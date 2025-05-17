@@ -56,6 +56,8 @@ apps/
       migrations/
         20220307034109_initial_migrate/
           migration.sql
+        20250517073440_add_user_auth_fields/
+          migration.sql
         migration_lock.toml
       schema.prisma
     src/
@@ -66,6 +68,12 @@ apps/
           prisma.service.spec.ts
           prisma.service.ts
         persistence.module.ts
+      users/
+        users.controller.spec.ts
+        users.controller.ts
+        users.module.ts
+        users.service.spec.ts
+        users.service.ts
       app.controller.spec.ts
       app.controller.ts
       app.module.ts
@@ -79,7 +87,6 @@ apps/
     Dockerfile
     nest-cli.json
     package.json
-    README.md
     tsconfig.build.json
     tsconfig.json
     webpack-hmr.config.js
@@ -134,7 +141,6 @@ packages/
 .dockerignore
 .gitignore
 docker-compose.yml
-kodebase.xml
 LICENSE
 package-scripts.js
 package.json
@@ -146,194 +152,90 @@ turbo.json
 <files>
 This section contains the contents of the repository's files.
 
-<file path=".repomix/bundles.json">
-{
-  "bundles": {}
-}
+<file path="apps/api/prisma/migrations/20250517073440_add_user_auth_fields/migration.sql">
+/*
+  Warnings:
+
+  - Added the required column `passwordHash` to the `User` table without a default value. This is not possible if the table is not empty.
+  - Added the required column `updatedAt` to the `User` table without a default value. This is not possible if the table is not empty.
+
+*/
+-- CreateEnum
+CREATE TYPE "Role" AS ENUM ('USER', 'ADMIN');
+
+-- AlterTable
+ALTER TABLE "User" ADD COLUMN     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ADD COLUMN     "passwordHash" TEXT NOT NULL,
+ADD COLUMN     "role" "Role" NOT NULL DEFAULT 'USER',
+ADD COLUMN     "updatedAt" TIMESTAMP(3) NOT NULL;
 </file>
 
-<file path="kodebase.xml">
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<unit xmlns="http://www.srcML.org/srcML/src" revision="1.0.0" url=""/>
+<file path="apps/api/src/users/users.controller.spec.ts">
+import { Test, TestingModule } from '@nestjs/testing';
+import { UsersController } from './users.controller';
+
+describe('UsersController', () => {
+  let controller: UsersController;
+
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      controllers: [UsersController],
+    }).compile();
+
+    controller = module.get<UsersController>(UsersController);
+  });
+
+  it('should be defined', () => {
+    expect(controller).toBeDefined();
+  });
+});
 </file>
 
-<file path="terminal.txt">
-Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % cp apps/api/.env.example apps/api/.env
-Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % cp apps/web/.env.example apps/web/.env
+<file path="apps/api/src/users/users.controller.ts">
+import { Controller } from '@nestjs/common';
 
-Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % nps
-Usage: nps [options] <script>...
-
-Commands:
-  nps init        automatically migrate from npm scripts to nps
-  nps completion  generate completion script
-
-Options:
-  --config, -c      Config file to use (defaults to nearest package-scripts.yml
-                    or package-scripts.js)                             [default:
-           "/Users/Yousef_1/Desktop/LearningLab/LearningLab/package-scripts.js"]
-  --silent, -s      Silent nps output                 [boolean] [default: false]
-  --log-level, -l   The log level to use
-                   [choices: "error", "warn", "info", "debug"] [default: "info"]
-  --prefix, -p      Prefix for each script name
-  --require, -r     Module to preload
-  --scripts         Log command text for script        [boolean] [default: true]
-  --help-style, -y  Choose the level of detail displayed by the help command
-                           [choices: "all", "scripts", "basic"] [default: "all"]
-  -v, --version     Show version number                                [boolean]
-
-Examples:
-  nps test build                     Runs the `test` script then the `build`
-                                     script
-  nps "test --cover" "build --prod"  Runs the `test` script and forwards the
-                                     "--cover" flag then the `build` script and
-                                     forwards the "--prod" flag
-Available scripts (camel or kebab case accepted)
-
-prepare - nps prepare.web prepare.api
-prepare.web - yarn
-prepare.api - nps prepare.docker prisma.migrate.dev
-prepare.docker - docker compose up -d
-prepare.ci.web - npx turbo prune --scope=web && cd out && yarn install --frozen-lockfile
-prepare.ci.api - npx turbo prune --scope=api && cd out && yarn install --frozen-lockfile && nps prisma.generate
-test - nps test.web test.api
-test.web - cd /Users/Yousef_1/Desktop/LearningLab/LearningLab/apps/web && yarn test
-test.api - cd /Users/Yousef_1/Desktop/LearningLab/LearningLab/apps/api && yarn test
-test.ci - nps test.ci.web test.ci.api
-test.ci.web - cd /Users/Yousef_1/Desktop/LearningLab/LearningLab/out/apps/web && yarn test:ci
-test.ci.api - cd /Users/Yousef_1/Desktop/LearningLab/LearningLab/out/apps/api && yarn test:ci
-test.watch - nps test.watch.web test.watch.api
-test.watch.web - cd /Users/Yousef_1/Desktop/LearningLab/LearningLab/apps/web && yarn test:watch
-test.watch.api - cd /Users/Yousef_1/Desktop/LearningLab/LearningLab/apps/api && yarn test:watch
-prisma.generate - cd /Users/Yousef_1/Desktop/LearningLab/LearningLab/apps/api && npx prisma generate
-prisma.studio - cd /Users/Yousef_1/Desktop/LearningLab/LearningLab/apps/api && npx prisma studio
-prisma.migrate.dev - cd /Users/Yousef_1/Desktop/LearningLab/LearningLab/apps/api && npx prisma migrate dev
-build - npx turbo run build
-build.ci.web - cd out && npm run build
-build.ci.api - cd out && npm run build
-docker.build - nps docker.build.web docker.build.api
-docker.build.web - docker build -t web . -f /Users/Yousef_1/Desktop/LearningLab/LearningLab/apps/web/Dockerfile
-docker.build.api - docker build -t api . -f /Users/Yousef_1/Desktop/LearningLab/LearningLab/apps/api/Dockerfile
-dev - npx turbo run dev
-Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % nps prepare
-nps is executing `prepare` : nps prepare.web prepare.api
-nps is executing `prepare.web` : yarn
-yarn install v1.22.22
-[1/5] 🔍  Validating package.json...
-[2/5] 🔍  Resolving packages...
-[3/5] 🚚  Fetching packages...
-[4/5] 🔗  Linking dependencies...
-warning "workspace-aggregator-949825a9-f577-4023-9cc6-34a57412a947 > api > swagger-ui-express@5.0.0" has unmet peer dependency "express@>=4.0.0 || >=5.0.0-beta".
-warning "workspace-aggregator-949825a9-f577-4023-9cc6-34a57412a947 > web > @testing-library/user-event@14.4.3" has unmet peer dependency "@testing-library/dom@>=7.21.4".
-warning "workspace-aggregator-949825a9-f577-4023-9cc6-34a57412a947 > config > eslint-config-next@13.4.12" has unmet peer dependency "eslint@^7.23.0 || ^8.0.0".
-warning "workspace-aggregator-949825a9-f577-4023-9cc6-34a57412a947 > config > eslint-plugin-react@7.33.1" has unmet peer dependency "eslint@^3 || ^4 || ^5 || ^6 || ^7 || ^8".
-warning "workspace-aggregator-949825a9-f577-4023-9cc6-34a57412a947 > config > eslint-config-next > @typescript-eslint/parser@5.46.1" has unmet peer dependency "eslint@^6.0.0 || ^7.0.0 || ^8.0.0".
-warning "workspace-aggregator-949825a9-f577-4023-9cc6-34a57412a947 > config > eslint-config-next > eslint-import-resolver-typescript@3.5.2" has unmet peer dependency "eslint@*".
-warning "workspace-aggregator-949825a9-f577-4023-9cc6-34a57412a947 > config > eslint-config-next > eslint-plugin-import@2.26.0" has unmet peer dependency "eslint@^2 || ^3 || ^4 || ^5 || ^6 || ^7.2.0 || ^8".
-warning "workspace-aggregator-949825a9-f577-4023-9cc6-34a57412a947 > config > eslint-config-next > eslint-plugin-jsx-a11y@6.6.1" has unmet peer dependency "eslint@^3 || ^4 || ^5 || ^6 || ^7 || ^8".
-warning "workspace-aggregator-949825a9-f577-4023-9cc6-34a57412a947 > config > eslint-config-next > eslint-plugin-react@7.31.11" has unmet peer dependency "eslint@^3 || ^4 || ^5 || ^6 || ^7 || ^8".
-warning "workspace-aggregator-949825a9-f577-4023-9cc6-34a57412a947 > config > eslint-config-next > eslint-plugin-react-hooks@5.0.0-canary-7118f5dd7-20230705" has unmet peer dependency "eslint@^3.0.0 || ^4.0.0 || ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0-0".
-warning "workspace-aggregator-949825a9-f577-4023-9cc6-34a57412a947 > config > eslint-config-next > @typescript-eslint/parser > @typescript-eslint/typescript-estree > tsutils@3.21.0" has unmet peer dependency "typescript@>=2.8.0 || >= 3.2.0-dev || >= 3.3.0-dev || >= 3.4.0-dev || >= 3.5.0-dev || >= 3.6.0-dev || >= 3.6.0-beta || >= 3.7.0-dev || >= 3.7.0-beta".
-[5/5] 🔨  Building fresh packages...
-✨  Done in 36.75s.
-nps is executing `prepare.api` : nps prepare.docker prisma.migrate.dev
-nps is executing `prepare.docker` : docker compose up -d
-WARN[0000] /Users/Yousef_1/Desktop/LearningLab/LearningLab/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion 
-[+] Running 22/22
- ✔ reverse-proxy Pulled                                                                                  8.8s 
-   ✔ a53cddf3d9ee Pull complete                                                                          1.4s 
-   ✔ 67ef22056282 Pull complete                                                                          6.5s 
-   ✔ 4e82158dafdd Pull complete                                                                          1.4s 
-   ✔ ff2745aabaf7 Pull complete                                                                          0.8s 
-   ✔ 844fa86a5e03 Pull complete                                                                          1.4s 
-   ✔ e1242a59b7fa Pull complete                                                                          1.4s 
- ✔ postgres Pulled                                                                                      11.3s 
-   ✔ a10737efea89 Pull complete                                                                          0.9s 
-   ✔ f093701651fc Pull complete                                                                          0.7s 
-   ✔ b955a72f820f Pull complete                                                                          1.5s 
-   ✔ 8fbfde47bdf5 Pull complete                                                                          1.5s 
-   ✔ 4ec5ceba4f23 Pull complete                                                                          0.9s 
-   ✔ dae69a032ed8 Pull complete                                                                          0.9s 
-   ✔ 57660abecc5c Pull complete                                                                          4.3s 
-   ✔ 057f898184a1 Pull complete                                                                          4.1s 
-   ✔ 943331d8a9a9 Pull complete                                                                          4.0s 
-   ✔ 670722a69e75 Pull complete                                                                          0.9s 
-   ✔ bb243f355f93 Pull complete                                                                          0.7s 
-   ✔ c181fff81329 Pull complete                                                                          8.9s 
-   ✔ bbc8249184ff Pull complete                                                                          0.9s 
-   ✔ 79fb7f3dbea0 Pull complete                                                                          0.9s 
-[+] Running 3/4
- ✔ Network learninglab_default       Created                                                             0.0s 
- ✔ Volume "learninglab_db_data"      Created                                                             0.0s 
- ⠦ Container learninglab-postgres-1  Starting                                                            0.6s 
- ✔ Container nginx_container         Created                                                             0.1s 
-Error response from daemon: failed to set up container networking: driver failed programming external connectivity on endpoint learninglab-postgres-1 (9b58ec3585035274962f0fb1bef506f64deab53f9a3d1cc1b6ba1790c2f1d432): Bind for 0.0.0.0:5432 failed: port is already allocated
-The script called "prepare.docker" which runs "docker compose up -d" failed with exit code 1 https://github.com/sezna/nps/blob/master/other/ERRORS_AND_WARNINGS.md#failed-with-exit-code
-The script called "prepare.api" which runs "nps prepare.docker prisma.migrate.dev" failed with exit code 1 https://github.com/sezna/nps/blob/master/other/ERRORS_AND_WARNINGS.md#failed-with-exit-code
-The script called "prepare" which runs "nps prepare.web prepare.api" failed with exit code 1 https://github.com/sezna/nps/blob/master/other/ERRORS_AND_WARNINGS.md#failed-with-exit-code
-Yousef@MacBook-Pro-tilhrende-Yousef LearningLab %
+@Controller('users')
+export class UsersController {}
 </file>
 
-<file path=".github/workflows/api.yaml">
-# This is a basic workflow to help you get started with Actions
+<file path="apps/api/src/users/users.module.ts">
+import { Module } from '@nestjs/common';
+import { UsersService } from './users.service';
+import { UsersController } from './users.controller';
 
-name: api-ci
+@Module({
+  providers: [UsersService],
+  controllers: [UsersController]
+})
+export class UsersModule {}
+</file>
 
-# Controls when the workflow will run
-on:
-  # Triggers the workflow on push or pull request events but only for the master branch
-  push:
-    branches: [master]
-    paths:
-      - "apps/api/**"
-  pull_request:
-    branches: [master]
-    paths:
-      - "apps/api/**"
+<file path="apps/api/src/users/users.service.spec.ts">
+import { Test, TestingModule } from '@nestjs/testing';
+import { UsersService } from './users.service';
 
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
+describe('UsersService', () => {
+  let service: UsersService;
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
-jobs:
-  # This workflow contains a single job called "build"
-  build:
-    # The type of runner that the job will run on
-    runs-on: ubuntu-latest
-    env:
-      DATABASE_URL: "postgresql://test:test@localhost:5432/pm"
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [UsersService],
+    }).compile();
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
-    strategy:
-      matrix:
-        node-version: [16.x]
+    service = module.get<UsersService>(UsersService);
+  });
 
-    steps:
-      - uses: actions/checkout@v2
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
-        with:
-          node-version: ${{ matrix.node-version }}
+  it('should be defined', () => {
+    expect(service).toBeDefined();
+  });
+});
+</file>
 
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
+<file path="apps/api/src/users/users.service.ts">
+import { Injectable } from '@nestjs/common';
 
-      - name: Cache node modules
-        uses: actions/cache@v2
-        env:
-          cache-name: cache-node-modules
-        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
-        with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-
-      - run: yarn global add turbo
-      - run: npx nps prepare.ci.api
-      - run: npx nps build.ci.api
-      - run: npx nps test.ci.api
+@Injectable()
+export class UsersService {}
 </file>
 
 <file path=".github/workflows/web.yaml">
@@ -393,6 +295,12 @@ jobs:
       - run: npx nps test.ci.web
 </file>
 
+<file path=".repomix/bundles.json">
+{
+  "bundles": {}
+}
+</file>
+
 <file path="apps/api/prisma/migrations/20220307034109_initial_migrate/migration.sql">
 -- CreateTable
 CREATE TABLE "User" (
@@ -414,9 +322,6 @@ provider = "postgresql"
 </file>
 
 <file path="apps/api/prisma/schema.prisma">
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -427,9 +332,18 @@ datasource db {
 }
 
 model User {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
+  passwordHash String
+  name         String?
+  role         Role     @default(USER)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+enum Role {
+  USER
+  ADMIN
 }
 </file>
 
@@ -528,6 +442,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { validationSchemaForEnv } from './config/environment-variables';
 import { PersistenceModule } from './persistence/persistence.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -536,6 +451,7 @@ import { PersistenceModule } from './persistence/persistence.module';
       validationSchema: validationSchemaForEnv,
     }),
     PersistenceModule,
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService],
@@ -667,82 +583,6 @@ CMD [ "node", "apps/api/dist/main.js" ]
   "collection": "@nestjs/schematics",
   "sourceRoot": "src"
 }
-</file>
-
-<file path="apps/api/README.md">
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo_text.svg" width="320" alt="Nest Logo" /></a>
-</p>
-
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
-
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
-
-## Description
-
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
-
-## Installation
-
-```bash
-$ npm install
-```
-
-## Running the app
-
-```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
-```
-
-## Test
-
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](LICENSE).
 </file>
 
 <file path="apps/api/tsconfig.build.json">
@@ -1246,6 +1086,50 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 </file>
 
+<file path="terminal.txt">
+[{
+	"resource": "/Users/Yousef_1/Desktop/LearningLab/LearningLab/.github/workflows/api.yaml",
+	"owner": "_generated_diagnostic_collection_name_#1",
+	"severity": 8,
+	"message": "All mapping items must start at the same column at line 31, column 1:\n\n    # Steps represent a sequence of tasks that will be executed as part of the …\n    strategy:\n^\n",
+	"startLineNumber": 31,
+	"startColumn": 1,
+	"endLineNumber": 31,
+	"endColumn": 2
+},{
+	"resource": "/Users/Yousef_1/Desktop/LearningLab/LearningLab/.github/workflows/api.yaml",
+	"owner": "_generated_diagnostic_collection_name_#1",
+	"severity": 8,
+	"message": "All mapping items must start at the same column at line 34, column 1:\n\n        node-version: [16.x]\n\n^\n",
+	"startLineNumber": 34,
+	"startColumn": 1,
+	"endLineNumber": 35,
+	"endColumn": 1
+},{
+	"resource": "/Users/Yousef_1/Desktop/LearningLab/LearningLab/.github/workflows/api.yaml",
+	"owner": "cSpell",
+	"severity": 2,
+	"message": "\"mydb\": Unknown word.",
+	"source": "cSpell",
+	"startLineNumber": 28,
+	"startColumn": 56,
+	"endLineNumber": 28,
+	"endColumn": 60
+}]
+
+[{
+	"resource": "/Users/Yousef_1/Desktop/LearningLab/LearningLab/docker-compose.yml",
+	"owner": "cSpell",
+	"severity": 2,
+	"message": "\"mydb\": Unknown word.",
+	"source": "cSpell",
+	"startLineNumber": 17,
+	"startColumn": 21,
+	"endLineNumber": 17,
+	"endColumn": 25
+}]
+</file>
+
 <file path="turbo.json">
 {
   "pipeline": {
@@ -1264,6 +1148,56 @@ SOFTWARE.
     }
   }
 }
+</file>
+
+<file path=".github/workflows/api.yaml">
+name: api-ci
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - "apps/api/**"
+  pull_request:
+    branches: [master]
+    paths:
+      - "apps/api/**"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: "postgresql://test:test@localhost:5433/mydb"
+
+    strategy:
+      matrix:
+        node-version: [16.x]
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+
+      - name: Cache node modules
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - run: yarn global add turbo
+      - run: npx nps prepare.ci.api
+      - run: npx nps build.ci.api
+      - run: npx nps test.ci.api
 </file>
 
 <file path="apps/api/src/persistence/prisma/prisma.service.ts">
@@ -1380,37 +1314,6 @@ http {
 }
 </file>
 
-<file path="docker-compose.yml">
-version: "3.8"
-
-services:
-  reverse-proxy:
-    image: nginx:latest
-    container_name: nginx_container
-    ports:
-      - 80:80
-    depends_on:
-      - postgres
-    volumes:
-      - ./packages/config/nginx.conf:/etc/nginx/nginx.conf
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-
-  postgres:
-    image: postgres:15
-    environment:
-      - POSTGRES_DB=mydb
-      - POSTGRES_USER=test
-      - POSTGRES_PASSWORD=test
-    volumes:
-      - db_data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
-
-volumes:
-  db_data:
-</file>
-
 <file path="apps/api/package.json">
 {
   "name": "api",
@@ -1442,6 +1345,7 @@ volumes:
     "@nestjs/platform-express": "^10.1.3",
     "@nestjs/swagger": "^7.1.6",
     "@prisma/client": "^5.1.0",
+    "bcryptjs": "^3.0.2",
     "joi": "^17.9.2",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^5.0.1",
@@ -1528,6 +1432,35 @@ volumes:
     "typescript": "^5.1.6"
   }
 }
+</file>
+
+<file path="docker-compose.yml">
+services:
+  reverse-proxy:
+    image: nginx:latest
+    container_name: nginx_container
+    ports:
+      - 80:80
+    depends_on:
+      - postgres
+    volumes:
+      - ./packages/config/nginx.conf:/etc/nginx/nginx.conf
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  postgres:
+    image: postgres:15
+    environment:
+      - POSTGRES_DB=mydb
+      - POSTGRES_USER=test
+      - POSTGRES_PASSWORD=test
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+
+volumes:
+  db_data:
 </file>
 
 <file path="package-scripts.js">
