@@ -1,13 +1,60 @@
-[{
-	"resource": "/Users/Yousef_1/Desktop/LearningLab/LearningLab/apps/api/src/users/users.module.ts",
-	"owner": "typescript",
-	"code": "2307",
-	"severity": 8,
-	"message": "Cannot find module '../../persistence/persistence.module' or its corresponding type declarations.",
-	"source": "ts",
-	"startLineNumber": 5,
-	"startColumn": 35,
-	"endLineNumber": 5,
-	"endColumn": 73
-}]
-
+Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % # I roden af dit projekt, eller naviger til apps/web
+# yarn add uuid
+# yarn add -D @types/uuid
+Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % yarn add uuid
+yarn add v1.22.22
+error Running this command will add the dependency to the workspace root rather than the workspace itself, which might not be what you want - if you really meant it, make it explicit by running this command again with the -W flag (or --ignore-workspace-root-check).
+info Visit https://yarnpkg.com/en/docs/cli/add for documentation about this command.
+Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % yarn workspace web add uuid
+yarn workspace web add -D @types/uuid
+yarn workspace v1.22.22
+yarn add v1.22.22
+[1/4] 🔍  Resolving packages...
+[2/4] 🚚  Fetching packages...
+[3/4] 🔗  Linking dependencies...
+warning "workspace-aggregator-d320a9ea-0602-4201-970e-815ba729f087 > api > swagger-ui-express@5.0.0" has unmet peer dependency "express@>=4.0.0 || >=5.0.0-beta".
+warning "workspace-aggregator-d320a9ea-0602-4201-970e-815ba729f087 > web > @testing-library/user-event@14.4.3" has unmet peer dependency "@testing-library/dom@>=7.21.4".
+warning "workspace-aggregator-d320a9ea-0602-4201-970e-815ba729f087 > config > eslint-config-next@13.4.12" has unmet peer dependency "eslint@^7.23.0 || ^8.0.0".
+warning "workspace-aggregator-d320a9ea-0602-4201-970e-815ba729f087 > config > eslint-plugin-react@7.33.1" has unmet peer dependency "eslint@^3 || ^4 || ^5 || ^6 || ^7 || ^8".
+warning "workspace-aggregator-d320a9ea-0602-4201-970e-815ba729f087 > config > eslint-config-next > @typescript-eslint/parser@5.46.1" has unmet peer dependency "eslint@^6.0.0 || ^7.0.0 || ^8.0.0".
+warning "workspace-aggregator-d320a9ea-0602-4201-970e-815ba729f087 > config > eslint-config-next > eslint-import-resolver-typescript@3.5.2" has unmet peer dependency "eslint@*".
+warning "workspace-aggregator-d320a9ea-0602-4201-970e-815ba729f087 > config > eslint-config-next > eslint-plugin-import@2.26.0" has unmet peer dependency "eslint@^2 || ^3 || ^4 || ^5 || ^6 || ^7.2.0 || ^8".
+warning "workspace-aggregator-d320a9ea-0602-4201-970e-815ba729f087 > config > eslint-config-next > eslint-plugin-jsx-a11y@6.6.1" has unmet peer dependency "eslint@^3 || ^4 || ^5 || ^6 || ^7 || ^8".
+warning "workspace-aggregator-d320a9ea-0602-4201-970e-815ba729f087 > config > eslint-config-next > eslint-plugin-react@7.31.11" has unmet peer dependency "eslint@^3 || ^4 || ^5 || ^6 || ^7 || ^8".
+warning "workspace-aggregator-d320a9ea-0602-4201-970e-815ba729f087 > config > eslint-config-next > eslint-plugin-react-hooks@5.0.0-canary-7118f5dd7-20230705" has unmet peer dependency "eslint@^3.0.0 || ^4.0.0 || ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0-0".
+warning "workspace-aggregator-d320a9ea-0602-4201-970e-815ba729f087 > config > eslint-config-next > @typescript-eslint/parser > @typescript-eslint/typescript-estree > tsutils@3.21.0" has unmet peer dependency "typescript@>=2.8.0 || >= 3.2.0-dev || >= 3.3.0-dev || >= 3.4.0-dev || >= 3.5.0-dev || >= 3.6.0-dev || >= 3.6.0-beta || >= 3.7.0-dev || >= 3.7.0-beta".
+[4/4] 🔨  Building fresh packages...
+success Saved lockfile.
+success Saved 2 new dependencies.
+info Direct dependencies
+info All dependencies
+├─ ui@0.0.0
+└─ uuid@11.1.0
+✨  Done in 2.33s.
+✨  Done in 2.48s.
+yarn workspace v1.22.22
+yarn add v1.22.22
+[1/4] 🔍  Resolving packages...
+[2/4] 🚚  Fetching packages...
+[3/4] 🔗  Linking dependencies...
+warning "workspace-aggregator-a0994172-0510-4153-86cf-c181519bdad6 > api > swagger-ui-express@5.0.0" has unmet peer dependency "express@>=4.0.0 || >=5.0.0-beta".
+warning "workspace-aggregator-a0994172-0510-4153-86cf-c181519bdad6 > web > @testing-library/user-event@14.4.3" has unmet peer dependency "@testing-library/dom@>=7.21.4".
+warning "workspace-aggregator-a0994172-0510-4153-86cf-c181519bdad6 > config > eslint-config-next@13.4.12" has unmet peer dependency "eslint@^7.23.0 || ^8.0.0".
+warning "workspace-aggregator-a0994172-0510-4153-86cf-c181519bdad6 > config > eslint-plugin-react@7.33.1" has unmet peer dependency "eslint@^3 || ^4 || ^5 || ^6 || ^7 || ^8".
+warning "workspace-aggregator-a0994172-0510-4153-86cf-c181519bdad6 > config > eslint-config-next > @typescript-eslint/parser@5.46.1" has unmet peer dependency "eslint@^6.0.0 || ^7.0.0 || ^8.0.0".
+warning "workspace-aggregator-a0994172-0510-4153-86cf-c181519bdad6 > config > eslint-config-next > eslint-import-resolver-typescript@3.5.2" has unmet peer dependency "eslint@*".
+warning "workspace-aggregator-a0994172-0510-4153-86cf-c181519bdad6 > config > eslint-config-next > eslint-plugin-import@2.26.0" has unmet peer dependency "eslint@^2 || ^3 || ^4 || ^5 || ^6 || ^7.2.0 || ^8".
+warning "workspace-aggregator-a0994172-0510-4153-86cf-c181519bdad6 > config > eslint-config-next > eslint-plugin-jsx-a11y@6.6.1" has unmet peer dependency "eslint@^3 || ^4 || ^5 || ^6 || ^7 || ^8".
+warning "workspace-aggregator-a0994172-0510-4153-86cf-c181519bdad6 > config > eslint-config-next > eslint-plugin-react@7.31.11" has unmet peer dependency "eslint@^3 || ^4 || ^5 || ^6 || ^7 || ^8".
+warning "workspace-aggregator-a0994172-0510-4153-86cf-c181519bdad6 > config > eslint-config-next > eslint-plugin-react-hooks@5.0.0-canary-7118f5dd7-20230705" has unmet peer dependency "eslint@^3.0.0 || ^4.0.0 || ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0-0".
+warning "workspace-aggregator-a0994172-0510-4153-86cf-c181519bdad6 > config > eslint-config-next > @typescript-eslint/parser > @typescript-eslint/typescript-estree > tsutils@3.21.0" has unmet peer dependency "typescript@>=2.8.0 || >= 3.2.0-dev || >= 3.3.0-dev || >= 3.4.0-dev || >= 3.5.0-dev || >= 3.6.0-dev || >= 3.6.0-beta || >= 3.7.0-dev || >= 3.7.0-beta".
+[4/4] 🔨  Building fresh packages...
+success Saved lockfile.
+success Saved 2 new dependencies.
+info Direct dependencies
+info All dependencies
+├─ @types/uuid@10.0.0
+└─ ui@0.0.0
+✨  Done in 2.02s.
+✨  Done in 2.23s.
+Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % 
