@@ -12,16 +12,19 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
   }
 
   // Denne metode kaldes automatisk af Passport, når LocalAuthGuard bruges
-  async validate(email: string, pass: string): Promise<Omit<User, 'passwordHash'>> {
+  async validate(
+    email: string,
+    pass: string,
+  ): Promise<Omit<User, 'passwordHash'>> {
     // Kald AuthService for at validere brugerens email og password
     // authService.validateUser returnerer allerede Omit<User, 'passwordHash'> | null
     const user = await this.authService.validateUser(email, pass);
-    
+
     if (!user) {
       // Hvis brugeren ikke findes eller password er forkert, kast en UnauthorizedException
       throw new UnauthorizedException('Ugyldig email eller password.');
     }
-    
+
     // Brugerobjektet 'user' er allerede i det korrekte format (uden passwordHash),
     // da authService.validateUser håndterer fjernelsen af passwordHash.
     // Derfor kan vi returnere 'user' direkte.

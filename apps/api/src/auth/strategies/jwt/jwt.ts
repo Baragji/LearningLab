@@ -20,7 +20,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: configService.get<string>('JWT_SECRET') || 'DEFAULT_VERY_SECRET_KEY_CHANGE_ME_IN_ENV',
+      secretOrKey:
+        configService.get<string>('JWT_SECRET') ||
+        'DEFAULT_VERY_SECRET_KEY_CHANGE_ME_IN_ENV',
     });
   }
 
@@ -28,7 +30,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     const user = await this.usersService.findOneById(payload.sub);
 
     if (!user) {
-      throw new UnauthorizedException('Bruger ikke fundet eller token er ugyldigt.');
+      throw new UnauthorizedException(
+        'Bruger ikke fundet eller token er ugyldigt.',
+      );
     }
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { passwordHash, ...result } = user;
