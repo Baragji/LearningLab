@@ -1,0 +1,41 @@
+[{
+	"resource": "/Users/Yousef_1/Desktop/LearningLab/LearningLab/.github/workflows/api.yaml",
+	"owner": "_generated_diagnostic_collection_name_#1",
+	"severity": 8,
+	"message": "All mapping items must start at the same column at line 31, column 1:\n\n    # Steps represent a sequence of tasks that will be executed as part of the …\n    strategy:\n^\n",
+	"startLineNumber": 31,
+	"startColumn": 1,
+	"endLineNumber": 31,
+	"endColumn": 2
+},{
+	"resource": "/Users/Yousef_1/Desktop/LearningLab/LearningLab/.github/workflows/api.yaml",
+	"owner": "_generated_diagnostic_collection_name_#1",
+	"severity": 8,
+	"message": "All mapping items must start at the same column at line 34, column 1:\n\n        node-version: [16.x]\n\n^\n",
+	"startLineNumber": 34,
+	"startColumn": 1,
+	"endLineNumber": 35,
+	"endColumn": 1
+},{
+	"resource": "/Users/Yousef_1/Desktop/LearningLab/LearningLab/.github/workflows/api.yaml",
+	"owner": "cSpell",
+	"severity": 2,
+	"message": "\"mydb\": Unknown word.",
+	"source": "cSpell",
+	"startLineNumber": 28,
+	"startColumn": 56,
+	"endLineNumber": 28,
+	"endColumn": 60
+}]
+
+[{
+	"resource": "/Users/Yousef_1/Desktop/LearningLab/LearningLab/docker-compose.yml",
+	"owner": "cSpell",
+	"severity": 2,
+	"message": "\"mydb\": Unknown word.",
+	"source": "cSpell",
+	"startLineNumber": 17,
+	"startColumn": 21,
+	"endLineNumber": 17,
+	"endColumn": 25
+}]
