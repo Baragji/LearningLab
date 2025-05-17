@@ -1,5 +1,13 @@
 // apps/api/src/users/users.controller.ts
-import { Controller, Post, Body, ValidationPipe, UsePipes, HttpCode, HttpStatus } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  ValidationPipe,
+  UsePipes,
+  HttpCode,
+  HttpStatus,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from '@prisma/client'; // Importer User type for returtypen
@@ -12,9 +20,17 @@ export class UsersController {
   // @UsePipes(...) aktiverer automatisk validering af request body'en baseret på CreateUserDto
   // @HttpCode(...) sætter HTTP statuskoden til 201 Created ved succesfuld oprettelse
   @Post('signup')
-  @UsePipes(new ValidationPipe({ transform: true, whitelist: true, forbidNonWhitelisted: true }))
+  @UsePipes(
+    new ValidationPipe({
+      transform: true,
+      whitelist: true,
+      forbidNonWhitelisted: true,
+    }),
+  )
   @HttpCode(HttpStatus.CREATED)
-  async signUp(@Body() createUserDto: CreateUserDto): Promise<Omit<User, 'passwordHash'>> {
+  async signUp(
+    @Body() createUserDto: CreateUserDto,
+  ): Promise<Omit<User, 'passwordHash'>> {
     // @Body() decorator tager request body'en og mapper den til createUserDto
     // UsersService.create kaldes for at håndtere selve brugeroprettelsen
     return this.usersService.create(createUserDto);

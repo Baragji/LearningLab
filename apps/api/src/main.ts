@@ -51,8 +51,14 @@ async function bootstrap() {
 
   // Log-beskeder til terminalen for at vise, at serveren kører.
   logger.log(`NestJS API server kører internt på http://localhost:${PORT}`);
-  logger.log(`API Dokumentation (internt) er tilgængelig på http://localhost:${PORT}/docs`);
-  logger.log(`Hele applikationen (via Nginx) burde være tilgængelig på http://localhost`);
-  logger.log(`API'en (via Nginx) burde være tilgængelig på http://localhost/api/`);
+  logger.log(
+    `API Dokumentation (internt) er tilgængelig på http://localhost:${PORT}/docs`,
+  );
+  logger.log(
+    `Hele applikationen (via Nginx) burde være tilgængelig på http://localhost`,
+  );
+  logger.log(
+    `API'en (via Nginx) burde være tilgængelig på http://localhost/api/`,
+  );
 }
 bootstrap();

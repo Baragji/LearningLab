@@ -1,5 +1,9 @@
 // apps/api/src/users/users.service.ts
-import { Injectable, ConflictException, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  ConflictException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { PrismaService } from '../persistence/prisma/prisma.service'; // Sti til din PrismaService
 import { CreateUserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcryptjs';
@@ -9,7 +13,9 @@ import { User, Role } from '@prisma/client'; // Importer User og Role typer fra 
 export class UsersService {
   constructor(private prisma: PrismaService) {}
 
-  async create(createUserDto: CreateUserDto): Promise<Omit<User, 'passwordHash'>> {
+  async create(
+    createUserDto: CreateUserDto,
+  ): Promise<Omit<User, 'passwordHash'>> {
     const { email, password, name, role } = createUserDto;
 
     // Tjek om brugeren allerede eksisterer
@@ -18,7 +24,9 @@ export class UsersService {
     });
 
     if (existingUser) {
-      throw new ConflictException('En bruger med denne email eksisterer allerede.');
+      throw new ConflictException(
+        'En bruger med denne email eksisterer allerede.',
+      );
     }
 
     // Hash passwordet
@@ -30,7 +38,9 @@ export class UsersService {
       // Log den faktiske fejl internt
       console.error('Fejl under hashing af password:', error);
       // Vis en generisk fejl til klienten
-      throw new InternalServerErrorException('Der opstod en intern fejl under brugeroprettelse (hashing).');
+      throw new InternalServerErrorException(
+        'Der opstod en intern fejl under brugeroprettelse (hashing).',
+      );
     }
 
     // Opret brugeren i databasen
@@ -48,16 +58,25 @@ export class UsersService {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { passwordHash, ...result } = user;
       return result;
-
     } catch (error) {
       // Håndter specifikke databasefejl, f.eks. hvis unique constraint fejler (selvom vi tjekker ovenfor)
-      if (error && typeof error === 'object' && 'code' in error && error.code === 'P2002') { // Prisma's kode for unique constraint violation
-        throw new ConflictException('En bruger med denne email eksisterer allerede (databasefejl).');
+      if (
+        error &&
+        typeof error === 'object' &&
+        'code' in error &&
+        error.code === 'P2002'
+      ) {
+        // Prisma's kode for unique constraint violation
+        throw new ConflictException(
+          'En bruger med denne email eksisterer allerede (databasefejl).',
+        );
       }
       // Log den faktiske fejl internt
       console.error('Databasefejl under brugeroprettelse:', error);
       // Vis en generisk fejl til klienten
-      throw new InternalServerErrorException('Der opstod en databasefejl under brugeroprettelse.');
+      throw new InternalServerErrorException(
+        'Der opstod en databasefejl under brugeroprettelse.',
+      );
     }
   }
 
