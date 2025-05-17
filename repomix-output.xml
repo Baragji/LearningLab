@@ -61,6 +61,15 @@ apps/
         migration_lock.toml
       schema.prisma
     src/
+      auth/
+        strategies/
+          jwt/
+            jwt.ts
+          local/
+            local.ts
+        auth.controller.ts
+        auth.module.ts
+        auth.service.ts
       config/
         environment-variables.ts
       persistence/
@@ -69,6 +78,8 @@ apps/
           prisma.service.ts
         persistence.module.ts
       users/
+        dto/
+          create-user.dto.ts
         users.controller.spec.ts
         users.controller.ts
         users.module.ts
@@ -152,90 +163,95 @@ turbo.json
 <files>
 This section contains the contents of the repository's files.
 
-<file path="apps/api/prisma/migrations/20250517073440_add_user_auth_fields/migration.sql">
-/*
-  Warnings:
-
-  - Added the required column `passwordHash` to the `User` table without a default value. This is not possible if the table is not empty.
-  - Added the required column `updatedAt` to the `User` table without a default value. This is not possible if the table is not empty.
-
-*/
--- CreateEnum
-CREATE TYPE "Role" AS ENUM ('USER', 'ADMIN');
-
--- AlterTable
-ALTER TABLE "User" ADD COLUMN     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-ADD COLUMN     "passwordHash" TEXT NOT NULL,
-ADD COLUMN     "role" "Role" NOT NULL DEFAULT 'USER',
-ADD COLUMN     "updatedAt" TIMESTAMP(3) NOT NULL;
+<file path="apps/api/src/auth/strategies/jwt/jwt.ts">
+export class Jwt {}
 </file>
 
-<file path="apps/api/src/users/users.controller.spec.ts">
-import { Test, TestingModule } from '@nestjs/testing';
-import { UsersController } from './users.controller';
+<file path="apps/api/src/auth/strategies/local/local.ts">
+// apps/api/src/auth/strategies/local.strategy.ts
+import { Strategy } from 'passport-local';
+import { PassportStrategy } from '@nestjs/passport';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { AuthService } from '../auth.service';
+import { User } from '@prisma/client';
 
-describe('UsersController', () => {
-  let controller: UsersController;
+@Injectable()
+export class LocalStrategy extends PassportStrategy(Strategy) {
+  constructor(private authService: AuthService) {
+    super({ usernameField: 'email' }); // Fortæller Passport at 'email' feltet skal bruges som brugernavn
+  }
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      controllers: [UsersController],
-    }).compile();
-
-    controller = module.get<UsersController>(UsersController);
-  });
-
-  it('should be defined', () => {
-    expect(controller).toBeDefined();
-  });
-});
+  // Denne metode kaldes automatisk af Passport, når LocalAuthGuard bruges
+  async validate(email: string, pass: string): Promise<Omit<User, 'passwordHash'>> {
+    // Kald AuthService for at validere brugerens email og password
+    const user = await this.authService.validateUser(email, pass);
+    if (!user) {
+      // Hvis brugeren ikke findes eller password er forkert, kast en UnauthorizedException
+      throw new UnauthorizedException('Ugyldig email eller password.');
+    }
+    // Returner brugerobjektet (uden passwordHash), som så bliver tilgængeligt på req.user
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { passwordHash, ...result } = user;
+    return result;
+  }
+}
 </file>
 
-<file path="apps/api/src/users/users.controller.ts">
+<file path="apps/api/src/auth/auth.controller.ts">
 import { Controller } from '@nestjs/common';
 
-@Controller('users')
-export class UsersController {}
+@Controller('auth')
+export class AuthController {}
 </file>
 
-<file path="apps/api/src/users/users.module.ts">
+<file path="apps/api/src/auth/auth.module.ts">
+// apps/api/src/auth/auth.module.ts
 import { Module } from '@nestjs/common';
-import { UsersService } from './users.service';
-import { UsersController } from './users.controller';
+import { AuthService } from './auth.service';
+import { AuthController } from './auth.controller';
+import { UsersModule } from '../users/users.module'; // Importer UsersModule for at få adgang til UsersService
+import { PassportModule } from '@nestjs/passport';
+import { JwtModule } from '@nestjs/jwt';
+import { LocalStrategy } from './strategies/local.strategy';
+import { JwtStrategy } from './strategies/jwt.strategy';
+import { ConfigModule, ConfigService } from '@nestjs/config'; // Importer ConfigModule og ConfigService
 
 @Module({
-  providers: [UsersService],
-  controllers: [UsersController]
+  imports: [
+    UsersModule, // Gør UsersService tilgængelig i AuthModule
+    PassportModule.register({ defaultStrategy: 'jwt' }), // Registrer PassportModule, default strategi er jwt
+    JwtModule.registerAsync({
+      // Konfigurer JwtModule asynkront for at kunne bruge ConfigService
+      imports: [ConfigModule], // Importer ConfigModule for at få adgang til miljøvariabler
+      inject: [ConfigService], // Injicer ConfigService
+      useFactory: async (configService: ConfigService) => ({
+        // Brug en factory funktion til at definere JWT optioner dynamisk
+        // Hent JWT_SECRET og JWT_EXPIRES_IN fra miljøvariabler via ConfigService
+        // Sørg for at have disse defineret i din .env fil (f.eks. JWT_SECRET=DIN_SUPER_HEMMELIGE_NØGLE og JWT_EXPIRES_IN=3600s)
+        secret: configService.get<string>('JWT_SECRET') || 'DEFAULT_VERY_SECRET_KEY_CHANGE_ME_IN_ENV', // Fallback hvis ikke sat i .env
+        signOptions: {
+          expiresIn: configService.get<string>('JWT_EXPIRES_IN') || '1h', // Token udløber om 1 time som default
+        },
+      }),
+    }),
+    ConfigModule, // Sørg for at ConfigModule er importeret, hvis den ikke er global i AppModule
+  ],
+  controllers: [AuthController],
+  providers: [
+    AuthService,
+    LocalStrategy, // Tilføj LocalStrategy til providers
+    JwtStrategy,   // Tilføj JwtStrategy til providers
+  ],
+  exports: [AuthService, JwtModule], // Eksporter AuthService og JwtModule så de kan bruges i andre moduler (f.eks. til Guards)
 })
-export class UsersModule {}
+export class AuthModule {}
 </file>
 
-<file path="apps/api/src/users/users.service.spec.ts">
-import { Test, TestingModule } from '@nestjs/testing';
-import { UsersService } from './users.service';
-
-describe('UsersService', () => {
-  let service: UsersService;
-
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [UsersService],
-    }).compile();
-
-    service = module.get<UsersService>(UsersService);
-  });
-
-  it('should be defined', () => {
-    expect(service).toBeDefined();
-  });
-});
-</file>
-
-<file path="apps/api/src/users/users.service.ts">
+<file path="apps/api/src/auth/auth.service.ts">
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
-export class UsersService {}
+export class AuthService {}
 </file>
 
 <file path=".github/workflows/web.yaml">
@@ -315,36 +331,28 @@ CREATE TABLE "User" (
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 </file>
 
+<file path="apps/api/prisma/migrations/20250517073440_add_user_auth_fields/migration.sql">
+/*
+  Warnings:
+
+  - Added the required column `passwordHash` to the `User` table without a default value. This is not possible if the table is not empty.
+  - Added the required column `updatedAt` to the `User` table without a default value. This is not possible if the table is not empty.
+
+*/
+-- CreateEnum
+CREATE TYPE "Role" AS ENUM ('USER', 'ADMIN');
+
+-- AlterTable
+ALTER TABLE "User" ADD COLUMN     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ADD COLUMN     "passwordHash" TEXT NOT NULL,
+ADD COLUMN     "role" "Role" NOT NULL DEFAULT 'USER',
+ADD COLUMN     "updatedAt" TIMESTAMP(3) NOT NULL;
+</file>
+
 <file path="apps/api/prisma/migrations/migration_lock.toml">
 # Please do not edit this file manually
 # It should be added in your version-control system (i.e. Git)
 provider = "postgresql"
-</file>
-
-<file path="apps/api/prisma/schema.prisma">
-generator client {
-  provider = "prisma-client-js"
-}
-
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
-
-model User {
-  id           Int      @id @default(autoincrement())
-  email        String   @unique
-  passwordHash String
-  name         String?
-  role         Role     @default(USER)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-}
-
-enum Role {
-  USER
-  ADMIN
-}
 </file>
 
 <file path="apps/api/src/config/environment-variables.ts">
@@ -391,6 +399,202 @@ import { PrismaService } from './prisma/prisma.service';
 export class PersistenceModule {}
 </file>
 
+<file path="apps/api/src/users/dto/create-user.dto.ts">
+// apps/api/src/users/dto/create-user.dto.ts
+    import { IsEmail, IsNotEmpty, IsString, MinLength, IsEnum, IsOptional } from 'class-validator';
+    import { Role } from '@prisma/client'; // Importer Role enum fra Prisma Client
+
+    export class CreateUserDto {
+      @IsEmail({}, { message: 'Email skal være en gyldig email-adresse.' })
+      @IsNotEmpty({ message: 'Email må ikke være tom.' })
+      email: string;
+
+      @IsString({ message: 'Password skal være en streng.' })
+      @MinLength(8, { message: 'Password skal være mindst 8 tegn langt.' })
+      @IsNotEmpty({ message: 'Password må ikke være tomt.' })
+      password: string;
+
+      @IsString({ message: 'Navn skal være en streng.' })
+      @IsOptional() // Gør navnefeltet valgfrit
+      name?: string;
+
+      // Baseret på din schema.prisma, hvor en bruger har én 'role'
+      @IsEnum(Role, { message: 'Rolle skal være en gyldig værdi (USER eller ADMIN).' })
+      @IsOptional() // Gør rollen valgfri ved oprettelse, så den kan falde tilbage til default i schema
+      role?: Role;
+    }
+</file>
+
+<file path="apps/api/src/users/users.controller.spec.ts">
+import { Test, TestingModule } from '@nestjs/testing';
+import { UsersController } from './users.controller';
+
+describe('UsersController', () => {
+  let controller: UsersController;
+
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      controllers: [UsersController],
+    }).compile();
+
+    controller = module.get<UsersController>(UsersController);
+  });
+
+  it('should be defined', () => {
+    expect(controller).toBeDefined();
+  });
+});
+</file>
+
+<file path="apps/api/src/users/users.controller.ts">
+// apps/api/src/users/users.controller.ts
+import { Controller, Post, Body, ValidationPipe, UsePipes, HttpCode, HttpStatus } from '@nestjs/common';
+import { UsersService } from './users.service';
+import { CreateUserDto } from './dto/create-user.dto';
+import { User } from '@prisma/client'; // Importer User type for returtypen
+
+@Controller('users') // Alle ruter i denne controller vil starte med /users
+export class UsersController {
+  constructor(private readonly usersService: UsersService) {}
+
+  // Definerer en POST-rute til /users/signup
+  // @UsePipes(...) aktiverer automatisk validering af request body'en baseret på CreateUserDto
+  // @HttpCode(...) sætter HTTP statuskoden til 201 Created ved succesfuld oprettelse
+  @Post('signup')
+  @UsePipes(new ValidationPipe({ transform: true, whitelist: true, forbidNonWhitelisted: true }))
+  @HttpCode(HttpStatus.CREATED)
+  async signUp(@Body() createUserDto: CreateUserDto): Promise<Omit<User, 'passwordHash'>> {
+    // @Body() decorator tager request body'en og mapper den til createUserDto
+    // UsersService.create kaldes for at håndtere selve brugeroprettelsen
+    return this.usersService.create(createUserDto);
+  }
+
+  // Her kan andre endpoints tilføjes senere, f.eks.:
+  // @Get()
+  // findAll() { ... }
+
+  // @Get(':id')
+  // findOne(@Param('id') id: string) { ... }
+}
+</file>
+
+<file path="apps/api/src/users/users.module.ts">
+// apps/api/src/users/users.module.ts
+import { Module } from '@nestjs/common';
+import { UsersService } from './users.service';
+import { UsersController } from './users.controller';
+import { PersistenceModule } from '../persistence/persistence.module'; // Importer PersistenceModule, der indeholder PrismaService
+
+@Module({
+  imports: [PersistenceModule], // Gør PrismaService tilgængelig for UsersService
+  controllers: [UsersController],
+  providers: [UsersService],
+  exports: [UsersService], // Gør UsersService tilgængelig for andre moduler (f.eks. AuthModule senere)
+})
+export class UsersModule {}
+</file>
+
+<file path="apps/api/src/users/users.service.spec.ts">
+import { Test, TestingModule } from '@nestjs/testing';
+import { UsersService } from './users.service';
+
+describe('UsersService', () => {
+  let service: UsersService;
+
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [UsersService],
+    }).compile();
+
+    service = module.get<UsersService>(UsersService);
+  });
+
+  it('should be defined', () => {
+    expect(service).toBeDefined();
+  });
+});
+</file>
+
+<file path="apps/api/src/users/users.service.ts">
+// apps/api/src/users/users.service.ts
+import { Injectable, ConflictException, InternalServerErrorException } from '@nestjs/common';
+import { PrismaService } from '../persistence/prisma/prisma.service'; // Sti til din PrismaService
+import { CreateUserDto } from './dto/create-user.dto';
+import * as bcrypt from 'bcryptjs';
+import { User, Role } from '@prisma/client'; // Importer User og Role typer fra Prisma
+
+@Injectable()
+export class UsersService {
+  constructor(private prisma: PrismaService) {}
+
+  async create(createUserDto: CreateUserDto): Promise<Omit<User, 'passwordHash'>> {
+    const { email, password, name, role } = createUserDto;
+
+    // Tjek om brugeren allerede eksisterer
+    const existingUser = await this.prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (existingUser) {
+      throw new ConflictException('En bruger med denne email eksisterer allerede.');
+    }
+
+    // Hash passwordet
+    const saltRounds = 10; // Anbefalet antal "salt rounds" for bcrypt
+    let hashedPassword;
+    try {
+      hashedPassword = await bcrypt.hash(password, saltRounds);
+    } catch (error) {
+      // Log den faktiske fejl internt
+      console.error('Fejl under hashing af password:', error);
+      // Vis en generisk fejl til klienten
+      throw new InternalServerErrorException('Der opstod en intern fejl under brugeroprettelse (hashing).');
+    }
+
+    // Opret brugeren i databasen
+    try {
+      const user = await this.prisma.user.create({
+        data: {
+          email,
+          passwordHash: hashedPassword, // Gem det hashede password
+          name: name || null, // Sæt til null hvis name ikke er angivet i DTO'en
+          role: role || Role.USER, // Brug den angivne rolle fra DTO'en, eller default til USER hvis ikke angivet
+        },
+      });
+
+      // Fjern det hashede password fra det objekt, der returneres til klienten
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { passwordHash, ...result } = user;
+      return result;
+
+    } catch (error) {
+      // Håndter specifikke databasefejl, f.eks. hvis unique constraint fejler (selvom vi tjekker ovenfor)
+      if (error && typeof error === 'object' && 'code' in error && error.code === 'P2002') { // Prisma's kode for unique constraint violation
+        throw new ConflictException('En bruger med denne email eksisterer allerede (databasefejl).');
+      }
+      // Log den faktiske fejl internt
+      console.error('Databasefejl under brugeroprettelse:', error);
+      // Vis en generisk fejl til klienten
+      throw new InternalServerErrorException('Der opstod en databasefejl under brugeroprettelse.');
+    }
+  }
+
+  // Metode til at finde en bruger baseret på email (nyttig til login senere)
+  async findOneByEmail(email: string): Promise<User | null> {
+    return this.prisma.user.findUnique({
+      where: { email },
+    });
+  }
+
+  // Metode til at finde en bruger baseret på ID (nyttig til andre operationer senere)
+  async findOneById(id: number): Promise<User | null> {
+    return this.prisma.user.findUnique({
+      where: { id },
+    });
+  }
+}
+</file>
+
 <file path="apps/api/src/app.controller.spec.ts">
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppController } from './app.controller';
@@ -433,30 +637,6 @@ export class AppController {
     return await this.appService.getHello();
   }
 }
-</file>
-
-<file path="apps/api/src/app.module.ts">
-import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { validationSchemaForEnv } from './config/environment-variables';
-import { PersistenceModule } from './persistence/persistence.module';
-import { UsersModule } from './users/users.module';
-
-@Module({
-  imports: [
-    ConfigModule.forRoot({
-      isGlobal: true,
-      validationSchema: validationSchemaForEnv,
-    }),
-    PersistenceModule,
-    UsersModule,
-  ],
-  controllers: [AppController],
-  providers: [AppService],
-})
-export class AppModule {}
 </file>
 
 <file path="apps/api/src/app.service.ts">
@@ -1086,50 +1266,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 </file>
 
-<file path="terminal.txt">
-[{
-	"resource": "/Users/Yousef_1/Desktop/LearningLab/LearningLab/.github/workflows/api.yaml",
-	"owner": "_generated_diagnostic_collection_name_#1",
-	"severity": 8,
-	"message": "All mapping items must start at the same column at line 31, column 1:\n\n    # Steps represent a sequence of tasks that will be executed as part of the …\n    strategy:\n^\n",
-	"startLineNumber": 31,
-	"startColumn": 1,
-	"endLineNumber": 31,
-	"endColumn": 2
-},{
-	"resource": "/Users/Yousef_1/Desktop/LearningLab/LearningLab/.github/workflows/api.yaml",
-	"owner": "_generated_diagnostic_collection_name_#1",
-	"severity": 8,
-	"message": "All mapping items must start at the same column at line 34, column 1:\n\n        node-version: [16.x]\n\n^\n",
-	"startLineNumber": 34,
-	"startColumn": 1,
-	"endLineNumber": 35,
-	"endColumn": 1
-},{
-	"resource": "/Users/Yousef_1/Desktop/LearningLab/LearningLab/.github/workflows/api.yaml",
-	"owner": "cSpell",
-	"severity": 2,
-	"message": "\"mydb\": Unknown word.",
-	"source": "cSpell",
-	"startLineNumber": 28,
-	"startColumn": 56,
-	"endLineNumber": 28,
-	"endColumn": 60
-}]
-
-[{
-	"resource": "/Users/Yousef_1/Desktop/LearningLab/LearningLab/docker-compose.yml",
-	"owner": "cSpell",
-	"severity": 2,
-	"message": "\"mydb\": Unknown word.",
-	"source": "cSpell",
-	"startLineNumber": 17,
-	"startColumn": 21,
-	"endLineNumber": 17,
-	"endColumn": 25
-}]
-</file>
-
 <file path="turbo.json">
 {
   "pipeline": {
@@ -1200,6 +1336,32 @@ jobs:
       - run: npx nps test.ci.api
 </file>
 
+<file path="apps/api/prisma/schema.prisma">
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
+  passwordHash String
+  name         String?
+  role         Role     @default(USER)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+</file>
+
 <file path="apps/api/src/persistence/prisma/prisma.service.ts">
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
@@ -1212,37 +1374,28 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
 }
 </file>
 
-<file path="apps/api/src/main.ts">
-import { Logger } from '@nestjs/common';
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+<file path="apps/api/src/app.module.ts">
+import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
+import { validationSchemaForEnv } from './config/environment-variables';
+import { PersistenceModule } from './persistence/persistence.module';
+import { UsersModule } from './users/users.module';
 
-declare const module: any;
-async function bootstrap() {
-  const logger = new Logger('EntryPoint');
-  const app = await NestFactory.create(AppModule);
-
-  const config = new DocumentBuilder()
-    .setTitle('Leaves Tracker')
-    .setDescription('Api Docs for leaves tracker')
-    .setVersion('1.0')
-    .build();
-
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('docs', app, document);
-
-  const PORT = 5002;
-
-  await app.listen(PORT);
-
-  if (module.hot) {
-    module.hot.accept();
-    module.hot.dispose(() => app.close());
-  }
-  logger.log(`Server running on http://localhost:${PORT}`);
-}
-bootstrap();
+@Module({
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      validationSchema: validationSchemaForEnv,
+    }),
+    PersistenceModule,
+    UsersModule,
+  ],
+  controllers: [AppController],
+  providers: [AppService],
+})
+export class AppModule {}
 </file>
 
 <file path="apps/api/webpack-hmr.config.js">
@@ -1314,90 +1467,80 @@ http {
 }
 </file>
 
-<file path="apps/api/package.json">
-{
-  "name": "api",
-  "version": "0.0.1",
-  "description": "",
-  "author": "",
-  "private": true,
-  "license": "UNLICENSED",
-  "scripts": {
-    "prebuild": "rimraf dist",
-    "build": "nest build",
-    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "start": "nest start",
-    "dev": "nest build --webpack --webpackPath webpack-hmr.config.js --watch",
-    "start:debug": "nest start --debug --watch",
-    "start:prod": "node dist/main",
-    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-    "test": "jest",
-    "test:watch": "jest --watch --runInBand",
-    "test:cov": "jest --coverage",
-    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json --runInBand",
-    "test:ci": "jest --ci --runInBand"
-  },
-  "dependencies": {
-    "@nestjs/common": "^10.1.3",
-    "@nestjs/config": "^3.0.0",
-    "@nestjs/core": "^10.1.3",
-    "@nestjs/platform-express": "^10.1.3",
-    "@nestjs/swagger": "^7.1.6",
-    "@prisma/client": "^5.1.0",
-    "bcryptjs": "^3.0.2",
-    "joi": "^17.9.2",
-    "reflect-metadata": "^0.1.13",
-    "rimraf": "^5.0.1",
-    "rxjs": "^7.8.1",
-    "swagger-ui-express": "^5.0.0"
-  },
-  "devDependencies": {
-    "@nestjs/cli": "^10.1.11",
-    "@nestjs/schematics": "^10.0.1",
-    "@nestjs/testing": "^10.1.3",
-    "@types/express": "^4.17.17",
-    "@types/jest": "^29.5.3",
-    "@types/node": "^20.4.5",
-    "@types/supertest": "^2.0.12",
-    "@typescript-eslint/eslint-plugin": "^6.2.1",
-    "@typescript-eslint/parser": "^6.2.1",
-    "eslint": "^8.46.0",
-    "eslint-config-prettier": "^8.9.0",
-    "eslint-plugin-prettier": "^5.0.0",
-    "jest": "^29.6.2",
-    "prettier": "^3.0.0",
-    "prisma": "^5.1.0",
-    "run-script-webpack-plugin": "^0.2.0",
-    "source-map-support": "^0.5.21",
-    "supertest": "^6.3.3",
-    "ts-jest": "^29.1.1",
-    "ts-loader": "^9.4.4",
-    "ts-node": "^10.9.1",
-    "tsconfig": "*",
-    "tsconfig-paths": "^4.2.0",
-    "typescript": "^5.1.6",
-    "webpack": "^5.88.2",
-    "webpack-node-externals": "^3.0.0"
-  },
-  "jest": {
-    "moduleFileExtensions": [
-      "js",
-      "json",
-      "ts"
-    ],
-    "rootDir": "src",
-    "testRegex": ".*\\.spec\\.ts$",
-    "transform": {
-      "^.+\\.(t|j)s$": "ts-jest"
-    },
-    "collectCoverageFrom": [
-      "**/*.(t|j)s"
-    ],
-    "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+<file path="terminal.txt">
+[{
+	"resource": "/Users/Yousef_1/Desktop/LearningLab/LearningLab/apps/api/src/users/users.module.ts",
+	"owner": "typescript",
+	"code": "2307",
+	"severity": 8,
+	"message": "Cannot find module '../../persistence/persistence.module' or its corresponding type declarations.",
+	"source": "ts",
+	"startLineNumber": 5,
+	"startColumn": 35,
+	"endLineNumber": 5,
+	"endColumn": 73
+}]
+</file>
+
+<file path="apps/api/src/main.ts">
+// apps/api/src/main.ts
+import { Logger, ValidationPipe } from '@nestjs/common'; // Importer ValidationPipe
+import { NestFactory } from '@nestjs/core';
+import { AppModule } from './app.module';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+
+declare const module: any; // For HMR (Hot Module Replacement)
+
+async function bootstrap() {
+  const logger = new Logger('EntryPoint');
+  const app = await NestFactory.create(AppModule);
+
+  // Global Validation Pipe
+  // Dette sikrer, at alle indkommende data til controllere valideres
+  // baseret på DTO'er (Data Transfer Objects) og class-validator decorators.
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true, // Fjerner automatisk properties, der ikke er defineret i DTO'en.
+      forbidNonWhitelisted: true, // Kaster en fejl, hvis der sendes properties, der ikke er i DTO'en.
+      transform: true, // Transformer automatisk indkommende data til DTO-instanser.
+      transformOptions: {
+        enableImplicitConversion: true, // Tillader implicit konvertering af typer (f.eks. string fra URL-parametre til number).
+      },
+    }),
+  );
+
+  // Swagger API Dokumentation Setup
+  // Swagger (OpenAPI) bruges til at generere interaktiv API-dokumentation.
+  const swaggerConfig = new DocumentBuilder()
+    .setTitle('Læringsplatform API') // Opdateret titel for API-dokumentationen
+    .setDescription('API Dokumentation for den avancerede læringsplatform') // Opdateret beskrivelse
+    .setVersion('1.0')
+    .addBearerAuth() // Tilføjer mulighed for at specificere Bearer Token (JWT) i Swagger UI, forbereder til autentificering
+    .build();
+
+  const document = SwaggerModule.createDocument(app, swaggerConfig);
+  // Gør API-dokumentationen tilgængelig på /docs endpointet (f.eks. http://localhost/api/docs via Nginx)
+  SwaggerModule.setup('docs', app, document);
+
+  // Sæt porten for API'en. Brug miljøvariablen PORT hvis den er sat, ellers default til 5002.
+  const PORT = process.env.PORT || 5002;
+
+  await app.listen(PORT);
+
+  // HMR (Hot Module Replacement) opsætning (kun for udvikling)
+  // Dette tillader moduler at blive genindlæst uden at genstarte hele applikationen.
+  if (module.hot) {
+    module.hot.accept();
+    module.hot.dispose(() => app.close());
   }
+
+  // Log-beskeder til terminalen for at vise, at serveren kører.
+  logger.log(`NestJS API server kører internt på http://localhost:${PORT}`);
+  logger.log(`API Dokumentation (internt) er tilgængelig på http://localhost:${PORT}/docs`);
+  logger.log(`Hele applikationen (via Nginx) burde være tilgængelig på http://localhost`);
+  logger.log(`API'en (via Nginx) burde være tilgængelig på http://localhost/api/`);
 }
+bootstrap();
 </file>
 
 <file path="packages/config/package.json">
@@ -1550,6 +1693,101 @@ module.exports = {
     "node": ">=14.0.0"
   },
   "packageManager": "yarn@1.22.17"
+}
+</file>
+
+<file path="apps/api/package.json">
+{
+  "name": "api",
+  "version": "0.0.1",
+  "description": "",
+  "author": "",
+  "private": true,
+  "license": "UNLICENSED",
+  "scripts": {
+    "prebuild": "rimraf dist",
+    "build": "nest build",
+    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+    "start": "nest start",
+    "dev": "nest build --webpack --webpackPath webpack-hmr.config.js --watch",
+    "start:debug": "nest start --debug --watch",
+    "start:prod": "node dist/main",
+    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
+    "test": "jest",
+    "test:watch": "jest --watch --runInBand",
+    "test:cov": "jest --coverage",
+    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
+    "test:e2e": "jest --config ./test/jest-e2e.json --runInBand",
+    "test:ci": "jest --ci --runInBand"
+  },
+  "dependencies": {
+    "@nestjs/common": "^10.1.3",
+    "@nestjs/config": "^3.0.0",
+    "@nestjs/core": "^10.1.3",
+    "@nestjs/jwt": "^11.0.0",
+    "@nestjs/passport": "^11.0.5",
+    "@nestjs/platform-express": "^10.1.3",
+    "@nestjs/swagger": "^7.1.6",
+    "@prisma/client": "^5.1.0",
+    "bcryptjs": "^3.0.2",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.2",
+    "joi": "^17.9.2",
+    "passport": "^0.7.0",
+    "passport-jwt": "^4.0.1",
+    "passport-local": "^1.0.0",
+    "reflect-metadata": "^0.1.13",
+    "rimraf": "^5.0.1",
+    "rxjs": "^7.8.1",
+    "swagger-ui-express": "^5.0.0"
+  },
+  "devDependencies": {
+    "@nestjs/cli": "^10.1.11",
+    "@nestjs/schematics": "^10.0.1",
+    "@nestjs/testing": "^10.1.3",
+    "@types/express": "^4.17.17",
+    "@types/jest": "^29.5.3",
+    "@types/node": "^20.4.5",
+    "@types/passport-jwt": "^4.0.1",
+    "@types/passport-local": "^1.0.38",
+    "@types/supertest": "^2.0.12",
+    "@typescript-eslint/eslint-plugin": "^6.2.1",
+    "@typescript-eslint/parser": "^6.2.1",
+    "eslint": "^8.46.0",
+    "eslint-config-prettier": "^8.9.0",
+    "eslint-plugin-prettier": "^5.0.0",
+    "jest": "^29.6.2",
+    "prettier": "^3.0.0",
+    "prisma": "^5.1.0",
+    "run-script-webpack-plugin": "^0.2.0",
+    "source-map-support": "^0.5.21",
+    "supertest": "^6.3.3",
+    "ts-jest": "^29.1.1",
+    "ts-loader": "^9.4.4",
+    "ts-node": "^10.9.1",
+    "tsconfig": "*",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^5.1.6",
+    "webpack": "^5.88.2",
+    "webpack-node-externals": "^3.0.0"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "ts"
+    ],
+    "rootDir": "src",
+    "testRegex": ".*\\.spec\\.ts$",
+    "transform": {
+      "^.+\\.(t|j)s$": "ts-jest"
+    },
+    "collectCoverageFrom": [
+      "**/*.(t|j)s"
+    ],
+    "coverageDirectory": "../coverage",
+    "testEnvironment": "node"
+  }
 }
 </file>
 
