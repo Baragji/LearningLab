@@ -1,55 +1,26 @@
 // apps/web/pages/profile.tsx
-import React, { useEffect } from 'react'; // Fjernet useState, da vi bruger context
-import { useRouter } from 'next/router';
-import { useAuth } from '../src/context/AuthContext'; // Importer useAuth hook'en
+import React from 'react'; // useEffect er fjernet, da ProtectedRoute håndterer det
+import { useAuth } from '../src/context/AuthContext';
+import ProtectedRoute from '../src/components/auth/ProtectedRoute'; // Importer ProtectedRoute
 
-// UserProfile interface er ikke længere nødvendig her, da User typen kommer fra AuthContext
+// Den faktiske indholdskomponent for profilsiden
+function ProfilePageContent() {
+  const { user, logout } = useAuth();
 
-export default function ProfilePage() {
-  const router = useRouter();
-  // Hent user, token, isLoading (fra AuthContext), og logout funktion fra useAuth
-  const { user, token, isLoading: authIsLoading, logout } = useAuth();
-
-  // useEffect til at håndtere omdirigering, hvis brugeren ikke er logget ind,
-  // eller hvis token forsvinder (f.eks. efter en fejl i AuthContext).
-  // authIsLoading sikrer, at vi ikke omdirigerer, før AuthContext har haft en chance for at initialisere.
-  useEffect(() => {
-    if (!authIsLoading && !user) {
-      // Hvis vi ikke loader, og der ikke er en bruger (eller token), omdiriger til login
-      console.log('ProfilePage: Ingen bruger fundet efter initial load, omdirigerer til login.');
-      router.replace('/login');
-    }
-  }, [user, authIsLoading, router, token]); // Lyt også på token for en sikkerheds skyld
-
-  // Viser en global loading-spinner, mens AuthContext initialiserer eller logger ind.
-  if (authIsLoading) {
+  // På dette tidspunkt, hvis ProfilePageContent renderes,
+  // har ProtectedRoute allerede sikret, at brugeren er logget ind,
+  // og at authIsLoading er false.
+  // Vi kan derfor trygt antage, at 'user' ikke er null.
+  if (!user) {
+    // Denne fallback burde sjældent rammes, hvis ProtectedRoute fungerer korrekt.
+    // Det er en ekstra sikkerhedsforanstaltning.
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-100 font-inter">
-        <div className="p-8 text-center">
-          <svg className="animate-spin h-10 w-10 text-indigo-600 mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-          </svg>
-          <p className="text-lg text-gray-700">Indlæser...</p>
-        </div>
+        <p className="text-lg text-gray-700">Fejl: Brugerdata ikke tilgængelige, selvom ruten er beskyttet.</p>
       </div>
     );
   }
 
-  // Hvis brugeren ikke er logget ind (og vi ikke længere loader),
-  // vil useEffect ovenfor have omdirigeret.
-  // Men som en ekstra sikkerhed, hvis vi når hertil uden en bruger, vis intet eller en fejl.
-  if (!user) {
-    // Dette state burde ideelt set ikke nås, hvis useEffect fungerer korrekt.
-    // Man kan returnere null eller en mere specifik fejlside/komponent.
-    return (
-        <div className="flex items-center justify-center min-h-screen bg-gray-100 font-inter">
-            <p className="text-lg text-gray-700">Du skal være logget ind for at se denne side.</p>
-      </div>
-    );
-  }
-
-  // Hvis vi har en bruger, vis profilsiden
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 font-inter p-4">
       <div className="w-full max-w-lg p-8 space-y-6 bg-white rounded-xl shadow-xl">
@@ -87,5 +58,14 @@ export default function ProfilePage() {
         </div>
       </div>
     </div>
+  );
+}
+
+// Default export er nu en wrapper-komponent, der anvender ProtectedRoute
+export default function WrappedProfilePage() {
+  return (
+    <ProtectedRoute>
+      <ProfilePageContent />
+    </ProtectedRoute>
   );
 }
