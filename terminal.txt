@@ -1,10 +1,10 @@
-Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % yarn install
+Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % yarn workspace api add -D express @types/express
 ➤ YN0000: · Yarn 4.9.1
 ➤ YN0000: ┌ Resolution step
-➤ YN0085: │ + @nestjs/cli@npm:10.4.9, and 1065 more.
-➤ YN0000: └ Completed in 2s 138ms
+➤ YN0085: │ + express@npm:5.1.0, accepts@npm:2.0.0, body-parser@npm:2.2.0, and 16 more.
+➤ YN0085: │ - @types/express-serve-static-core@npm:4.19.6, @types/express@npm:4.17.22
+➤ YN0000: └ Completed in 0s 374ms
 ➤ YN0000: ┌ Post-resolution validation
-➤ YN0002: │ api@workspace:apps/api doesn't provide express (p7c4aa), requested by swagger-ui-express.
 ➤ YN0002: │ turborepo-basic-shared@workspace:. doesn't provide @nestjs/common (p9cc3a), requested by @nestjs/config.
 ➤ YN0002: │ turborepo-basic-shared@workspace:. doesn't provide rxjs (p757a7), requested by @nestjs/config.
 ➤ YN0002: │ web@workspace:apps/web doesn't provide @testing-library/dom (paf9c0), requested by @testing-library/user-event.
@@ -12,37 +12,17 @@ Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % yarn install
 ➤ YN0086: │ Some peer dependencies are incorrectly met by dependencies; run yarn explain peer-requirements for details.
 ➤ YN0000: └ Completed
 ➤ YN0000: ┌ Fetch step
-➤ YN0013: │ 1037 packages were added to the project (+ 515.38 MiB).
-➤ YN0000: └ Completed in 6s 341ms
+➤ YN0013: │ 19 packages were added to the project (+ 837.06 KiB).
+➤ YN0000: └ Completed in 0s 444ms
 ➤ YN0000: ┌ Link step
-➤ YN0007: │ turbo@npm:1.10.12 must be built because it never has been before or the last one failed
-➤ YN0007: │ @prisma/engines@npm:5.22.0 must be built because it never has been before or the last one failed
-➤ YN0007: │ @nestjs/core@npm:10.4.17 [62573] must be built because it never has been before or the last one failed
-➤ YN0007: │ @scarf/scarf@npm:1.4.0 must be built because it never has been before or the last one failed
-➤ YN0007: │ unrs-resolver@npm:1.7.2 must be built because it never has been before or the last one failed
-➤ YN0007: │ prisma@npm:5.22.0 must be built because it never has been before or the last one failed
-➤ YN0007: │ @prisma/client@npm:5.22.0 [62573] must be built because it never has been before or the last one failed
-➤ YN0000: └ Completed in 10s 192ms
-➤ YN0000: · Done with warnings in 18s 761ms
-Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % git add yarn.lock && git commit -m "chore: add yarn.lock for Yarn Berry"
-[UltBlue0.1 d54687e] chore: add yarn.lock for Yarn Berry
- 1 file changed, 11078 insertions(+)
- create mode 100644 yarn.lock
-Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % yarn install --immutable
-➤ YN0000: · Yarn 4.9.1
-➤ YN0000: ┌ Resolution step
-➤ YN0000: └ Completed
-➤ YN0000: ┌ Post-resolution validation
-➤ YN0002: │ api@workspace:apps/api doesn't provide express (p7c4aa), requested by swagger-ui-express.
-➤ YN0002: │ turborepo-basic-shared@workspace:. doesn't provide @nestjs/common (p9cc3a), requested by @nestjs/config.
-➤ YN0002: │ turborepo-basic-shared@workspace:. doesn't provide rxjs (p757a7), requested by @nestjs/config.
-➤ YN0002: │ web@workspace:apps/web doesn't provide @testing-library/dom (paf9c0), requested by @testing-library/user-event.
-➤ YN0086: │ Some peer dependencies are incorrectly met by your project; run yarn explain peer-requirements <hash> for details, where <hash> is the six-letter p-prefixed code.
-➤ YN0086: │ Some peer dependencies are incorrectly met by dependencies; run yarn explain peer-requirements for details.
-➤ YN0000: └ Completed
-➤ YN0000: ┌ Fetch step
-➤ YN0000: └ Completed in 0s 377ms
-➤ YN0000: ┌ Link step
-➤ YN0000: └ Completed
-➤ YN0000: · Done with warnings in 0s 769ms
+➤ YN0000: └ Completed in 0s 259ms
+➤ YN0000: · Done with warnings in 1s 173ms
+Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % yarn add -W -D @nestjs/common rxjs
+Unknown Syntax Error: Unsupported option name ("-W").
+
+$ yarn add [--json] [-F,--fixed] [-E,--exact] [-T,--tilde] [-C,--caret] [-D,--dev] [-P,--peer] [-O,--optional] [--prefer-dev] [-i,--interactive] [--cached] [--mode #0] ...
+Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % yarn add -W -D @nestjs/common rxjs
+Unknown Syntax Error: Unsupported option name ("-W").
+
+$ yarn add [--json] [-F,--fixed] [-E,--exact] [-T,--tilde] [-C,--caret] [-D,--dev] [-P,--peer] [-O,--optional] [--prefer-dev] [-i,--interactive] [--cached] [--mode #0] ...
 Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % 
