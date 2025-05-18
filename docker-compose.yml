@@ -1,9 +1,6 @@
-version: "3.9"
-
 services:
   postgres:
-    image: postgres:15-alpine
-    container_name: learninglab-postgres
+    image: postgres:15
     environment:
       POSTGRES_DB: mydb
       POSTGRES_USER: test
@@ -17,9 +14,9 @@ services:
     build:
       context: .
       dockerfile: apps/api/Dockerfile
-    container_name: learninglab-api
     environment:
-      DATABASE_URL: postgresql://test:test@postgres:5432/mydb
+      NODE_ENV: production
+      DATABASE_URL: postgres://test:test@postgres:5432/mydb
     depends_on:
       - postgres
     ports:
@@ -29,9 +26,9 @@ services:
     build:
       context: .
       dockerfile: apps/web/Dockerfile
-    container_name: learninglab-web
     environment:
-      NEXT_PUBLIC_API_URL: http://api:5002
+      NODE_ENV: production
+      NEXT_PUBLIC_API_URL: http://localhost:5002
     depends_on:
       - api
     ports:

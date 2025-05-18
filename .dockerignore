@@ -1,9 +1,12 @@
-# Fælles for hele repoet
-**/node_modules
-**/dist
-**/.next
-.yarn/*
-!.yarn/releases # Yarn Berry runtime
+# fælles rod
 .git
-Dockerfile*
-docker-compose*.yml
+node_modules
+.yarn/cache
+.yarn/unplugged
+# test-output
+coverage
+dist
+# editorfiler
+.idea
+.vscode
+.DS_Store
