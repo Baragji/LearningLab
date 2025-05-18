@@ -1,0 +1,41 @@
+Del 1: Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % rm -rf node_modules
+rm -rf apps/api/node_modules
+rm -rf apps/web/node_modules
+rm -rf packages/core/node_modules
+rm -rf packages/config/node_modules
+rm -rf packages/ui/node_modules
+# Tilføj andre packages/* mapper, hvis de har node_modules
+rm -f yarn.lock # Slet den gamle lockfil i roden
+echo "✅ Eksisterende node_modules mapper og yarn.lock fjernet."
+✅ Eksisterende node_modules mapper og yarn.lock fjernet.
+Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % yarn install --immutable
+Usage Error: The nearest package directory (/Users/Yousef_1/Desktop/LearningLab/LearningLab) doesn't seem to be part of the project declared in /Users/Yousef_1.
+
+- If /Users/Yousef_1 isn't intended to be a project, remove any yarn.lock and/or package.json file there.
+- If /Users/Yousef_1 is intended to be a project, it might be that you forgot to list Desktop/LearningLab/LearningLab in its workspace configuration.
+- Finally, if /Users/Yousef_1 is fine and you intend Desktop/LearningLab/LearningLab to be treated as a completely separate project (not even a workspace), create an empty yarn.lock file in it.
+
+$ yarn install [--json] [--immutable] [--immutable-cache] [--refresh-lockfile] [--check-cache] [--check-resolutions] [--inline-builds] [--mode #0]
+Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % 
+
+Del 2: 
+Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % ls -a | grep -E "package.json|yarn.lock"
+package.json
+Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % cd ~
+Yousef@MacBook-Pro-tilhrende-Yousef ~ % ls -a | grep -E "package.json|yarn.lock"
+yarn.lock
+Yousef@MacBook-Pro-tilhrende-Yousef ~ % mv yarn.lock yarn.lock.old
+Yousef@MacBook-Pro-tilhrende-Yousef ~ % cd /Users/Yousef_1/Desktop/LearningLab/LearningLab
+Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % rm -rf node_modules
+rm -rf apps/api/node_modules
+rm -rf apps/web/node_modules
+rm -rf packages/core/node_modules
+rm -rf packages/config/node_modules
+rm -rf packages/ui/node_modules
+rm -f yarn.lock # Slet lockfilen i roden af LearningLab
+yarn install --immutable
+➤ YN0000: · Yarn 4.9.1
+➤ YN0028: · The lockfile would have been created by this install, which is explicitly forbidden.
+➤ YN0000: · Failed with errors in 0s 14ms
+Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % 
+

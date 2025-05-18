@@ -2,8 +2,9 @@
 import { Strategy } from 'passport-local';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { AuthService } from '../../auth.service'; // Justeret sti til AuthService
-import { User } from '@prisma/client';
+import { AuthService } from '../../auth.service';
+// Importer CoreUser for at specificere returtypen korrekt
+import { User as CoreUser } from '@repo/core';
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
@@ -12,12 +13,12 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
   }
 
   // Denne metode kaldes automatisk af Passport, når LocalAuthGuard bruges
+  // Returtypen er nu Omit<CoreUser, 'passwordHash'> for at matche AuthService.validateUser
   async validate(
     email: string,
     pass: string,
-  ): Promise<Omit<User, 'passwordHash'>> {
-    // Kald AuthService for at validere brugerens email og password
-    // authService.validateUser returnerer allerede Omit<User, 'passwordHash'> | null
+  ): Promise<Omit<CoreUser, 'passwordHash'>> {
+    // authService.validateUser returnerer Omit<CoreUser, 'passwordHash'> | null
     const user = await this.authService.validateUser(email, pass);
 
     if (!user) {
@@ -25,9 +26,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
       throw new UnauthorizedException('Ugyldig email eller password.');
     }
 
-    // Brugerobjektet 'user' er allerede i det korrekte format (uden passwordHash),
-    // da authService.validateUser håndterer fjernelsen af passwordHash.
-    // Derfor kan vi returnere 'user' direkte.
+    // Brugerobjektet 'user' er allerede i det korrekte CoreUser format (uden passwordHash)
     return user;
   }
 }
