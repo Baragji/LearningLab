@@ -14,7 +14,7 @@
     RUN corepack enable && corepack prepare yarn@stable --activate
     
     # installér KUN det workspace vi skal bruge (+ dets deps)
-    RUN yarn workspaces focus api --production=false --all
+    RUN yarn workspaces focus api
     
     # kopiér resten af koden (efter install = maksimal cache-hit)
     COPY . .
