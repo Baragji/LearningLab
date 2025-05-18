@@ -1,33 +1,38 @@
-# --- Build stage ---
+# ---------- 1. BUILD-STAGE ----------
     FROM node:20-alpine AS build
-    WORKDIR /usr/src/app
+
+    # eksterne pakker (prisma cli kræver glibc)  
+    RUN apk add --no-cache libc6-compat
     
-    # Kopiér kun det nødvendige for at installere afhængigheder
-    COPY package.json yarn.lock ./
-    COPY .yarn .yarn
-    COPY .yarnrc.yml ./
+    WORKDIR /workspace               # én mappe til alt
     
-    # Installer – kun prod-deps
-    RUN corepack enable && corepack prepare yarn@stable --activate \
-     && yarn workspaces focus --production --all
+    # kopiér Yarn Berry filer + root manifests
+    COPY package.json yarn.lock .yarnrc.yml ./
+    COPY .yarn ./.yarn
     
-    # Kopiér resten af kildeteksten til api-workspacet og byg
-    COPY apps/api ./apps/api
-    WORKDIR /usr/src/app/apps/api
-    RUN yarn build   # kører "nest build" hvis du har det script
+    # aktivér Yarn 4
+    RUN corepack enable && corepack prepare yarn@stable --activate
     
-    # --- Runtime stage ---
-    FROM node:20-alpine
+    # installér KUN det workspace vi skal bruge (+ dets deps)
+    RUN yarn workspaces focus api --production=false --all
+    
+    # kopiér resten af koden (efter install = maksimal cache-hit)
+    COPY . .
+    
+    # byg Nest-app’en
+    RUN yarn workspace api build         # -> apps/api/dist
+    RUN yarn workspace api prisma generate
+    
+    # ---------- 2. RUNTIME-STAGE ----------
+    FROM node:20-alpine AS runtime
     WORKDIR /app
+    ENV NODE_ENV=production
     
-    ENV NODE_ENV=production \
-        PORT=5002
+    # tag kun det der skal bruges i drift
+    COPY --from=build /workspace/apps/api/dist  ./apps/api/dist
+    COPY --from=build /workspace/node_modules   ./node_modules
+    COPY --from=build /workspace/apps/api/package.json ./apps/api/package.json
     
-    # Kopiér færdigt build + prod-node_modules
-    COPY --from=build /usr/src/app/apps/api/dist ./dist
-    COPY --from=build /usr/src/app/node_modules ./node_modules
-    COPY --from=build /usr/src/app/apps/api/package.json ./
-    
-    EXPOSE $PORT
-    CMD ["node", "dist/main.js"]
+    EXPOSE 5002
+    CMD ["node","apps/api/dist/main.js"]
     
