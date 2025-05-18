@@ -50,6 +50,8 @@ The content is organized as follows:
     web.yaml
 .repomix/
   bundles.json
+api/
+  web.txt
 apps/
   api/
     prisma/
@@ -191,10 +193,11 @@ packages/
 docker-compose.yml
 LICENSE
 Migration.txt
+Opgave 2.3.txt
 package-scripts.js
 package.json
-problems.txt
 README.md
+Struktur.txt
 terminal.txt
 turbo.json
 </directory_structure>
@@ -202,7 +205,194 @@ turbo.json
 <files>
 This section contains the contents of the repository's files.
 
-<file path=".github/workflows/web.yaml">
+<file path="Opgave 2.3.txt">
+Ja, det er noteret. Du har gemt den opdaterede .github/workflows/web.yaml fil fra Canvas.
+
+Som vi talte om før, er den bedste måde at teste disse CI-workflowfiler på at committe og pushe dine ændringer til GitHub. Dette vil automatisk starte workflows, og du kan observere dem under "Actions"-fanen i dit repository.
+
+Er du klar til at gøre det, eller vil du fortsætte med Docker-filerne først og teste alt samlet senere?
+
+ja
+Ja, det er noteret. Du har bekræftet, at du har gemt den opdaterede .github/workflows/web.yaml fil fra Canvas.
+
+Vi fortsætter nu med næste del af Fase 0.1, som er at gennemgå og implementere forbedringer til Docker-filerne.
+
+Lad os starte med Docker-filen for din API: apps/api/Dockerfile.
+
+Opgave 2.3: Opdater apps/api/Dockerfile
+
+Jeg har gennemgået din nuværende apps/api/Dockerfile (som jeg kender fra repomix-output.xml) og vil foreslå ændringer for at:
+
+Opdatere Node.js versionen til at matche CI (f.eks. 20-alpine).
+Sikre korrekt håndtering af Yarn Berry-konfigurationsfiler (.yarnrc.yml, .yarn mappen).
+Bruge yarn install --immutable for installation af afhængigheder.
+Køre turbo kommandoer via yarn turbo ... (forudsat turbo er en devDependency i din rod package.json), hvilket fjerner behovet for global installation af turbo.
+Generelt forbedre struktur og klarhed i Docker-filens stages.
+Her er det komplette opdaterede indhold til din apps/api/Dockerfile:
+Opdateret apps/api/Dockerfile
+18. maj, 15.36
+
+Handlinger:
+
+Åbn filen apps/api/Dockerfile.
+Erstat hele indholdet med kodeblokken ovenfor fra Canvas.
+Gem filen.
+Vigtige noter til ændringerne:
+
+Node Version: Opdateret til node:20-alpine i alle stages.
+Global Turbo Fjernet: yarn global add turbo er fjernet. I stedet installeres alle root devDependencies (inklusive turbo) i builder stagen, så yarn turbo prune ... kan køres.
+Yarn Berry Filer: .yarnrc.yml og .yarn mappen kopieres nu korrekt ind i installer stagen før yarn install køres for den "prunede" app.
+yarn install --immutable: Bruges konsekvent.
+Prisma Generate: Køres nu med yarn workspace api prisma generate for korrekt kontekst.
+Struktur: Stages er forsøgt gjort mere logiske ift. turbo prune flowet. builder forbereder og pruner. installer installerer deps for den prunede version. sourcer bygger appen. runner kører den byggede app.
+Runner Stage: Kopierer mere specifikt de nødvendige artefakter (dist, package.json, node_modules).
+Når du har gemt denne fil, kan vi tage apps/web/Dockerfile på samme måde. Lad mig vide, når du er klar!
+
+# apps/api/Dockerfile
+
+# Builder stage: Forbereder monorepo og pruner til 'api' appen
+FROM node:20-alpine AS builder
+# Installer nødvendige OS pakker
+RUN apk update && apk add --no-cache git # git kan være nødvendigt for nogle yarn dependencies eller turbo
+
+WORKDIR /app
+
+# Kopier rod package.json, yarn.lock, Yarn Berry konfigurationsfiler
+# Dette lag caches, hvis disse filer ikke ændres ofte.
+COPY package.json yarn.lock ./
+COPY .yarnrc.yml .yarnrc.yml
+COPY .yarn ./.yarn
+
+# Installer alle afhængigheder fra roden (inkl. devDependencies som 'turbo')
+# Dette gør 'turbo' CLI tilgængelig for 'prune' kommandoen.
+RUN yarn install --immutable
+
+# Kopier resten af monorepo-koden
+COPY . .
+
+# Generer en isoleret, "pruned" version af 'api' appen og dens afhængigheder
+# Outputtet vil være i /app/out mappen
+RUN yarn turbo prune --scope=api --docker
+
+# Installer stage: Installerer afhængigheder for den "pruned" 'api' app
+FROM node:20-alpine AS installer
+# Installer OS pakker, libc6-compat er ofte nødvendig for Prisma
+RUN apk update && apk add --no-cache libc6-compat
+WORKDIR /app
+
+# Kopier Yarn Berry konfigurationsfiler fra builder stagen (som har den fulde originale kontekst)
+# Disse er nødvendige for at 'yarn install' fungerer korrekt med Yarn Berry.
+COPY --from=builder /app/.yarnrc.yml .yarnrc.yml
+COPY --from=builder /app/.yarn ./.yarn
+
+# Kopier de "pruned" package.json filer og rod yarn.lock fra builder stagens output (/app/out)
+COPY --from=builder /app/out/json/ .
+COPY --from=builder /app/out/yarn.lock ./yarn.lock
+
+# Kopier den "pruned" fulde kildekode for 'api' appen og dens interne afhængigheder
+# Dette bør inkludere apps/api/prisma, hvis 'turbo prune' håndterer det korrekt.
+COPY --from=builder /app/out/full/ .
+
+# Installer afhængigheder specifikt for den "pruned" app
+RUN yarn install --immutable
+
+# Generer Prisma client
+# Kør 'prisma generate' indenfor konteksten af det specifikke workspace ('api')
+# Sikr at 'prisma' er en dependency (typisk devDependency) i 'api' workspacets package.json.
+RUN yarn workspace api prisma generate
+
+# Sourcer stage: Bygger selve applikationen
+FROM node:20-alpine AS sourcer
+WORKDIR /app
+
+# Kopier de installerede node_modules og kildekoden fra installer stagen
+COPY --from=installer /app/ .
+
+# Byg 'api' applikationen
+# Bruger 'turbo run build' til at bygge 'api' og dens interne monorepo afhængigheder.
+RUN yarn turbo run build --scope=api --include-dependencies --no-deps
+
+# Runner stage: Opretter det endelige letvægtsimage til at køre applikationen
+FROM node:20-alpine AS runner
+WORKDIR /app
+
+# Sæt NODE_ENV til production for det endelige image
+ENV NODE_ENV production
+
+# Kopier kun de nødvendige build-artefakter fra 'sourcer' stagen
+# Dette inkluderer 'dist' mappen for 'api' appen og dens produktions-node_modules.
+COPY --from=sourcer /app/apps/api/dist ./apps/api/dist
+COPY --from=sourcer /app/apps/api/package.json ./apps/api/package.json # Kan være nyttig for runtime
+COPY --from=sourcer /app/node_modules ./node_modules
+
+# Hvis din applikation ved runtime afhænger af andre byggede 'packages' fra monorepoet
+# (som ikke er en del af node_modules, f.eks. via symlinks i udvikling),
+# skal deres build output også kopieres her. F.eks.:
+# COPY --from=sourcer /app/packages/core/dist ./packages/core/dist
+
+# Angiv porten som API'en vil køre på (hvis ikke håndteret af dit deployment miljø)
+# EXPOSE 5002 # Eller den port din app lytter på (f.eks. process.env.PORT)
+
+# Kommando til at starte applikationen
+CMD [ "node", "apps/api/dist/main.js" ]
+</file>
+
+<file path=".repomix/bundles.json">
+{
+  "bundles": {}
+}
+</file>
+
+<file path="api/web.txt">
+2.name: api-ci
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - "apps/api/**"
+  pull_request:
+    branches: [master]
+    paths:
+      - "apps/api/**"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: "postgresql://test:test@localhost:5433/mydb"
+
+    strategy:
+      matrix:
+        node-version: [16.x]
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+
+      - name: Cache node modules
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - run: yarn global add turbo
+      - run: npx nps prepare.ci.api
+      - run: npx nps build.ci.api
+      - run: npx nps test.ci.api
+
+2. 
 # This is a basic workflow to help you get started with Actions
 
 name: web-ci
@@ -257,12 +447,6 @@ jobs:
       - run: npx nps prepare.ci.web
       - run: npx nps build.ci.web
       - run: npx nps test.ci.web
-</file>
-
-<file path=".repomix/bundles.json">
-{
-  "bundles": {}
-}
 </file>
 
 <file path="apps/api/prisma/migrations/20220307034109_initial_migrate/migration.sql">
@@ -2050,49 +2234,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 </file>
 
-<file path="problems.txt">
-Del 1: Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % rm -rf node_modules
-rm -rf apps/api/node_modules
-rm -rf apps/web/node_modules
-rm -rf packages/core/node_modules
-rm -rf packages/config/node_modules
-rm -rf packages/ui/node_modules
-# Tilføj andre packages/* mapper, hvis de har node_modules
-rm -f yarn.lock # Slet den gamle lockfil i roden
-echo "✅ Eksisterende node_modules mapper og yarn.lock fjernet."
-✅ Eksisterende node_modules mapper og yarn.lock fjernet.
-Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % yarn install --immutable
-Usage Error: The nearest package directory (/Users/Yousef_1/Desktop/LearningLab/LearningLab) doesn't seem to be part of the project declared in /Users/Yousef_1.
-
-- If /Users/Yousef_1 isn't intended to be a project, remove any yarn.lock and/or package.json file there.
-- If /Users/Yousef_1 is intended to be a project, it might be that you forgot to list Desktop/LearningLab/LearningLab in its workspace configuration.
-- Finally, if /Users/Yousef_1 is fine and you intend Desktop/LearningLab/LearningLab to be treated as a completely separate project (not even a workspace), create an empty yarn.lock file in it.
-
-$ yarn install [--json] [--immutable] [--immutable-cache] [--refresh-lockfile] [--check-cache] [--check-resolutions] [--inline-builds] [--mode #0]
-Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % 
-
-Del 2: 
-Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % ls -a | grep -E "package.json|yarn.lock"
-package.json
-Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % cd ~
-Yousef@MacBook-Pro-tilhrende-Yousef ~ % ls -a | grep -E "package.json|yarn.lock"
-yarn.lock
-Yousef@MacBook-Pro-tilhrende-Yousef ~ % mv yarn.lock yarn.lock.old
-Yousef@MacBook-Pro-tilhrende-Yousef ~ % cd /Users/Yousef_1/Desktop/LearningLab/LearningLab
-Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % rm -rf node_modules
-rm -rf apps/api/node_modules
-rm -rf apps/web/node_modules
-rm -rf packages/core/node_modules
-rm -rf packages/config/node_modules
-rm -rf packages/ui/node_modules
-rm -f yarn.lock # Slet lockfilen i roden af LearningLab
-yarn install --immutable
-➤ YN0000: · Yarn 4.9.1
-➤ YN0028: · The lockfile would have been created by this install, which is explicitly forbidden.
-➤ YN0000: · Failed with errors in 0s 14ms
-Yousef@MacBook-Pro-tilhrende-Yousef LearningLab %
-</file>
-
 <file path="turbo.json">
 {
   "pipeline": {
@@ -2113,54 +2254,61 @@ Yousef@MacBook-Pro-tilhrende-Yousef LearningLab %
 }
 </file>
 
-<file path=".github/workflows/api.yaml">
-name: api-ci
+<file path=".github/workflows/web.yaml">
+# .github/workflows/web.yaml
+
+name: web-ci
 
 on:
   push:
-    branches: [master]
+    branches: [master] # Din nuværende primære branch. Overvej 'main' i fremtiden.
     paths:
-      - "apps/api/**"
+      - "apps/web/**"
+      - ".github/workflows/web.yaml" # God praksis: Trigger også på ændringer i selve workflow-filen
   pull_request:
-    branches: [master]
+    branches: [master] # Din nuværende primære branch.
     paths:
-      - "apps/api/**"
+      - "apps/web/**"
+      - ".github/workflows/web.yaml"
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      DATABASE_URL: "postgresql://test:test@localhost:5433/mydb"
 
     strategy:
       matrix:
-        node-version: [16.x]
+        node-version: [20.x] # Opdateret til en nyere LTS Node.js version (f.eks. 18.x eller 20.x). Du kan justere dette.
 
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v4 # Opdateret fra v2
 
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4 # Opdateret fra v2
         with:
           node-version: ${{ matrix.node-version }}
+          cache: 'yarn' # Anbefalet måde at cache Yarn-afhængigheder på med setup-node@v4
 
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
+      # Det er ikke altid nødvendigt at installere turbo globalt.
+      # Hvis 'turbo' er en devDependency i rod-package.json, kan du køre kommandoer med 'yarn turbo ...'
+      # Dette trin er bevaret fra din originale fil, men overvej om det kan fjernes.
+      - name: Install Turbo globally (overvej at køre via yarn turbo)
+        run: yarn global add turbo
 
-      - name: Cache node modules
-        uses: actions/cache@v2
-        with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
+      # Kør 'yarn install --immutable' for at sikre, at yarn.lock ikke ændres og for at installere afhængigheder.
+      - name: Install dependencies
+        run: yarn install --immutable
 
-      - run: yarn global add turbo
-      - run: npx nps prepare.ci.api
-      - run: npx nps build.ci.api
-      - run: npx nps test.ci.api
+      # Dine eksisterende nps-kommandoer
+      - name: Run CI preparation for Web
+        run: npx nps prepare.ci.web
+
+      - name: Build Web
+        run: npx nps build.ci.web
+
+      - name: Test Web
+        run: npx nps test.ci.web
 </file>
 
 <file path="apps/api/src/auth/guards/jwt-auth.guard.ts">
@@ -2338,32 +2486,404 @@ http {
 }
 </file>
 
-<file path=".yarnrc.yml">
-nodeLinker: node-modules
+<file path="Struktur.txt">
+```
+LearningLab
+├─ .dockerignore
+├─ .repomix
+│  └─ bundles.json
+├─ .yarn
+│  ├─ install-state.gz
+│  └─ releases
+│     └─ yarn-4.9.1.cjs
+├─ .yarnrc.yml
+├─ LICENSE
+├─ Migration.txt
+├─ README.md
+├─ apps
+│  ├─ api
+│  │  ├─ .eslintrc.js
+│  │  ├─ .prettierrc
+│  │  ├─ .turbo
+│  │  │  └─ turbo-lint.log
+│  │  ├─ Dockerfile
+│  │  ├─ nest-cli.json
+│  │  ├─ package.json
+│  │  ├─ prisma
+│  │  │  ├─ migrations
+│  │  │  │  ├─ 20220307034109_initial_migrate
+│  │  │  │  │  └─ migration.sql
+│  │  │  │  ├─ 20250517073440_add_user_auth_fields
+│  │  │  │  │  └─ migration.sql
+│  │  │  │  ├─ 20250517122525_add_password_reset_fields
+│  │  │  │  │  └─ migration.sql
+│  │  │  │  └─ migration_lock.toml
+│  │  │  └─ schema.prisma
+│  │  ├─ src
+│  │  │  ├─ app.controller.spec.ts
+│  │  │  ├─ app.controller.ts
+│  │  │  ├─ app.module.ts
+│  │  │  ├─ app.service.ts
+│  │  │  ├─ auth
+│  │  │  │  ├─ auth.controller.ts
+│  │  │  │  ├─ auth.module.ts
+│  │  │  │  ├─ auth.service.ts
+│  │  │  │  ├─ dto
+│  │  │  │  │  ├─ forgot-password.dto.ts
+│  │  │  │  │  ├─ login.dto.ts
+│  │  │  │  │  └─ reset-password.dto.ts
+│  │  │  │  ├─ guards
+│  │  │  │  │  ├─ jwt-auth.guard.ts
+│  │  │  │  │  └─ local-auth.guard.ts
+│  │  │  │  └─ strategies
+│  │  │  │     ├─ jwt
+│  │  │  │     │  └─ jwt.ts
+│  │  │  │     └─ local
+│  │  │  │        └─ local.ts
+│  │  │  ├─ config
+│  │  │  │  └─ environment-variables.ts
+│  │  │  ├─ main.ts
+│  │  │  ├─ persistence
+│  │  │  │  ├─ persistence.module.ts
+│  │  │  │  └─ prisma
+│  │  │  │     ├─ prisma.service.spec.ts
+│  │  │  │     └─ prisma.service.ts
+│  │  │  └─ users
+│  │  │     ├─ dto
+│  │  │     │  └─ create-user.dto.ts
+│  │  │     ├─ users.controller.spec.ts
+│  │  │     ├─ users.controller.ts
+│  │  │     ├─ users.module.ts
+│  │  │     ├─ users.service.spec.ts
+│  │  │     └─ users.service.ts
+│  │  ├─ test
+│  │  │  ├─ app.e2e-spec.ts
+│  │  │  └─ jest-e2e.json
+│  │  ├─ tsconfig.json
+│  │  └─ webpack-hmr.config.js
+│  └─ web
+│     ├─ .eslintrc.js
+│     ├─ .swc
+│     │  └─ plugins
+│     │     └─ v7_macos_aarch64_0.98.5
+│     ├─ .turbo
+│     │  └─ turbo-lint.log
+│     ├─ Dockerfile
+│     ├─ README.md
+│     ├─ jest.config.js
+│     ├─ jest.setup.js
+│     ├─ next-env.d.ts
+│     ├─ next.config.js
+│     ├─ package.json
+│     ├─ pages
+│     │  ├─ _app.tsx
+│     │  ├─ forgot-password.tsx
+│     │  ├─ index.tsx
+│     │  ├─ login.tsx
+│     │  ├─ profile.tsx
+│     │  ├─ reset-password.tsx
+│     │  └─ signup.tsx
+│     ├─ postcss.config.js
+│     ├─ src
+│     │  ├─ common
+│     │  ├─ components
+│     │  │  └─ auth
+│     │  ├─ context
+│     │  │  └─ AuthContext.tsx
+│     │  ├─ screens
+│     │  │  ├─ admin
+│     │  │  ├─ auth
+│     │  │  │  ├─ forgot-password
+│     │  │  │  │  └─ forgot-password.tsx
+│     │  │  │  ├─ login
+│     │  │  │  │  ├─ login.test.tsx
+│     │  │  │  │  └─ login.tsx
+│     │  │  │  ├─ reset-password
+│     │  │  │  │  └─ reset-password.tsx
+│     │  │  │  └─ signup
+│     │  │  │     └─ signup.tsx
+│     │  │  ├─ common
+│     │  │  └─ employee
+│     │  ├─ store
+│     │  │  ├─ index.ts
+│     │  │  └─ services
+│     │  │     └─ api.ts
+│     │  └─ styles
+│     │     └─ global.css
+│     ├─ tailwind.config.js
+│     └─ tsconfig.json
+├─ docker-compose.yml
+├─ package-scripts.js
+├─ package.json
+├─ packages
+│  ├─ config
+│  │  ├─ eslint-preset.js
+│  │  ├─ nginx.conf
+│  │  ├─ package.json
+│  │  ├─ postcss.config.js
+│  │  ├─ src
+│  │  │  ├─ env.ts
+│  │  │  └─ index.ts
+│  │  ├─ tailwind.config.js
+│  │  └─ tsconfig.json
+│  ├─ core
+│  │  ├─ package.json
+│  │  ├─ src
+│  │  │  ├─ index.ts
+│  │  │  └─ types
+│  │  │     └─ user.types.ts
+│  │  └─ tsconfig.json
+│  ├─ tsconfig
+│  │  ├─ README.md
+│  │  ├─ base.json
+│  │  ├─ nestjs.json
+│  │  ├─ nextjs.json
+│  │  ├─ package.json
+│  │  └─ react-library.json
+│  └─ ui
+│     ├─ components
+│     │  └─ Button
+│     │     └─ Button.tsx
+│     ├─ index.tsx
+│     ├─ package.json
+│     └─ tsconfig.json
+├─ problems.txt
+├─ src
+├─ terminal.txt
+├─ turbo.json
+└─ yarn.lock
+
+```
+```
+LearningLab
+├─ .dockerignore
+├─ .repomix
+│  └─ bundles.json
+├─ .yarn
+│  ├─ install-state.gz
+│  └─ releases
+│     └─ yarn-4.9.1.cjs
+├─ .yarnrc.yml
+├─ LICENSE
+├─ Migration.txt
+├─ README.md
+├─ Struktur.txt
+├─ apps
+│  ├─ api
+│  │  ├─ .eslintrc.js
+│  │  ├─ .prettierrc
+│  │  ├─ .turbo
+│  │  │  └─ turbo-lint.log
+│  │  ├─ Dockerfile
+│  │  ├─ nest-cli.json
+│  │  ├─ package.json
+│  │  ├─ prisma
+│  │  │  ├─ migrations
+│  │  │  │  ├─ 20220307034109_initial_migrate
+│  │  │  │  │  └─ migration.sql
+│  │  │  │  ├─ 20250517073440_add_user_auth_fields
+│  │  │  │  │  └─ migration.sql
+│  │  │  │  ├─ 20250517122525_add_password_reset_fields
+│  │  │  │  │  └─ migration.sql
+│  │  │  │  └─ migration_lock.toml
+│  │  │  └─ schema.prisma
+│  │  ├─ src
+│  │  │  ├─ app.controller.spec.ts
+│  │  │  ├─ app.controller.ts
+│  │  │  ├─ app.module.ts
+│  │  │  ├─ app.service.ts
+│  │  │  ├─ auth
+│  │  │  │  ├─ auth.controller.ts
+│  │  │  │  ├─ auth.module.ts
+│  │  │  │  ├─ auth.service.ts
+│  │  │  │  ├─ dto
+│  │  │  │  │  ├─ forgot-password.dto.ts
+│  │  │  │  │  ├─ login.dto.ts
+│  │  │  │  │  └─ reset-password.dto.ts
+│  │  │  │  ├─ guards
+│  │  │  │  │  ├─ jwt-auth.guard.ts
+│  │  │  │  │  └─ local-auth.guard.ts
+│  │  │  │  └─ strategies
+│  │  │  │     ├─ jwt
+│  │  │  │     │  └─ jwt.ts
+│  │  │  │     └─ local
+│  │  │  │        └─ local.ts
+│  │  │  ├─ config
+│  │  │  │  └─ environment-variables.ts
+│  │  │  ├─ main.ts
+│  │  │  ├─ persistence
+│  │  │  │  ├─ persistence.module.ts
+│  │  │  │  └─ prisma
+│  │  │  │     ├─ prisma.service.spec.ts
+│  │  │  │     └─ prisma.service.ts
+│  │  │  └─ users
+│  │  │     ├─ dto
+│  │  │     │  └─ create-user.dto.ts
+│  │  │     ├─ users.controller.spec.ts
+│  │  │     ├─ users.controller.ts
+│  │  │     ├─ users.module.ts
+│  │  │     ├─ users.service.spec.ts
+│  │  │     └─ users.service.ts
+│  │  ├─ test
+│  │  │  ├─ app.e2e-spec.ts
+│  │  │  └─ jest-e2e.json
+│  │  ├─ tsconfig.json
+│  │  └─ webpack-hmr.config.js
+│  └─ web
+│     ├─ .eslintrc.js
+│     ├─ .swc
+│     │  └─ plugins
+│     │     └─ v7_macos_aarch64_0.98.5
+│     ├─ .turbo
+│     │  └─ turbo-lint.log
+│     ├─ Dockerfile
+│     ├─ README.md
+│     ├─ jest.config.js
+│     ├─ jest.setup.js
+│     ├─ next-env.d.ts
+│     ├─ next.config.js
+│     ├─ package.json
+│     ├─ pages
+│     │  ├─ _app.tsx
+│     │  ├─ forgot-password.tsx
+│     │  ├─ index.tsx
+│     │  ├─ login.tsx
+│     │  ├─ profile.tsx
+│     │  ├─ reset-password.tsx
+│     │  └─ signup.tsx
+│     ├─ postcss.config.js
+│     ├─ src
+│     │  ├─ common
+│     │  ├─ components
+│     │  │  └─ auth
+│     │  ├─ context
+│     │  │  └─ AuthContext.tsx
+│     │  ├─ screens
+│     │  │  ├─ admin
+│     │  │  ├─ auth
+│     │  │  │  ├─ forgot-password
+│     │  │  │  │  └─ forgot-password.tsx
+│     │  │  │  ├─ login
+│     │  │  │  │  ├─ login.test.tsx
+│     │  │  │  │  └─ login.tsx
+│     │  │  │  ├─ reset-password
+│     │  │  │  │  └─ reset-password.tsx
+│     │  │  │  └─ signup
+│     │  │  │     └─ signup.tsx
+│     │  │  ├─ common
+│     │  │  └─ employee
+│     │  ├─ store
+│     │  │  ├─ index.ts
+│     │  │  └─ services
+│     │  │     └─ api.ts
+│     │  └─ styles
+│     │     └─ global.css
+│     ├─ tailwind.config.js
+│     └─ tsconfig.json
+├─ docker-compose.yml
+├─ package-scripts.js
+├─ package.json
+├─ packages
+│  ├─ config
+│  │  ├─ eslint-preset.js
+│  │  ├─ nginx.conf
+│  │  ├─ package.json
+│  │  ├─ postcss.config.js
+│  │  ├─ src
+│  │  │  ├─ env.ts
+│  │  │  └─ index.ts
+│  │  ├─ tailwind.config.js
+│  │  └─ tsconfig.json
+│  ├─ core
+│  │  ├─ package.json
+│  │  ├─ src
+│  │  │  ├─ index.ts
+│  │  │  └─ types
+│  │  │     └─ user.types.ts
+│  │  └─ tsconfig.json
+│  ├─ tsconfig
+│  │  ├─ README.md
+│  │  ├─ base.json
+│  │  ├─ nestjs.json
+│  │  ├─ nextjs.json
+│  │  ├─ package.json
+│  │  └─ react-library.json
+│  └─ ui
+│     ├─ components
+│     │  └─ Button
+│     │     └─ Button.tsx
+│     ├─ index.tsx
+│     ├─ package.json
+│     └─ tsconfig.json
+├─ problems.txt
+├─ src
+├─ terminal.txt
+├─ turbo.json
+└─ yarn.lock
+
+```
 </file>
 
-<file path="Migration.txt">
-Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % yarn -v   # skal nu vise 4.9.1
+<file path=".github/workflows/api.yaml">
+# .github/workflows/api.yaml
 
-4.9.1
-Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % rm -f yarn.lock
-yarn install    # skaber ny yarn.lock i Berry-format
+name: api-ci
 
-➤ YN0000: · Yarn 4.9.1
-➤ YN0000: ┌ Resolution step
-➤ YN0001: │ Error: config@workspace:*: Workspace not found (config@workspace:*)
-    at t.getWorkspaceByDescriptor (/Users/Yousef_1/Desktop/LearningLab/LearningLab/.yarn/releases/yarn-4.9.1.cjs:210:3520)
-    at t.getCandidates (/Users/Yousef_1/Desktop/LearningLab/LearningLab/.yarn/releases/yarn-4.9.1.cjs:140:117535)
-    at rm.getCandidates (/Users/Yousef_1/Desktop/LearningLab/LearningLab/.yarn/releases/yarn-4.9.1.cjs:141:1311)
-    at rm.getCandidates (/Users/Yousef_1/Desktop/LearningLab/LearningLab/.yarn/releases/yarn-4.9.1.cjs:141:1311)
-    at /Users/Yousef_1/Desktop/LearningLab/LearningLab/.yarn/releases/yarn-4.9.1.cjs:210:8420
-    at GE (/Users/Yousef_1/Desktop/LearningLab/LearningLab/.yarn/releases/yarn-4.9.1.cjs:140:54028)
-    at gt (/Users/Yousef_1/Desktop/LearningLab/LearningLab/.yarn/releases/yarn-4.9.1.cjs:210:8400)
-    at async Promise.allSettled (index 2)
-    at async Uu (/Users/Yousef_1/Desktop/LearningLab/LearningLab/.yarn/releases/yarn-4.9.1.cjs:140:53356)
-➤ YN0000: └ Completed in 1s 95ms
-➤ YN0000: · Failed with errors in 1s 105ms
-Yousef@MacBook-Pro-tilhrende-Yousef LearningLab %
+on:
+  push:
+    branches: [master] # Din nuværende primære branch. Overvej 'main' i fremtiden.
+    paths:
+      - "apps/api/**"
+      - ".github/workflows/api.yaml" # God praksis: Trigger også på ændringer i selve workflow-filen
+  pull_request:
+    branches: [master] # Din nuværende primære branch.
+    paths:
+      - "apps/api/**"
+      - ".github/workflows/api.yaml"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: "postgresql://test:test@localhost:5433/mydb" # Fra din originale fil
+
+    strategy:
+      matrix:
+        node-version: [20.x] # Opdateret til en nyere LTS Node.js version (f.eks. 18.x eller 20.x). Du kan justere dette.
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4 # Opdateret fra v2
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4 # Opdateret fra v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'yarn' # Anbefalet måde at cache Yarn-afhængigheder på med setup-node@v4
+
+      # Det er ikke altid nødvendigt at installere turbo globalt.
+      # Hvis 'turbo' er en devDependency i rod-package.json, kan du køre kommandoer med 'yarn turbo ...'
+      # Dette trin er bevaret fra din originale fil, men overvej om det kan fjernes.
+      - name: Install Turbo globally (overvej at køre via yarn turbo)
+        run: yarn global add turbo
+
+      # Kør 'yarn install --immutable' for at sikre, at yarn.lock ikke ændres og for at installere afhængigheder.
+      # Dette er en vigtig tilføjelse for CI-stabilitet.
+      - name: Install dependencies
+        run: yarn install --immutable
+
+      # Dine eksisterende nps-kommandoer
+      # Hvis 'prepare.ci.api' også kører 'yarn install', kan det foregående 'Install dependencies' trin måske
+      # virke overflødigt, men en eksplicit 'yarn install --immutable' tidligt er god praksis.
+      - name: Run CI preparation for API
+        run: npx nps prepare.ci.api
+
+      - name: Build API
+        run: npx nps build.ci.api
+
+      - name: Test API
+        run: npx nps test.ci.api
 </file>
 
 <file path="apps/api/prisma/schema.prisma">
@@ -3202,6 +3722,34 @@ coverage
 .DS_Store
 </file>
 
+<file path=".yarnrc.yml">
+cacheFolder: .yarn/cache
+
+logFilters:
+  - code: YN0086
+    level: discard
+  - code: YN0060
+    level: discard
+  - code: YN0002
+    level: error
+
+nodeLinker: node-modules
+
+packageExtensions:
+  "@angular-devkit/core@*":
+    peerDependencies:
+      "@types/ajv": "*"
+      "@types/chokidar": "*"
+  "@angular-devkit/schematics-cli@*":
+    peerDependencies:
+      "@types/chokidar": "*"
+      chokidar: "*"
+  "@angular-devkit/schematics@*":
+    peerDependencies:
+      "@types/chokidar": "*"
+      chokidar: "*"
+</file>
+
 <file path="docker-compose.yml">
 services:
   reverse-proxy:
@@ -3229,6 +3777,173 @@ services:
 
 volumes:
   db_data:
+</file>
+
+<file path="Migration.txt">
+**Revideret Projektplan: Yarn Berry Monorepo**
+
+Nedenstående plan er opdateret til dit nuværende setup, hvor vi kører med Yarn Berry (v4) og PnP‑/node\_modules‑linking efter migrering.
+
+---
+
+## Fase 0: Fundament og Yarn Berry Setup
+
+### 0.0 Yarn Berry Konfiguration
+
+1. Slet eventuel gammel `.yarnrc.yml` og erstat med:
+
+   ```yaml
+   nodeLinker: node-modules      # eller pnp, hvis I ønsker Plug’n’Play
+   plugins:
+     - path: .yarn/plugins/@yarnpkg/plugin-workspace-tools.cjs
+   logFilters:
+     - code: YN0086              # undertryk peer-dependency‑warnings
+       level: discard
+   packageExtensions:
+     "@angular-devkit/core@*":
+       peerDependencies:
+         "@types/ajv": "*"
+         "@types/chokidar": "*"
+     "@angular-devkit/schematics@*":
+       peerDependencies:
+         "chokidar": "*"
+         "@types/chokidar": "*"
+     "@angular-devkit/schematics-cli@*":
+       peerDependencies:
+         "chokidar": "*"
+         "@types/chokidar": "*"
+   ```
+2. Ryd alt og geninstaller:
+
+   ```bash
+   rm -rf node_modules **/node_modules yarn.lock .yarn/cache .yarn/unplugged
+   yarn install
+   ```
+3. Tilføj plugin til workspace-dashboard (valgfrit):
+
+   ```bash
+   yarn plugin import workspace-tools
+   yarn workspaces list --recursive
+   ```
+
+### 0.1 CI & Docker Anpassinger
+
+* **CI**: Opdater dine GitHub Actions til at cache PnP-filer:
+
+  ```yaml
+  - name: Cache Yarn
+    uses: actions/cache@v3
+    with:
+      path: |
+        .yarn/cache
+        .yarn/unplugged
+        .yarn/build-state.yml
+      key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+      restore-keys: |
+        ${{ runner.os }}-yarn-
+  ```
+* **Docker**: Indsæt før `yarn install`:
+
+  ```dockerfile
+  COPY .yarn .yarn
+  COPY .yarnrc.yml .
+  RUN yarn install --immutable
+  ```
+
+---
+
+## Fase 1: Monorepo Struktur & Kernepakker
+
+### 1.1 Domain‑orienteret Workspace‑Opsætning
+
+* `packages/core` (data‑typer, interfaces)
+* `packages/config` (env‑validering, central config)
+* `packages/ui` (fælles React‑komponenter)
+* `packages/pensum`, `packages/quiz`, …
+* `apps/api` (NestJS backend)
+* `apps/web` (Next.js frontend)
+
+### 1.2 Konkrete Skridt – `packages/core`
+
+1. `mkdir -p packages/core/src`
+2. `cd packages/core` → `yarn init -2 -y`
+3. Tilføj i `package.json`:
+
+   ```json
+   {
+     "name": "@repo/core",
+     "version": "0.0.0",
+     "private": true,
+     "main": "./src/index.ts",
+     "types": "./src/index.ts",
+     "devDependencies": {
+       "typescript": "^5.1.6"
+     }
+   }
+   ```
+4. Opret `tsconfig.json`:
+
+   ```json
+   {
+     "extends": "tsconfig/base.json",
+     "compilerOptions": {"outDir": "dist"},
+     "include": ["src"]
+   }
+   ```
+5. Flyt delte typer fra `apps/api` og `apps/web` til `packages/core/src/types`
+
+### 1.3 Refaktorer Imports
+
+* I `apps/api`:
+
+  ```bash
+  yarn workspace api add @repo/core
+  ```
+
+  Opdater alle `import { User } from '../../...'` til:
+
+  ```ts
+  import { User, Role } from '@repo/core'
+  ```
+* I `apps/web`: tilsvarende `yarn workspace web add @repo/core`
+
+---
+
+## Fase 2: Autentificering & Authorization (Refaktor)
+
+* Opdater backend DTO’er/services til at bruge typer fra `@repo/core`
+* Opdater frontend AuthContext/Pages til at bruge `@repo/core`
+* (Evt.) skift fra `localStorage` til `httpOnly` cookies senere
+
+---
+
+## Fase 3: UI‑Bibliotek & Storybook
+
+* Opret `packages/ui` med React, Storybook, Tailwind
+* Flyt/bygg basale komponenter (Button, Card, Input)
+* Test via `yarn workspace ui storybook`
+
+---
+
+## Fase 4: Pensum & Quiz Pakker
+
+1. `packages/pensum`: Prisma‑modeller, CRUD‑service, migration
+2. `apps/api`: PensumModule, Controllers & guarded endpoints
+3. `apps/web`: Admin‑UI og Bruger‑UI for pensum
+4. `packages/quiz` & tilhørende CRUD, quiz‑flow i UI
+
+---
+
+## Næste Konkrete Skridt
+
+1. Erstat `.yarnrc.yml` med Berry‑konfigurationen ovenfor
+2. Kør den fulde oprydning og `yarn install`
+3. Opret `packages/core` og init med Yarn v4
+4. Flyt eksisterende TypeScript‑interfaces ind i `packages/core`
+5. Tilføj `@repo/core` som dependency i `apps/api` & `apps/web`
+
+Lad os tage de første tre punkter i dag. Når Berry‑opsætningen er stabil, går vi videre med `packages/core`.
+Hvordan lyder det?
 </file>
 
 <file path="package-scripts.js">
@@ -3631,93 +4346,14 @@ Run `nps` in the terminal to see list of all available commands.
 </file>
 
 <file path="terminal.txt">
-Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % # Remove the bad names in one go
-yarn workspace api remove \
-  @types/prisma \
-  @types/rxjs \
-  @types/swc__cli \
-  @types/swc__core \
-  @types/swc__wasm
-
-Usage Error: Patterns @types/prisma, @types/rxjs, @types/swc__cli, @types/swc__core, @types/swc__wasm don't match any packages referenced by this workspace
-
-$ yarn remove [-A,--all] [--mode #0] ...
-Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % yarn workspace api add -D prisma @prisma/client
-
-Usage Error: Package "@prisma/client" is already listed as a regular dependency - remove the -D,-P flags or remove it from your dependencies first
-
-$ yarn add [--json] [-F,--fixed] [-E,--exact] [-T,--tilde] [-C,--caret] [-D,--dev] [-P,--peer] [-O,--optional] [--prefer-dev] [-i,--interactive] [--cached] [--mode #0] ...
-Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % npx prisma generate
-
-Error: Could not find Prisma Schema that is required for this command.
-You can either provide it with `--schema` argument, set it as `prisma.schema` in your package.json or put it into the default location.
-Checked following paths:
-
-schema.prisma: file not found
-prisma/schema.prisma: file not found
-prisma/schema: directory not found
-
-See also https://pris.ly/d/prisma-schema-location
-Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % yarn workspace api add rxjs 
-
-➤ YN0000: · Yarn 4.9.1
-➤ YN0000: ┌ Resolution step
-➤ YN0000: └ Completed
-➤ YN0000: ┌ Post-resolution validation
-➤ YN0086: │ Some peer dependencies are incorrectly met by dependencies; run yarn explain peer-requirements for details.
-➤ YN0000: └ Completed
-➤ YN0000: ┌ Fetch step
-➤ YN0000: └ Completed in 0s 395ms
-➤ YN0000: ┌ Link step
-➤ YN0000: └ Completed
-➤ YN0000: · Done with warnings in 0s 837ms
-Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % yarn workspace api add -D @swc/core @swc/types
-
-➤ YN0000: · Yarn 4.9.1
-➤ YN0000: ┌ Resolution step
-➤ YN0085: │ + @swc/core@npm:1.11.24, @swc/types@npm:0.1.21, and 11 more.
-➤ YN0000: └ Completed in 1s 60ms
-➤ YN0000: ┌ Post-resolution validation
-➤ YN0086: │ Some peer dependencies are incorrectly met by dependencies; run yarn explain peer-requirements for details.
-➤ YN0000: └ Completed
-➤ YN0000: ┌ Fetch step
-➤ YN0013: │ 4 packages were added to the project (+ 33.02 MiB).
-➤ YN0000: └ Completed in 0s 718ms
-➤ YN0000: ┌ Link step
-➤ YN0007: │ @swc/core@npm:1.11.24 [62573] must be built because it never has been before or the last one failed
-➤ YN0000: └ Completed in 0s 810ms
-➤ YN0000: · Done with warnings in 2s 710ms
-Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % yarn workspace api add -D \ 
-  @types/prettier \
-  @types/node-notifier \
-  @types/passport
-
-➤ YN0000: · Yarn 4.9.1
-➤ YN0000: ┌ Resolution step
-➤ YN0085: │ + @types/node-notifier@npm:8.0.5, @types/prettier@npm:3.0.0
-➤ YN0000: └ Completed in 0s 258ms
-➤ YN0000: ┌ Post-resolution validation
-➤ YN0086: │ Some peer dependencies are incorrectly met by dependencies; run yarn explain peer-requirements for details.
-➤ YN0000: └ Completed
-➤ YN0000: ┌ Fetch step
-➤ YN0013: │ 2 packages were added to the project (+ 14.66 KiB).
-➤ YN0000: └ Completed in 0s 654ms
-➤ YN0000: ┌ Link step
-➤ YN0000: └ Completed
-➤ YN0000: · Done with warnings in 1s 194ms
-Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % rm -rf node_modules **/node_modules yarn.lock
-
 Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % yarn install
 
 ➤ YN0000: · Yarn 4.9.1
 ➤ YN0000: ┌ Resolution step
-➤ YN0085: │ + @nestjs/cli@npm:10.4.9, and 1104 more.
-➤ YN0000: └ Completed in 1s 742ms
-➤ YN0000: ┌ Post-resolution validation
-➤ YN0086: │ Some peer dependencies are incorrectly met by dependencies; run yarn explain peer-requirements for details.
-➤ YN0000: └ Completed
+➤ YN0085: │ + @nestjs/cli@npm:10.4.9, @nestjs/common@npm:10.4.17, and 1103 more.
+➤ YN0000: └ Completed in 1s 955ms
 ➤ YN0000: ┌ Fetch step
-➤ YN0000: └ Completed in 0s 436ms
+➤ YN0000: └ Completed in 0s 441ms
 ➤ YN0000: ┌ Link step
 ➤ YN0007: │ turbo@npm:1.10.12 must be built because it never has been before or the last one failed
 ➤ YN0007: │ @nestjs/core@npm:10.4.17 [62573] must be built because it never has been before or the last one failed
@@ -3727,8 +4363,8 @@ Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % yarn install
 ➤ YN0007: │ unrs-resolver@npm:1.7.2 must be built because it never has been before or the last one failed
 ➤ YN0007: │ prisma@npm:5.22.0 must be built because it never has been before or the last one failed
 ➤ YN0007: │ @prisma/client@npm:5.22.0 [62573] must be built because it never has been before or the last one failed
-➤ YN0000: └ Completed in 8s 322ms
-➤ YN0000: · Done with warnings in 10s 589ms
+➤ YN0000: └ Completed in 9s 618ms
+➤ YN0000: · Done in 12s 139ms
 Yousef@MacBook-Pro-tilhrende-Yousef LearningLab %
 </file>
 
