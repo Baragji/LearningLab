@@ -3,16 +3,18 @@ FROM node:20-alpine AS builder
 RUN apk update && apk add --no-cache git libc6-compat
 
 WORKDIR /app
-
 COPY package.json yarn.lock ./
 COPY .yarnrc.yml .yarnrc.yml
 COPY .yarn ./.yarn
 
+# ⚠️ Denne RUN skal stå i Dockerfile, ikke i terminalen
 # ⚠️ Bemærk: Denne RUN-instruktion skal tilføjes i Dockerfile, ikke i terminalen
 RUN corepack enable \
  && corepack prepare yarn@4.9.1 --activate
 
-RUN yarn install --immutable --immutable-cache --check-cache
+# Tillad opdatering af lockfile under Docker-build ved at deaktivere immutable-installs
+RUN echo "enableImmutableInstalls: false" >> .yarnrc.yml \
+ && yarn install --immutable-cache --check-cache
 COPY . .
 RUN yarn turbo prune --scope=api --docker
 
