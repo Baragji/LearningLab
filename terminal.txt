@@ -1,60 +1,48 @@
-Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % # I roden af dit projekt, eller naviger til apps/web
-# yarn add uuid
-# yarn add -D @types/uuid
-Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % yarn add uuid
-yarn add v1.22.22
-error Running this command will add the dependency to the workspace root rather than the workspace itself, which might not be what you want - if you really meant it, make it explicit by running this command again with the -W flag (or --ignore-workspace-root-check).
-info Visit https://yarnpkg.com/en/docs/cli/add for documentation about this command.
-Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % yarn workspace web add uuid
-yarn workspace web add -D @types/uuid
-yarn workspace v1.22.22
-yarn add v1.22.22
-[1/4] 🔍  Resolving packages...
-[2/4] 🚚  Fetching packages...
-[3/4] 🔗  Linking dependencies...
-warning "workspace-aggregator-d320a9ea-0602-4201-970e-815ba729f087 > api > swagger-ui-express@5.0.0" has unmet peer dependency "express@>=4.0.0 || >=5.0.0-beta".
-warning "workspace-aggregator-d320a9ea-0602-4201-970e-815ba729f087 > web > @testing-library/user-event@14.4.3" has unmet peer dependency "@testing-library/dom@>=7.21.4".
-warning "workspace-aggregator-d320a9ea-0602-4201-970e-815ba729f087 > config > eslint-config-next@13.4.12" has unmet peer dependency "eslint@^7.23.0 || ^8.0.0".
-warning "workspace-aggregator-d320a9ea-0602-4201-970e-815ba729f087 > config > eslint-plugin-react@7.33.1" has unmet peer dependency "eslint@^3 || ^4 || ^5 || ^6 || ^7 || ^8".
-warning "workspace-aggregator-d320a9ea-0602-4201-970e-815ba729f087 > config > eslint-config-next > @typescript-eslint/parser@5.46.1" has unmet peer dependency "eslint@^6.0.0 || ^7.0.0 || ^8.0.0".
-warning "workspace-aggregator-d320a9ea-0602-4201-970e-815ba729f087 > config > eslint-config-next > eslint-import-resolver-typescript@3.5.2" has unmet peer dependency "eslint@*".
-warning "workspace-aggregator-d320a9ea-0602-4201-970e-815ba729f087 > config > eslint-config-next > eslint-plugin-import@2.26.0" has unmet peer dependency "eslint@^2 || ^3 || ^4 || ^5 || ^6 || ^7.2.0 || ^8".
-warning "workspace-aggregator-d320a9ea-0602-4201-970e-815ba729f087 > config > eslint-config-next > eslint-plugin-jsx-a11y@6.6.1" has unmet peer dependency "eslint@^3 || ^4 || ^5 || ^6 || ^7 || ^8".
-warning "workspace-aggregator-d320a9ea-0602-4201-970e-815ba729f087 > config > eslint-config-next > eslint-plugin-react@7.31.11" has unmet peer dependency "eslint@^3 || ^4 || ^5 || ^6 || ^7 || ^8".
-warning "workspace-aggregator-d320a9ea-0602-4201-970e-815ba729f087 > config > eslint-config-next > eslint-plugin-react-hooks@5.0.0-canary-7118f5dd7-20230705" has unmet peer dependency "eslint@^3.0.0 || ^4.0.0 || ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0-0".
-warning "workspace-aggregator-d320a9ea-0602-4201-970e-815ba729f087 > config > eslint-config-next > @typescript-eslint/parser > @typescript-eslint/typescript-estree > tsutils@3.21.0" has unmet peer dependency "typescript@>=2.8.0 || >= 3.2.0-dev || >= 3.3.0-dev || >= 3.4.0-dev || >= 3.5.0-dev || >= 3.6.0-dev || >= 3.6.0-beta || >= 3.7.0-dev || >= 3.7.0-beta".
-[4/4] 🔨  Building fresh packages...
-success Saved lockfile.
-success Saved 2 new dependencies.
-info Direct dependencies
-info All dependencies
-├─ ui@0.0.0
-└─ uuid@11.1.0
-✨  Done in 2.33s.
-✨  Done in 2.48s.
-yarn workspace v1.22.22
-yarn add v1.22.22
-[1/4] 🔍  Resolving packages...
-[2/4] 🚚  Fetching packages...
-[3/4] 🔗  Linking dependencies...
-warning "workspace-aggregator-a0994172-0510-4153-86cf-c181519bdad6 > api > swagger-ui-express@5.0.0" has unmet peer dependency "express@>=4.0.0 || >=5.0.0-beta".
-warning "workspace-aggregator-a0994172-0510-4153-86cf-c181519bdad6 > web > @testing-library/user-event@14.4.3" has unmet peer dependency "@testing-library/dom@>=7.21.4".
-warning "workspace-aggregator-a0994172-0510-4153-86cf-c181519bdad6 > config > eslint-config-next@13.4.12" has unmet peer dependency "eslint@^7.23.0 || ^8.0.0".
-warning "workspace-aggregator-a0994172-0510-4153-86cf-c181519bdad6 > config > eslint-plugin-react@7.33.1" has unmet peer dependency "eslint@^3 || ^4 || ^5 || ^6 || ^7 || ^8".
-warning "workspace-aggregator-a0994172-0510-4153-86cf-c181519bdad6 > config > eslint-config-next > @typescript-eslint/parser@5.46.1" has unmet peer dependency "eslint@^6.0.0 || ^7.0.0 || ^8.0.0".
-warning "workspace-aggregator-a0994172-0510-4153-86cf-c181519bdad6 > config > eslint-config-next > eslint-import-resolver-typescript@3.5.2" has unmet peer dependency "eslint@*".
-warning "workspace-aggregator-a0994172-0510-4153-86cf-c181519bdad6 > config > eslint-config-next > eslint-plugin-import@2.26.0" has unmet peer dependency "eslint@^2 || ^3 || ^4 || ^5 || ^6 || ^7.2.0 || ^8".
-warning "workspace-aggregator-a0994172-0510-4153-86cf-c181519bdad6 > config > eslint-config-next > eslint-plugin-jsx-a11y@6.6.1" has unmet peer dependency "eslint@^3 || ^4 || ^5 || ^6 || ^7 || ^8".
-warning "workspace-aggregator-a0994172-0510-4153-86cf-c181519bdad6 > config > eslint-config-next > eslint-plugin-react@7.31.11" has unmet peer dependency "eslint@^3 || ^4 || ^5 || ^6 || ^7 || ^8".
-warning "workspace-aggregator-a0994172-0510-4153-86cf-c181519bdad6 > config > eslint-config-next > eslint-plugin-react-hooks@5.0.0-canary-7118f5dd7-20230705" has unmet peer dependency "eslint@^3.0.0 || ^4.0.0 || ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0-0".
-warning "workspace-aggregator-a0994172-0510-4153-86cf-c181519bdad6 > config > eslint-config-next > @typescript-eslint/parser > @typescript-eslint/typescript-estree > tsutils@3.21.0" has unmet peer dependency "typescript@>=2.8.0 || >= 3.2.0-dev || >= 3.3.0-dev || >= 3.4.0-dev || >= 3.5.0-dev || >= 3.6.0-dev || >= 3.6.0-beta || >= 3.7.0-dev || >= 3.7.0-beta".
-[4/4] 🔨  Building fresh packages...
-success Saved lockfile.
-success Saved 2 new dependencies.
-info Direct dependencies
-info All dependencies
-├─ @types/uuid@10.0.0
-└─ ui@0.0.0
-✨  Done in 2.02s.
-✨  Done in 2.23s.
+Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % yarn install
+➤ YN0000: · Yarn 4.9.1
+➤ YN0000: ┌ Resolution step
+➤ YN0085: │ + @nestjs/cli@npm:10.4.9, and 1065 more.
+➤ YN0000: └ Completed in 2s 138ms
+➤ YN0000: ┌ Post-resolution validation
+➤ YN0002: │ api@workspace:apps/api doesn't provide express (p7c4aa), requested by swagger-ui-express.
+➤ YN0002: │ turborepo-basic-shared@workspace:. doesn't provide @nestjs/common (p9cc3a), requested by @nestjs/config.
+➤ YN0002: │ turborepo-basic-shared@workspace:. doesn't provide rxjs (p757a7), requested by @nestjs/config.
+➤ YN0002: │ web@workspace:apps/web doesn't provide @testing-library/dom (paf9c0), requested by @testing-library/user-event.
+➤ YN0086: │ Some peer dependencies are incorrectly met by your project; run yarn explain peer-requirements <hash> for details, where <hash> is the six-letter p-prefixed code.
+➤ YN0086: │ Some peer dependencies are incorrectly met by dependencies; run yarn explain peer-requirements for details.
+➤ YN0000: └ Completed
+➤ YN0000: ┌ Fetch step
+➤ YN0013: │ 1037 packages were added to the project (+ 515.38 MiB).
+➤ YN0000: └ Completed in 6s 341ms
+➤ YN0000: ┌ Link step
+➤ YN0007: │ turbo@npm:1.10.12 must be built because it never has been before or the last one failed
+➤ YN0007: │ @prisma/engines@npm:5.22.0 must be built because it never has been before or the last one failed
+➤ YN0007: │ @nestjs/core@npm:10.4.17 [62573] must be built because it never has been before or the last one failed
+➤ YN0007: │ @scarf/scarf@npm:1.4.0 must be built because it never has been before or the last one failed
+➤ YN0007: │ unrs-resolver@npm:1.7.2 must be built because it never has been before or the last one failed
+➤ YN0007: │ prisma@npm:5.22.0 must be built because it never has been before or the last one failed
+➤ YN0007: │ @prisma/client@npm:5.22.0 [62573] must be built because it never has been before or the last one failed
+➤ YN0000: └ Completed in 10s 192ms
+➤ YN0000: · Done with warnings in 18s 761ms
+Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % git add yarn.lock && git commit -m "chore: add yarn.lock for Yarn Berry"
+[UltBlue0.1 d54687e] chore: add yarn.lock for Yarn Berry
+ 1 file changed, 11078 insertions(+)
+ create mode 100644 yarn.lock
+Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % yarn install --immutable
+➤ YN0000: · Yarn 4.9.1
+➤ YN0000: ┌ Resolution step
+➤ YN0000: └ Completed
+➤ YN0000: ┌ Post-resolution validation
+➤ YN0002: │ api@workspace:apps/api doesn't provide express (p7c4aa), requested by swagger-ui-express.
+➤ YN0002: │ turborepo-basic-shared@workspace:. doesn't provide @nestjs/common (p9cc3a), requested by @nestjs/config.
+➤ YN0002: │ turborepo-basic-shared@workspace:. doesn't provide rxjs (p757a7), requested by @nestjs/config.
+➤ YN0002: │ web@workspace:apps/web doesn't provide @testing-library/dom (paf9c0), requested by @testing-library/user-event.
+➤ YN0086: │ Some peer dependencies are incorrectly met by your project; run yarn explain peer-requirements <hash> for details, where <hash> is the six-letter p-prefixed code.
+➤ YN0086: │ Some peer dependencies are incorrectly met by dependencies; run yarn explain peer-requirements for details.
+➤ YN0000: └ Completed
+➤ YN0000: ┌ Fetch step
+➤ YN0000: └ Completed in 0s 377ms
+➤ YN0000: ┌ Link step
+➤ YN0000: └ Completed
+➤ YN0000: · Done with warnings in 0s 769ms
 Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % 
