@@ -21,7 +21,8 @@
     "turbo": "1.10.12"
   },
   "dependencies": {
-    "@nestjs/config": "^4.0.2"
+    "@nestjs/config": "^4.0.2",
+    "reflect-metadata": "^0.2.2"
   },
   "engines": {
     "npm": ">=7.0.0",
