@@ -20,7 +20,7 @@ module.exports = {
       // Forberedelsesscript for 'web' appen (kører 'yarn install')
       web: `yarn`,
       // Forberedelsesscript for 'api' appen (kører nu kun prisma migrate dev)
-      api: `nps prisma.migrate.dev`, // 'prepare.docker' er fjernet
+      api: `nps prisma.migrate.dev`, 
       // CI specifikke forberedelsesscripts
       ci: {
         // For 'web': Pruner monorepoet, navigerer til output mappen, og installerer dependencies
