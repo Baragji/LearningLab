@@ -1,21 +1,164 @@
-Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % yarn -v   # skal nu vise 4.9.1
+**Revideret Projektplan: Yarn Berry Monorepo**
 
-4.9.1
-Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % rm -f yarn.lock
-yarn install    # skaber ny yarn.lock i Berry-format
+Nedenstående plan er opdateret til dit nuværende setup, hvor vi kører med Yarn Berry (v4) og PnP‑/node\_modules‑linking efter migrering.
 
-➤ YN0000: · Yarn 4.9.1
-➤ YN0000: ┌ Resolution step
-➤ YN0001: │ Error: config@workspace:*: Workspace not found (config@workspace:*)
-    at t.getWorkspaceByDescriptor (/Users/Yousef_1/Desktop/LearningLab/LearningLab/.yarn/releases/yarn-4.9.1.cjs:210:3520)
-    at t.getCandidates (/Users/Yousef_1/Desktop/LearningLab/LearningLab/.yarn/releases/yarn-4.9.1.cjs:140:117535)
-    at rm.getCandidates (/Users/Yousef_1/Desktop/LearningLab/LearningLab/.yarn/releases/yarn-4.9.1.cjs:141:1311)
-    at rm.getCandidates (/Users/Yousef_1/Desktop/LearningLab/LearningLab/.yarn/releases/yarn-4.9.1.cjs:141:1311)
-    at /Users/Yousef_1/Desktop/LearningLab/LearningLab/.yarn/releases/yarn-4.9.1.cjs:210:8420
-    at GE (/Users/Yousef_1/Desktop/LearningLab/LearningLab/.yarn/releases/yarn-4.9.1.cjs:140:54028)
-    at gt (/Users/Yousef_1/Desktop/LearningLab/LearningLab/.yarn/releases/yarn-4.9.1.cjs:210:8400)
-    at async Promise.allSettled (index 2)
-    at async Uu (/Users/Yousef_1/Desktop/LearningLab/LearningLab/.yarn/releases/yarn-4.9.1.cjs:140:53356)
-➤ YN0000: └ Completed in 1s 95ms
-➤ YN0000: · Failed with errors in 1s 105ms
-Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % 
+---
+
+## Fase 0: Fundament og Yarn Berry Setup
+
+### 0.0 Yarn Berry Konfiguration
+
+1. Slet eventuel gammel `.yarnrc.yml` og erstat med:
+
+   ```yaml
+   nodeLinker: node-modules      # eller pnp, hvis I ønsker Plug’n’Play
+   plugins:
+     - path: .yarn/plugins/@yarnpkg/plugin-workspace-tools.cjs
+   logFilters:
+     - code: YN0086              # undertryk peer-dependency‑warnings
+       level: discard
+   packageExtensions:
+     "@angular-devkit/core@*":
+       peerDependencies:
+         "@types/ajv": "*"
+         "@types/chokidar": "*"
+     "@angular-devkit/schematics@*":
+       peerDependencies:
+         "chokidar": "*"
+         "@types/chokidar": "*"
+     "@angular-devkit/schematics-cli@*":
+       peerDependencies:
+         "chokidar": "*"
+         "@types/chokidar": "*"
+   ```
+2. Ryd alt og geninstaller:
+
+   ```bash
+   rm -rf node_modules **/node_modules yarn.lock .yarn/cache .yarn/unplugged
+   yarn install
+   ```
+3. Tilføj plugin til workspace-dashboard (valgfrit):
+
+   ```bash
+   yarn plugin import workspace-tools
+   yarn workspaces list --recursive
+   ```
+
+### 0.1 CI & Docker Anpassinger
+
+* **CI**: Opdater dine GitHub Actions til at cache PnP-filer:
+
+  ```yaml
+  - name: Cache Yarn
+    uses: actions/cache@v3
+    with:
+      path: |
+        .yarn/cache
+        .yarn/unplugged
+        .yarn/build-state.yml
+      key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+      restore-keys: |
+        ${{ runner.os }}-yarn-
+  ```
+* **Docker**: Indsæt før `yarn install`:
+
+  ```dockerfile
+  COPY .yarn .yarn
+  COPY .yarnrc.yml .
+  RUN yarn install --immutable
+  ```
+
+---
+
+## Fase 1: Monorepo Struktur & Kernepakker
+
+### 1.1 Domain‑orienteret Workspace‑Opsætning
+
+* `packages/core` (data‑typer, interfaces)
+* `packages/config` (env‑validering, central config)
+* `packages/ui` (fælles React‑komponenter)
+* `packages/pensum`, `packages/quiz`, …
+* `apps/api` (NestJS backend)
+* `apps/web` (Next.js frontend)
+
+### 1.2 Konkrete Skridt – `packages/core`
+
+1. `mkdir -p packages/core/src`
+2. `cd packages/core` → `yarn init -2 -y`
+3. Tilføj i `package.json`:
+
+   ```json
+   {
+     "name": "@repo/core",
+     "version": "0.0.0",
+     "private": true,
+     "main": "./src/index.ts",
+     "types": "./src/index.ts",
+     "devDependencies": {
+       "typescript": "^5.1.6"
+     }
+   }
+   ```
+4. Opret `tsconfig.json`:
+
+   ```json
+   {
+     "extends": "tsconfig/base.json",
+     "compilerOptions": {"outDir": "dist"},
+     "include": ["src"]
+   }
+   ```
+5. Flyt delte typer fra `apps/api` og `apps/web` til `packages/core/src/types`
+
+### 1.3 Refaktorer Imports
+
+* I `apps/api`:
+
+  ```bash
+  yarn workspace api add @repo/core
+  ```
+
+  Opdater alle `import { User } from '../../...'` til:
+
+  ```ts
+  import { User, Role } from '@repo/core'
+  ```
+* I `apps/web`: tilsvarende `yarn workspace web add @repo/core`
+
+---
+
+## Fase 2: Autentificering & Authorization (Refaktor)
+
+* Opdater backend DTO’er/services til at bruge typer fra `@repo/core`
+* Opdater frontend AuthContext/Pages til at bruge `@repo/core`
+* (Evt.) skift fra `localStorage` til `httpOnly` cookies senere
+
+---
+
+## Fase 3: UI‑Bibliotek & Storybook
+
+* Opret `packages/ui` med React, Storybook, Tailwind
+* Flyt/bygg basale komponenter (Button, Card, Input)
+* Test via `yarn workspace ui storybook`
+
+---
+
+## Fase 4: Pensum & Quiz Pakker
+
+1. `packages/pensum`: Prisma‑modeller, CRUD‑service, migration
+2. `apps/api`: PensumModule, Controllers & guarded endpoints
+3. `apps/web`: Admin‑UI og Bruger‑UI for pensum
+4. `packages/quiz` & tilhørende CRUD, quiz‑flow i UI
+
+---
+
+## Næste Konkrete Skridt
+
+1. Erstat `.yarnrc.yml` med Berry‑konfigurationen ovenfor
+2. Kør den fulde oprydning og `yarn install`
+3. Opret `packages/core` og init med Yarn v4
+4. Flyt eksisterende TypeScript‑interfaces ind i `packages/core`
+5. Tilføj `@repo/core` som dependency i `apps/api` & `apps/web`
+
+Lad os tage de første tre punkter i dag. Når Berry‑opsætningen er stabil, går vi videre med `packages/core`.
+Hvordan lyder det?

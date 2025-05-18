@@ -195,528 +195,12 @@ package-scripts.js
 package.json
 problems.txt
 README.md
+terminal.txt
 turbo.json
 </directory_structure>
 
 <files>
 This section contains the contents of the repository's files.
-
-<file path="packages/config/src/env.ts">
-// packages/config/src/env.ts
-import { z } from 'zod';
-
-/**
- * Definerer skemaet for server-side miljøvariabler.
- * Brug .server() for at sikre, at disse ikke utilsigtet inkluderes i client-side bundles.
- */
-const serverSchema = z.object({
-  DATABASE_URL: z.string().url({ message: "DATABASE_URL skal være en gyldig URL." }),
-  JWT_SECRET: z.string().min(32, { message: "JWT_SECRET skal være mindst 32 tegn lang." }),
-  JWT_EXPIRES_IN: z.string().default('1h'), // Default værdi hvis ikke sat
-  // NODE_ENV: z.enum(['development', 'production', 'test']).default('development'), // Eksempel
-});
-
-/**
- * Definerer skemaet for client-side (public) miljøvariabler.
- * Disse skal prefixxes med NEXT_PUBLIC_ for Next.js applikationer.
- */
-const clientSchema = z.object({
-  NEXT_PUBLIC_APP_NAME: z.string().default('Læringsplatform'),
-  NEXT_PUBLIC_WS_URL: z.string().url({ message: "NEXT_PUBLIC_WS_URL skal være en gyldig URL." }).default('http://localhost:3001'),
-  // Tilføj andre NEXT_PUBLIC_ variabler her efter behov
-});
-
-/**
- * Miljøvariabler, der er tilgængelige for både server og client.
- * Dette er typisk ikke anbefalet for følsomme variabler.
- * For Next.js, er det bedre at adskille dem klart.
- * Hvis en variabel skal bruges på både server og client (og ikke er følsom),
- * kan den defineres her eller i clientSchema (hvis public) og serverSchema (hvis server).
- */
-// const sharedSchema = z.object({
-//   // F.eks. en feature flag der kan læses af begge
-// });
-
-
-/**
- * Validerer og parser server-side miljøvariabler.
- * Kaster en fejl ved build/runtime hvis validering fejler.
- */
-const parsedServerEnv = serverSchema.safeParse({
-  DATABASE_URL: process.env.DATABASE_URL,
-  JWT_SECRET: process.env.JWT_SECRET,
-  JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN,
-  // NODE_ENV: process.env.NODE_ENV,
-});
-
-if (!parsedServerEnv.success) {
-  console.error(
-    '❌ Ugyldige server-side miljøvariabler:',
-    parsedServerEnv.error.flatten().fieldErrors,
-  );
-  // I et produktionsmiljø bør applikationen ikke starte med ugyldige env vars.
-  // I udvikling kan man overveje at kaste fejlen for at stoppe processen.
-  throw new Error('Ugyldige server-side miljøvariabler. Tjek .env filen og konsollen.');
-}
-export const serverEnv = parsedServerEnv.data;
-
-
-/**
- * Validerer og parser client-side miljøvariabler.
- * For Next.js hentes disse typisk direkte via process.env.NEXT_PUBLIC_XXX i client-koden,
- * men at have et skema her hjælper med central definition og type-sikkerhed.
- * For at gøre disse typer globalt tilgængelige i Next.js client-side kode uden import,
- * kan man udvide NodeJS.ProcessEnv interfacet (se Next.js dokumentation).
- */
-const parsedClientEnv = clientSchema.safeParse({
-  NEXT_PUBLIC_APP_NAME: process.env.NEXT_PUBLIC_APP_NAME,
-  NEXT_PUBLIC_WS_URL: process.env.NEXT_PUBLIC_WS_URL,
-});
-
-if (!parsedClientEnv.success) {
-  console.error(
-    '❌ Ugyldige client-side miljøvariabler:',
-    parsedClientEnv.error.flatten().fieldErrors,
-  );
-  // Overvej at kaste en fejl her også, især under build-processen.
-  throw new Error('Ugyldige client-side miljøvariabler. Tjek .env filen og konsollen.');
-}
-export const clientEnv = parsedClientEnv.data;
-
-/**
- * Samlet objekt for alle miljøvariabler (kan være nyttigt i nogle sammenhænge,
- * men adskillelsen af serverEnv og clientEnv er ofte mere sikker og klar).
- */
-export const env = {
-  ...serverEnv,
-  ...clientEnv,
-  // ...parsedSharedEnv.data, // Hvis sharedSchema bruges
-};
-
-console.log('✅ Miljøvariabler valideret og indlæst.');
-</file>
-
-<file path="packages/config/src/index.ts">
-// packages/config/src/index.ts
-
-/**
- * Hoved-eksportfil for @repo/config TypeScript-delen.
- * Herfra eksporteres validerede miljøvariabler og potentielt andre konfigurationsfunktioner.
- */
-
-export * from './env';
-</file>
-
-<file path="packages/config/tsconfig.json">
-{
-  "extends": "tsconfig/base.json", // Eller tsconfig/react-library.json hvis relevant for fremtidig brug
-  "compilerOptions": {
-    "outDir": "dist",
-    "rootDir": "src", // Specificerer roden af input-filerne
-    "baseUrl": "./src",
-    "paths": {
-      "@/*": ["*"]
-    }
-  },
-  "include": ["src"],
-  "exclude": ["node_modules", "dist", "*.js", "*.conf"] // Ekskluder eksisterende .js og .conf filer fra TS-kompilering
-}
-</file>
-
-<file path="packages/core/src/types/user.types.ts">
-// packages/core/src/types/user.types.ts
-
-/**
- * Definerer de mulige roller en bruger kan have i systemet.
- * Disse matcher værdierne defineret i Prisma schemaet.
- */
-export enum Role {
-  USER = 'USER',
-  ADMIN = 'ADMIN',
-}
-
-/**
- * Interface for en bruger.
- * Dette er en ren data-kontrakt og indeholder ikke backend-specifikke felter som passwordHash.
- * Den er beregnet til at blive brugt på tværs af frontend og backend for type-sikkerhed.
- */
-export interface User {
-  id: number;
-  email: string;
-  name?: string | null; // Navn er valgfrit og kan være null
-  role: Role;
-  createdAt: Date; // Tidspunkt for oprettelse af brugeren
-  updatedAt: Date; // Tidspunkt for seneste opdatering af brugeren
-  // passwordResetToken, passwordResetExpires og passwordHash er udeladt,
-  // da de er backend-specifikke og ikke bør være en del af den delte kerne-type.
-}
-</file>
-
-<file path="packages/core/src/index.ts">
-// packages/core/src/index.ts
-
-/**
- * Dette er hoved-eksportfilen for @repo/core pakken.
- * Alle delte typer, interfaces, enums, og potentielt funktioner eller konstanter
- * bør eksporteres herfra, så de nemt kan importeres i andre pakker (apps/web, apps/api, etc.).
- */
-
-export * from './types/user.types';
-// Tilføj andre eksports her efterhånden som pakken vokser, f.eks.:
-// export * from './types/course.types';
-// export * from './utils/formatter.utils';
-</file>
-
-<file path="packages/core/package.json">
-{
-  "name": "@repo/core",
-  "version": "0.0.0",
-  "private": true,
-  "packageManager": "yarn@4.9.1", 
-  "main": "./src/index.ts",
-  "types": "./src/index.ts",
-  "scripts": {
-    "lint": "eslint . --ext .ts,.tsx"
-  },
-  "devDependencies": {
-    "typescript": "^5.1.6",
-    "tsconfig": "workspace:*", 
-    "eslint": "^8.57.1" 
-  }
-}
-</file>
-
-<file path="packages/core/tsconfig.json">
-{
-  "extends": "../tsconfig/base.json",
-  "compilerOptions": {
-    "outDir": "dist",
-    "baseUrl": "./src", // Gør det nemmere at have absolutte imports inden for pakken hvis nødvendigt
-    "paths": { // Eksempel på paths, kan justeres/fjernes efter behov
-      "@/*": ["*"]
-    }
-  },
-  "include": ["src"],
-  "exclude": ["node_modules", "dist"]
-}
-</file>
-
-<file path=".yarnrc.yml">
-# .yarnrc.yml
-
-# Denne indstilling specificerer, hvordan Yarn skal linke dine pakkeafhængigheder.
-# 'node-modules' er den mest kompatible tilstand og ligner mest den traditionelle npm/Yarn Classic opførsel.
-# Det betyder, at du stadig vil have en node_modules mappe i dine workspaces.
-nodeLinker: node-modules
-
-# Du kan fjerne kommenteringen af følgende linje, hvis du vil aktivere Yarn's globale cache.
-# Dette kan fremskynde installationer på tværs af projekter, men er valgfrit.
-# enableGlobalCache: true
-
-# Hvis der er andre indstillinger i din eksisterende .yarnrc.yml efter 'yarn set version berry',
-# kan du overveje at beholde dem, hvis du ved, hvad de gør.
-# For en standardopsætning er 'nodeLinker: node-modules' det vigtigste at have med.
-</file>
-
-<file path="Migration.txt">
-Here’s a **complete, no-research-needed** migration plan your developer can follow to move your monorepo from Yarn Classic (v1.x) to Yarn Berry (v2+), including every file to touch and exact commands to run.
-
-> **Summary:**
->
-> 1. **Prerequisites & Corepack**: Ensure Node >=16.10 and enable Corepack so Yarn Berry can run out-of-the-box ([Medium][1]).
-> 2. **Bootstrap Berry**: Run `yarn set version berry` at the repo root to install Yarn v2+ locally ([Yarn][2]).
-> 3. **`.yarnrc.yml`**: Create/convert your old `.yarnrc` to `.yarnrc.yml` with `nodeLinker: node-modules` (or `pnp`) ([psidium.github.io][3]).
-> 4. **Root `package.json`**: Add `"packageManager": "yarn@<your-berry-version>"` and confirm `workspaces: ["apps/*","packages/*"]` ([heygrady.com][4]).
-> 5. **Workspace `package.json`**: In every `apps/*/package.json` and `packages/*/package.json`, add the same `packageManager` field and switch local deps to `"workspace:*"` if desired ([DoltHub][5]).
-> 6. **`.gitignore`**: Ignore Berry artifacts (`.yarn/cache`, `.pnp.*`, etc.) ([Medium][1]).
-> 7. **Install & Lockfile**: Run `yarn install --immutable` to regenerate `yarn.lock` under Berry rules ([Yarn][2]).
-> 8. **CI/CD**: Update GitHub Actions to use `actions/setup-node@v3` with `cache: "yarn"` or a dedicated `setup-yarn-berry` action and `yarn install --immutable` ([GitHub][6]).
-> 9. **Dockerfiles**: Change install stages to copy only `package.json`, `yarn.lock`, `.yarnrc.yml`, `.yarn/releases` and run `yarn install --immutable` ([DEV Community][7]).
-> 10. **Validation**: Run `yarn workspaces foreach run test` / `yarn tsc --build` and fix any PnP path errors (if using `nodeLinker: pnp`) .
-
----
-
-## 1. Prerequisites & Corepack
-
-1. **Node >=16.10** is required so you can use Corepack to manage Yarn versions ([Medium][1]).
-2. **Enable Corepack** globally:
-
-   ```bash
-   corepack enable
-   ```
-
-   This makes `yarn set version berry` available without a separate install ([Medium][1]).
-
----
-
-## 2. Bootstrap Yarn Berry in Root
-
-1. From your repo root, run:
-
-   ```bash
-   yarn set version berry
-   ```
-
-   This creates `.yarn/releases/yarn-*.cjs` and a minimal `.yarnrc.yml` if none exists ([Yarn][2]).
-2. **Commit** the generated files:
-
-   * `.yarn/releases/yarn-berry.cjs`
-   * `.yarnrc.yml`
-
----
-
-## 3. Configure `.yarnrc.yml`
-
-Create or replace your old `.yarnrc` with this `.yarnrc.yml` at the repo root:
-
-```yaml
-# Choose one linker:
-nodeLinker: node-modules    # retains node_modules folder
-# nodeLinker: pnp           # Plug’n’Play mode, no node_modules
-
-# (Optionally) enable the global offline cache:
-# enableGlobalCache: true
-```
-
-This new YAML format is required by Yarn v2+ ([psidium.github.io][3]).
-
----
-
-## 4. Update Root `package.json`
-
-In your **root** `package.json`, ensure it contains:
-
-```diff
-{
-  "name": "learninglab",
-  "private": true,
-+ "packageManager": "yarn@3.4.1",
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ],
-  "scripts": {
-    "dev": "turbo run dev",
-    "build": "turbo run build",
-    "lint": "turbo run lint"
-  },
-  "devDependencies": {
--   "turbo": "^1.10.0"
-+   "turbo": "^1.10.0"
-  }
-}
-```
-
-* `packageManager` locks the Berry version for everyone ([heygrady.com][4]).
-* `workspaces` must list your apps and packages ([heygrady.com][4]).
-
----
-
-## 5. Update Workspace `package.json` Files
-
-For **each** `apps/*/package.json` and `packages/*/package.json`:
-
-1. Add the same `packageManager` field:
-
-   ```json
-   {
-     "packageManager": "yarn@3.4.1"
-   }
-   ```
-2. If you were using `@repo/core: "*"`, switch to the Berry protocol:
-
-   ```diff
-   "dependencies": {
-   ```
-
-* "@repo/core": "\*",
-* "@repo/config": "\*"
-
-- "@repo/core": "workspace:\*",
-- "@repo/config": "workspace:\*"
-  }
-
-```
-This ties each workspace to the local package version :contentReference[oaicite:16]{index=16}.
-
----
-
-## 6. Update `.gitignore`  
-Add these entries at the bottom of your root `.gitignore`:  
-```
-
-# Yarn Berry
-
-.yarn/cache
-.yarn/unplugged
-.yarn/build-state.yml
-.pnp.\*
-
-````
-This prevents committing cache artifacts and Plug’n’Play files :contentReference[oaicite:17]{index=17}.
-
----
-
-## 7. Install & Lockfile Regeneration  
-1. **Clean** existing installs:  
-   ```bash
-   rm -rf node_modules yarn.lock
-````
-
-2. **Install** under Berry constraints:
-
-   ```bash
-   yarn install --immutable
-   ```
-
-   * `--immutable` enforces that `yarn.lock` matches your dependencies or fails ([Yarn][2]).
-
----
-
-## 8. CI/CD: GitHub Actions
-
-In your `.github/workflows/*.yaml`, replace npm or Yarn Classic steps with:
-
-```yaml
-- uses: actions/checkout@v3
-
-- uses: actions/setup-node@v3
-  with:
-    node-version: 18.x
-    cache: 'yarn'                 # Caches both node_modules & .yarn/cache
-    cache-dependency-path: yarn.lock
-
-- name: Setup Yarn Berry
-  run: |
-    corepack enable
-    yarn set version berry
-
-- name: Install dependencies
-  run: yarn install --immutable
-
-- name: Build
-  run: yarn turbo run build --scope=${{ matrix.project }}
-```
-
-Or use a dedicated action like `threeal/setup-yarn-action` for Berry ([GitHub][6]).
-
----
-
-## 9. Dockerfile Updates
-
-For **each** `apps/api/Dockerfile` and `apps/web/Dockerfile`, use a multistage build:
-
-```dockerfile
-FROM node:18-alpine AS deps
-WORKDIR /app
-COPY package.json yarn.lock .yarnrc.yml ./
-COPY .yarn/releases ./.yarn/releases
-RUN yarn install --immutable
-
-FROM node:18-alpine AS builder
-WORKDIR /app
-COPY --from=deps /app ./
-COPY . .
-RUN yarn turbo run build --scope=api --include-dependencies
-
-FROM node:18-alpine AS runner
-WORKDIR /app
-COPY --from=builder /app ./
-CMD ["node", "apps/api/dist/main.js"]
-```
-
-* **Stage `deps`** caches only what’s needed for install ([DEV Community][7]).
-* **`yarn install --immutable`** ensures lockfile consistency.
-
----
-
-## 10. Validation & Troubleshooting
-
-1. **Run tests** in all workspaces:
-
-   ```bash
-   yarn workspaces foreach run test
-   yarn workspaces foreach run lint
-   yarn workspaces foreach run tsc --noEmit
-   ```
-2. If using `nodeLinker: pnp`, you may get PnP path errors in Jest or ESLint. To fix, follow the Yarn PnP docs to add SDKs or `packageExtensions` ([GitHub][8]).
-3. Ensure `turbo` tasks still link correctly under Berry.
-
----
-
-## 11. Final Commit & Developer Handoff
-
-1. Commit **all** changes:
-
-   ```
-   git add \
-     package.json \
-     **/package.json \
-     yarn.lock \
-     .yarnrc.yml \
-     .yarn/releases \
-     .gitignore \
-     .github/workflows
-   git commit -m "🔄 Migrate monorepo to Yarn Berry (v2+)"
-   ```
-2. Push and verify in CI: the build must pass without needing any additional research.
-
----
-
-By following these **11** precise steps—with every file and command spelled out—your developer can migrate the repo end-to-end without extra digging.
-
-[1]: https://gabrielyotoo.medium.com/how-to-migrate-your-project-to-modern-yarn-berry-29b2b2a75b84?utm_source=chatgpt.com "How to migrate your project to modern Yarn Berry - Gabriel Yamamoto"
-[2]: https://yarnpkg.com/migration/guide?utm_source=chatgpt.com "Migration steps - Yarn"
-[3]: https://psidium.github.io/lerna/monorepo/yarn/nodejs/pnp/zero-install/2021/08/23/migrating-a-monorepo-from-lerna-to-yarn-3.html?utm_source=chatgpt.com "Migrating a monorepo from Lerna to Yarn 3 with PnP and Zero Install"
-[4]: https://heygrady.com/posts/2022-09-01-creating-a-yarn-monorepo-in-2022/?utm_source=chatgpt.com "Creating a Yarn Monorepo in 2022 - Heygrady"
-[5]: https://dolthub.com/blog/2022-03-18-migrating-to-yarn-2/?utm_source=chatgpt.com "Migrating our Monorepo to Yarn 2 | DoltHub Blog"
-[6]: https://github.com/marketplace/actions/setup-yarn-berry?utm_source=chatgpt.com "Setup Yarn Berry · Actions · GitHub Marketplace"
-[7]: https://dev.to/mattpocockuk/how-to-cache-nodemodules-in-github-actions-with-yarn-24eh?utm_source=chatgpt.com "How to cache node_modules in GitHub Actions with Yarn"
-[8]: https://github.com/yarnpkg/berry/discussions/4978?utm_source=chatgpt.com "Where is the \"Link step\" cached? · yarnpkg berry · Discussion #4978"
-</file>
-
-<file path="problems.txt">
-Del 1: Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % rm -rf node_modules
-rm -rf apps/api/node_modules
-rm -rf apps/web/node_modules
-rm -rf packages/core/node_modules
-rm -rf packages/config/node_modules
-rm -rf packages/ui/node_modules
-# Tilføj andre packages/* mapper, hvis de har node_modules
-rm -f yarn.lock # Slet den gamle lockfil i roden
-echo "✅ Eksisterende node_modules mapper og yarn.lock fjernet."
-✅ Eksisterende node_modules mapper og yarn.lock fjernet.
-Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % yarn install --immutable
-Usage Error: The nearest package directory (/Users/Yousef_1/Desktop/LearningLab/LearningLab) doesn't seem to be part of the project declared in /Users/Yousef_1.
-
-- If /Users/Yousef_1 isn't intended to be a project, remove any yarn.lock and/or package.json file there.
-- If /Users/Yousef_1 is intended to be a project, it might be that you forgot to list Desktop/LearningLab/LearningLab in its workspace configuration.
-- Finally, if /Users/Yousef_1 is fine and you intend Desktop/LearningLab/LearningLab to be treated as a completely separate project (not even a workspace), create an empty yarn.lock file in it.
-
-$ yarn install [--json] [--immutable] [--immutable-cache] [--refresh-lockfile] [--check-cache] [--check-resolutions] [--inline-builds] [--mode #0]
-Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % 
-
-Del 2: 
-Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % ls -a | grep -E "package.json|yarn.lock"
-package.json
-Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % cd ~
-Yousef@MacBook-Pro-tilhrende-Yousef ~ % ls -a | grep -E "package.json|yarn.lock"
-yarn.lock
-Yousef@MacBook-Pro-tilhrende-Yousef ~ % mv yarn.lock yarn.lock.old
-Yousef@MacBook-Pro-tilhrende-Yousef ~ % cd /Users/Yousef_1/Desktop/LearningLab/LearningLab
-Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % rm -rf node_modules
-rm -rf apps/api/node_modules
-rm -rf apps/web/node_modules
-rm -rf packages/core/node_modules
-rm -rf packages/config/node_modules
-rm -rf packages/ui/node_modules
-rm -f yarn.lock # Slet lockfilen i roden af LearningLab
-yarn install --immutable
-➤ YN0000: · Yarn 4.9.1
-➤ YN0028: · The lockfile would have been created by this install, which is explicitly forbidden.
-➤ YN0000: · Failed with errors in 0s 14ms
-Yousef@MacBook-Pro-tilhrende-Yousef LearningLab %
-</file>
 
 <file path=".github/workflows/web.yaml">
 # This is a basic workflow to help you get started with Actions
@@ -2206,6 +1690,112 @@ module.exports = require("config/tailwind.config");
 }
 </file>
 
+<file path="packages/config/src/env.ts">
+// packages/config/src/env.ts
+import { z } from 'zod';
+
+/**
+ * Definerer skemaet for server-side miljøvariabler.
+ * Brug .server() for at sikre, at disse ikke utilsigtet inkluderes i client-side bundles.
+ */
+const serverSchema = z.object({
+  DATABASE_URL: z.string().url({ message: "DATABASE_URL skal være en gyldig URL." }),
+  JWT_SECRET: z.string().min(32, { message: "JWT_SECRET skal være mindst 32 tegn lang." }),
+  JWT_EXPIRES_IN: z.string().default('1h'), // Default værdi hvis ikke sat
+  // NODE_ENV: z.enum(['development', 'production', 'test']).default('development'), // Eksempel
+});
+
+/**
+ * Definerer skemaet for client-side (public) miljøvariabler.
+ * Disse skal prefixxes med NEXT_PUBLIC_ for Next.js applikationer.
+ */
+const clientSchema = z.object({
+  NEXT_PUBLIC_APP_NAME: z.string().default('Læringsplatform'),
+  NEXT_PUBLIC_WS_URL: z.string().url({ message: "NEXT_PUBLIC_WS_URL skal være en gyldig URL." }).default('http://localhost:3001'),
+  // Tilføj andre NEXT_PUBLIC_ variabler her efter behov
+});
+
+/**
+ * Miljøvariabler, der er tilgængelige for både server og client.
+ * Dette er typisk ikke anbefalet for følsomme variabler.
+ * For Next.js, er det bedre at adskille dem klart.
+ * Hvis en variabel skal bruges på både server og client (og ikke er følsom),
+ * kan den defineres her eller i clientSchema (hvis public) og serverSchema (hvis server).
+ */
+// const sharedSchema = z.object({
+//   // F.eks. en feature flag der kan læses af begge
+// });
+
+
+/**
+ * Validerer og parser server-side miljøvariabler.
+ * Kaster en fejl ved build/runtime hvis validering fejler.
+ */
+const parsedServerEnv = serverSchema.safeParse({
+  DATABASE_URL: process.env.DATABASE_URL,
+  JWT_SECRET: process.env.JWT_SECRET,
+  JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN,
+  // NODE_ENV: process.env.NODE_ENV,
+});
+
+if (!parsedServerEnv.success) {
+  console.error(
+    '❌ Ugyldige server-side miljøvariabler:',
+    parsedServerEnv.error.flatten().fieldErrors,
+  );
+  // I et produktionsmiljø bør applikationen ikke starte med ugyldige env vars.
+  // I udvikling kan man overveje at kaste fejlen for at stoppe processen.
+  throw new Error('Ugyldige server-side miljøvariabler. Tjek .env filen og konsollen.');
+}
+export const serverEnv = parsedServerEnv.data;
+
+
+/**
+ * Validerer og parser client-side miljøvariabler.
+ * For Next.js hentes disse typisk direkte via process.env.NEXT_PUBLIC_XXX i client-koden,
+ * men at have et skema her hjælper med central definition og type-sikkerhed.
+ * For at gøre disse typer globalt tilgængelige i Next.js client-side kode uden import,
+ * kan man udvide NodeJS.ProcessEnv interfacet (se Next.js dokumentation).
+ */
+const parsedClientEnv = clientSchema.safeParse({
+  NEXT_PUBLIC_APP_NAME: process.env.NEXT_PUBLIC_APP_NAME,
+  NEXT_PUBLIC_WS_URL: process.env.NEXT_PUBLIC_WS_URL,
+});
+
+if (!parsedClientEnv.success) {
+  console.error(
+    '❌ Ugyldige client-side miljøvariabler:',
+    parsedClientEnv.error.flatten().fieldErrors,
+  );
+  // Overvej at kaste en fejl her også, især under build-processen.
+  throw new Error('Ugyldige client-side miljøvariabler. Tjek .env filen og konsollen.');
+}
+export const clientEnv = parsedClientEnv.data;
+
+/**
+ * Samlet objekt for alle miljøvariabler (kan være nyttigt i nogle sammenhænge,
+ * men adskillelsen af serverEnv og clientEnv er ofte mere sikker og klar).
+ */
+export const env = {
+  ...serverEnv,
+  ...clientEnv,
+  // ...parsedSharedEnv.data, // Hvis sharedSchema bruges
+};
+
+console.log('✅ Miljøvariabler valideret og indlæst.');
+</file>
+
+<file path="packages/config/src/index.ts">
+// packages/config/src/index.ts
+
+/**
+ * Hoved-eksportfil for @repo/config TypeScript-delen.
+ * Herfra eksporteres validerede miljøvariabler og potentielt andre konfigurationsfunktioner.
+ */
+
+export * from './env';
+</file>
+
 <file path="packages/config/eslint-preset.js">
 module.exports = {
   extends: ["next", "prettier"],
@@ -2242,6 +1832,81 @@ module.exports = {
   },
   plugins: [],
 };
+</file>
+
+<file path="packages/config/tsconfig.json">
+{
+  "extends": "tsconfig/base.json", // Eller tsconfig/react-library.json hvis relevant for fremtidig brug
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "src", // Specificerer roden af input-filerne
+    "baseUrl": "./src",
+    "paths": {
+      "@/*": ["*"]
+    }
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist", "*.js", "*.conf"] // Ekskluder eksisterende .js og .conf filer fra TS-kompilering
+}
+</file>
+
+<file path="packages/core/src/types/user.types.ts">
+// packages/core/src/types/user.types.ts
+
+/**
+ * Definerer de mulige roller en bruger kan have i systemet.
+ * Disse matcher værdierne defineret i Prisma schemaet.
+ */
+export enum Role {
+  USER = 'USER',
+  ADMIN = 'ADMIN',
+}
+
+/**
+ * Interface for en bruger.
+ * Dette er en ren data-kontrakt og indeholder ikke backend-specifikke felter som passwordHash.
+ * Den er beregnet til at blive brugt på tværs af frontend og backend for type-sikkerhed.
+ */
+export interface User {
+  id: number;
+  email: string;
+  name?: string | null; // Navn er valgfrit og kan være null
+  role: Role;
+  createdAt: Date; // Tidspunkt for oprettelse af brugeren
+  updatedAt: Date; // Tidspunkt for seneste opdatering af brugeren
+  // passwordResetToken, passwordResetExpires og passwordHash er udeladt,
+  // da de er backend-specifikke og ikke bør være en del af den delte kerne-type.
+}
+</file>
+
+<file path="packages/core/src/index.ts">
+// packages/core/src/index.ts
+
+/**
+ * Dette er hoved-eksportfilen for @repo/core pakken.
+ * Alle delte typer, interfaces, enums, og potentielt funktioner eller konstanter
+ * bør eksporteres herfra, så de nemt kan importeres i andre pakker (apps/web, apps/api, etc.).
+ */
+
+export * from './types/user.types';
+// Tilføj andre eksports her efterhånden som pakken vokser, f.eks.:
+// export * from './types/course.types';
+// export * from './utils/formatter.utils';
+</file>
+
+<file path="packages/core/tsconfig.json">
+{
+  "extends": "../tsconfig/base.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "baseUrl": "./src", // Gør det nemmere at have absolutte imports inden for pakken hvis nødvendigt
+    "paths": { // Eksempel på paths, kan justeres/fjernes efter behov
+      "@/*": ["*"]
+    }
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"]
+}
 </file>
 
 <file path="packages/tsconfig/base.json">
@@ -2316,22 +1981,6 @@ module.exports = {
 }
 </file>
 
-<file path="packages/tsconfig/package.json">
-{
-  "name": "tsconfig",
-  "version": "0.0.0",
-  "private": true,
-  "packageManager": "yarn@4.9.1", 
-  "main": "index.js",
-  "files": [
-    "base.json",
-    "nestjs.json",
-    "nextjs.json",
-    "react-library.json" 
-  ]
-}
-</file>
-
 <file path="packages/tsconfig/react-library.json">
 {
   "$schema": "https://json.schemastore.org/tsconfig",
@@ -2377,55 +2026,6 @@ export * from "./components/Button/Button";
 **/.turbo
 </file>
 
-<file path=".gitignore">
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
-# dependencies
-node_modules
-.pnp
-.pnp.js
-
-# testing
-coverage
-
-# next.js
-.next/
-out/
-build
-
-**/dist
-**/.env
-
-# misc
-.DS_Store
-*.pem
-
-# debug
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-.pnpm-debug.log*
-
-# local env files
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-
-# turbo
-.turbo
-
-# Yarn Berry
-.yarn/cache
-.yarn/unplugged
-.yarn/build-state.yml
-# .pnp.* # Denne linje er ofte .pnp.cjs eller .pnp.loader.mjs. Vi bruger den generelle form fra planen.
-.pnp.cjs
-.pnp.loader.mjs # Tilføjet for fuldstændighed, hvis PnP bruges senere.
-# Hvis du bruger nodeLinker: node-modules, er .pnp.* måske ikke strengt nødvendigt,
-# men det skader ikke at have dem med for fremtidig fleksibilitet.
-</file>
-
 <file path="LICENSE">
 MIT License
 
@@ -2448,6 +2048,49 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+</file>
+
+<file path="problems.txt">
+Del 1: Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % rm -rf node_modules
+rm -rf apps/api/node_modules
+rm -rf apps/web/node_modules
+rm -rf packages/core/node_modules
+rm -rf packages/config/node_modules
+rm -rf packages/ui/node_modules
+# Tilføj andre packages/* mapper, hvis de har node_modules
+rm -f yarn.lock # Slet den gamle lockfil i roden
+echo "✅ Eksisterende node_modules mapper og yarn.lock fjernet."
+✅ Eksisterende node_modules mapper og yarn.lock fjernet.
+Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % yarn install --immutable
+Usage Error: The nearest package directory (/Users/Yousef_1/Desktop/LearningLab/LearningLab) doesn't seem to be part of the project declared in /Users/Yousef_1.
+
+- If /Users/Yousef_1 isn't intended to be a project, remove any yarn.lock and/or package.json file there.
+- If /Users/Yousef_1 is intended to be a project, it might be that you forgot to list Desktop/LearningLab/LearningLab in its workspace configuration.
+- Finally, if /Users/Yousef_1 is fine and you intend Desktop/LearningLab/LearningLab to be treated as a completely separate project (not even a workspace), create an empty yarn.lock file in it.
+
+$ yarn install [--json] [--immutable] [--immutable-cache] [--refresh-lockfile] [--check-cache] [--check-resolutions] [--inline-builds] [--mode #0]
+Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % 
+
+Del 2: 
+Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % ls -a | grep -E "package.json|yarn.lock"
+package.json
+Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % cd ~
+Yousef@MacBook-Pro-tilhrende-Yousef ~ % ls -a | grep -E "package.json|yarn.lock"
+yarn.lock
+Yousef@MacBook-Pro-tilhrende-Yousef ~ % mv yarn.lock yarn.lock.old
+Yousef@MacBook-Pro-tilhrende-Yousef ~ % cd /Users/Yousef_1/Desktop/LearningLab/LearningLab
+Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % rm -rf node_modules
+rm -rf apps/api/node_modules
+rm -rf apps/web/node_modules
+rm -rf packages/core/node_modules
+rm -rf packages/config/node_modules
+rm -rf packages/ui/node_modules
+rm -f yarn.lock # Slet lockfilen i roden af LearningLab
+yarn install --immutable
+➤ YN0000: · Yarn 4.9.1
+➤ YN0028: · The lockfile would have been created by this install, which is explicitly forbidden.
+➤ YN0000: · Failed with errors in 0s 14ms
+Yousef@MacBook-Pro-tilhrende-Yousef LearningLab %
 </file>
 
 <file path="turbo.json">
@@ -2569,6 +2212,189 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     }
     return user;
   }
+}
+</file>
+
+<file path="apps/api/src/persistence/prisma/prisma.service.ts">
+import { Injectable, OnModuleInit } from '@nestjs/common';
+import { PrismaClient } from '@prisma/client';
+
+@Injectable()
+export class PrismaService extends PrismaClient implements OnModuleInit {
+  async onModuleInit() {
+    await this.$connect();
+  }
+}
+</file>
+
+<file path="apps/api/webpack-hmr.config.js">
+/* eslint-disable @typescript-eslint/no-var-requires */
+const nodeExternals = require('webpack-node-externals');
+const { RunScriptWebpackPlugin } = require('run-script-webpack-plugin');
+
+module.exports = function (options, webpack) {
+  return {
+    ...options,
+    entry: ['webpack/hot/poll?100', options.entry],
+    externals: [
+      nodeExternals({
+        allowlist: ['webpack/hot/poll?100'],
+        modulesDir: '../../node_modules',
+      }),
+    ],
+    plugins: [
+      ...options.plugins,
+      new webpack.HotModuleReplacementPlugin(),
+      new webpack.WatchIgnorePlugin({
+        paths: [/\.js$/, /\.d\.ts$/],
+      }),
+      new RunScriptWebpackPlugin({ name: options.output.filename }),
+    ],
+  };
+};
+</file>
+
+<file path="apps/web/pages/_app.tsx">
+// apps/web/pages/_app.tsx
+import type { AppProps } from "next/app";
+import { Provider as ReduxProvider } from "react-redux"; // Omdøb for klarhed, hvis du bruger Redux
+import store from "../src/store"; // Din Redux store
+import { AuthProvider } from '../src/context/AuthContext'; // <--- TILFØJ DENNE LINJE
+import "../src/styles/global.css";
+
+function MyApp({ Component, pageProps }: AppProps) {
+  return (
+    // Yderst er ReduxProvider, hvis du bruger Redux
+    <ReduxProvider store={store}>
+      {/* Indeni ReduxProvider (eller yderst hvis du ikke bruger Redux), wrapper vi med AuthProvider */}
+      <AuthProvider> 
+        <Component {...pageProps} />
+      </AuthProvider>
+    </ReduxProvider>
+  );
+}
+
+export default MyApp;
+</file>
+
+<file path="packages/config/nginx.conf">
+events {
+
+}
+
+http {
+
+    server {
+        listen 80;
+        server_name localhost;
+
+        location /api/ {
+            proxy_set_header Host $host;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_pass http://host.docker.internal:5002/;
+
+            proxy_http_version 1.1;
+            proxy_set_header Connection "upgrade";
+            proxy_set_header Upgrade $http_upgrade;
+        }
+
+        location /_next/webpack-hmr {
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header Host $host;
+
+
+            proxy_pass http://host.docker.internal:3000;
+
+            proxy_http_version 1.1;
+            proxy_set_header Connection "upgrade";
+            proxy_set_header Upgrade $http_upgrade;
+        }
+
+        location / {
+            proxy_pass http://host.docker.internal:3000;
+        }
+
+    }
+
+}
+</file>
+
+<file path="packages/core/package.json">
+{
+  "name": "@repo/core",
+  "version": "0.0.0",
+  "private": true,
+  "packageManager": "yarn@4.9.1",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "lint": "eslint . --ext .ts,.tsx"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.1",
+    "tsconfig": "workspace:*",
+    "typescript": "^5.1.6"
+  }
+}
+</file>
+
+<file path=".yarnrc.yml">
+nodeLinker: node-modules
+</file>
+
+<file path="Migration.txt">
+Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % yarn -v   # skal nu vise 4.9.1
+
+4.9.1
+Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % rm -f yarn.lock
+yarn install    # skaber ny yarn.lock i Berry-format
+
+➤ YN0000: · Yarn 4.9.1
+➤ YN0000: ┌ Resolution step
+➤ YN0001: │ Error: config@workspace:*: Workspace not found (config@workspace:*)
+    at t.getWorkspaceByDescriptor (/Users/Yousef_1/Desktop/LearningLab/LearningLab/.yarn/releases/yarn-4.9.1.cjs:210:3520)
+    at t.getCandidates (/Users/Yousef_1/Desktop/LearningLab/LearningLab/.yarn/releases/yarn-4.9.1.cjs:140:117535)
+    at rm.getCandidates (/Users/Yousef_1/Desktop/LearningLab/LearningLab/.yarn/releases/yarn-4.9.1.cjs:141:1311)
+    at rm.getCandidates (/Users/Yousef_1/Desktop/LearningLab/LearningLab/.yarn/releases/yarn-4.9.1.cjs:141:1311)
+    at /Users/Yousef_1/Desktop/LearningLab/LearningLab/.yarn/releases/yarn-4.9.1.cjs:210:8420
+    at GE (/Users/Yousef_1/Desktop/LearningLab/LearningLab/.yarn/releases/yarn-4.9.1.cjs:140:54028)
+    at gt (/Users/Yousef_1/Desktop/LearningLab/LearningLab/.yarn/releases/yarn-4.9.1.cjs:210:8400)
+    at async Promise.allSettled (index 2)
+    at async Uu (/Users/Yousef_1/Desktop/LearningLab/LearningLab/.yarn/releases/yarn-4.9.1.cjs:140:53356)
+➤ YN0000: └ Completed in 1s 95ms
+➤ YN0000: · Failed with errors in 1s 105ms
+Yousef@MacBook-Pro-tilhrende-Yousef LearningLab %
+</file>
+
+<file path="apps/api/prisma/schema.prisma">
+// apps/api/prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
+  passwordHash String
+  name         String?
+  role         Role     @default(USER)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Nye felter til password reset
+  passwordResetToken   String?   @unique // Gør tokenet unikt for at kunne slå det op
+  passwordResetExpires DateTime?
+}
+
+enum Role {
+  USER
+  ADMIN
 }
 </file>
 
@@ -2940,18 +2766,6 @@ export class AuthModule {}
     }
 </file>
 
-<file path="apps/api/src/persistence/prisma/prisma.service.ts">
-import { Injectable, OnModuleInit } from '@nestjs/common';
-import { PrismaClient } from '@prisma/client';
-
-@Injectable()
-export class PrismaService extends PrismaClient implements OnModuleInit {
-  async onModuleInit() {
-    await this.$connect();
-  }
-}
-</file>
-
 <file path="apps/api/src/users/dto/create-user.dto.ts">
 // apps/api/src/users/dto/create-user.dto.ts
     import {
@@ -3136,156 +2950,6 @@ export class UsersController {
         return prismaUser ? this.mapToCoreUser(prismaUser) : null;
       }
     }
-</file>
-
-<file path="apps/api/webpack-hmr.config.js">
-/* eslint-disable @typescript-eslint/no-var-requires */
-const nodeExternals = require('webpack-node-externals');
-const { RunScriptWebpackPlugin } = require('run-script-webpack-plugin');
-
-module.exports = function (options, webpack) {
-  return {
-    ...options,
-    entry: ['webpack/hot/poll?100', options.entry],
-    externals: [
-      nodeExternals({
-        allowlist: ['webpack/hot/poll?100'],
-        modulesDir: '../../node_modules',
-      }),
-    ],
-    plugins: [
-      ...options.plugins,
-      new webpack.HotModuleReplacementPlugin(),
-      new webpack.WatchIgnorePlugin({
-        paths: [/\.js$/, /\.d\.ts$/],
-      }),
-      new RunScriptWebpackPlugin({ name: options.output.filename }),
-    ],
-  };
-};
-</file>
-
-<file path="apps/web/pages/_app.tsx">
-// apps/web/pages/_app.tsx
-import type { AppProps } from "next/app";
-import { Provider as ReduxProvider } from "react-redux"; // Omdøb for klarhed, hvis du bruger Redux
-import store from "../src/store"; // Din Redux store
-import { AuthProvider } from '../src/context/AuthContext'; // <--- TILFØJ DENNE LINJE
-import "../src/styles/global.css";
-
-function MyApp({ Component, pageProps }: AppProps) {
-  return (
-    // Yderst er ReduxProvider, hvis du bruger Redux
-    <ReduxProvider store={store}>
-      {/* Indeni ReduxProvider (eller yderst hvis du ikke bruger Redux), wrapper vi med AuthProvider */}
-      <AuthProvider> 
-        <Component {...pageProps} />
-      </AuthProvider>
-    </ReduxProvider>
-  );
-}
-
-export default MyApp;
-</file>
-
-<file path="packages/config/nginx.conf">
-events {
-
-}
-
-http {
-
-    server {
-        listen 80;
-        server_name localhost;
-
-        location /api/ {
-            proxy_set_header Host $host;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_pass http://host.docker.internal:5002/;
-
-            proxy_http_version 1.1;
-            proxy_set_header Connection "upgrade";
-            proxy_set_header Upgrade $http_upgrade;
-        }
-
-        location /_next/webpack-hmr {
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header Host $host;
-
-
-            proxy_pass http://host.docker.internal:3000;
-
-            proxy_http_version 1.1;
-            proxy_set_header Connection "upgrade";
-            proxy_set_header Upgrade $http_upgrade;
-        }
-
-        location / {
-            proxy_pass http://host.docker.internal:3000;
-        }
-
-    }
-
-}
-</file>
-
-<file path="apps/api/prisma/schema.prisma">
-// apps/api/prisma/schema.prisma
-
-generator client {
-  provider = "prisma-client-js"
-}
-
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
-
-model User {
-  id           Int      @id @default(autoincrement())
-  email        String   @unique
-  passwordHash String
-  name         String?
-  role         Role     @default(USER)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-
-  // Nye felter til password reset
-  passwordResetToken   String?   @unique // Gør tokenet unikt for at kunne slå det op
-  passwordResetExpires DateTime?
-}
-
-enum Role {
-  USER
-  ADMIN
-}
-</file>
-
-<file path="apps/api/src/app.module.ts">
-// apps/api/src/app.module.ts
-import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config'; // Kun ConfigModule
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-// import { validationSchemaForEnv } from './config/environment-variables'; // Fjernet
-import { PersistenceModule } from './persistence/persistence.module';
-import { UsersModule } from './users/users.module';
-import { AuthModule } from './auth/auth.module';
-
-@Module({
-  imports: [
-    ConfigModule.forRoot({ // Ingen validationSchema her længere for de delte variabler
-      isGlobal: true,
-    }),
-    PersistenceModule,
-    UsersModule,
-    AuthModule,
-  ],
-  controllers: [AppController],
-  providers: [AppService],
-})
-export class AppModule {}
 </file>
 
 <file path="apps/web/pages/profile.tsx">
@@ -3496,56 +3160,46 @@ export function LoginScreen() {
 }
 </file>
 
-<file path="packages/config/package.json">
+<file path="packages/tsconfig/package.json">
 {
-  "name": "@repo/config",
+  "name": "tsconfig",
   "version": "0.0.0",
   "private": true,
-  "packageManager": "yarn@4.9.1", 
-  "main": "./src/index.ts",
-  "types": "./src/index.ts",
+  "packageManager": "yarn@4.9.1",
+  "main": "index.js",
   "files": [
-    "eslint-preset.js",
-    "nginx.conf",
-    "postcss.config.js",
-    "tailwind.config.js",
-    "src"
-  ],
-  "scripts": {
-    "lint": "eslint . --ext .ts,.tsx",
-    "build": "tsc -p tsconfig.json"
-  },
-  "dependencies": {
-    "eslint-config-next": "^13.4.12",
-    "eslint-config-prettier": "^8.9.0",
-    "eslint-plugin-react": "7.33.1",
-    "zod": "^3.24.4"  
-  },
-  "devDependencies": {
-    "typescript": "^5.1.6",
-    "tsconfig": "workspace:*", 
-    "eslint": "^8.57.1" 
-  },
-  "license": "MIT"
+    "base.json",
+    "nestjs.json",
+    "nextjs.json",
+    "react-library.json"
+  ]
 }
 </file>
 
-<file path="packages/ui/package.json">
-{
-  "name": "ui",
-  "version": "0.0.0",
-  "packageManager": "yarn@4.9.1", 
-  "main": "./index.tsx",
-  "types": "./index.tsx",
-  "license": "MIT",
-  "devDependencies": {
-    "@types/react": "^18.2.18",
-    "@types/react-dom": "^18.2.7",
-    "config": "workspace:*", 
-    "tsconfig": "workspace:*", 
-    "typescript": "^5.1.6"
-  }
-}
+<file path=".gitignore">
+# Node
+node_modules
+
+# Yarn Berry cache
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/releases
+
+# Plug’n’Play files
+.pnp.cjs
+.pnp.loader.mjs
+
+# Build output
+.next
+dist
+out
+build
+coverage
+
+# Misc
+.env*
+.DS_Store
 </file>
 
 <file path="docker-compose.yml">
@@ -3639,6 +3293,32 @@ module.exports = {
 };
 </file>
 
+<file path="apps/api/src/app.module.ts">
+// apps/api/src/app.module.ts
+import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config'; // Kun ConfigModule
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
+// import { validationSchemaForEnv } from './config/environment-variables'; // Fjernet
+import { PersistenceModule } from './persistence/persistence.module';
+import { UsersModule } from './users/users.module';
+import { AuthModule } from './auth/auth.module';
+
+@Module({
+  imports: [
+    ConfigModule.forRoot({ // Ingen validationSchema her længere for de delte variabler
+      isGlobal: true,
+    }),
+    PersistenceModule,
+    UsersModule,
+    AuthModule,
+  ],
+  controllers: [AppController],
+  providers: [AppService],
+})
+export class AppModule {}
+</file>
+
 <file path="apps/api/src/main.ts">
 // apps/api/src/main.ts
 import { Logger, ValidationPipe } from '@nestjs/common'; // Importer ValidationPipe
@@ -3706,176 +3386,54 @@ async function bootstrap() {
 bootstrap();
 </file>
 
-<file path="package.json">
+<file path="packages/config/package.json">
 {
-  "name": "turborepo-basic-shared",
+  "name": "@repo/config",
   "version": "0.0.0",
   "private": true,
-  "workspaces": [
-    "apps/*",
-    "packages/*"
+  "packageManager": "yarn@4.9.1",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "files": [
+    "eslint-preset.js",
+    "nginx.conf",
+    "postcss.config.js",
+    "tailwind.config.js",
+    "src"
   ],
   "scripts": {
-    "build": "turbo run build",
-    "dev": "turbo run dev --parallel",
-    "lint": "turbo run lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\""
-  },
-  "devDependencies": {
-    "prettier": "^3.0.0",
-    "prisma": "^5.1.0",
-    "turbo": "1.10.12"
-  },
-  "engines": {
-    "npm": ">=7.0.0",
-    "node": ">=14.0.0"
-  },
-  "packageManager": "yarn@4.9.1",
-  "dependencies": {
-    "@nestjs/config": "^4.0.2"
-  }
-}
-</file>
-
-<file path="apps/api/package.json">
-{
-  "name": "api",
-  "version": "0.0.1",
-  "description": "",
-  "author": "",
-  "private": true,
-  "license": "UNLICENSED",
-  "packageManager": "yarn@4.9.1",
-  "scripts": {
-    "prebuild": "rimraf dist",
-    "build": "nest build",
-    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "start": "nest start",
-    "dev": "nest build --webpack --webpackPath webpack-hmr.config.js --watch",
-    "start:debug": "nest start --debug --watch",
-    "start:prod": "node dist/main",
-    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-    "test": "jest",
-    "test:watch": "jest --watch --runInBand",
-    "test:cov": "jest --coverage",
-    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json --runInBand",
-    "test:ci": "jest --ci --runInBand"
+    "lint": "eslint . --ext .ts,.tsx",
+    "build": "tsc -p tsconfig.json"
   },
   "dependencies": {
-    "@nestjs/common": "^10.1.3",
-    "@nestjs/config": "^3.0.0",
-    "@nestjs/core": "^10.1.3",
-    "@nestjs/jwt": "^11.0.0",
-    "@nestjs/passport": "^11.0.5",
-    "@nestjs/platform-express": "^10.1.3",
-    "@nestjs/swagger": "^7.1.6",
-    "@prisma/client": "^5.1.0",
-    "bcryptjs": "^3.0.2",
-    "class-transformer": "^0.5.1",
-    "class-validator": "^0.14.2", 
-    "passport": "^0.7.0",
-    "passport-jwt": "^4.0.1",
-    "passport-local": "^1.0.0",
-    "reflect-metadata": "^0.1.13",
-    "rimraf": "^5.0.1",
-    "rxjs": "^7.8.1",
-    "swagger-ui-express": "^5.0.0",
-    "@repo/core": "workspace:*", 
-    "@repo/config": "workspace:*" 
-  },
-  "devDependencies": {
-    "@nestjs/cli": "^10.1.11",
-    "@nestjs/schematics": "^10.0.1",
-    "@nestjs/testing": "^10.1.3",
-    "@types/express": "^4.17.17",
-    "@types/jest": "^29.5.3",
-    "@types/node": "^20.4.5",
-    "@types/passport-jwt": "^4.0.1",
-    "@types/passport-local": "^1.0.38",
-    "@types/supertest": "^2.0.12",
-    "@typescript-eslint/eslint-plugin": "^6.2.1",
-    "@typescript-eslint/parser": "^6.2.1",
-    "eslint": "^8.57.1", 
+    "eslint-config-next": "^13.4.12",
     "eslint-config-prettier": "^8.9.0",
-    "eslint-plugin-prettier": "^5.0.0",
-    "jest": "^29.6.2",
-    "prettier": "^3.0.0",
-    "prisma": "^5.1.0",
-    "run-script-webpack-plugin": "^0.2.0",
-    "source-map-support": "^0.5.21",
-    "supertest": "^6.3.3",
-    "ts-jest": "^29.1.1",
-    "ts-loader": "^9.4.4",
-    "ts-node": "^10.9.1",
-    "tsconfig": "*",
-    "tsconfig-paths": "^4.2.0",
-    "typescript": "^5.1.6",
-    "webpack": "^5.88.2",
-    "webpack-node-externals": "^3.0.0"
+    "eslint-plugin-react": "7.33.1",
+    "zod": "^3.24.4"
   },
-  "jest": {
-    "moduleFileExtensions": [
-      "js",
-      "json",
-      "ts"
-    ],
-    "rootDir": "src",
-    "testRegex": ".*\\.spec\\.ts$",
-    "transform": {
-      "^.+\\.(t|j)s$": "ts-jest"
-    },
-    "collectCoverageFrom": [
-      "**/*.(t|j)s"
-    ],
-    "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
-  }
+  "devDependencies": {
+    "eslint": "^8.57.1",
+    "tsconfig": "workspace:*",
+    "typescript": "^5.1.6"
+  },
+  "license": "MIT"
 }
 </file>
 
-<file path="apps/web/package.json">
+<file path="packages/ui/package.json">
 {
-  "name": "web",
+  "name": "ui",
   "version": "0.0.0",
   "private": true,
-  "packageManager": "yarn@4.9.1", 
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:ci": "jest --ci"
-  },
-  "dependencies": {
-    "@reduxjs/toolkit": "^1.9.5",
-    "next": "13.4.12",
-    "react": "18.2.0",
-    "react-dom": "18.2.0",
-    "react-redux": "^8.1.2",
-    "ui": "workspace:*", 
-    "uuid": "^11.1.0",
-    "@repo/core": "workspace:*", 
-    "@repo/config": "workspace:*"  
-  },
+  "packageManager": "yarn@4.9.1",
+  "main": "./index.tsx",
+  "types": "./index.tsx",
+  "license": "MIT",
   "devDependencies": {
-    "@testing-library/jest-dom": "^5.17.0",
-    "@testing-library/react": "^14.0.0",
-    "@testing-library/user-event": "14.4.3",
-    "@types/node": "^20.4.5",
-    "@types/react": "18.2.18",
-    "@types/uuid": "^10.0.0", 
-    "autoprefixer": "^10.4.14",
-    "config": "workspace:*", 
-    "eslint": "8.46.0",
-    "jest": "^29.6.2",
-    "jest-environment-jsdom": "^29.6.2",
-    "next-transpile-modules": "10.0.1",
-    "postcss": "^8.4.27",
-    "tailwindcss": "^3.3.3",
-    "tsconfig": "workspace:*", 
+    "@repo/config": "workspace:*",
+    "@types/react": "^18.2.18",
+    "@types/react-dom": "^18.2.7",
+    "tsconfig": "workspace:*",
     "typescript": "^5.1.6"
   }
 }
@@ -3966,6 +3524,299 @@ The app should be running at `http://localhost` with reverse proxy configured.
 
 ## Other available commands
 Run `nps` in the terminal to see list of all available commands.
+</file>
+
+<file path="apps/api/package.json">
+{
+  "name": "api",
+  "version": "0.0.1",
+  "description": "",
+  "author": "",
+  "private": true,
+  "license": "UNLICENSED",
+  "packageManager": "yarn@4.9.1",
+  "scripts": {
+    "prebuild": "rimraf dist",
+    "build": "nest build",
+    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+    "start": "nest start",
+    "dev": "nest build --webpack --webpackPath webpack-hmr.config.js --watch",
+    "start:debug": "nest start --debug --watch",
+    "start:prod": "node dist/main",
+    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
+    "test": "jest",
+    "test:watch": "jest --watch --runInBand",
+    "test:cov": "jest --coverage",
+    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
+    "test:e2e": "jest --config ./test/jest-e2e.json --runInBand",
+    "test:ci": "jest --ci --runInBand"
+  },
+  "dependencies": {
+    "@nestjs/common": "^10.1.3",
+    "@nestjs/config": "^3.0.0",
+    "@nestjs/core": "^10.1.3",
+    "@nestjs/jwt": "^11.0.0",
+    "@nestjs/passport": "^11.0.5",
+    "@nestjs/platform-express": "^10.1.3",
+    "@nestjs/swagger": "^7.1.6",
+    "@prisma/client": "^5.1.0",
+    "@repo/config": "workspace:*",
+    "@repo/core": "workspace:*",
+    "bcryptjs": "^3.0.2",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.2",
+    "passport": "^0.7.0",
+    "passport-jwt": "^4.0.1",
+    "passport-local": "^1.0.0",
+    "reflect-metadata": "^0.1.13",
+    "rimraf": "^5.0.1",
+    "rxjs": "^7.8.2",
+    "swagger-ui-express": "^5.0.0"
+  },
+  "devDependencies": {
+    "@nestjs/cli": "^10.1.11",
+    "@nestjs/schematics": "^10.0.1",
+    "@nestjs/testing": "^10.1.3",
+    "@swc/core": "^1.11.24",
+    "@swc/types": "^0.1.21",
+    "@types/babel__core": "^7.20.5",
+    "@types/express": "^5.0.2",
+    "@types/jest": "^29.5.3",
+    "@types/node": "^20.4.5",
+    "@types/node-notifier": "^8.0.5",
+    "@types/passport": "^1.0.17",
+    "@types/passport-jwt": "^4.0.1",
+    "@types/passport-local": "^1.0.38",
+    "@types/prettier": "^3.0.0",
+    "@types/supertest": "^2.0.12",
+    "@typescript-eslint/eslint-plugin": "^6.2.1",
+    "@typescript-eslint/parser": "^6.2.1",
+    "eslint": "^8.57.1",
+    "eslint-config-prettier": "^8.9.0",
+    "eslint-plugin-prettier": "^5.0.0",
+    "express": "^5.1.0",
+    "jest": "^29.6.2",
+    "prettier": "^3.0.0",
+    "prisma": "^5.1.0",
+    "run-script-webpack-plugin": "^0.2.0",
+    "source-map-support": "^0.5.21",
+    "supertest": "^6.3.3",
+    "ts-jest": "^29.1.1",
+    "ts-loader": "^9.4.4",
+    "ts-node": "^10.9.1",
+    "tsconfig": "*",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^5.1.6",
+    "webpack": "^5.88.2",
+    "webpack-node-externals": "^3.0.0"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "ts"
+    ],
+    "rootDir": "src",
+    "testRegex": ".*\\.spec\\.ts$",
+    "transform": {
+      "^.+\\.(t|j)s$": "ts-jest"
+    },
+    "collectCoverageFrom": [
+      "**/*.(t|j)s"
+    ],
+    "coverageDirectory": "../coverage",
+    "testEnvironment": "node"
+  }
+}
+</file>
+
+<file path="terminal.txt">
+Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % # Remove the bad names in one go
+yarn workspace api remove \
+  @types/prisma \
+  @types/rxjs \
+  @types/swc__cli \
+  @types/swc__core \
+  @types/swc__wasm
+
+Usage Error: Patterns @types/prisma, @types/rxjs, @types/swc__cli, @types/swc__core, @types/swc__wasm don't match any packages referenced by this workspace
+
+$ yarn remove [-A,--all] [--mode #0] ...
+Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % yarn workspace api add -D prisma @prisma/client
+
+Usage Error: Package "@prisma/client" is already listed as a regular dependency - remove the -D,-P flags or remove it from your dependencies first
+
+$ yarn add [--json] [-F,--fixed] [-E,--exact] [-T,--tilde] [-C,--caret] [-D,--dev] [-P,--peer] [-O,--optional] [--prefer-dev] [-i,--interactive] [--cached] [--mode #0] ...
+Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % npx prisma generate
+
+Error: Could not find Prisma Schema that is required for this command.
+You can either provide it with `--schema` argument, set it as `prisma.schema` in your package.json or put it into the default location.
+Checked following paths:
+
+schema.prisma: file not found
+prisma/schema.prisma: file not found
+prisma/schema: directory not found
+
+See also https://pris.ly/d/prisma-schema-location
+Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % yarn workspace api add rxjs 
+
+➤ YN0000: · Yarn 4.9.1
+➤ YN0000: ┌ Resolution step
+➤ YN0000: └ Completed
+➤ YN0000: ┌ Post-resolution validation
+➤ YN0086: │ Some peer dependencies are incorrectly met by dependencies; run yarn explain peer-requirements for details.
+➤ YN0000: └ Completed
+➤ YN0000: ┌ Fetch step
+➤ YN0000: └ Completed in 0s 395ms
+➤ YN0000: ┌ Link step
+➤ YN0000: └ Completed
+➤ YN0000: · Done with warnings in 0s 837ms
+Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % yarn workspace api add -D @swc/core @swc/types
+
+➤ YN0000: · Yarn 4.9.1
+➤ YN0000: ┌ Resolution step
+➤ YN0085: │ + @swc/core@npm:1.11.24, @swc/types@npm:0.1.21, and 11 more.
+➤ YN0000: └ Completed in 1s 60ms
+➤ YN0000: ┌ Post-resolution validation
+➤ YN0086: │ Some peer dependencies are incorrectly met by dependencies; run yarn explain peer-requirements for details.
+➤ YN0000: └ Completed
+➤ YN0000: ┌ Fetch step
+➤ YN0013: │ 4 packages were added to the project (+ 33.02 MiB).
+➤ YN0000: └ Completed in 0s 718ms
+➤ YN0000: ┌ Link step
+➤ YN0007: │ @swc/core@npm:1.11.24 [62573] must be built because it never has been before or the last one failed
+➤ YN0000: └ Completed in 0s 810ms
+➤ YN0000: · Done with warnings in 2s 710ms
+Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % yarn workspace api add -D \ 
+  @types/prettier \
+  @types/node-notifier \
+  @types/passport
+
+➤ YN0000: · Yarn 4.9.1
+➤ YN0000: ┌ Resolution step
+➤ YN0085: │ + @types/node-notifier@npm:8.0.5, @types/prettier@npm:3.0.0
+➤ YN0000: └ Completed in 0s 258ms
+➤ YN0000: ┌ Post-resolution validation
+➤ YN0086: │ Some peer dependencies are incorrectly met by dependencies; run yarn explain peer-requirements for details.
+➤ YN0000: └ Completed
+➤ YN0000: ┌ Fetch step
+➤ YN0013: │ 2 packages were added to the project (+ 14.66 KiB).
+➤ YN0000: └ Completed in 0s 654ms
+➤ YN0000: ┌ Link step
+➤ YN0000: └ Completed
+➤ YN0000: · Done with warnings in 1s 194ms
+Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % rm -rf node_modules **/node_modules yarn.lock
+
+Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % yarn install
+
+➤ YN0000: · Yarn 4.9.1
+➤ YN0000: ┌ Resolution step
+➤ YN0085: │ + @nestjs/cli@npm:10.4.9, and 1104 more.
+➤ YN0000: └ Completed in 1s 742ms
+➤ YN0000: ┌ Post-resolution validation
+➤ YN0086: │ Some peer dependencies are incorrectly met by dependencies; run yarn explain peer-requirements for details.
+➤ YN0000: └ Completed
+➤ YN0000: ┌ Fetch step
+➤ YN0000: └ Completed in 0s 436ms
+➤ YN0000: ┌ Link step
+➤ YN0007: │ turbo@npm:1.10.12 must be built because it never has been before or the last one failed
+➤ YN0007: │ @nestjs/core@npm:10.4.17 [62573] must be built because it never has been before or the last one failed
+➤ YN0007: │ @prisma/engines@npm:5.22.0 must be built because it never has been before or the last one failed
+➤ YN0007: │ @swc/core@npm:1.11.24 [62573] must be built because it never has been before or the last one failed
+➤ YN0007: │ @scarf/scarf@npm:1.4.0 must be built because it never has been before or the last one failed
+➤ YN0007: │ unrs-resolver@npm:1.7.2 must be built because it never has been before or the last one failed
+➤ YN0007: │ prisma@npm:5.22.0 must be built because it never has been before or the last one failed
+➤ YN0007: │ @prisma/client@npm:5.22.0 [62573] must be built because it never has been before or the last one failed
+➤ YN0000: └ Completed in 8s 322ms
+➤ YN0000: · Done with warnings in 10s 589ms
+Yousef@MacBook-Pro-tilhrende-Yousef LearningLab %
+</file>
+
+<file path="apps/web/package.json">
+{
+  "name": "web",
+  "version": "0.0.0",
+  "private": true,
+  "packageManager": "yarn@4.9.1",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:ci": "jest --ci"
+  },
+  "dependencies": {
+    "@reduxjs/toolkit": "^1.9.5",
+    "@repo/config": "workspace:*",
+    "@repo/core": "workspace:*",
+    "next": "13.4.12",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-redux": "^8.1.2",
+    "ui": "workspace:*",
+    "uuid": "^11.1.0"
+  },
+  "devDependencies": {
+    "@repo/config": "workspace:*",
+    "@testing-library/dom": "^10.4.0",
+    "@testing-library/jest-dom": "^5.17.0",
+    "@testing-library/react": "^14.0.0",
+    "@testing-library/user-event": "14.4.3",
+    "@types/babel__core": "^7.20.5",
+    "@types/node": "^20.4.5",
+    "@types/react": "18.2.18",
+    "@types/uuid": "^10.0.0",
+    "autoprefixer": "^10.4.14",
+    "eslint": "8.46.0",
+    "jest": "^29.6.2",
+    "jest-environment-jsdom": "^29.6.2",
+    "next-transpile-modules": "10.0.1",
+    "postcss": "^8.4.27",
+    "tailwindcss": "^3.3.3",
+    "tsconfig": "workspace:*",
+    "typescript": "^5.1.6"
+  }
+}
+</file>
+
+<file path="package.json">
+{
+  "name": "turborepo-basic-shared",
+  "version": "0.0.0",
+  "private": true,
+  "packageManager": "yarn@4.9.1",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev --parallel",
+    "lint": "turbo run lint",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+  },
+  "devDependencies": {
+    "@nestjs/common": "^11.1.1",
+    "@types/eslint": "^9.6.1",
+    "@types/jest": "^29.5.14",
+    "@types/node": "^22.15.18",
+    "prettier": "^3.0.0",
+    "prisma": "^5.1.0",
+    "rxjs": "^7.8.2",
+    "turbo": "1.10.12",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "@nestjs/config": "^4.0.2",
+    "reflect-metadata": "^0.2.2"
+  },
+  "engines": {
+    "npm": ">=7.0.0",
+    "node": ">=14.0.0"
+  }
+}
 </file>
 
 </files>
