@@ -205,138 +205,6 @@ turbo.json
 <files>
 This section contains the contents of the repository's files.
 
-<file path="Opgave 2.3.txt">
-Ja, det er noteret. Du har gemt den opdaterede .github/workflows/web.yaml fil fra Canvas.
-
-Som vi talte om før, er den bedste måde at teste disse CI-workflowfiler på at committe og pushe dine ændringer til GitHub. Dette vil automatisk starte workflows, og du kan observere dem under "Actions"-fanen i dit repository.
-
-Er du klar til at gøre det, eller vil du fortsætte med Docker-filerne først og teste alt samlet senere?
-
-ja
-Ja, det er noteret. Du har bekræftet, at du har gemt den opdaterede .github/workflows/web.yaml fil fra Canvas.
-
-Vi fortsætter nu med næste del af Fase 0.1, som er at gennemgå og implementere forbedringer til Docker-filerne.
-
-Lad os starte med Docker-filen for din API: apps/api/Dockerfile.
-
-Opgave 2.3: Opdater apps/api/Dockerfile
-
-Jeg har gennemgået din nuværende apps/api/Dockerfile (som jeg kender fra repomix-output.xml) og vil foreslå ændringer for at:
-
-Opdatere Node.js versionen til at matche CI (f.eks. 20-alpine).
-Sikre korrekt håndtering af Yarn Berry-konfigurationsfiler (.yarnrc.yml, .yarn mappen).
-Bruge yarn install --immutable for installation af afhængigheder.
-Køre turbo kommandoer via yarn turbo ... (forudsat turbo er en devDependency i din rod package.json), hvilket fjerner behovet for global installation af turbo.
-Generelt forbedre struktur og klarhed i Docker-filens stages.
-Her er det komplette opdaterede indhold til din apps/api/Dockerfile:
-Opdateret apps/api/Dockerfile
-18. maj, 15.36
-
-Handlinger:
-
-Åbn filen apps/api/Dockerfile.
-Erstat hele indholdet med kodeblokken ovenfor fra Canvas.
-Gem filen.
-Vigtige noter til ændringerne:
-
-Node Version: Opdateret til node:20-alpine i alle stages.
-Global Turbo Fjernet: yarn global add turbo er fjernet. I stedet installeres alle root devDependencies (inklusive turbo) i builder stagen, så yarn turbo prune ... kan køres.
-Yarn Berry Filer: .yarnrc.yml og .yarn mappen kopieres nu korrekt ind i installer stagen før yarn install køres for den "prunede" app.
-yarn install --immutable: Bruges konsekvent.
-Prisma Generate: Køres nu med yarn workspace api prisma generate for korrekt kontekst.
-Struktur: Stages er forsøgt gjort mere logiske ift. turbo prune flowet. builder forbereder og pruner. installer installerer deps for den prunede version. sourcer bygger appen. runner kører den byggede app.
-Runner Stage: Kopierer mere specifikt de nødvendige artefakter (dist, package.json, node_modules).
-Når du har gemt denne fil, kan vi tage apps/web/Dockerfile på samme måde. Lad mig vide, når du er klar!
-
-# apps/api/Dockerfile
-
-# Builder stage: Forbereder monorepo og pruner til 'api' appen
-FROM node:20-alpine AS builder
-# Installer nødvendige OS pakker
-RUN apk update && apk add --no-cache git # git kan være nødvendigt for nogle yarn dependencies eller turbo
-
-WORKDIR /app
-
-# Kopier rod package.json, yarn.lock, Yarn Berry konfigurationsfiler
-# Dette lag caches, hvis disse filer ikke ændres ofte.
-COPY package.json yarn.lock ./
-COPY .yarnrc.yml .yarnrc.yml
-COPY .yarn ./.yarn
-
-# Installer alle afhængigheder fra roden (inkl. devDependencies som 'turbo')
-# Dette gør 'turbo' CLI tilgængelig for 'prune' kommandoen.
-RUN yarn install --immutable
-
-# Kopier resten af monorepo-koden
-COPY . .
-
-# Generer en isoleret, "pruned" version af 'api' appen og dens afhængigheder
-# Outputtet vil være i /app/out mappen
-RUN yarn turbo prune --scope=api --docker
-
-# Installer stage: Installerer afhængigheder for den "pruned" 'api' app
-FROM node:20-alpine AS installer
-# Installer OS pakker, libc6-compat er ofte nødvendig for Prisma
-RUN apk update && apk add --no-cache libc6-compat
-WORKDIR /app
-
-# Kopier Yarn Berry konfigurationsfiler fra builder stagen (som har den fulde originale kontekst)
-# Disse er nødvendige for at 'yarn install' fungerer korrekt med Yarn Berry.
-COPY --from=builder /app/.yarnrc.yml .yarnrc.yml
-COPY --from=builder /app/.yarn ./.yarn
-
-# Kopier de "pruned" package.json filer og rod yarn.lock fra builder stagens output (/app/out)
-COPY --from=builder /app/out/json/ .
-COPY --from=builder /app/out/yarn.lock ./yarn.lock
-
-# Kopier den "pruned" fulde kildekode for 'api' appen og dens interne afhængigheder
-# Dette bør inkludere apps/api/prisma, hvis 'turbo prune' håndterer det korrekt.
-COPY --from=builder /app/out/full/ .
-
-# Installer afhængigheder specifikt for den "pruned" app
-RUN yarn install --immutable
-
-# Generer Prisma client
-# Kør 'prisma generate' indenfor konteksten af det specifikke workspace ('api')
-# Sikr at 'prisma' er en dependency (typisk devDependency) i 'api' workspacets package.json.
-RUN yarn workspace api prisma generate
-
-# Sourcer stage: Bygger selve applikationen
-FROM node:20-alpine AS sourcer
-WORKDIR /app
-
-# Kopier de installerede node_modules og kildekoden fra installer stagen
-COPY --from=installer /app/ .
-
-# Byg 'api' applikationen
-# Bruger 'turbo run build' til at bygge 'api' og dens interne monorepo afhængigheder.
-RUN yarn turbo run build --scope=api --include-dependencies --no-deps
-
-# Runner stage: Opretter det endelige letvægtsimage til at køre applikationen
-FROM node:20-alpine AS runner
-WORKDIR /app
-
-# Sæt NODE_ENV til production for det endelige image
-ENV NODE_ENV production
-
-# Kopier kun de nødvendige build-artefakter fra 'sourcer' stagen
-# Dette inkluderer 'dist' mappen for 'api' appen og dens produktions-node_modules.
-COPY --from=sourcer /app/apps/api/dist ./apps/api/dist
-COPY --from=sourcer /app/apps/api/package.json ./apps/api/package.json # Kan være nyttig for runtime
-COPY --from=sourcer /app/node_modules ./node_modules
-
-# Hvis din applikation ved runtime afhænger af andre byggede 'packages' fra monorepoet
-# (som ikke er en del af node_modules, f.eks. via symlinks i udvikling),
-# skal deres build output også kopieres her. F.eks.:
-# COPY --from=sourcer /app/packages/core/dist ./packages/core/dist
-
-# Angiv porten som API'en vil køre på (hvis ikke håndteret af dit deployment miljø)
-# EXPOSE 5002 # Eller den port din app lytter på (f.eks. process.env.PORT)
-
-# Kommando til at starte applikationen
-CMD [ "node", "apps/api/dist/main.js" ]
-</file>
-
 <file path=".repomix/bundles.json">
 {
   "bundles": {}
@@ -796,40 +664,6 @@ module.exports = {
   "singleQuote": true,
   "trailingComma": "all"
 }
-</file>
-
-<file path="apps/api/Dockerfile">
-FROM node:16-alpine AS builder
-RUN apk update
-# Set working directory
-WORKDIR /app
-RUN yarn global add turbo
-COPY . .
-RUN turbo prune --scope=api --docker
-
-# Add lockfile and package.json's of isolated subworkspace
-FROM node:16-alpine AS installer
-RUN apk update
-WORKDIR /app
-COPY --from=builder /app/out/json/ .
-COPY --from=builder /app/out/yarn.lock ./yarn.lock
-COPY --from=builder /app/turbo.json ./turbo.json
-COPY --from=builder /app/apps/api/prisma ./prisma
-RUN yarn install --frozen-lockfile
-RUN yarn prisma generate 
-
-
-FROM node:16-alpine AS sourcer
-WORKDIR /app
-COPY --from=installer /app/ .
-COPY --from=builder /app/out/full/ .
-COPY .gitignore .gitignore
-RUN yarn turbo run build --scope=api --include-dependencies --no-deps
-
-FROM node:16-alpine as runner
-WORKDIR /app
-COPY --from=sourcer /app/ .
-CMD [ "node", "apps/api/dist/main.js" ]
 </file>
 
 <file path="apps/api/nest-cli.json">
@@ -1743,42 +1577,6 @@ export default store;
 module.exports = require("config/eslint-preset");
 </file>
 
-<file path="apps/web/Dockerfile">
-FROM node:16-alpine AS builder
-RUN apk update
-# Set working directory
-WORKDIR /app
-RUN yarn global add turbo
-COPY . .
-# Only Take packages that are needed to compile this app
-RUN turbo prune --scope=web --docker
-
-# Add lockfile and package.json's of isolated subworkspace
-FROM node:16-alpine AS installer
-RUN apk update
-RUN apk add --no-cache libc6-compat
-WORKDIR /app
-COPY --from=builder /app/out/json/ .
-COPY --from=builder /app/out/yarn.lock ./yarn.lock
-COPY --from=builder /app/turbo.json ./turbo.json
-RUN yarn install --frozen-lockfile
-
-
-FROM node:16-alpine AS sourcer
-RUN apk update
-WORKDIR /app
-COPY --from=installer /app/ .
-COPY --from=builder /app/out/full/ .
-COPY .gitignore .gitignore
-RUN yarn turbo run build --scope=web --include-dependencies --no-deps
-
-FROM node:16-alpine as runner
-WORKDIR /app
-COPY --from=sourcer /app/ .
-WORKDIR /app/apps/web/
-CMD [ "npm", "start" ]
-</file>
-
 <file path="apps/web/jest.config.js">
 const nextJest = require("next/jest");
 
@@ -2203,13 +2001,6 @@ export * from "./components/Button/Button";
 }
 </file>
 
-<file path=".dockerignore">
-**/node_modules
-**/.next
-**/dist
-**/.turbo
-</file>
-
 <file path="LICENSE">
 MIT License
 
@@ -2232,6 +2023,221 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+</file>
+
+<file path="Opgave 2.3.txt">
+Compose: 
+services:
+  postgres:
+    image: postgres:15
+    container_name: learninglab-postgres
+    environment:
+      POSTGRES_DB: mydb
+      POSTGRES_USER: test
+      POSTGRES_PASSWORD: test
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    image: learninglab-api:latest
+    container_name: learninglab-api
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      # Eventuelt flere vars her eller via env_file
+    ports:
+      - "5002:5002"
+    depends_on:
+      - postgres
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    image: learninglab-web:latest
+    container_name: learninglab-web
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      NEXT_PUBLIC_API_URL: http://api:5002
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+
+  reverse-proxy:
+    image: nginx:latest
+    container_name: nginx_container
+    restart: unless-stopped
+    depends_on:
+      - api
+      - web
+    ports:
+      - "80:80"
+    volumes:
+      - ./packages/config/nginx.conf:/etc/nginx/nginx.conf
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+volumes:
+  db_data:
+
+
+Docker api:
+# ─────────────────────────────────────────────────────────────────────────────
+# Builder stage: Installer root-dependencies & pruner monorepo for 'api'
+# ─────────────────────────────────────────────────────────────────────────────
+FROM node:20-alpine AS builder
+# Installer nødvendige OS-pakker
+RUN apk update && apk add --no-cache git libc6-compat
+
+WORKDIR /app
+
+# Kopiér rod-konfiguration for cache og PnP
+COPY package.json yarn.lock ./
+COPY .yarnrc.yml .yarnrc.yml
+COPY .yarn ./.yarn
+
+# Installer alle dependencies (inkl. devDeps like turbo)
+RUN yarn install --immutable --immutable-cache --check-cache
+
+# Kopiér resten af kildekoden
+COPY . .
+
+# Prune monorepo til kun 'api' workspace
+RUN yarn turbo prune --scope=api --docker
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Installer stage: Installer kun dependencies for den prunede 'api' app
+# ─────────────────────────────────────────────────────────────────────────────
+FROM node:20-alpine AS installer
+RUN apk update && apk add --no-cache libc6-compat
+
+WORKDIR /app
+
+# Hent Yarn-konfig fra builder
+COPY --from=builder /app/.yarnrc.yml .yarnrc.yml
+COPY --from=builder /app/.yarn ./.yarn
+
+# Hent pruned manifest og kildekode
+COPY --from=builder /app/out/json/ .
+COPY --from=builder /app/out/yarn.lock ./yarn.lock
+COPY --from=builder /app/out/full/ .
+
+# Installer kun nødvendige dependencies
+RUN yarn install --immutable --immutable-cache --check-cache
+
+# Generer Prisma client i 'api' workspace
+RUN yarn workspace api prisma generate
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Sourcer stage: Byg 'api' appen og dens afhængigheder
+# ─────────────────────────────────────────────────────────────────────────────
+FROM node:20-alpine AS sourcer
+WORKDIR /app
+
+# Overfør installeret node_modules og kildekode
+COPY --from=installer /app/ .
+
+# Byg applikationen
+RUN yarn turbo run build --scope=api --include-dependencies --no-deps
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Runner stage: Letvægts-runtime-image til kørsel
+# ─────────────────────────────────────────────────────────────────────────────
+FROM node:20-alpine AS runner
+WORKDIR /app
+
+ENV NODE_ENV production
+
+# Kopiér kun build-artifacts og runtime-modules
+COPY --from=sourcer /app/apps/api/dist ./apps/api/dist
+COPY --from=sourcer /app/apps/api/package.json ./apps/api/package.json
+COPY --from=sourcer /app/node_modules ./node_modules
+
+# Start kommando
+CMD [ "node", "apps/api/dist/main.js" ]
+
+Docker web: 
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Builder stage: Installer root-dependencies & pruner monorepo for 'web'
+# ─────────────────────────────────────────────────────────────────────────────
+FROM node:20-alpine AS builder
+RUN apk update && apk add --no-cache git libc6-compat
+
+WORKDIR /app
+
+# Kopiér rod-konfiguration for cache og PnP
+COPY package.json yarn.lock ./
+COPY .yarnrc.yml .yarnrc.yml
+COPY .yarn ./.yarn
+
+# Installer alle dependencies inkl. devDeps (f.eks. turbo, Next.js build-værktøjer)
+RUN yarn install --immutable --immutable-cache --check-cache
+
+# Kopiér resten af kildekoden
+COPY . .
+
+# Prune monorepo til kun 'web' workspace
+RUN yarn turbo prune --scope=web --docker
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Installer stage: Installer kun dependencies for den prunede 'web' app
+# ─────────────────────────────────────────────────────────────────────────────
+FROM node:20-alpine AS installer
+RUN apk update && apk add --no-cache libc6-compat
+
+WORKDIR /app
+
+# Hent Yarn-konfig fra builder
+COPY --from=builder /app/.yarnrc.yml .yarnrc.yml
+COPY --from=builder /app/.yarn ./.yarn
+
+# Hent pruned manifest og kildekode
+COPY --from=builder /app/out/json/ .
+COPY --from=builder /app/out/yarn.lock ./yarn.lock
+COPY --from=builder /app/out/full/ .
+
+# Installer kun nødvendige dependencies
+RUN yarn install --immutable --immutable-cache --check-cache
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Sourcer stage: Byg Next.js — produktion
+# ─────────────────────────────────────────────────────────────────────────────
+FROM node:20-alpine AS sourcer
+WORKDIR /app
+
+# Overfør installeret node_modules og kildekode
+COPY --from=installer /app/ .
+
+# Byg Next.js til produktion
+RUN yarn workspace web next build
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Runner stage: Letvægts-runtime-image til kørsel af Next.js
+# ─────────────────────────────────────────────────────────────────────────────
+FROM node:20-alpine AS runner
+WORKDIR /app
+
+ENV NODE_ENV production
+
+# Kopiér kun nødvendige filer fra sourcer
+COPY --from=sourcer /app/apps/web/.next ./.next
+COPY --from=sourcer /app/apps/web/public ./public
+COPY --from=sourcer /app/apps/web/package.json ./package.json
+COPY --from=sourcer /app/node_modules ./node_modules
+
+# Eksponer standard Next.js port
+EXPOSE 3000
+
+# Start kommando
+CMD [ "yarn", "workspace", "web", "next", "start" ]
 </file>
 
 <file path="turbo.json">
@@ -2484,344 +2490,6 @@ http {
     "typescript": "^5.1.6"
   }
 }
-</file>
-
-<file path="Struktur.txt">
-```
-LearningLab
-├─ .dockerignore
-├─ .repomix
-│  └─ bundles.json
-├─ .yarn
-│  ├─ install-state.gz
-│  └─ releases
-│     └─ yarn-4.9.1.cjs
-├─ .yarnrc.yml
-├─ LICENSE
-├─ Migration.txt
-├─ README.md
-├─ apps
-│  ├─ api
-│  │  ├─ .eslintrc.js
-│  │  ├─ .prettierrc
-│  │  ├─ .turbo
-│  │  │  └─ turbo-lint.log
-│  │  ├─ Dockerfile
-│  │  ├─ nest-cli.json
-│  │  ├─ package.json
-│  │  ├─ prisma
-│  │  │  ├─ migrations
-│  │  │  │  ├─ 20220307034109_initial_migrate
-│  │  │  │  │  └─ migration.sql
-│  │  │  │  ├─ 20250517073440_add_user_auth_fields
-│  │  │  │  │  └─ migration.sql
-│  │  │  │  ├─ 20250517122525_add_password_reset_fields
-│  │  │  │  │  └─ migration.sql
-│  │  │  │  └─ migration_lock.toml
-│  │  │  └─ schema.prisma
-│  │  ├─ src
-│  │  │  ├─ app.controller.spec.ts
-│  │  │  ├─ app.controller.ts
-│  │  │  ├─ app.module.ts
-│  │  │  ├─ app.service.ts
-│  │  │  ├─ auth
-│  │  │  │  ├─ auth.controller.ts
-│  │  │  │  ├─ auth.module.ts
-│  │  │  │  ├─ auth.service.ts
-│  │  │  │  ├─ dto
-│  │  │  │  │  ├─ forgot-password.dto.ts
-│  │  │  │  │  ├─ login.dto.ts
-│  │  │  │  │  └─ reset-password.dto.ts
-│  │  │  │  ├─ guards
-│  │  │  │  │  ├─ jwt-auth.guard.ts
-│  │  │  │  │  └─ local-auth.guard.ts
-│  │  │  │  └─ strategies
-│  │  │  │     ├─ jwt
-│  │  │  │     │  └─ jwt.ts
-│  │  │  │     └─ local
-│  │  │  │        └─ local.ts
-│  │  │  ├─ config
-│  │  │  │  └─ environment-variables.ts
-│  │  │  ├─ main.ts
-│  │  │  ├─ persistence
-│  │  │  │  ├─ persistence.module.ts
-│  │  │  │  └─ prisma
-│  │  │  │     ├─ prisma.service.spec.ts
-│  │  │  │     └─ prisma.service.ts
-│  │  │  └─ users
-│  │  │     ├─ dto
-│  │  │     │  └─ create-user.dto.ts
-│  │  │     ├─ users.controller.spec.ts
-│  │  │     ├─ users.controller.ts
-│  │  │     ├─ users.module.ts
-│  │  │     ├─ users.service.spec.ts
-│  │  │     └─ users.service.ts
-│  │  ├─ test
-│  │  │  ├─ app.e2e-spec.ts
-│  │  │  └─ jest-e2e.json
-│  │  ├─ tsconfig.json
-│  │  └─ webpack-hmr.config.js
-│  └─ web
-│     ├─ .eslintrc.js
-│     ├─ .swc
-│     │  └─ plugins
-│     │     └─ v7_macos_aarch64_0.98.5
-│     ├─ .turbo
-│     │  └─ turbo-lint.log
-│     ├─ Dockerfile
-│     ├─ README.md
-│     ├─ jest.config.js
-│     ├─ jest.setup.js
-│     ├─ next-env.d.ts
-│     ├─ next.config.js
-│     ├─ package.json
-│     ├─ pages
-│     │  ├─ _app.tsx
-│     │  ├─ forgot-password.tsx
-│     │  ├─ index.tsx
-│     │  ├─ login.tsx
-│     │  ├─ profile.tsx
-│     │  ├─ reset-password.tsx
-│     │  └─ signup.tsx
-│     ├─ postcss.config.js
-│     ├─ src
-│     │  ├─ common
-│     │  ├─ components
-│     │  │  └─ auth
-│     │  ├─ context
-│     │  │  └─ AuthContext.tsx
-│     │  ├─ screens
-│     │  │  ├─ admin
-│     │  │  ├─ auth
-│     │  │  │  ├─ forgot-password
-│     │  │  │  │  └─ forgot-password.tsx
-│     │  │  │  ├─ login
-│     │  │  │  │  ├─ login.test.tsx
-│     │  │  │  │  └─ login.tsx
-│     │  │  │  ├─ reset-password
-│     │  │  │  │  └─ reset-password.tsx
-│     │  │  │  └─ signup
-│     │  │  │     └─ signup.tsx
-│     │  │  ├─ common
-│     │  │  └─ employee
-│     │  ├─ store
-│     │  │  ├─ index.ts
-│     │  │  └─ services
-│     │  │     └─ api.ts
-│     │  └─ styles
-│     │     └─ global.css
-│     ├─ tailwind.config.js
-│     └─ tsconfig.json
-├─ docker-compose.yml
-├─ package-scripts.js
-├─ package.json
-├─ packages
-│  ├─ config
-│  │  ├─ eslint-preset.js
-│  │  ├─ nginx.conf
-│  │  ├─ package.json
-│  │  ├─ postcss.config.js
-│  │  ├─ src
-│  │  │  ├─ env.ts
-│  │  │  └─ index.ts
-│  │  ├─ tailwind.config.js
-│  │  └─ tsconfig.json
-│  ├─ core
-│  │  ├─ package.json
-│  │  ├─ src
-│  │  │  ├─ index.ts
-│  │  │  └─ types
-│  │  │     └─ user.types.ts
-│  │  └─ tsconfig.json
-│  ├─ tsconfig
-│  │  ├─ README.md
-│  │  ├─ base.json
-│  │  ├─ nestjs.json
-│  │  ├─ nextjs.json
-│  │  ├─ package.json
-│  │  └─ react-library.json
-│  └─ ui
-│     ├─ components
-│     │  └─ Button
-│     │     └─ Button.tsx
-│     ├─ index.tsx
-│     ├─ package.json
-│     └─ tsconfig.json
-├─ problems.txt
-├─ src
-├─ terminal.txt
-├─ turbo.json
-└─ yarn.lock
-
-```
-```
-LearningLab
-├─ .dockerignore
-├─ .repomix
-│  └─ bundles.json
-├─ .yarn
-│  ├─ install-state.gz
-│  └─ releases
-│     └─ yarn-4.9.1.cjs
-├─ .yarnrc.yml
-├─ LICENSE
-├─ Migration.txt
-├─ README.md
-├─ Struktur.txt
-├─ apps
-│  ├─ api
-│  │  ├─ .eslintrc.js
-│  │  ├─ .prettierrc
-│  │  ├─ .turbo
-│  │  │  └─ turbo-lint.log
-│  │  ├─ Dockerfile
-│  │  ├─ nest-cli.json
-│  │  ├─ package.json
-│  │  ├─ prisma
-│  │  │  ├─ migrations
-│  │  │  │  ├─ 20220307034109_initial_migrate
-│  │  │  │  │  └─ migration.sql
-│  │  │  │  ├─ 20250517073440_add_user_auth_fields
-│  │  │  │  │  └─ migration.sql
-│  │  │  │  ├─ 20250517122525_add_password_reset_fields
-│  │  │  │  │  └─ migration.sql
-│  │  │  │  └─ migration_lock.toml
-│  │  │  └─ schema.prisma
-│  │  ├─ src
-│  │  │  ├─ app.controller.spec.ts
-│  │  │  ├─ app.controller.ts
-│  │  │  ├─ app.module.ts
-│  │  │  ├─ app.service.ts
-│  │  │  ├─ auth
-│  │  │  │  ├─ auth.controller.ts
-│  │  │  │  ├─ auth.module.ts
-│  │  │  │  ├─ auth.service.ts
-│  │  │  │  ├─ dto
-│  │  │  │  │  ├─ forgot-password.dto.ts
-│  │  │  │  │  ├─ login.dto.ts
-│  │  │  │  │  └─ reset-password.dto.ts
-│  │  │  │  ├─ guards
-│  │  │  │  │  ├─ jwt-auth.guard.ts
-│  │  │  │  │  └─ local-auth.guard.ts
-│  │  │  │  └─ strategies
-│  │  │  │     ├─ jwt
-│  │  │  │     │  └─ jwt.ts
-│  │  │  │     └─ local
-│  │  │  │        └─ local.ts
-│  │  │  ├─ config
-│  │  │  │  └─ environment-variables.ts
-│  │  │  ├─ main.ts
-│  │  │  ├─ persistence
-│  │  │  │  ├─ persistence.module.ts
-│  │  │  │  └─ prisma
-│  │  │  │     ├─ prisma.service.spec.ts
-│  │  │  │     └─ prisma.service.ts
-│  │  │  └─ users
-│  │  │     ├─ dto
-│  │  │     │  └─ create-user.dto.ts
-│  │  │     ├─ users.controller.spec.ts
-│  │  │     ├─ users.controller.ts
-│  │  │     ├─ users.module.ts
-│  │  │     ├─ users.service.spec.ts
-│  │  │     └─ users.service.ts
-│  │  ├─ test
-│  │  │  ├─ app.e2e-spec.ts
-│  │  │  └─ jest-e2e.json
-│  │  ├─ tsconfig.json
-│  │  └─ webpack-hmr.config.js
-│  └─ web
-│     ├─ .eslintrc.js
-│     ├─ .swc
-│     │  └─ plugins
-│     │     └─ v7_macos_aarch64_0.98.5
-│     ├─ .turbo
-│     │  └─ turbo-lint.log
-│     ├─ Dockerfile
-│     ├─ README.md
-│     ├─ jest.config.js
-│     ├─ jest.setup.js
-│     ├─ next-env.d.ts
-│     ├─ next.config.js
-│     ├─ package.json
-│     ├─ pages
-│     │  ├─ _app.tsx
-│     │  ├─ forgot-password.tsx
-│     │  ├─ index.tsx
-│     │  ├─ login.tsx
-│     │  ├─ profile.tsx
-│     │  ├─ reset-password.tsx
-│     │  └─ signup.tsx
-│     ├─ postcss.config.js
-│     ├─ src
-│     │  ├─ common
-│     │  ├─ components
-│     │  │  └─ auth
-│     │  ├─ context
-│     │  │  └─ AuthContext.tsx
-│     │  ├─ screens
-│     │  │  ├─ admin
-│     │  │  ├─ auth
-│     │  │  │  ├─ forgot-password
-│     │  │  │  │  └─ forgot-password.tsx
-│     │  │  │  ├─ login
-│     │  │  │  │  ├─ login.test.tsx
-│     │  │  │  │  └─ login.tsx
-│     │  │  │  ├─ reset-password
-│     │  │  │  │  └─ reset-password.tsx
-│     │  │  │  └─ signup
-│     │  │  │     └─ signup.tsx
-│     │  │  ├─ common
-│     │  │  └─ employee
-│     │  ├─ store
-│     │  │  ├─ index.ts
-│     │  │  └─ services
-│     │  │     └─ api.ts
-│     │  └─ styles
-│     │     └─ global.css
-│     ├─ tailwind.config.js
-│     └─ tsconfig.json
-├─ docker-compose.yml
-├─ package-scripts.js
-├─ package.json
-├─ packages
-│  ├─ config
-│  │  ├─ eslint-preset.js
-│  │  ├─ nginx.conf
-│  │  ├─ package.json
-│  │  ├─ postcss.config.js
-│  │  ├─ src
-│  │  │  ├─ env.ts
-│  │  │  └─ index.ts
-│  │  ├─ tailwind.config.js
-│  │  └─ tsconfig.json
-│  ├─ core
-│  │  ├─ package.json
-│  │  ├─ src
-│  │  │  ├─ index.ts
-│  │  │  └─ types
-│  │  │     └─ user.types.ts
-│  │  └─ tsconfig.json
-│  ├─ tsconfig
-│  │  ├─ README.md
-│  │  ├─ base.json
-│  │  ├─ nestjs.json
-│  │  ├─ nextjs.json
-│  │  ├─ package.json
-│  │  └─ react-library.json
-│  └─ ui
-│     ├─ components
-│     │  └─ Button
-│     │     └─ Button.tsx
-│     ├─ index.tsx
-│     ├─ package.json
-│     └─ tsconfig.json
-├─ problems.txt
-├─ src
-├─ terminal.txt
-├─ turbo.json
-└─ yarn.lock
-
-```
 </file>
 
 <file path=".github/workflows/api.yaml">
@@ -3750,35 +3418,6 @@ packageExtensions:
       chokidar: "*"
 </file>
 
-<file path="docker-compose.yml">
-services:
-  reverse-proxy:
-    image: nginx:latest
-    container_name: nginx_container
-    ports:
-      - 80:80
-    depends_on:
-      - postgres
-    volumes:
-      - ./packages/config/nginx.conf:/etc/nginx/nginx.conf
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-
-  postgres:
-    image: postgres:15
-    environment:
-      - POSTGRES_DB=mydb
-      - POSTGRES_USER=test
-      - POSTGRES_PASSWORD=test
-    volumes:
-      - db_data:/var/lib/postgresql/data
-    ports:
-      - "5433:5432"
-
-volumes:
-  db_data:
-</file>
-
 <file path="Migration.txt">
 **Revideret Projektplan: Yarn Berry Monorepo**
 
@@ -4101,6 +3740,869 @@ async function bootstrap() {
 bootstrap();
 </file>
 
+<file path=".dockerignore">
+# Git & dev‑rod
+.git
+.vscode
+.idea
+*.log
+node_modules/
+.yarn/cache/
+dist/
+.next/
+coverage/
+Dockerfile*
+README.md
+</file>
+
+<file path="Struktur.txt">
+```
+LearningLab
+├─ .dockerignore
+├─ .repomix
+│  └─ bundles.json
+├─ .yarn
+│  ├─ install-state.gz
+│  └─ releases
+│     └─ yarn-4.9.1.cjs
+├─ .yarnrc.yml
+├─ LICENSE
+├─ Migration.txt
+├─ README.md
+├─ apps
+│  ├─ api
+│  │  ├─ .eslintrc.js
+│  │  ├─ .prettierrc
+│  │  ├─ .turbo
+│  │  │  └─ turbo-lint.log
+│  │  ├─ Dockerfile
+│  │  ├─ nest-cli.json
+│  │  ├─ package.json
+│  │  ├─ prisma
+│  │  │  ├─ migrations
+│  │  │  │  ├─ 20220307034109_initial_migrate
+│  │  │  │  │  └─ migration.sql
+│  │  │  │  ├─ 20250517073440_add_user_auth_fields
+│  │  │  │  │  └─ migration.sql
+│  │  │  │  ├─ 20250517122525_add_password_reset_fields
+│  │  │  │  │  └─ migration.sql
+│  │  │  │  └─ migration_lock.toml
+│  │  │  └─ schema.prisma
+│  │  ├─ src
+│  │  │  ├─ app.controller.spec.ts
+│  │  │  ├─ app.controller.ts
+│  │  │  ├─ app.module.ts
+│  │  │  ├─ app.service.ts
+│  │  │  ├─ auth
+│  │  │  │  ├─ auth.controller.ts
+│  │  │  │  ├─ auth.module.ts
+│  │  │  │  ├─ auth.service.ts
+│  │  │  │  ├─ dto
+│  │  │  │  │  ├─ forgot-password.dto.ts
+│  │  │  │  │  ├─ login.dto.ts
+│  │  │  │  │  └─ reset-password.dto.ts
+│  │  │  │  ├─ guards
+│  │  │  │  │  ├─ jwt-auth.guard.ts
+│  │  │  │  │  └─ local-auth.guard.ts
+│  │  │  │  └─ strategies
+│  │  │  │     ├─ jwt
+│  │  │  │     │  └─ jwt.ts
+│  │  │  │     └─ local
+│  │  │  │        └─ local.ts
+│  │  │  ├─ config
+│  │  │  │  └─ environment-variables.ts
+│  │  │  ├─ main.ts
+│  │  │  ├─ persistence
+│  │  │  │  ├─ persistence.module.ts
+│  │  │  │  └─ prisma
+│  │  │  │     ├─ prisma.service.spec.ts
+│  │  │  │     └─ prisma.service.ts
+│  │  │  └─ users
+│  │  │     ├─ dto
+│  │  │     │  └─ create-user.dto.ts
+│  │  │     ├─ users.controller.spec.ts
+│  │  │     ├─ users.controller.ts
+│  │  │     ├─ users.module.ts
+│  │  │     ├─ users.service.spec.ts
+│  │  │     └─ users.service.ts
+│  │  ├─ test
+│  │  │  ├─ app.e2e-spec.ts
+│  │  │  └─ jest-e2e.json
+│  │  ├─ tsconfig.json
+│  │  └─ webpack-hmr.config.js
+│  └─ web
+│     ├─ .eslintrc.js
+│     ├─ .swc
+│     │  └─ plugins
+│     │     └─ v7_macos_aarch64_0.98.5
+│     ├─ .turbo
+│     │  └─ turbo-lint.log
+│     ├─ Dockerfile
+│     ├─ README.md
+│     ├─ jest.config.js
+│     ├─ jest.setup.js
+│     ├─ next-env.d.ts
+│     ├─ next.config.js
+│     ├─ package.json
+│     ├─ pages
+│     │  ├─ _app.tsx
+│     │  ├─ forgot-password.tsx
+│     │  ├─ index.tsx
+│     │  ├─ login.tsx
+│     │  ├─ profile.tsx
+│     │  ├─ reset-password.tsx
+│     │  └─ signup.tsx
+│     ├─ postcss.config.js
+│     ├─ src
+│     │  ├─ common
+│     │  ├─ components
+│     │  │  └─ auth
+│     │  ├─ context
+│     │  │  └─ AuthContext.tsx
+│     │  ├─ screens
+│     │  │  ├─ admin
+│     │  │  ├─ auth
+│     │  │  │  ├─ forgot-password
+│     │  │  │  │  └─ forgot-password.tsx
+│     │  │  │  ├─ login
+│     │  │  │  │  ├─ login.test.tsx
+│     │  │  │  │  └─ login.tsx
+│     │  │  │  ├─ reset-password
+│     │  │  │  │  └─ reset-password.tsx
+│     │  │  │  └─ signup
+│     │  │  │     └─ signup.tsx
+│     │  │  ├─ common
+│     │  │  └─ employee
+│     │  ├─ store
+│     │  │  ├─ index.ts
+│     │  │  └─ services
+│     │  │     └─ api.ts
+│     │  └─ styles
+│     │     └─ global.css
+│     ├─ tailwind.config.js
+│     └─ tsconfig.json
+├─ docker-compose.yml
+├─ package-scripts.js
+├─ package.json
+├─ packages
+│  ├─ config
+│  │  ├─ eslint-preset.js
+│  │  ├─ nginx.conf
+│  │  ├─ package.json
+│  │  ├─ postcss.config.js
+│  │  ├─ src
+│  │  │  ├─ env.ts
+│  │  │  └─ index.ts
+│  │  ├─ tailwind.config.js
+│  │  └─ tsconfig.json
+│  ├─ core
+│  │  ├─ package.json
+│  │  ├─ src
+│  │  │  ├─ index.ts
+│  │  │  └─ types
+│  │  │     └─ user.types.ts
+│  │  └─ tsconfig.json
+│  ├─ tsconfig
+│  │  ├─ README.md
+│  │  ├─ base.json
+│  │  ├─ nestjs.json
+│  │  ├─ nextjs.json
+│  │  ├─ package.json
+│  │  └─ react-library.json
+│  └─ ui
+│     ├─ components
+│     │  └─ Button
+│     │     └─ Button.tsx
+│     ├─ index.tsx
+│     ├─ package.json
+│     └─ tsconfig.json
+├─ problems.txt
+├─ src
+├─ terminal.txt
+├─ turbo.json
+└─ yarn.lock
+
+```
+```
+LearningLab
+├─ .dockerignore
+├─ .repomix
+│  └─ bundles.json
+├─ .yarn
+│  ├─ install-state.gz
+│  └─ releases
+│     └─ yarn-4.9.1.cjs
+├─ .yarnrc.yml
+├─ LICENSE
+├─ Migration.txt
+├─ README.md
+├─ Struktur.txt
+├─ apps
+│  ├─ api
+│  │  ├─ .eslintrc.js
+│  │  ├─ .prettierrc
+│  │  ├─ .turbo
+│  │  │  └─ turbo-lint.log
+│  │  ├─ Dockerfile
+│  │  ├─ nest-cli.json
+│  │  ├─ package.json
+│  │  ├─ prisma
+│  │  │  ├─ migrations
+│  │  │  │  ├─ 20220307034109_initial_migrate
+│  │  │  │  │  └─ migration.sql
+│  │  │  │  ├─ 20250517073440_add_user_auth_fields
+│  │  │  │  │  └─ migration.sql
+│  │  │  │  ├─ 20250517122525_add_password_reset_fields
+│  │  │  │  │  └─ migration.sql
+│  │  │  │  └─ migration_lock.toml
+│  │  │  └─ schema.prisma
+│  │  ├─ src
+│  │  │  ├─ app.controller.spec.ts
+│  │  │  ├─ app.controller.ts
+│  │  │  ├─ app.module.ts
+│  │  │  ├─ app.service.ts
+│  │  │  ├─ auth
+│  │  │  │  ├─ auth.controller.ts
+│  │  │  │  ├─ auth.module.ts
+│  │  │  │  ├─ auth.service.ts
+│  │  │  │  ├─ dto
+│  │  │  │  │  ├─ forgot-password.dto.ts
+│  │  │  │  │  ├─ login.dto.ts
+│  │  │  │  │  └─ reset-password.dto.ts
+│  │  │  │  ├─ guards
+│  │  │  │  │  ├─ jwt-auth.guard.ts
+│  │  │  │  │  └─ local-auth.guard.ts
+│  │  │  │  └─ strategies
+│  │  │  │     ├─ jwt
+│  │  │  │     │  └─ jwt.ts
+│  │  │  │     └─ local
+│  │  │  │        └─ local.ts
+│  │  │  ├─ config
+│  │  │  │  └─ environment-variables.ts
+│  │  │  ├─ main.ts
+│  │  │  ├─ persistence
+│  │  │  │  ├─ persistence.module.ts
+│  │  │  │  └─ prisma
+│  │  │  │     ├─ prisma.service.spec.ts
+│  │  │  │     └─ prisma.service.ts
+│  │  │  └─ users
+│  │  │     ├─ dto
+│  │  │     │  └─ create-user.dto.ts
+│  │  │     ├─ users.controller.spec.ts
+│  │  │     ├─ users.controller.ts
+│  │  │     ├─ users.module.ts
+│  │  │     ├─ users.service.spec.ts
+│  │  │     └─ users.service.ts
+│  │  ├─ test
+│  │  │  ├─ app.e2e-spec.ts
+│  │  │  └─ jest-e2e.json
+│  │  ├─ tsconfig.json
+│  │  └─ webpack-hmr.config.js
+│  └─ web
+│     ├─ .eslintrc.js
+│     ├─ .swc
+│     │  └─ plugins
+│     │     └─ v7_macos_aarch64_0.98.5
+│     ├─ .turbo
+│     │  └─ turbo-lint.log
+│     ├─ Dockerfile
+│     ├─ README.md
+│     ├─ jest.config.js
+│     ├─ jest.setup.js
+│     ├─ next-env.d.ts
+│     ├─ next.config.js
+│     ├─ package.json
+│     ├─ pages
+│     │  ├─ _app.tsx
+│     │  ├─ forgot-password.tsx
+│     │  ├─ index.tsx
+│     │  ├─ login.tsx
+│     │  ├─ profile.tsx
+│     │  ├─ reset-password.tsx
+│     │  └─ signup.tsx
+│     ├─ postcss.config.js
+│     ├─ src
+│     │  ├─ common
+│     │  ├─ components
+│     │  │  └─ auth
+│     │  ├─ context
+│     │  │  └─ AuthContext.tsx
+│     │  ├─ screens
+│     │  │  ├─ admin
+│     │  │  ├─ auth
+│     │  │  │  ├─ forgot-password
+│     │  │  │  │  └─ forgot-password.tsx
+│     │  │  │  ├─ login
+│     │  │  │  │  ├─ login.test.tsx
+│     │  │  │  │  └─ login.tsx
+│     │  │  │  ├─ reset-password
+│     │  │  │  │  └─ reset-password.tsx
+│     │  │  │  └─ signup
+│     │  │  │     └─ signup.tsx
+│     │  │  ├─ common
+│     │  │  └─ employee
+│     │  ├─ store
+│     │  │  ├─ index.ts
+│     │  │  └─ services
+│     │  │     └─ api.ts
+│     │  └─ styles
+│     │     └─ global.css
+│     ├─ tailwind.config.js
+│     └─ tsconfig.json
+├─ docker-compose.yml
+├─ package-scripts.js
+├─ package.json
+├─ packages
+│  ├─ config
+│  │  ├─ eslint-preset.js
+│  │  ├─ nginx.conf
+│  │  ├─ package.json
+│  │  ├─ postcss.config.js
+│  │  ├─ src
+│  │  │  ├─ env.ts
+│  │  │  └─ index.ts
+│  │  ├─ tailwind.config.js
+│  │  └─ tsconfig.json
+│  ├─ core
+│  │  ├─ package.json
+│  │  ├─ src
+│  │  │  ├─ index.ts
+│  │  │  └─ types
+│  │  │     └─ user.types.ts
+│  │  └─ tsconfig.json
+│  ├─ tsconfig
+│  │  ├─ README.md
+│  │  ├─ base.json
+│  │  ├─ nestjs.json
+│  │  ├─ nextjs.json
+│  │  ├─ package.json
+│  │  └─ react-library.json
+│  └─ ui
+│     ├─ components
+│     │  └─ Button
+│     │     └─ Button.tsx
+│     ├─ index.tsx
+│     ├─ package.json
+│     └─ tsconfig.json
+├─ problems.txt
+├─ src
+├─ terminal.txt
+├─ turbo.json
+└─ yarn.lock
+
+```
+```
+LearningLab
+├─ .dockerignore
+├─ .repomix
+│  └─ bundles.json
+├─ .yarn
+│  ├─ install-state.gz
+│  └─ releases
+│     └─ yarn-4.9.1.cjs
+├─ .yarnrc.yml
+├─ LICENSE
+├─ Migration.txt
+├─ Opgave 2.3.txt
+├─ README.md
+├─ Struktur.txt
+├─ api
+│  └─ web.txt
+├─ apps
+│  ├─ api
+│  │  ├─ .eslintrc.js
+│  │  ├─ .prettierrc
+│  │  ├─ .turbo
+│  │  │  └─ turbo-lint.log
+│  │  ├─ Dockerfile
+│  │  ├─ nest-cli.json
+│  │  ├─ package.json
+│  │  ├─ prisma
+│  │  │  ├─ migrations
+│  │  │  │  ├─ 20220307034109_initial_migrate
+│  │  │  │  │  └─ migration.sql
+│  │  │  │  ├─ 20250517073440_add_user_auth_fields
+│  │  │  │  │  └─ migration.sql
+│  │  │  │  ├─ 20250517122525_add_password_reset_fields
+│  │  │  │  │  └─ migration.sql
+│  │  │  │  └─ migration_lock.toml
+│  │  │  └─ schema.prisma
+│  │  ├─ src
+│  │  │  ├─ app.controller.spec.ts
+│  │  │  ├─ app.controller.ts
+│  │  │  ├─ app.module.ts
+│  │  │  ├─ app.service.ts
+│  │  │  ├─ auth
+│  │  │  │  ├─ auth.controller.ts
+│  │  │  │  ├─ auth.module.ts
+│  │  │  │  ├─ auth.service.ts
+│  │  │  │  ├─ dto
+│  │  │  │  │  ├─ forgot-password.dto.ts
+│  │  │  │  │  ├─ login.dto.ts
+│  │  │  │  │  └─ reset-password.dto.ts
+│  │  │  │  ├─ guards
+│  │  │  │  │  ├─ jwt-auth.guard.ts
+│  │  │  │  │  └─ local-auth.guard.ts
+│  │  │  │  └─ strategies
+│  │  │  │     ├─ jwt
+│  │  │  │     │  └─ jwt.ts
+│  │  │  │     └─ local
+│  │  │  │        └─ local.ts
+│  │  │  ├─ config
+│  │  │  │  └─ environment-variables.ts
+│  │  │  ├─ main.ts
+│  │  │  ├─ persistence
+│  │  │  │  ├─ persistence.module.ts
+│  │  │  │  └─ prisma
+│  │  │  │     ├─ prisma.service.spec.ts
+│  │  │  │     └─ prisma.service.ts
+│  │  │  └─ users
+│  │  │     ├─ dto
+│  │  │     │  └─ create-user.dto.ts
+│  │  │     ├─ users.controller.spec.ts
+│  │  │     ├─ users.controller.ts
+│  │  │     ├─ users.module.ts
+│  │  │     ├─ users.service.spec.ts
+│  │  │     └─ users.service.ts
+│  │  ├─ test
+│  │  │  ├─ app.e2e-spec.ts
+│  │  │  └─ jest-e2e.json
+│  │  ├─ tsconfig.json
+│  │  └─ webpack-hmr.config.js
+│  └─ web
+│     ├─ .eslintrc.js
+│     ├─ .swc
+│     │  └─ plugins
+│     │     └─ v7_macos_aarch64_0.98.5
+│     ├─ .turbo
+│     │  └─ turbo-lint.log
+│     ├─ Dockerfile
+│     ├─ README.md
+│     ├─ jest.config.js
+│     ├─ jest.setup.js
+│     ├─ next-env.d.ts
+│     ├─ next.config.js
+│     ├─ package.json
+│     ├─ pages
+│     │  ├─ _app.tsx
+│     │  ├─ forgot-password.tsx
+│     │  ├─ index.tsx
+│     │  ├─ login.tsx
+│     │  ├─ profile.tsx
+│     │  ├─ reset-password.tsx
+│     │  └─ signup.tsx
+│     ├─ postcss.config.js
+│     ├─ src
+│     │  ├─ common
+│     │  ├─ components
+│     │  │  └─ auth
+│     │  ├─ context
+│     │  │  └─ AuthContext.tsx
+│     │  ├─ screens
+│     │  │  ├─ admin
+│     │  │  ├─ auth
+│     │  │  │  ├─ forgot-password
+│     │  │  │  │  └─ forgot-password.tsx
+│     │  │  │  ├─ login
+│     │  │  │  │  ├─ login.test.tsx
+│     │  │  │  │  └─ login.tsx
+│     │  │  │  ├─ reset-password
+│     │  │  │  │  └─ reset-password.tsx
+│     │  │  │  └─ signup
+│     │  │  │     └─ signup.tsx
+│     │  │  ├─ common
+│     │  │  └─ employee
+│     │  ├─ store
+│     │  │  ├─ index.ts
+│     │  │  └─ services
+│     │  │     └─ api.ts
+│     │  └─ styles
+│     │     └─ global.css
+│     ├─ tailwind.config.js
+│     └─ tsconfig.json
+├─ docker-compose.yml
+├─ package-scripts.js
+├─ package.json
+├─ packages
+│  ├─ config
+│  │  ├─ eslint-preset.js
+│  │  ├─ nginx.conf
+│  │  ├─ package.json
+│  │  ├─ postcss.config.js
+│  │  ├─ src
+│  │  │  ├─ env.ts
+│  │  │  └─ index.ts
+│  │  ├─ tailwind.config.js
+│  │  └─ tsconfig.json
+│  ├─ core
+│  │  ├─ package.json
+│  │  ├─ src
+│  │  │  ├─ index.ts
+│  │  │  └─ types
+│  │  │     └─ user.types.ts
+│  │  └─ tsconfig.json
+│  ├─ tsconfig
+│  │  ├─ README.md
+│  │  ├─ base.json
+│  │  ├─ nestjs.json
+│  │  ├─ nextjs.json
+│  │  ├─ package.json
+│  │  └─ react-library.json
+│  └─ ui
+│     ├─ components
+│     │  └─ Button
+│     │     └─ Button.tsx
+│     ├─ index.tsx
+│     ├─ package.json
+│     └─ tsconfig.json
+├─ src
+├─ terminal.txt
+├─ turbo.json
+└─ yarn.lock
+
+```
+```
+LearningLab
+├─ .dockerignore
+├─ .repomix
+│  └─ bundles.json
+├─ .yarn
+│  ├─ install-state.gz
+│  └─ releases
+│     └─ yarn-4.9.1.cjs
+├─ .yarnrc.yml
+├─ LICENSE
+├─ Migration.txt
+├─ Opgave 2.3.txt
+├─ README.md
+├─ Struktur.txt
+├─ api
+│  └─ web.txt
+├─ apps
+│  ├─ api
+│  │  ├─ .eslintrc.js
+│  │  ├─ .prettierrc
+│  │  ├─ .turbo
+│  │  │  └─ turbo-lint.log
+│  │  ├─ Dockerfile
+│  │  ├─ nest-cli.json
+│  │  ├─ package.json
+│  │  ├─ prisma
+│  │  │  ├─ migrations
+│  │  │  │  ├─ 20220307034109_initial_migrate
+│  │  │  │  │  └─ migration.sql
+│  │  │  │  ├─ 20250517073440_add_user_auth_fields
+│  │  │  │  │  └─ migration.sql
+│  │  │  │  ├─ 20250517122525_add_password_reset_fields
+│  │  │  │  │  └─ migration.sql
+│  │  │  │  └─ migration_lock.toml
+│  │  │  └─ schema.prisma
+│  │  ├─ src
+│  │  │  ├─ app.controller.spec.ts
+│  │  │  ├─ app.controller.ts
+│  │  │  ├─ app.module.ts
+│  │  │  ├─ app.service.ts
+│  │  │  ├─ auth
+│  │  │  │  ├─ auth.controller.ts
+│  │  │  │  ├─ auth.module.ts
+│  │  │  │  ├─ auth.service.ts
+│  │  │  │  ├─ dto
+│  │  │  │  │  ├─ forgot-password.dto.ts
+│  │  │  │  │  ├─ login.dto.ts
+│  │  │  │  │  └─ reset-password.dto.ts
+│  │  │  │  ├─ guards
+│  │  │  │  │  ├─ jwt-auth.guard.ts
+│  │  │  │  │  └─ local-auth.guard.ts
+│  │  │  │  └─ strategies
+│  │  │  │     ├─ jwt
+│  │  │  │     │  └─ jwt.ts
+│  │  │  │     └─ local
+│  │  │  │        └─ local.ts
+│  │  │  ├─ config
+│  │  │  │  └─ environment-variables.ts
+│  │  │  ├─ main.ts
+│  │  │  ├─ persistence
+│  │  │  │  ├─ persistence.module.ts
+│  │  │  │  └─ prisma
+│  │  │  │     ├─ prisma.service.spec.ts
+│  │  │  │     └─ prisma.service.ts
+│  │  │  └─ users
+│  │  │     ├─ dto
+│  │  │     │  └─ create-user.dto.ts
+│  │  │     ├─ users.controller.spec.ts
+│  │  │     ├─ users.controller.ts
+│  │  │     ├─ users.module.ts
+│  │  │     ├─ users.service.spec.ts
+│  │  │     └─ users.service.ts
+│  │  ├─ test
+│  │  │  ├─ app.e2e-spec.ts
+│  │  │  └─ jest-e2e.json
+│  │  ├─ tsconfig.json
+│  │  └─ webpack-hmr.config.js
+│  └─ web
+│     ├─ .eslintrc.js
+│     ├─ .swc
+│     │  └─ plugins
+│     │     └─ v7_macos_aarch64_0.98.5
+│     ├─ .turbo
+│     │  └─ turbo-lint.log
+│     ├─ Dockerfile
+│     ├─ README.md
+│     ├─ jest.config.js
+│     ├─ jest.setup.js
+│     ├─ next-env.d.ts
+│     ├─ next.config.js
+│     ├─ package.json
+│     ├─ pages
+│     │  ├─ _app.tsx
+│     │  ├─ forgot-password.tsx
+│     │  ├─ index.tsx
+│     │  ├─ login.tsx
+│     │  ├─ profile.tsx
+│     │  ├─ reset-password.tsx
+│     │  └─ signup.tsx
+│     ├─ postcss.config.js
+│     ├─ src
+│     │  ├─ common
+│     │  ├─ components
+│     │  │  └─ auth
+│     │  ├─ context
+│     │  │  └─ AuthContext.tsx
+│     │  ├─ screens
+│     │  │  ├─ admin
+│     │  │  ├─ auth
+│     │  │  │  ├─ forgot-password
+│     │  │  │  │  └─ forgot-password.tsx
+│     │  │  │  ├─ login
+│     │  │  │  │  ├─ login.test.tsx
+│     │  │  │  │  └─ login.tsx
+│     │  │  │  ├─ reset-password
+│     │  │  │  │  └─ reset-password.tsx
+│     │  │  │  └─ signup
+│     │  │  │     └─ signup.tsx
+│     │  │  ├─ common
+│     │  │  └─ employee
+│     │  ├─ store
+│     │  │  ├─ index.ts
+│     │  │  └─ services
+│     │  │     └─ api.ts
+│     │  └─ styles
+│     │     └─ global.css
+│     ├─ tailwind.config.js
+│     └─ tsconfig.json
+├─ docker-compose.yml
+├─ package-scripts.js
+├─ package.json
+├─ packages
+│  ├─ config
+│  │  ├─ eslint-preset.js
+│  │  ├─ nginx.conf
+│  │  ├─ package.json
+│  │  ├─ postcss.config.js
+│  │  ├─ src
+│  │  │  ├─ env.ts
+│  │  │  └─ index.ts
+│  │  ├─ tailwind.config.js
+│  │  └─ tsconfig.json
+│  ├─ core
+│  │  ├─ package.json
+│  │  ├─ src
+│  │  │  ├─ index.ts
+│  │  │  └─ types
+│  │  │     └─ user.types.ts
+│  │  └─ tsconfig.json
+│  ├─ tsconfig
+│  │  ├─ README.md
+│  │  ├─ base.json
+│  │  ├─ nestjs.json
+│  │  ├─ nextjs.json
+│  │  ├─ package.json
+│  │  └─ react-library.json
+│  └─ ui
+│     ├─ components
+│     │  └─ Button
+│     │     └─ Button.tsx
+│     ├─ index.tsx
+│     ├─ package.json
+│     └─ tsconfig.json
+├─ src
+├─ terminal.txt
+├─ turbo.json
+└─ yarn.lock
+
+```
+```
+LearningLab
+├─ .dockerignore
+├─ .repomix
+│  └─ bundles.json
+├─ .yarn
+│  ├─ install-state.gz
+│  └─ releases
+│     └─ yarn-4.9.1.cjs
+├─ .yarnrc.yml
+├─ LICENSE
+├─ Migration.txt
+├─ Opgave 2.3.txt
+├─ README.md
+├─ Struktur.txt
+├─ api
+│  └─ web.txt
+├─ apps
+│  ├─ api
+│  │  ├─ .eslintrc.js
+│  │  ├─ .prettierrc
+│  │  ├─ .turbo
+│  │  │  └─ turbo-lint.log
+│  │  ├─ Dockerfile
+│  │  ├─ nest-cli.json
+│  │  ├─ package.json
+│  │  ├─ prisma
+│  │  │  ├─ migrations
+│  │  │  │  ├─ 20220307034109_initial_migrate
+│  │  │  │  │  └─ migration.sql
+│  │  │  │  ├─ 20250517073440_add_user_auth_fields
+│  │  │  │  │  └─ migration.sql
+│  │  │  │  ├─ 20250517122525_add_password_reset_fields
+│  │  │  │  │  └─ migration.sql
+│  │  │  │  └─ migration_lock.toml
+│  │  │  └─ schema.prisma
+│  │  ├─ src
+│  │  │  ├─ app.controller.spec.ts
+│  │  │  ├─ app.controller.ts
+│  │  │  ├─ app.module.ts
+│  │  │  ├─ app.service.ts
+│  │  │  ├─ auth
+│  │  │  │  ├─ auth.controller.ts
+│  │  │  │  ├─ auth.module.ts
+│  │  │  │  ├─ auth.service.ts
+│  │  │  │  ├─ dto
+│  │  │  │  │  ├─ forgot-password.dto.ts
+│  │  │  │  │  ├─ login.dto.ts
+│  │  │  │  │  └─ reset-password.dto.ts
+│  │  │  │  ├─ guards
+│  │  │  │  │  ├─ jwt-auth.guard.ts
+│  │  │  │  │  └─ local-auth.guard.ts
+│  │  │  │  └─ strategies
+│  │  │  │     ├─ jwt
+│  │  │  │     │  └─ jwt.ts
+│  │  │  │     └─ local
+│  │  │  │        └─ local.ts
+│  │  │  ├─ config
+│  │  │  │  └─ environment-variables.ts
+│  │  │  ├─ main.ts
+│  │  │  ├─ persistence
+│  │  │  │  ├─ persistence.module.ts
+│  │  │  │  └─ prisma
+│  │  │  │     ├─ prisma.service.spec.ts
+│  │  │  │     └─ prisma.service.ts
+│  │  │  └─ users
+│  │  │     ├─ dto
+│  │  │     │  └─ create-user.dto.ts
+│  │  │     ├─ users.controller.spec.ts
+│  │  │     ├─ users.controller.ts
+│  │  │     ├─ users.module.ts
+│  │  │     ├─ users.service.spec.ts
+│  │  │     └─ users.service.ts
+│  │  ├─ test
+│  │  │  ├─ app.e2e-spec.ts
+│  │  │  └─ jest-e2e.json
+│  │  ├─ tsconfig.json
+│  │  └─ webpack-hmr.config.js
+│  └─ web
+│     ├─ .eslintrc.js
+│     ├─ .swc
+│     │  └─ plugins
+│     │     └─ v7_macos_aarch64_0.98.5
+│     ├─ .turbo
+│     │  └─ turbo-lint.log
+│     ├─ Dockerfile
+│     ├─ README.md
+│     ├─ jest.config.js
+│     ├─ jest.setup.js
+│     ├─ next-env.d.ts
+│     ├─ next.config.js
+│     ├─ package.json
+│     ├─ pages
+│     │  ├─ _app.tsx
+│     │  ├─ forgot-password.tsx
+│     │  ├─ index.tsx
+│     │  ├─ login.tsx
+│     │  ├─ profile.tsx
+│     │  ├─ reset-password.tsx
+│     │  └─ signup.tsx
+│     ├─ postcss.config.js
+│     ├─ src
+│     │  ├─ common
+│     │  ├─ components
+│     │  │  └─ auth
+│     │  ├─ context
+│     │  │  └─ AuthContext.tsx
+│     │  ├─ screens
+│     │  │  ├─ admin
+│     │  │  ├─ auth
+│     │  │  │  ├─ forgot-password
+│     │  │  │  │  └─ forgot-password.tsx
+│     │  │  │  ├─ login
+│     │  │  │  │  ├─ login.test.tsx
+│     │  │  │  │  └─ login.tsx
+│     │  │  │  ├─ reset-password
+│     │  │  │  │  └─ reset-password.tsx
+│     │  │  │  └─ signup
+│     │  │  │     └─ signup.tsx
+│     │  │  ├─ common
+│     │  │  └─ employee
+│     │  ├─ store
+│     │  │  ├─ index.ts
+│     │  │  └─ services
+│     │  │     └─ api.ts
+│     │  └─ styles
+│     │     └─ global.css
+│     ├─ tailwind.config.js
+│     └─ tsconfig.json
+├─ docker-compose.yml
+├─ package-scripts.js
+├─ package.json
+├─ packages
+│  ├─ config
+│  │  ├─ eslint-preset.js
+│  │  ├─ nginx.conf
+│  │  ├─ package.json
+│  │  ├─ postcss.config.js
+│  │  ├─ src
+│  │  │  ├─ env.ts
+│  │  │  └─ index.ts
+│  │  ├─ tailwind.config.js
+│  │  └─ tsconfig.json
+│  ├─ core
+│  │  ├─ package.json
+│  │  ├─ src
+│  │  │  ├─ index.ts
+│  │  │  └─ types
+│  │  │     └─ user.types.ts
+│  │  └─ tsconfig.json
+│  ├─ tsconfig
+│  │  ├─ README.md
+│  │  ├─ base.json
+│  │  ├─ nestjs.json
+│  │  ├─ nextjs.json
+│  │  ├─ package.json
+│  │  └─ react-library.json
+│  └─ ui
+│     ├─ components
+│     │  └─ Button
+│     │     └─ Button.tsx
+│     ├─ index.tsx
+│     ├─ package.json
+│     └─ tsconfig.json
+├─ src
+├─ terminal.txt
+├─ turbo.json
+└─ yarn.lock
+
+```
+</file>
+
 <file path="packages/config/package.json">
 {
   "name": "@repo/config",
@@ -4239,6 +4741,142 @@ The app should be running at `http://localhost` with reverse proxy configured.
 
 ## Other available commands
 Run `nps` in the terminal to see list of all available commands.
+</file>
+
+<file path="apps/web/Dockerfile">
+############ 1. Dependencies ############
+FROM node:20-alpine AS deps
+WORKDIR /app
+
+COPY package.json yarn.lock .yarnrc.yml ./
+COPY .yarn/ .yarn/
+RUN corepack enable \
+ && corepack prepare yarn@4.9.1 --activate \
+ && yarn install --immutable --inline-builds
+
+############ 2. Source + Build ##########
+FROM node:20-alpine AS build
+WORKDIR /app
+
+COPY --from=deps /app/ /app/
+COPY apps/web/  ./apps/web/
+COPY packages/  ./packages/
+
+# NextJS production build (static server)
+RUN yarn workspace web build
+
+############ 3. Runtime #################
+FROM node:20-alpine AS runner
+WORKDIR /app
+ENV NODE_ENV=production
+
+COPY --from=build /app/apps/web/.next              ./.next
+COPY --from=build /app/apps/web/public             ./public
+COPY --from=build /app/apps/web/package.json       ./package.json
+COPY --from=deps  /app/node_modules                ./node_modules
+
+EXPOSE 3000
+CMD ["node","./node_modules/next/dist/bin/next","start","-p","3000"]
+</file>
+
+<file path="docker-compose.yml">
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: learninglab-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: mydb
+      POSTGRES_USER: test
+      POSTGRES_PASSWORD: test
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+      target: runner
+    container_name: learninglab-api
+    depends_on:
+      - postgres
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgres://test:test@postgres:5432/mydb
+    ports:
+      - "5002:5002"
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      target: runner
+    container_name: learninglab-web
+    depends_on:
+      - api
+    environment:
+      NODE_ENV: production
+      NEXT_PUBLIC_API_URL: http://api:5002
+    ports:
+      - "3000:3000"
+
+  reverse-proxy:
+    image: nginx:latest
+    container_name: learninglab-nginx
+    restart: unless-stopped
+    depends_on:
+      - web
+    ports:
+      - "80:80"
+    volumes:
+      - ./packages/config/nginx.conf:/etc/nginx/nginx.conf:ro
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+volumes:
+  db_data:
+</file>
+
+<file path="apps/api/Dockerfile">
+############ 1. Dependencies ############
+FROM node:20-alpine AS deps
+WORKDIR /app
+
+# Kopiér Yarn Berry‑metadata først for cache‑hit
+COPY package.json yarn.lock .yarnrc.yml ./
+COPY .yarn/ .yarn/
+
+RUN corepack enable \
+ && corepack prepare yarn@4.9.1 --activate \
+ && yarn install --immutable --inline-builds
+
+############ 2. Source + Build ##########
+FROM node:20-alpine AS build
+WORKDIR /app
+
+# Hent allerede installerede node_modules
+COPY --from=deps /app/ /app/
+
+# Kopiér kun det der vedrører API‑appen (+ shared packages)
+COPY apps/api/ ./apps/api/
+COPY packages/ ./packages/
+
+# Byg NestJS
+RUN yarn workspace api build
+
+############ 3. Runtime #################
+FROM node:20-alpine AS runner
+WORKDIR /app
+ENV NODE_ENV=production
+
+# Hent compiled output & prod‑deps
+COPY --from=build /app/apps/api/dist ./dist
+COPY --from=deps  /app/node_modules ./node_modules
+
+EXPOSE 5002
+CMD ["node","dist/main.js"]
 </file>
 
 <file path="apps/api/package.json">
