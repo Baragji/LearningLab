@@ -1,12 +1,12 @@
-# fælles rod
+# Git & dev‑rod
 .git
-node_modules
-.yarn/cache
-.yarn/unplugged
-# test-output
-coverage
-dist
-# editorfiler
-.idea
 .vscode
-.DS_Store
+.idea
+*.log
+node_modules/
+.yarn/cache/
+dist/
+.next/
+coverage/
+Dockerfile*
+README.md
