@@ -11,7 +11,7 @@ COPY .yarn ./.yarn
 RUN corepack enable \
  && corepack prepare yarn@4.9.1 --activate
 
-RUN yarn install --immutable --immutable-cache --check-cache
+RUN yarn install --immutable --mode=update-lockfile --immutable-cache --check-cache
 COPY . .
 RUN yarn turbo prune --scope=web --docker
 
@@ -24,7 +24,7 @@ COPY --from=builder /app/.yarn ./.yarn
 COPY --from=builder /app/out/json/ ./
 COPY --from=builder /app/out/yarn.lock ./yarn.lock
 COPY --from=builder /app/out/full/ ./
-RUN yarn install --immutable --immutable-cache --check-cache
+RUN yarn install --immutable --mode=update-lockfile --immutable-cache --check-cache
 
 # Sourcer stage: Byg Next.js
 FROM node:20-alpine AS sourcer
