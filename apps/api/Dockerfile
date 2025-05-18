@@ -8,7 +8,7 @@ COPY .yarn/ .yarn/
 
 RUN corepack enable \
  && corepack prepare yarn@4.9.1 --activate \
- && yarn install --immutable --inline-builds
+ && yarn install --immutable --inline-builds # <-- --immutable TILBAGE HER
 
 ############ 2. Source + Build ##########
 FROM node:20-alpine AS build
@@ -22,7 +22,9 @@ COPY apps/api/ ./apps/api/
 COPY packages/ ./packages/
 
 # Byg NestJS
-RUN yarn workspace api build
+RUN corepack enable \
+ && corepack prepare yarn@4.9.1 --activate \
+ && yarn workspace api build # <-- TILFØJET corepack enable... her
 
 ############ 3. Runtime #################
 FROM node:20-alpine AS runner
