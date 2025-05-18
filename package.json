@@ -2,6 +2,7 @@
   "name": "turborepo-basic-shared",
   "version": "0.0.0",
   "private": true,
+  "packageManager": "yarn@4.9.1",
   "workspaces": [
     "apps/*",
     "packages/*"
@@ -17,12 +18,11 @@
     "prisma": "^5.1.0",
     "turbo": "1.10.12"
   },
+  "dependencies": {
+    "@nestjs/config": "^4.0.2"
+  },
   "engines": {
     "npm": ">=7.0.0",
     "node": ">=14.0.0"
-  },
-  "packageManager": "yarn@4.9.1",
-  "dependencies": {
-    "@nestjs/config": "^4.0.2"
   }
 }
