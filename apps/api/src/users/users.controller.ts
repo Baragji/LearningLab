@@ -10,15 +10,13 @@ import {
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
-import { User } from '@prisma/client'; // Importer User type for returtypen
+// Importer CoreUser fra @repo/core for returtypen
+import { User as CoreUser } from '@repo/core';
 
-@Controller('users') // Alle ruter i denne controller vil starte med /users
+@Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  // Definerer en POST-rute til /users/signup
-  // @UsePipes(...) aktiverer automatisk validering af request body'en baseret på CreateUserDto
-  // @HttpCode(...) sætter HTTP statuskoden til 201 Created ved succesfuld oprettelse
   @Post('signup')
   @UsePipes(
     new ValidationPipe({
@@ -28,18 +26,10 @@ export class UsersController {
     }),
   )
   @HttpCode(HttpStatus.CREATED)
+  // Returtypen er nu Omit<CoreUser, 'passwordHash'> for at matche UsersService.create
   async signUp(
     @Body() createUserDto: CreateUserDto,
-  ): Promise<Omit<User, 'passwordHash'>> {
-    // @Body() decorator tager request body'en og mapper den til createUserDto
-    // UsersService.create kaldes for at håndtere selve brugeroprettelsen
+  ): Promise<Omit<CoreUser, 'passwordHash'>> {
     return this.usersService.create(createUserDto);
   }
-
-  // Her kan andre endpoints tilføjes senere, f.eks.:
-  // @Get()
-  // findAll() { ... }
-
-  // @Get(':id')
-  // findOne(@Param('id') id: string) { ... }
 }

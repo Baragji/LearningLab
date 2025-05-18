@@ -2,10 +2,12 @@
   "name": "tsconfig",
   "version": "0.0.0",
   "private": true,
+  "packageManager": "yarn@4.9.1", 
   "main": "index.js",
   "files": [
     "base.json",
+    "nestjs.json",
     "nextjs.json",
-    "react-library.json"
+    "react-library.json" 
   ]
 }

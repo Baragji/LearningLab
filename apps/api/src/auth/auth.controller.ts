@@ -1,73 +1,69 @@
-// apps/api/src/auth/auth.controller.ts
-import {
-  Controller,
-  Request,
-  Post,
-  UseGuards,
-  Get,
-  HttpCode,
-  HttpStatus,
-  Body,
-  ValidationPipe,
-} from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { LocalAuthGuard } from './guards/local-auth.guard';
-import { JwtAuthGuard } from './guards/jwt-auth.guard';
-import { User as UserModel } from '@prisma/client';
-import { LoginDto } from './dto/login.dto';
-import { ForgotPasswordDto } from './dto/forgot-password.dto'; // Importer ForgotPasswordDto
-import { ResetPasswordDto } from './dto/reset-password.dto'; // Importer ResetPasswordDto
+    // apps/api/src/auth/auth.controller.ts
+    import {
+      Controller,
+      Request, // Standard Request type fra @nestjs/common
+      Post,
+      UseGuards,
+      Get,
+      HttpCode,
+      HttpStatus,
+      Body,
+      ValidationPipe,
+    } from '@nestjs/common';
+    import { AuthService } from './auth.service';
+    import { LocalAuthGuard } from './guards/local-auth.guard';
+    import { JwtAuthGuard } from './guards/jwt-auth.guard';
+    import { User as CoreUser } from '@repo/core'; // Importer CoreUser fra @repo/core
+    import { LoginDto } from './dto/login.dto';
+    import { ForgotPasswordDto } from './dto/forgot-password.dto';
+    import { ResetPasswordDto } from './dto/reset-password.dto';
 
-interface AuthenticatedRequest extends Request {
-  user: Omit<UserModel, 'passwordHash'>;
-}
+    // Definer en type for request objektet, der indeholder brugeren efter autentificering
+    interface AuthenticatedRequest extends globalThis.Request { // Eller Express.Request hvis du bruger @types/express
+      user: Omit<CoreUser, 'passwordHash'>; // req.user er nu af typen Omit<CoreUser, 'passwordHash'>
+    }
 
-@Controller('auth')
-export class AuthController {
-  constructor(private authService: AuthService) {}
+    @Controller('auth')
+    export class AuthController {
+      constructor(private authService: AuthService) {}
 
-  @UseGuards(LocalAuthGuard)
-  @Post('login')
-  @HttpCode(HttpStatus.OK)
-  async login(
-    @Request() req: AuthenticatedRequest,
-    @Body() loginDto: LoginDto,
-  ): Promise<{ access_token: string }> {
-    // loginDto er her for Swagger og klarhed, validering sker i LocalStrategy
-    return this.authService.login(req.user);
-  }
+      @UseGuards(LocalAuthGuard)
+      @Post('login')
+      @HttpCode(HttpStatus.OK)
+      async login(
+        @Request() req: AuthenticatedRequest,
+        // loginDto er her for Swagger og klarhed, validering sker i LocalStrategy/AuthService
+        @Body() loginDto: LoginDto,
+      ): Promise<{ access_token: string }> {
+        // req.user er sat af LocalStrategy (via AuthService.validateUser), som nu returnerer CoreUser formatet
+        return this.authService.login(req.user);
+      }
 
-  @UseGuards(JwtAuthGuard)
-  @Get('profile')
-  getProfile(
-    @Request() req: AuthenticatedRequest,
-  ): Omit<UserModel, 'passwordHash'> {
-    return req.user;
-  }
+      @UseGuards(JwtAuthGuard)
+      @Get('profile')
+      getProfile(
+        @Request() req: AuthenticatedRequest,
+      ): Omit<CoreUser, 'passwordHash'> {
+        // req.user er sat af JwtStrategy, som nu returnerer Omit<PrismaUser, 'passwordHash'>,
+        // men for konsistens med CoreUser, bør JwtStrategy også mappe til CoreUser hvis der er forskelle.
+        // I dette tilfælde er de ens nok efter fjernelse af passwordHash.
+        return req.user;
+      }
 
-  /**
-   * Endpoint til at anmode om nulstilling af password.
-   * @param forgotPasswordDto DTO indeholdende brugerens email.
-   * @returns En succesbesked.
-   */
-  @Post('forgot-password')
-  @HttpCode(HttpStatus.OK) // Returnerer 200 OK, da vi ikke vil afsløre om emailen findes
-  async forgotPassword(
-    @Body(new ValidationPipe()) forgotPasswordDto: ForgotPasswordDto,
-  ): Promise<{ message: string }> {
-    return this.authService.forgotPassword(forgotPasswordDto.email);
-  }
+      @Post('forgot-password')
+      @HttpCode(HttpStatus.OK)
+      async forgotPassword(
+        @Body(new ValidationPipe()) forgotPasswordDto: ForgotPasswordDto,
+      ): Promise<{ message: string }> {
+        return this.authService.forgotPassword(forgotPasswordDto.email);
+      }
 
-  /**
-   * Endpoint til at nulstille password med et gyldigt token.
-   * @param resetPasswordDto DTO indeholdende token, nyt password og bekræftelse.
-   * @returns En succesbesked.
-   */
-  @Post('reset-password')
-  @HttpCode(HttpStatus.OK)
-  async resetPassword(
-    @Body(new ValidationPipe()) resetPasswordDto: ResetPasswordDto,
-  ): Promise<{ message: string }> {
-    return this.authService.resetPassword(resetPasswordDto);
-  }
-}
+      @Post('reset-password')
+      @HttpCode(HttpStatus.OK)
+      async resetPassword(
+        @Body(new ValidationPipe()) resetPasswordDto: ResetPasswordDto,
+      ): Promise<{ message:string }> {
+        return this.authService.resetPassword(resetPasswordDto);
+      }
+    }
+    

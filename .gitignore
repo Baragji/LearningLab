@@ -34,3 +34,14 @@ yarn-error.log*
 
 # turbo
 .turbo
+
+# Yarn Berry
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+# .pnp.* # Denne linje er ofte .pnp.cjs eller .pnp.loader.mjs. Vi bruger den generelle form fra planen.
+.pnp.cjs
+.pnp.loader.mjs # Tilføjet for fuldstændighed, hvis PnP bruges senere.
+# Hvis du bruger nodeLinker: node-modules, er .pnp.* måske ikke strengt nødvendigt,
+# men det skader ikke at have dem med for fremtidig fleksibilitet.
+

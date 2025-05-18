@@ -155,11 +155,22 @@ apps/
     tsconfig.json
 packages/
   config/
+    src/
+      env.ts
+      index.ts
     eslint-preset.js
     nginx.conf
     package.json
     postcss.config.js
     tailwind.config.js
+    tsconfig.json
+  core/
+    src/
+      types/
+        user.types.ts
+      index.ts
+    package.json
+    tsconfig.json
   tsconfig/
     base.json
     nestjs.json
@@ -176,17 +187,536 @@ packages/
     tsconfig.json
 .dockerignore
 .gitignore
+.yarnrc.yml
 docker-compose.yml
 LICENSE
+Migration.txt
 package-scripts.js
 package.json
+problems.txt
 README.md
-terminal.txt
 turbo.json
 </directory_structure>
 
 <files>
 This section contains the contents of the repository's files.
+
+<file path="packages/config/src/env.ts">
+// packages/config/src/env.ts
+import { z } from 'zod';
+
+/**
+ * Definerer skemaet for server-side miljøvariabler.
+ * Brug .server() for at sikre, at disse ikke utilsigtet inkluderes i client-side bundles.
+ */
+const serverSchema = z.object({
+  DATABASE_URL: z.string().url({ message: "DATABASE_URL skal være en gyldig URL." }),
+  JWT_SECRET: z.string().min(32, { message: "JWT_SECRET skal være mindst 32 tegn lang." }),
+  JWT_EXPIRES_IN: z.string().default('1h'), // Default værdi hvis ikke sat
+  // NODE_ENV: z.enum(['development', 'production', 'test']).default('development'), // Eksempel
+});
+
+/**
+ * Definerer skemaet for client-side (public) miljøvariabler.
+ * Disse skal prefixxes med NEXT_PUBLIC_ for Next.js applikationer.
+ */
+const clientSchema = z.object({
+  NEXT_PUBLIC_APP_NAME: z.string().default('Læringsplatform'),
+  NEXT_PUBLIC_WS_URL: z.string().url({ message: "NEXT_PUBLIC_WS_URL skal være en gyldig URL." }).default('http://localhost:3001'),
+  // Tilføj andre NEXT_PUBLIC_ variabler her efter behov
+});
+
+/**
+ * Miljøvariabler, der er tilgængelige for både server og client.
+ * Dette er typisk ikke anbefalet for følsomme variabler.
+ * For Next.js, er det bedre at adskille dem klart.
+ * Hvis en variabel skal bruges på både server og client (og ikke er følsom),
+ * kan den defineres her eller i clientSchema (hvis public) og serverSchema (hvis server).
+ */
+// const sharedSchema = z.object({
+//   // F.eks. en feature flag der kan læses af begge
+// });
+
+
+/**
+ * Validerer og parser server-side miljøvariabler.
+ * Kaster en fejl ved build/runtime hvis validering fejler.
+ */
+const parsedServerEnv = serverSchema.safeParse({
+  DATABASE_URL: process.env.DATABASE_URL,
+  JWT_SECRET: process.env.JWT_SECRET,
+  JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN,
+  // NODE_ENV: process.env.NODE_ENV,
+});
+
+if (!parsedServerEnv.success) {
+  console.error(
+    '❌ Ugyldige server-side miljøvariabler:',
+    parsedServerEnv.error.flatten().fieldErrors,
+  );
+  // I et produktionsmiljø bør applikationen ikke starte med ugyldige env vars.
+  // I udvikling kan man overveje at kaste fejlen for at stoppe processen.
+  throw new Error('Ugyldige server-side miljøvariabler. Tjek .env filen og konsollen.');
+}
+export const serverEnv = parsedServerEnv.data;
+
+
+/**
+ * Validerer og parser client-side miljøvariabler.
+ * For Next.js hentes disse typisk direkte via process.env.NEXT_PUBLIC_XXX i client-koden,
+ * men at have et skema her hjælper med central definition og type-sikkerhed.
+ * For at gøre disse typer globalt tilgængelige i Next.js client-side kode uden import,
+ * kan man udvide NodeJS.ProcessEnv interfacet (se Next.js dokumentation).
+ */
+const parsedClientEnv = clientSchema.safeParse({
+  NEXT_PUBLIC_APP_NAME: process.env.NEXT_PUBLIC_APP_NAME,
+  NEXT_PUBLIC_WS_URL: process.env.NEXT_PUBLIC_WS_URL,
+});
+
+if (!parsedClientEnv.success) {
+  console.error(
+    '❌ Ugyldige client-side miljøvariabler:',
+    parsedClientEnv.error.flatten().fieldErrors,
+  );
+  // Overvej at kaste en fejl her også, især under build-processen.
+  throw new Error('Ugyldige client-side miljøvariabler. Tjek .env filen og konsollen.');
+}
+export const clientEnv = parsedClientEnv.data;
+
+/**
+ * Samlet objekt for alle miljøvariabler (kan være nyttigt i nogle sammenhænge,
+ * men adskillelsen af serverEnv og clientEnv er ofte mere sikker og klar).
+ */
+export const env = {
+  ...serverEnv,
+  ...clientEnv,
+  // ...parsedSharedEnv.data, // Hvis sharedSchema bruges
+};
+
+console.log('✅ Miljøvariabler valideret og indlæst.');
+</file>
+
+<file path="packages/config/src/index.ts">
+// packages/config/src/index.ts
+
+/**
+ * Hoved-eksportfil for @repo/config TypeScript-delen.
+ * Herfra eksporteres validerede miljøvariabler og potentielt andre konfigurationsfunktioner.
+ */
+
+export * from './env';
+</file>
+
+<file path="packages/config/tsconfig.json">
+{
+  "extends": "tsconfig/base.json", // Eller tsconfig/react-library.json hvis relevant for fremtidig brug
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "src", // Specificerer roden af input-filerne
+    "baseUrl": "./src",
+    "paths": {
+      "@/*": ["*"]
+    }
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist", "*.js", "*.conf"] // Ekskluder eksisterende .js og .conf filer fra TS-kompilering
+}
+</file>
+
+<file path="packages/core/src/types/user.types.ts">
+// packages/core/src/types/user.types.ts
+
+/**
+ * Definerer de mulige roller en bruger kan have i systemet.
+ * Disse matcher værdierne defineret i Prisma schemaet.
+ */
+export enum Role {
+  USER = 'USER',
+  ADMIN = 'ADMIN',
+}
+
+/**
+ * Interface for en bruger.
+ * Dette er en ren data-kontrakt og indeholder ikke backend-specifikke felter som passwordHash.
+ * Den er beregnet til at blive brugt på tværs af frontend og backend for type-sikkerhed.
+ */
+export interface User {
+  id: number;
+  email: string;
+  name?: string | null; // Navn er valgfrit og kan være null
+  role: Role;
+  createdAt: Date; // Tidspunkt for oprettelse af brugeren
+  updatedAt: Date; // Tidspunkt for seneste opdatering af brugeren
+  // passwordResetToken, passwordResetExpires og passwordHash er udeladt,
+  // da de er backend-specifikke og ikke bør være en del af den delte kerne-type.
+}
+</file>
+
+<file path="packages/core/src/index.ts">
+// packages/core/src/index.ts
+
+/**
+ * Dette er hoved-eksportfilen for @repo/core pakken.
+ * Alle delte typer, interfaces, enums, og potentielt funktioner eller konstanter
+ * bør eksporteres herfra, så de nemt kan importeres i andre pakker (apps/web, apps/api, etc.).
+ */
+
+export * from './types/user.types';
+// Tilføj andre eksports her efterhånden som pakken vokser, f.eks.:
+// export * from './types/course.types';
+// export * from './utils/formatter.utils';
+</file>
+
+<file path="packages/core/package.json">
+{
+  "name": "@repo/core",
+  "version": "0.0.0",
+  "private": true,
+  "packageManager": "yarn@4.9.1", 
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "lint": "eslint . --ext .ts,.tsx"
+  },
+  "devDependencies": {
+    "typescript": "^5.1.6",
+    "tsconfig": "workspace:*", 
+    "eslint": "^8.57.1" 
+  }
+}
+</file>
+
+<file path="packages/core/tsconfig.json">
+{
+  "extends": "../tsconfig/base.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "baseUrl": "./src", // Gør det nemmere at have absolutte imports inden for pakken hvis nødvendigt
+    "paths": { // Eksempel på paths, kan justeres/fjernes efter behov
+      "@/*": ["*"]
+    }
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"]
+}
+</file>
+
+<file path=".yarnrc.yml">
+# .yarnrc.yml
+
+# Denne indstilling specificerer, hvordan Yarn skal linke dine pakkeafhængigheder.
+# 'node-modules' er den mest kompatible tilstand og ligner mest den traditionelle npm/Yarn Classic opførsel.
+# Det betyder, at du stadig vil have en node_modules mappe i dine workspaces.
+nodeLinker: node-modules
+
+# Du kan fjerne kommenteringen af følgende linje, hvis du vil aktivere Yarn's globale cache.
+# Dette kan fremskynde installationer på tværs af projekter, men er valgfrit.
+# enableGlobalCache: true
+
+# Hvis der er andre indstillinger i din eksisterende .yarnrc.yml efter 'yarn set version berry',
+# kan du overveje at beholde dem, hvis du ved, hvad de gør.
+# For en standardopsætning er 'nodeLinker: node-modules' det vigtigste at have med.
+</file>
+
+<file path="Migration.txt">
+Here’s a **complete, no-research-needed** migration plan your developer can follow to move your monorepo from Yarn Classic (v1.x) to Yarn Berry (v2+), including every file to touch and exact commands to run.
+
+> **Summary:**
+>
+> 1. **Prerequisites & Corepack**: Ensure Node >=16.10 and enable Corepack so Yarn Berry can run out-of-the-box ([Medium][1]).
+> 2. **Bootstrap Berry**: Run `yarn set version berry` at the repo root to install Yarn v2+ locally ([Yarn][2]).
+> 3. **`.yarnrc.yml`**: Create/convert your old `.yarnrc` to `.yarnrc.yml` with `nodeLinker: node-modules` (or `pnp`) ([psidium.github.io][3]).
+> 4. **Root `package.json`**: Add `"packageManager": "yarn@<your-berry-version>"` and confirm `workspaces: ["apps/*","packages/*"]` ([heygrady.com][4]).
+> 5. **Workspace `package.json`**: In every `apps/*/package.json` and `packages/*/package.json`, add the same `packageManager` field and switch local deps to `"workspace:*"` if desired ([DoltHub][5]).
+> 6. **`.gitignore`**: Ignore Berry artifacts (`.yarn/cache`, `.pnp.*`, etc.) ([Medium][1]).
+> 7. **Install & Lockfile**: Run `yarn install --immutable` to regenerate `yarn.lock` under Berry rules ([Yarn][2]).
+> 8. **CI/CD**: Update GitHub Actions to use `actions/setup-node@v3` with `cache: "yarn"` or a dedicated `setup-yarn-berry` action and `yarn install --immutable` ([GitHub][6]).
+> 9. **Dockerfiles**: Change install stages to copy only `package.json`, `yarn.lock`, `.yarnrc.yml`, `.yarn/releases` and run `yarn install --immutable` ([DEV Community][7]).
+> 10. **Validation**: Run `yarn workspaces foreach run test` / `yarn tsc --build` and fix any PnP path errors (if using `nodeLinker: pnp`) .
+
+---
+
+## 1. Prerequisites & Corepack
+
+1. **Node >=16.10** is required so you can use Corepack to manage Yarn versions ([Medium][1]).
+2. **Enable Corepack** globally:
+
+   ```bash
+   corepack enable
+   ```
+
+   This makes `yarn set version berry` available without a separate install ([Medium][1]).
+
+---
+
+## 2. Bootstrap Yarn Berry in Root
+
+1. From your repo root, run:
+
+   ```bash
+   yarn set version berry
+   ```
+
+   This creates `.yarn/releases/yarn-*.cjs` and a minimal `.yarnrc.yml` if none exists ([Yarn][2]).
+2. **Commit** the generated files:
+
+   * `.yarn/releases/yarn-berry.cjs`
+   * `.yarnrc.yml`
+
+---
+
+## 3. Configure `.yarnrc.yml`
+
+Create or replace your old `.yarnrc` with this `.yarnrc.yml` at the repo root:
+
+```yaml
+# Choose one linker:
+nodeLinker: node-modules    # retains node_modules folder
+# nodeLinker: pnp           # Plug’n’Play mode, no node_modules
+
+# (Optionally) enable the global offline cache:
+# enableGlobalCache: true
+```
+
+This new YAML format is required by Yarn v2+ ([psidium.github.io][3]).
+
+---
+
+## 4. Update Root `package.json`
+
+In your **root** `package.json`, ensure it contains:
+
+```diff
+{
+  "name": "learninglab",
+  "private": true,
++ "packageManager": "yarn@3.4.1",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint"
+  },
+  "devDependencies": {
+-   "turbo": "^1.10.0"
++   "turbo": "^1.10.0"
+  }
+}
+```
+
+* `packageManager` locks the Berry version for everyone ([heygrady.com][4]).
+* `workspaces` must list your apps and packages ([heygrady.com][4]).
+
+---
+
+## 5. Update Workspace `package.json` Files
+
+For **each** `apps/*/package.json` and `packages/*/package.json`:
+
+1. Add the same `packageManager` field:
+
+   ```json
+   {
+     "packageManager": "yarn@3.4.1"
+   }
+   ```
+2. If you were using `@repo/core: "*"`, switch to the Berry protocol:
+
+   ```diff
+   "dependencies": {
+   ```
+
+* "@repo/core": "\*",
+* "@repo/config": "\*"
+
+- "@repo/core": "workspace:\*",
+- "@repo/config": "workspace:\*"
+  }
+
+```
+This ties each workspace to the local package version :contentReference[oaicite:16]{index=16}.
+
+---
+
+## 6. Update `.gitignore`  
+Add these entries at the bottom of your root `.gitignore`:  
+```
+
+# Yarn Berry
+
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.pnp.\*
+
+````
+This prevents committing cache artifacts and Plug’n’Play files :contentReference[oaicite:17]{index=17}.
+
+---
+
+## 7. Install & Lockfile Regeneration  
+1. **Clean** existing installs:  
+   ```bash
+   rm -rf node_modules yarn.lock
+````
+
+2. **Install** under Berry constraints:
+
+   ```bash
+   yarn install --immutable
+   ```
+
+   * `--immutable` enforces that `yarn.lock` matches your dependencies or fails ([Yarn][2]).
+
+---
+
+## 8. CI/CD: GitHub Actions
+
+In your `.github/workflows/*.yaml`, replace npm or Yarn Classic steps with:
+
+```yaml
+- uses: actions/checkout@v3
+
+- uses: actions/setup-node@v3
+  with:
+    node-version: 18.x
+    cache: 'yarn'                 # Caches both node_modules & .yarn/cache
+    cache-dependency-path: yarn.lock
+
+- name: Setup Yarn Berry
+  run: |
+    corepack enable
+    yarn set version berry
+
+- name: Install dependencies
+  run: yarn install --immutable
+
+- name: Build
+  run: yarn turbo run build --scope=${{ matrix.project }}
+```
+
+Or use a dedicated action like `threeal/setup-yarn-action` for Berry ([GitHub][6]).
+
+---
+
+## 9. Dockerfile Updates
+
+For **each** `apps/api/Dockerfile` and `apps/web/Dockerfile`, use a multistage build:
+
+```dockerfile
+FROM node:18-alpine AS deps
+WORKDIR /app
+COPY package.json yarn.lock .yarnrc.yml ./
+COPY .yarn/releases ./.yarn/releases
+RUN yarn install --immutable
+
+FROM node:18-alpine AS builder
+WORKDIR /app
+COPY --from=deps /app ./
+COPY . .
+RUN yarn turbo run build --scope=api --include-dependencies
+
+FROM node:18-alpine AS runner
+WORKDIR /app
+COPY --from=builder /app ./
+CMD ["node", "apps/api/dist/main.js"]
+```
+
+* **Stage `deps`** caches only what’s needed for install ([DEV Community][7]).
+* **`yarn install --immutable`** ensures lockfile consistency.
+
+---
+
+## 10. Validation & Troubleshooting
+
+1. **Run tests** in all workspaces:
+
+   ```bash
+   yarn workspaces foreach run test
+   yarn workspaces foreach run lint
+   yarn workspaces foreach run tsc --noEmit
+   ```
+2. If using `nodeLinker: pnp`, you may get PnP path errors in Jest or ESLint. To fix, follow the Yarn PnP docs to add SDKs or `packageExtensions` ([GitHub][8]).
+3. Ensure `turbo` tasks still link correctly under Berry.
+
+---
+
+## 11. Final Commit & Developer Handoff
+
+1. Commit **all** changes:
+
+   ```
+   git add \
+     package.json \
+     **/package.json \
+     yarn.lock \
+     .yarnrc.yml \
+     .yarn/releases \
+     .gitignore \
+     .github/workflows
+   git commit -m "🔄 Migrate monorepo to Yarn Berry (v2+)"
+   ```
+2. Push and verify in CI: the build must pass without needing any additional research.
+
+---
+
+By following these **11** precise steps—with every file and command spelled out—your developer can migrate the repo end-to-end without extra digging.
+
+[1]: https://gabrielyotoo.medium.com/how-to-migrate-your-project-to-modern-yarn-berry-29b2b2a75b84?utm_source=chatgpt.com "How to migrate your project to modern Yarn Berry - Gabriel Yamamoto"
+[2]: https://yarnpkg.com/migration/guide?utm_source=chatgpt.com "Migration steps - Yarn"
+[3]: https://psidium.github.io/lerna/monorepo/yarn/nodejs/pnp/zero-install/2021/08/23/migrating-a-monorepo-from-lerna-to-yarn-3.html?utm_source=chatgpt.com "Migrating a monorepo from Lerna to Yarn 3 with PnP and Zero Install"
+[4]: https://heygrady.com/posts/2022-09-01-creating-a-yarn-monorepo-in-2022/?utm_source=chatgpt.com "Creating a Yarn Monorepo in 2022 - Heygrady"
+[5]: https://dolthub.com/blog/2022-03-18-migrating-to-yarn-2/?utm_source=chatgpt.com "Migrating our Monorepo to Yarn 2 | DoltHub Blog"
+[6]: https://github.com/marketplace/actions/setup-yarn-berry?utm_source=chatgpt.com "Setup Yarn Berry · Actions · GitHub Marketplace"
+[7]: https://dev.to/mattpocockuk/how-to-cache-nodemodules-in-github-actions-with-yarn-24eh?utm_source=chatgpt.com "How to cache node_modules in GitHub Actions with Yarn"
+[8]: https://github.com/yarnpkg/berry/discussions/4978?utm_source=chatgpt.com "Where is the \"Link step\" cached? · yarnpkg berry · Discussion #4978"
+</file>
+
+<file path="problems.txt">
+Del 1: Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % rm -rf node_modules
+rm -rf apps/api/node_modules
+rm -rf apps/web/node_modules
+rm -rf packages/core/node_modules
+rm -rf packages/config/node_modules
+rm -rf packages/ui/node_modules
+# Tilføj andre packages/* mapper, hvis de har node_modules
+rm -f yarn.lock # Slet den gamle lockfil i roden
+echo "✅ Eksisterende node_modules mapper og yarn.lock fjernet."
+✅ Eksisterende node_modules mapper og yarn.lock fjernet.
+Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % yarn install --immutable
+Usage Error: The nearest package directory (/Users/Yousef_1/Desktop/LearningLab/LearningLab) doesn't seem to be part of the project declared in /Users/Yousef_1.
+
+- If /Users/Yousef_1 isn't intended to be a project, remove any yarn.lock and/or package.json file there.
+- If /Users/Yousef_1 is intended to be a project, it might be that you forgot to list Desktop/LearningLab/LearningLab in its workspace configuration.
+- Finally, if /Users/Yousef_1 is fine and you intend Desktop/LearningLab/LearningLab to be treated as a completely separate project (not even a workspace), create an empty yarn.lock file in it.
+
+$ yarn install [--json] [--immutable] [--immutable-cache] [--refresh-lockfile] [--check-cache] [--check-resolutions] [--inline-builds] [--mode #0]
+Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % 
+
+Del 2: 
+Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % ls -a | grep -E "package.json|yarn.lock"
+package.json
+Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % cd ~
+Yousef@MacBook-Pro-tilhrende-Yousef ~ % ls -a | grep -E "package.json|yarn.lock"
+yarn.lock
+Yousef@MacBook-Pro-tilhrende-Yousef ~ % mv yarn.lock yarn.lock.old
+Yousef@MacBook-Pro-tilhrende-Yousef ~ % cd /Users/Yousef_1/Desktop/LearningLab/LearningLab
+Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % rm -rf node_modules
+rm -rf apps/api/node_modules
+rm -rf apps/web/node_modules
+rm -rf packages/core/node_modules
+rm -rf packages/config/node_modules
+rm -rf packages/ui/node_modules
+rm -f yarn.lock # Slet lockfilen i roden af LearningLab
+yarn install --immutable
+➤ YN0000: · Yarn 4.9.1
+➤ YN0028: · The lockfile would have been created by this install, which is explicitly forbidden.
+➤ YN0000: · Failed with errors in 0s 14ms
+Yousef@MacBook-Pro-tilhrende-Yousef LearningLab %
+</file>
 
 <file path=".github/workflows/web.yaml">
 # This is a basic workflow to help you get started with Actions
@@ -1791,11 +2321,13 @@ module.exports = {
   "name": "tsconfig",
   "version": "0.0.0",
   "private": true,
+  "packageManager": "yarn@4.9.1", 
   "main": "index.js",
   "files": [
     "base.json",
+    "nestjs.json",
     "nextjs.json",
-    "react-library.json"
+    "react-library.json" 
   ]
 }
 </file>
@@ -1882,6 +2414,16 @@ yarn-error.log*
 
 # turbo
 .turbo
+
+# Yarn Berry
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+# .pnp.* # Denne linje er ofte .pnp.cjs eller .pnp.loader.mjs. Vi bruger den generelle form fra planen.
+.pnp.cjs
+.pnp.loader.mjs # Tilføjet for fuldstændighed, hvis PnP bruges senere.
+# Hvis du bruger nodeLinker: node-modules, er .pnp.* måske ikke strengt nødvendigt,
+# men det skader ikke at have dem med for fremtidig fleksibilitet.
 </file>
 
 <file path="LICENSE">
@@ -2035,9 +2577,10 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { UsersService } from '../../../users/users.service'; // Justeret sti til UsersService
-import { User } from '@prisma/client';
+import { UsersService } from '../../../users/users.service';
+import { User as PrismaUser, Role as PrismaRole } from '@prisma/client'; // Prisma User for interaktion med UsersService
+import { User as CoreUser, Role as CoreRole } from '@repo/core'; // CoreUser for payload og returtype
+import { serverEnv } from '@repo/config';
 
 export interface JwtPayload {
   email: string;
@@ -2047,29 +2590,42 @@ export interface JwtPayload {
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
-    private readonly configService: ConfigService,
     private readonly usersService: UsersService,
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey:
-        configService.get<string>('JWT_SECRET') ||
-        'DEFAULT_VERY_SECRET_KEY_CHANGE_ME_IN_ENV',
+      secretOrKey: serverEnv.JWT_SECRET,
     });
   }
 
-  async validate(payload: JwtPayload): Promise<Omit<User, 'passwordHash'>> {
-    const user = await this.usersService.findOneById(payload.sub);
+  /**
+   * Helper function to map a PrismaUser object to a CoreUser object (omitting passwordHash).
+   * @param user The PrismaUser object.
+   * @returns A CoreUser object without the passwordHash.
+   */
+  private mapToCoreUser(user: PrismaUser): Omit<CoreUser, 'passwordHash'> {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { passwordHash, passwordResetToken, passwordResetExpires, ...result } = user;
+    return {
+      ...result,
+      name: result.name ?? undefined, // Sørg for at name er string | undefined
+      role: user.role as CoreRole,
+      createdAt: new Date(user.createdAt),
+      updatedAt: new Date(user.updatedAt),
+    };
+  }
 
-    if (!user) {
+  async validate(payload: JwtPayload): Promise<Omit<CoreUser, 'passwordHash'>> {
+    const prismaUser = await this.usersService.findOneById(payload.sub);
+
+    if (!prismaUser) {
       throw new UnauthorizedException(
         'Bruger ikke fundet eller token er ugyldigt.',
       );
     }
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { passwordHash, ...result } = user;
-    return result;
+    // Map PrismaUser til CoreUser format
+    return this.mapToCoreUser(prismaUser);
   }
 }
 </file>
@@ -2079,8 +2635,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 import { Strategy } from 'passport-local';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { AuthService } from '../../auth.service'; // Justeret sti til AuthService
-import { User } from '@prisma/client';
+import { AuthService } from '../../auth.service';
+// Importer CoreUser for at specificere returtypen korrekt
+import { User as CoreUser } from '@repo/core';
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
@@ -2089,12 +2646,12 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
   }
 
   // Denne metode kaldes automatisk af Passport, når LocalAuthGuard bruges
+  // Returtypen er nu Omit<CoreUser, 'passwordHash'> for at matche AuthService.validateUser
   async validate(
     email: string,
     pass: string,
-  ): Promise<Omit<User, 'passwordHash'>> {
-    // Kald AuthService for at validere brugerens email og password
-    // authService.validateUser returnerer allerede Omit<User, 'passwordHash'> | null
+  ): Promise<Omit<CoreUser, 'passwordHash'>> {
+    // authService.validateUser returnerer Omit<CoreUser, 'passwordHash'> | null
     const user = await this.authService.validateUser(email, pass);
 
     if (!user) {
@@ -2102,9 +2659,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
       throw new UnauthorizedException('Ugyldig email eller password.');
     }
 
-    // Brugerobjektet 'user' er allerede i det korrekte format (uden passwordHash),
-    // da authService.validateUser håndterer fjernelsen af passwordHash.
-    // Derfor kan vi returnere 'user' direkte.
+    // Brugerobjektet 'user' er allerede i det korrekte CoreUser format (uden passwordHash)
     return user;
   }
 }
@@ -2112,78 +2667,73 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
 
 <file path="apps/api/src/auth/auth.controller.ts">
 // apps/api/src/auth/auth.controller.ts
-import {
-  Controller,
-  Request,
-  Post,
-  UseGuards,
-  Get,
-  HttpCode,
-  HttpStatus,
-  Body,
-  ValidationPipe,
-} from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { LocalAuthGuard } from './guards/local-auth.guard';
-import { JwtAuthGuard } from './guards/jwt-auth.guard';
-import { User as UserModel } from '@prisma/client';
-import { LoginDto } from './dto/login.dto';
-import { ForgotPasswordDto } from './dto/forgot-password.dto'; // Importer ForgotPasswordDto
-import { ResetPasswordDto } from './dto/reset-password.dto'; // Importer ResetPasswordDto
+    import {
+      Controller,
+      Request, // Standard Request type fra @nestjs/common
+      Post,
+      UseGuards,
+      Get,
+      HttpCode,
+      HttpStatus,
+      Body,
+      ValidationPipe,
+    } from '@nestjs/common';
+    import { AuthService } from './auth.service';
+    import { LocalAuthGuard } from './guards/local-auth.guard';
+    import { JwtAuthGuard } from './guards/jwt-auth.guard';
+    import { User as CoreUser } from '@repo/core'; // Importer CoreUser fra @repo/core
+    import { LoginDto } from './dto/login.dto';
+    import { ForgotPasswordDto } from './dto/forgot-password.dto';
+    import { ResetPasswordDto } from './dto/reset-password.dto';
 
-interface AuthenticatedRequest extends Request {
-  user: Omit<UserModel, 'passwordHash'>;
-}
+    // Definer en type for request objektet, der indeholder brugeren efter autentificering
+    interface AuthenticatedRequest extends globalThis.Request { // Eller Express.Request hvis du bruger @types/express
+      user: Omit<CoreUser, 'passwordHash'>; // req.user er nu af typen Omit<CoreUser, 'passwordHash'>
+    }
 
-@Controller('auth')
-export class AuthController {
-  constructor(private authService: AuthService) {}
+    @Controller('auth')
+    export class AuthController {
+      constructor(private authService: AuthService) {}
 
-  @UseGuards(LocalAuthGuard)
-  @Post('login')
-  @HttpCode(HttpStatus.OK)
-  async login(
-    @Request() req: AuthenticatedRequest,
-    @Body() loginDto: LoginDto,
-  ): Promise<{ access_token: string }> {
-    // loginDto er her for Swagger og klarhed, validering sker i LocalStrategy
-    return this.authService.login(req.user);
-  }
+      @UseGuards(LocalAuthGuard)
+      @Post('login')
+      @HttpCode(HttpStatus.OK)
+      async login(
+        @Request() req: AuthenticatedRequest,
+        // loginDto er her for Swagger og klarhed, validering sker i LocalStrategy/AuthService
+        @Body() loginDto: LoginDto,
+      ): Promise<{ access_token: string }> {
+        // req.user er sat af LocalStrategy (via AuthService.validateUser), som nu returnerer CoreUser formatet
+        return this.authService.login(req.user);
+      }
 
-  @UseGuards(JwtAuthGuard)
-  @Get('profile')
-  getProfile(
-    @Request() req: AuthenticatedRequest,
-  ): Omit<UserModel, 'passwordHash'> {
-    return req.user;
-  }
+      @UseGuards(JwtAuthGuard)
+      @Get('profile')
+      getProfile(
+        @Request() req: AuthenticatedRequest,
+      ): Omit<CoreUser, 'passwordHash'> {
+        // req.user er sat af JwtStrategy, som nu returnerer Omit<PrismaUser, 'passwordHash'>,
+        // men for konsistens med CoreUser, bør JwtStrategy også mappe til CoreUser hvis der er forskelle.
+        // I dette tilfælde er de ens nok efter fjernelse af passwordHash.
+        return req.user;
+      }
 
-  /**
-   * Endpoint til at anmode om nulstilling af password.
-   * @param forgotPasswordDto DTO indeholdende brugerens email.
-   * @returns En succesbesked.
-   */
-  @Post('forgot-password')
-  @HttpCode(HttpStatus.OK) // Returnerer 200 OK, da vi ikke vil afsløre om emailen findes
-  async forgotPassword(
-    @Body(new ValidationPipe()) forgotPasswordDto: ForgotPasswordDto,
-  ): Promise<{ message: string }> {
-    return this.authService.forgotPassword(forgotPasswordDto.email);
-  }
+      @Post('forgot-password')
+      @HttpCode(HttpStatus.OK)
+      async forgotPassword(
+        @Body(new ValidationPipe()) forgotPasswordDto: ForgotPasswordDto,
+      ): Promise<{ message: string }> {
+        return this.authService.forgotPassword(forgotPasswordDto.email);
+      }
 
-  /**
-   * Endpoint til at nulstille password med et gyldigt token.
-   * @param resetPasswordDto DTO indeholdende token, nyt password og bekræftelse.
-   * @returns En succesbesked.
-   */
-  @Post('reset-password')
-  @HttpCode(HttpStatus.OK)
-  async resetPassword(
-    @Body(new ValidationPipe()) resetPasswordDto: ResetPasswordDto,
-  ): Promise<{ message: string }> {
-    return this.authService.resetPassword(resetPasswordDto);
-  }
-}
+      @Post('reset-password')
+      @HttpCode(HttpStatus.OK)
+      async resetPassword(
+        @Body(new ValidationPipe()) resetPasswordDto: ResetPasswordDto,
+      ): Promise<{ message:string }> {
+        return this.authService.resetPassword(resetPasswordDto);
+      }
+    }
 </file>
 
 <file path="apps/api/src/auth/auth.module.ts">
@@ -2196,207 +2746,198 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { LocalStrategy } from './strategies/local/local';
 import { JwtStrategy } from './strategies/jwt/jwt';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { PersistenceModule } from '../persistence/persistence.module'; // <--- TILFØJ DENNE LINJE
+import { ConfigModule } from '@nestjs/config'; // ConfigModule kan stadig være her, hvis andre dele har brug for den
+import { PersistenceModule } from '../persistence/persistence.module';
+import { serverEnv } from '@repo/config'; // Importer serverEnv for JWT secret og expires_in
 
 @Module({
   imports: [
     UsersModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => ({
-        secret:
-          configService.get<string>('JWT_SECRET') ||
-          'DEFAULT_VERY_SECRET_KEY_CHANGE_ME_IN_ENV',
+      // imports: [ConfigModule], // Ikke længere nødvendigt at importere ConfigModule specifikt for JWT secret/expires her
+      // inject: [ConfigService], // Ikke længere nødvendigt at injecte ConfigService specifikt for JWT secret/expires her
+      useFactory: async () => ({ // ConfigService parameter fjernet, da vi bruger serverEnv direkte
+        secret: serverEnv.JWT_SECRET,
         signOptions: {
-          expiresIn: configService.get<string>('JWT_EXPIRES_IN') || '1h',
+          expiresIn: serverEnv.JWT_EXPIRES_IN,
         },
       }),
     }),
-    ConfigModule,
-    PersistenceModule, // <--- TILFØJ PersistenceModule HER
+    ConfigModule, // Bevar hvis andre dele af AuthModule eller dens providers bruger ConfigService generelt
+    PersistenceModule,
   ],
   controllers: [AuthController],
   providers: [AuthService, LocalStrategy, JwtStrategy],
-  exports: [AuthService, JwtModule],
+  exports: [AuthService, JwtModule], // JwtModule eksporteres typisk, så andre moduler kan injecte JwtService
 })
 export class AuthModule {}
 </file>
 
 <file path="apps/api/src/auth/auth.service.ts">
 // apps/api/src/auth/auth.service.ts
-import {
-  Injectable,
-  UnauthorizedException,
-  NotFoundException,
-  BadRequestException,
-  InternalServerErrorException,
-} from '@nestjs/common';
-import { UsersService } from '../users/users.service';
-import { JwtService } from '@nestjs/jwt';
-import * as bcrypt from 'bcryptjs';
-import { User } from '@prisma/client';
-import { JwtPayload } from './strategies/jwt/jwt';
-import { PrismaService } from '../persistence/prisma/prisma.service'; // Importer PrismaService
-import { v4 as uuidv4 } from 'uuid'; // Til at generere unikke tokens
-import { ResetPasswordDto } from './dto/reset-password.dto'; // Importer ResetPasswordDto
+    import {
+      Injectable,
+      UnauthorizedException,
+      BadRequestException,
+      InternalServerErrorException,
+    } from '@nestjs/common';
+    import { UsersService } from '../users/users.service';
+    import { JwtService } from '@nestjs/jwt';
+    import * as bcrypt from 'bcryptjs';
+    import { User as PrismaUser } from '@prisma/client'; // PrismaUser bruges internt
+    import { User as CoreUser, Role as CoreRole } from '@repo/core'; // CoreUser for eksterne kontrakter
+    import { JwtPayload } from './strategies/jwt/jwt';
+    import { PrismaService } from '../persistence/prisma/prisma.service';
+    import { v4 as uuidv4 } from 'uuid';
+    import { ResetPasswordDto } from './dto/reset-password.dto';
 
-@Injectable()
-export class AuthService {
-  constructor(
-    private usersService: UsersService,
-    private jwtService: JwtService,
-    private prisma: PrismaService, // Injicer PrismaService for direkte databaseadgang her
-  ) {}
+    @Injectable()
+    export class AuthService {
+      constructor(
+        private usersService: UsersService,
+        private jwtService: JwtService,
+        private prisma: PrismaService,
+      ) {}
 
-  async validateUser(
-    email: string,
-    pass: string,
-  ): Promise<Omit<User, 'passwordHash'> | null> {
-    const user = await this.usersService.findOneByEmail(email);
+      /**
+       * Validates a user based on email and password.
+       * @param email The user's email.
+       * @param pass The user's password.
+       * @returns A CoreUser object (without passwordHash) if validation is successful, otherwise null.
+       */
+      async validateUser(
+        email: string,
+        pass: string,
+      ): Promise<Omit<CoreUser, 'passwordHash'> | null> {
+        const userEntity: PrismaUser | null = await this.usersService.findOneByEmail(email);
 
-    if (user) {
-      const isPasswordMatching = await bcrypt.compare(pass, user.passwordHash);
-      if (isPasswordMatching) {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { passwordHash, ...result } = user;
-        return result;
+        if (userEntity) {
+          const isPasswordMatching = await bcrypt.compare(pass, userEntity.passwordHash);
+          if (isPasswordMatching) {
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const { passwordHash, ...result } = userEntity;
+            // Map til CoreUser format
+            return {
+              ...result,
+              role: userEntity.role as CoreRole, // Type assertion
+              createdAt: new Date(userEntity.createdAt),
+              updatedAt: new Date(userEntity.updatedAt),
+            };
+          }
+        }
+        return null;
+      }
+
+      /**
+       * Generates a JWT access token for a given user.
+       * @param user The user object (CoreUser format, without passwordHash).
+       * @returns An object containing the access_token.
+       */
+      async login(
+        user: Omit<CoreUser, 'passwordHash'>, // Forventer CoreUser format
+      ): Promise<{ access_token: string }> {
+        const payload: JwtPayload = { email: user.email, sub: user.id };
+        return {
+          access_token: this.jwtService.sign(payload),
+        };
+      }
+
+      async forgotPassword(email: string): Promise<{ message: string }> {
+        const user = await this.usersService.findOneByEmail(email); // Returnerer PrismaUser
+        if (!user) {
+          return {
+            message:
+              'Hvis din email findes i systemet, vil du modtage et link til at nulstille dit password.',
+          };
+        }
+
+        const resetToken = uuidv4();
+        const expires = new Date();
+        expires.setHours(expires.getHours() + 1); // Token udløber om 1 time
+
+        try {
+          await this.prisma.user.update({
+            where: { email },
+            data: {
+              passwordResetToken: resetToken,
+              passwordResetExpires: expires,
+            },
+          });
+
+          // VIGTIGT: I en rigtig applikation, send email her!
+          console.log(`Password Reset Token for ${email}: ${resetToken}`); // Kun til udvikling
+
+          return {
+            message:
+              'Hvis din email findes i systemet, vil du modtage et link til at nulstille dit password.',
+          };
+        } catch (error) {
+          console.error('Fejl under opdatering af bruger med reset token:', error);
+          throw new InternalServerErrorException(
+            'Der opstod en fejl under behandling af din anmodning.',
+          );
+        }
+      }
+
+      async resetPassword(
+        resetPasswordDto: ResetPasswordDto,
+      ): Promise<{ message: string }> {
+        const { token, newPassword, confirmPassword } = resetPasswordDto;
+
+        if (newPassword !== confirmPassword) {
+          throw new BadRequestException('De nye passwords matcher ikke.');
+        }
+
+        const user = await this.prisma.user.findUnique({ // Arbejder med PrismaUser
+          where: { passwordResetToken: token },
+        });
+
+        if (!user) {
+          throw new BadRequestException(
+            'Ugyldigt eller udløbet password reset token (bruger ikke fundet).',
+          );
+        }
+
+        if (!user.passwordResetExpires || user.passwordResetExpires < new Date()) {
+          await this.prisma.user.update({
+            where: { id: user.id },
+            data: { passwordResetToken: null, passwordResetExpires: null },
+          });
+          throw new BadRequestException(
+            'Ugyldigt eller udløbet password reset token (token udløbet).',
+          );
+        }
+
+        const saltRounds = 10;
+        let hashedPassword;
+        try {
+          hashedPassword = await bcrypt.hash(newPassword, saltRounds);
+        } catch (error) {
+          console.error('Fejl under hashing af nyt password:', error);
+          throw new InternalServerErrorException(
+            'Der opstod en fejl under nulstilling af password (hashing).',
+          );
+        }
+
+        try {
+          await this.prisma.user.update({
+            where: { id: user.id },
+            data: {
+              passwordHash: hashedPassword,
+              passwordResetToken: null,
+              passwordResetExpires: null,
+            },
+          });
+          return { message: 'Dit password er blevet nulstillet succesfuldt.' };
+        } catch (error) {
+          console.error('Fejl under opdatering af brugers password:', error);
+          throw new InternalServerErrorException(
+            'Der opstod en fejl under nulstilling af password (database).',
+          );
+        }
       }
     }
-    return null;
-  }
-
-  async login(
-    user: Omit<User, 'passwordHash'>,
-  ): Promise<{ access_token: string }> {
-    const payload: JwtPayload = { email: user.email, sub: user.id };
-    return {
-      access_token: this.jwtService.sign(payload),
-    };
-  }
-
-  /**
-   * Håndterer en "glemt password" anmodning.
-   * Genererer et reset token, sætter en udløbstid, og gemmer det på brugeren.
-   * I en rigtig applikation ville man her sende en e-mail til brugeren med reset-linket.
-   * @param email Brugerens email
-   * @returns Et succes-objekt eller kaster en fejl.
-   */
-  async forgotPassword(email: string): Promise<{ message: string }> {
-    const user = await this.usersService.findOneByEmail(email);
-    if (!user) {
-      // Selvom brugeren ikke findes, returnerer vi en generisk besked for ikke at afsløre, om en email er registreret.
-      // Log internt, at der blev forsøgt password reset på en ikke-eksisterende email, hvis nødvendigt for sikkerhedsovervågning.
-      // console.warn(`Password reset anmodning for ikke-eksisterende email: ${email}`);
-      return {
-        message:
-          'Hvis din email findes i systemet, vil du modtage et link til at nulstille dit password.',
-      };
-    }
-
-    const resetToken = uuidv4(); // Generer et unikt token
-    const expires = new Date();
-    expires.setHours(expires.getHours() + 1); // Token udløber om 1 time
-
-    try {
-      await this.prisma.user.update({
-        where: { email },
-        data: {
-          passwordResetToken: resetToken,
-          passwordResetExpires: expires,
-        },
-      });
-
-      // **VIGTIGT: Send e-mail til brugeren her!**
-      // I en rigtig applikation skal du her integrere en e-mail service (f.eks. Nodemailer, SendGrid)
-      // og sende en e-mail til user.email med et link, der indeholder resetToken.
-      // F.eks.: https://din-frontend-app.com/reset-password?token=${resetToken}
-      console.log(`Password Reset Token for ${email}: ${resetToken}`); // Log kun til udvikling! Fjern i produktion.
-
-      return {
-        message:
-          'Hvis din email findes i systemet, vil du modtage et link til at nulstille dit password.',
-      };
-    } catch (error) {
-      console.error('Fejl under opdatering af bruger med reset token:', error);
-      throw new InternalServerErrorException(
-        'Der opstod en fejl under behandling af din anmodning.',
-      );
-    }
-  }
-
-  /**
-   * Nulstiller en brugers password baseret på et gyldigt reset token.
-   * @param resetPasswordDto DTO indeholdende token, nyt password og bekræftelse af password.
-   * @returns Et succes-objekt eller kaster en fejl.
-   */
-  async resetPassword(
-    resetPasswordDto: ResetPasswordDto,
-  ): Promise<{ message: string }> {
-    const { token, newPassword, confirmPassword } = resetPasswordDto;
-
-    if (newPassword !== confirmPassword) {
-      throw new BadRequestException('De nye passwords matcher ikke.');
-    }
-
-    const user = await this.prisma.user.findUnique({
-      where: { passwordResetToken: token },
-    });
-
-    if (!user) {
-      throw new BadRequestException(
-        'Ugyldigt eller udløbet password reset token (bruger ikke fundet).',
-      );
-    }
-
-    if (!user.passwordResetExpires || user.passwordResetExpires < new Date()) {
-      // Ryd tokenet hvis det er udløbet, for at undgå genbrug
-      await this.prisma.user.update({
-        where: { id: user.id },
-        data: { passwordResetToken: null, passwordResetExpires: null },
-      });
-      throw new BadRequestException(
-        'Ugyldigt eller udløbet password reset token (token udløbet).',
-      );
-    }
-
-    // Hash det nye password
-    const saltRounds = 10;
-    let hashedPassword;
-    try {
-      hashedPassword = await bcrypt.hash(newPassword, saltRounds);
-    } catch (error) {
-      console.error('Fejl under hashing af nyt password:', error);
-      throw new InternalServerErrorException(
-        'Der opstod en fejl under nulstilling af password (hashing).',
-      );
-    }
-
-    // Opdater brugerens password og ryd reset token felterne
-    try {
-      await this.prisma.user.update({
-        where: { id: user.id },
-        data: {
-          passwordHash: hashedPassword,
-          passwordResetToken: null, // Ryd tokenet efter brug
-          passwordResetExpires: null, // Ryd udløbsdatoen
-        },
-      });
-
-      // **VIGTIGT: Send evt. en bekræftelses-e-mail til brugeren her!**
-      // Informer brugeren om, at deres password er blevet ændret.
-
-      return { message: 'Dit password er blevet nulstillet succesfuldt.' };
-    } catch (error) {
-      console.error('Fejl under opdatering af brugers password:', error);
-      throw new InternalServerErrorException(
-        'Der opstod en fejl under nulstilling af password (database).',
-      );
-    }
-  }
-}
 </file>
 
 <file path="apps/api/src/persistence/prisma/prisma.service.ts">
@@ -2413,37 +2954,37 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
 
 <file path="apps/api/src/users/dto/create-user.dto.ts">
 // apps/api/src/users/dto/create-user.dto.ts
-import {
-  IsEmail,
-  IsNotEmpty,
-  IsString,
-  MinLength,
-  IsEnum,
-  IsOptional,
-} from 'class-validator';
-import { Role } from '@prisma/client'; // Importer Role enum fra Prisma Client
+    import {
+      IsEmail,
+      IsNotEmpty,
+      IsString,
+      MinLength,
+      IsEnum,
+      IsOptional,
+    } from 'class-validator';
+    import { Role } from '@repo/core'; // Importer Role enum fra @repo/core
 
-export class CreateUserDto {
-  @IsEmail({}, { message: 'Email skal være en gyldig email-adresse.' })
-  @IsNotEmpty({ message: 'Email må ikke være tom.' })
-  email: string;
+    export class CreateUserDto {
+      @IsEmail({}, { message: 'Email skal være en gyldig email-adresse.' })
+      @IsNotEmpty({ message: 'Email må ikke være tom.' })
+      email: string;
 
-  @IsString({ message: 'Password skal være en streng.' })
-  @MinLength(8, { message: 'Password skal være mindst 8 tegn langt.' })
-  @IsNotEmpty({ message: 'Password må ikke være tomt.' })
-  password: string;
+      @IsString({ message: 'Password skal være en streng.' })
+      @MinLength(8, { message: 'Password skal være mindst 8 tegn langt.' })
+      @IsNotEmpty({ message: 'Password må ikke være tomt.' })
+      password: string;
 
-  @IsString({ message: 'Navn skal være en streng.' })
-  @IsOptional() // Gør navnefeltet valgfrit
-  name?: string;
+      @IsString({ message: 'Navn skal være en streng.' })
+      @IsOptional()
+      name?: string;
 
-  // Baseret på din schema.prisma, hvor en bruger har én 'role'
-  @IsEnum(Role, {
-    message: 'Rolle skal være en gyldig værdi (USER eller ADMIN).',
-  })
-  @IsOptional() // Gør rollen valgfri ved oprettelse, så den kan falde tilbage til default i schema
-  role?: Role;
-}
+      // Bruger nu Role enum fra @repo/core
+      @IsEnum(Role, {
+        message: 'Rolle skal være en gyldig værdi (USER eller ADMIN).',
+      })
+      @IsOptional() // Gør rollen valgfri ved oprettelse, så den kan falde tilbage til default i Prisma schema
+      role?: Role;
+    }
 </file>
 
 <file path="apps/api/src/users/users.controller.ts">
@@ -2459,15 +3000,13 @@ import {
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
-import { User } from '@prisma/client'; // Importer User type for returtypen
+// Importer CoreUser fra @repo/core for returtypen
+import { User as CoreUser } from '@repo/core';
 
-@Controller('users') // Alle ruter i denne controller vil starte med /users
+@Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  // Definerer en POST-rute til /users/signup
-  // @UsePipes(...) aktiverer automatisk validering af request body'en baseret på CreateUserDto
-  // @HttpCode(...) sætter HTTP statuskoden til 201 Created ved succesfuld oprettelse
   @Post('signup')
   @UsePipes(
     new ValidationPipe({
@@ -2477,120 +3016,126 @@ export class UsersController {
     }),
   )
   @HttpCode(HttpStatus.CREATED)
+  // Returtypen er nu Omit<CoreUser, 'passwordHash'> for at matche UsersService.create
   async signUp(
     @Body() createUserDto: CreateUserDto,
-  ): Promise<Omit<User, 'passwordHash'>> {
-    // @Body() decorator tager request body'en og mapper den til createUserDto
-    // UsersService.create kaldes for at håndtere selve brugeroprettelsen
+  ): Promise<Omit<CoreUser, 'passwordHash'>> {
     return this.usersService.create(createUserDto);
   }
-
-  // Her kan andre endpoints tilføjes senere, f.eks.:
-  // @Get()
-  // findAll() { ... }
-
-  // @Get(':id')
-  // findOne(@Param('id') id: string) { ... }
 }
 </file>
 
 <file path="apps/api/src/users/users.service.ts">
 // apps/api/src/users/users.service.ts
-import {
-  Injectable,
-  ConflictException,
-  InternalServerErrorException,
-} from '@nestjs/common';
-import { PrismaService } from '../persistence/prisma/prisma.service'; // Sti til din PrismaService
-import { CreateUserDto } from './dto/create-user.dto';
-import * as bcrypt from 'bcryptjs';
-import { User, Role } from '@prisma/client'; // Importer User og Role typer fra Prisma
+    import {
+      Injectable,
+      ConflictException,
+      InternalServerErrorException,
+    } from '@nestjs/common';
+    import { PrismaService } from '../persistence/prisma/prisma.service';
+    import { CreateUserDto } from './dto/create-user.dto';
+    import * as bcrypt from 'bcryptjs';
+    import { User as PrismaUser, Role as PrismaRole } from '@prisma/client'; // Omdøb Prisma types for klarhed
+    import { User as CoreUser, Role as CoreRole } from '@repo/core'; // Importer Core types
 
-@Injectable()
-export class UsersService {
-  constructor(private prisma: PrismaService) {}
+    @Injectable()
+    export class UsersService {
+      constructor(private prisma: PrismaService) {}
 
-  async create(
-    createUserDto: CreateUserDto,
-  ): Promise<Omit<User, 'passwordHash'>> {
-    const { email, password, name, role } = createUserDto;
-
-    // Tjek om brugeren allerede eksisterer
-    const existingUser = await this.prisma.user.findUnique({
-      where: { email },
-    });
-
-    if (existingUser) {
-      throw new ConflictException(
-        'En bruger med denne email eksisterer allerede.',
-      );
-    }
-
-    // Hash passwordet
-    const saltRounds = 10; // Anbefalet antal "salt rounds" for bcrypt
-    let hashedPassword;
-    try {
-      hashedPassword = await bcrypt.hash(password, saltRounds);
-    } catch (error) {
-      // Log den faktiske fejl internt
-      console.error('Fejl under hashing af password:', error);
-      // Vis en generisk fejl til klienten
-      throw new InternalServerErrorException(
-        'Der opstod en intern fejl under brugeroprettelse (hashing).',
-      );
-    }
-
-    // Opret brugeren i databasen
-    try {
-      const user = await this.prisma.user.create({
-        data: {
-          email,
-          passwordHash: hashedPassword, // Gem det hashede password
-          name: name || null, // Sæt til null hvis name ikke er angivet i DTO'en
-          role: role || Role.USER, // Brug den angivne rolle fra DTO'en, eller default til USER hvis ikke angivet
-        },
-      });
-
-      // Fjern det hashede password fra det objekt, der returneres til klienten
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { passwordHash, ...result } = user;
-      return result;
-    } catch (error) {
-      // Håndter specifikke databasefejl, f.eks. hvis unique constraint fejler (selvom vi tjekker ovenfor)
-      if (
-        error &&
-        typeof error === 'object' &&
-        'code' in error &&
-        error.code === 'P2002'
-      ) {
-        // Prisma's kode for unique constraint violation
-        throw new ConflictException(
-          'En bruger med denne email eksisterer allerede (databasefejl).',
-        );
+      /**
+       * Helper function to map a PrismaUser object to a CoreUser object (omitting passwordHash).
+       * @param user The PrismaUser object.
+       * @returns A CoreUser object without the passwordHash.
+       */
+      private mapToCoreUser(user: PrismaUser): Omit<CoreUser, 'passwordHash'> {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { passwordHash, ...result } = user;
+        return {
+          ...result,
+          // Ensure enum compatibility if names are identical (which they are: USER, ADMIN)
+          role: user.role as CoreRole,
+          // Ensure Date objects are correctly typed if they come from JSON,
+          // though Prisma typically returns Date objects directly.
+          createdAt: new Date(user.createdAt),
+          updatedAt: new Date(user.updatedAt),
+        };
       }
-      // Log den faktiske fejl internt
-      console.error('Databasefejl under brugeroprettelse:', error);
-      // Vis en generisk fejl til klienten
-      throw new InternalServerErrorException(
-        'Der opstod en databasefejl under brugeroprettelse.',
-      );
+
+      async create(
+        createUserDto: CreateUserDto,
+      ): Promise<Omit<CoreUser, 'passwordHash'>> { // Returtype er nu baseret på CoreUser
+        const { email, password, name, role } = createUserDto;
+
+        const existingUser = await this.prisma.user.findUnique({
+          where: { email },
+        });
+
+        if (existingUser) {
+          throw new ConflictException(
+            'En bruger med denne email eksisterer allerede.',
+          );
+        }
+
+        const saltRounds = 10;
+        let hashedPassword;
+        try {
+          hashedPassword = await bcrypt.hash(password, saltRounds);
+        } catch (error) {
+          console.error('Fejl under hashing af password:', error);
+          throw new InternalServerErrorException(
+            'Der opstod en intern fejl under brugeroprettelse (hashing).',
+          );
+        }
+
+        try {
+          const prismaUser = await this.prisma.user.create({
+            data: {
+              email,
+              passwordHash: hashedPassword,
+              name: name || null,
+              // Map CoreRole from DTO to PrismaRole for database operation
+              role: (role as unknown as PrismaRole) || PrismaRole.USER,
+            },
+          });
+          // Map den oprettede PrismaUser til CoreUser format før returnering
+          return this.mapToCoreUser(prismaUser);
+        } catch (error) {
+          if (
+            error &&
+            typeof error === 'object' &&
+            'code' in error &&
+            error.code === 'P2002'
+          ) {
+            throw new ConflictException(
+              'En bruger med denne email eksisterer allerede (databasefejl).',
+            );
+          }
+          console.error('Databasefejl under brugeroprettelse:', error);
+          throw new InternalServerErrorException(
+            'Der opstod en databasefejl under brugeroprettelse.',
+          );
+        }
+      }
+
+      // Metoder der bruges internt af f.eks. AuthService kan stadig returnere PrismaUser
+      async findOneByEmail(email: string): Promise<PrismaUser | null> {
+        return this.prisma.user.findUnique({
+          where: { email },
+        });
+      }
+
+      async findOneById(id: number): Promise<PrismaUser | null> {
+        return this.prisma.user.findUnique({
+          where: { id },
+        });
+      }
+
+      // Valgfri: Hvis du vil have en metode, der eksplicit returnerer CoreUser for auth-formål
+      async findOneByEmailForAuth(email: string): Promise<Omit<CoreUser, 'passwordHash'> | null> {
+        const prismaUser = await this.findOneByEmail(email);
+        return prismaUser ? this.mapToCoreUser(prismaUser) : null;
+      }
     }
-  }
-
-  // Metode til at finde en bruger baseret på email (nyttig til login senere)
-  async findOneByEmail(email: string): Promise<User | null> {
-    return this.prisma.user.findUnique({
-      where: { email },
-    });
-  }
-
-  // Metode til at finde en bruger baseret på ID (nyttig til andre operationer senere)
-  async findOneById(id: number): Promise<User | null> {
-    return this.prisma.user.findUnique({
-      where: { id },
-    });
-  }
-}
 </file>
 
 <file path="apps/api/webpack-hmr.config.js">
@@ -2720,23 +3265,22 @@ enum Role {
 <file path="apps/api/src/app.module.ts">
 // apps/api/src/app.module.ts
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config'; // Kun ConfigModule
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { validationSchemaForEnv } from './config/environment-variables';
+// import { validationSchemaForEnv } from './config/environment-variables'; // Fjernet
 import { PersistenceModule } from './persistence/persistence.module';
 import { UsersModule } from './users/users.module';
-import { AuthModule } from './auth/auth.module'; // <--- TILFØJ DENNE LINJE
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({
+    ConfigModule.forRoot({ // Ingen validationSchema her længere for de delte variabler
       isGlobal: true,
-      validationSchema: validationSchemaForEnv,
     }),
     PersistenceModule,
     UsersModule,
-    AuthModule, // <--- TILFØJ AuthModule HER
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
@@ -2954,18 +3498,35 @@ export function LoginScreen() {
 
 <file path="packages/config/package.json">
 {
-  "name": "config",
+  "name": "@repo/config",
   "version": "0.0.0",
-  "main": "index.js",
-  "license": "MIT",
+  "private": true,
+  "packageManager": "yarn@4.9.1", 
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
   "files": [
-    "eslint-preset.js"
+    "eslint-preset.js",
+    "nginx.conf",
+    "postcss.config.js",
+    "tailwind.config.js",
+    "src"
   ],
+  "scripts": {
+    "lint": "eslint . --ext .ts,.tsx",
+    "build": "tsc -p tsconfig.json"
+  },
   "dependencies": {
     "eslint-config-next": "^13.4.12",
     "eslint-config-prettier": "^8.9.0",
-    "eslint-plugin-react": "7.33.1"
-  }
+    "eslint-plugin-react": "7.33.1",
+    "zod": "^3.24.4"  
+  },
+  "devDependencies": {
+    "typescript": "^5.1.6",
+    "tsconfig": "workspace:*", 
+    "eslint": "^8.57.1" 
+  },
+  "license": "MIT"
 }
 </file>
 
@@ -2973,14 +3534,15 @@ export function LoginScreen() {
 {
   "name": "ui",
   "version": "0.0.0",
+  "packageManager": "yarn@4.9.1", 
   "main": "./index.tsx",
   "types": "./index.tsx",
   "license": "MIT",
   "devDependencies": {
     "@types/react": "^18.2.18",
     "@types/react-dom": "^18.2.7",
-    "config": "*",
-    "tsconfig": "*",
+    "config": "workspace:*", 
+    "tsconfig": "workspace:*", 
     "typescript": "^5.1.6"
   }
 }
@@ -3077,69 +3639,6 @@ module.exports = {
 };
 </file>
 
-<file path="terminal.txt">
-Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % # I roden af dit projekt, eller naviger til apps/web
-# yarn add uuid
-# yarn add -D @types/uuid
-Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % yarn add uuid
-yarn add v1.22.22
-error Running this command will add the dependency to the workspace root rather than the workspace itself, which might not be what you want - if you really meant it, make it explicit by running this command again with the -W flag (or --ignore-workspace-root-check).
-info Visit https://yarnpkg.com/en/docs/cli/add for documentation about this command.
-Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % yarn workspace web add uuid
-yarn workspace web add -D @types/uuid
-yarn workspace v1.22.22
-yarn add v1.22.22
-[1/4] 🔍  Resolving packages...
-[2/4] 🚚  Fetching packages...
-[3/4] 🔗  Linking dependencies...
-warning "workspace-aggregator-d320a9ea-0602-4201-970e-815ba729f087 > api > swagger-ui-express@5.0.0" has unmet peer dependency "express@>=4.0.0 || >=5.0.0-beta".
-warning "workspace-aggregator-d320a9ea-0602-4201-970e-815ba729f087 > web > @testing-library/user-event@14.4.3" has unmet peer dependency "@testing-library/dom@>=7.21.4".
-warning "workspace-aggregator-d320a9ea-0602-4201-970e-815ba729f087 > config > eslint-config-next@13.4.12" has unmet peer dependency "eslint@^7.23.0 || ^8.0.0".
-warning "workspace-aggregator-d320a9ea-0602-4201-970e-815ba729f087 > config > eslint-plugin-react@7.33.1" has unmet peer dependency "eslint@^3 || ^4 || ^5 || ^6 || ^7 || ^8".
-warning "workspace-aggregator-d320a9ea-0602-4201-970e-815ba729f087 > config > eslint-config-next > @typescript-eslint/parser@5.46.1" has unmet peer dependency "eslint@^6.0.0 || ^7.0.0 || ^8.0.0".
-warning "workspace-aggregator-d320a9ea-0602-4201-970e-815ba729f087 > config > eslint-config-next > eslint-import-resolver-typescript@3.5.2" has unmet peer dependency "eslint@*".
-warning "workspace-aggregator-d320a9ea-0602-4201-970e-815ba729f087 > config > eslint-config-next > eslint-plugin-import@2.26.0" has unmet peer dependency "eslint@^2 || ^3 || ^4 || ^5 || ^6 || ^7.2.0 || ^8".
-warning "workspace-aggregator-d320a9ea-0602-4201-970e-815ba729f087 > config > eslint-config-next > eslint-plugin-jsx-a11y@6.6.1" has unmet peer dependency "eslint@^3 || ^4 || ^5 || ^6 || ^7 || ^8".
-warning "workspace-aggregator-d320a9ea-0602-4201-970e-815ba729f087 > config > eslint-config-next > eslint-plugin-react@7.31.11" has unmet peer dependency "eslint@^3 || ^4 || ^5 || ^6 || ^7 || ^8".
-warning "workspace-aggregator-d320a9ea-0602-4201-970e-815ba729f087 > config > eslint-config-next > eslint-plugin-react-hooks@5.0.0-canary-7118f5dd7-20230705" has unmet peer dependency "eslint@^3.0.0 || ^4.0.0 || ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0-0".
-warning "workspace-aggregator-d320a9ea-0602-4201-970e-815ba729f087 > config > eslint-config-next > @typescript-eslint/parser > @typescript-eslint/typescript-estree > tsutils@3.21.0" has unmet peer dependency "typescript@>=2.8.0 || >= 3.2.0-dev || >= 3.3.0-dev || >= 3.4.0-dev || >= 3.5.0-dev || >= 3.6.0-dev || >= 3.6.0-beta || >= 3.7.0-dev || >= 3.7.0-beta".
-[4/4] 🔨  Building fresh packages...
-success Saved lockfile.
-success Saved 2 new dependencies.
-info Direct dependencies
-info All dependencies
-├─ ui@0.0.0
-└─ uuid@11.1.0
-✨  Done in 2.33s.
-✨  Done in 2.48s.
-yarn workspace v1.22.22
-yarn add v1.22.22
-[1/4] 🔍  Resolving packages...
-[2/4] 🚚  Fetching packages...
-[3/4] 🔗  Linking dependencies...
-warning "workspace-aggregator-a0994172-0510-4153-86cf-c181519bdad6 > api > swagger-ui-express@5.0.0" has unmet peer dependency "express@>=4.0.0 || >=5.0.0-beta".
-warning "workspace-aggregator-a0994172-0510-4153-86cf-c181519bdad6 > web > @testing-library/user-event@14.4.3" has unmet peer dependency "@testing-library/dom@>=7.21.4".
-warning "workspace-aggregator-a0994172-0510-4153-86cf-c181519bdad6 > config > eslint-config-next@13.4.12" has unmet peer dependency "eslint@^7.23.0 || ^8.0.0".
-warning "workspace-aggregator-a0994172-0510-4153-86cf-c181519bdad6 > config > eslint-plugin-react@7.33.1" has unmet peer dependency "eslint@^3 || ^4 || ^5 || ^6 || ^7 || ^8".
-warning "workspace-aggregator-a0994172-0510-4153-86cf-c181519bdad6 > config > eslint-config-next > @typescript-eslint/parser@5.46.1" has unmet peer dependency "eslint@^6.0.0 || ^7.0.0 || ^8.0.0".
-warning "workspace-aggregator-a0994172-0510-4153-86cf-c181519bdad6 > config > eslint-config-next > eslint-import-resolver-typescript@3.5.2" has unmet peer dependency "eslint@*".
-warning "workspace-aggregator-a0994172-0510-4153-86cf-c181519bdad6 > config > eslint-config-next > eslint-plugin-import@2.26.0" has unmet peer dependency "eslint@^2 || ^3 || ^4 || ^5 || ^6 || ^7.2.0 || ^8".
-warning "workspace-aggregator-a0994172-0510-4153-86cf-c181519bdad6 > config > eslint-config-next > eslint-plugin-jsx-a11y@6.6.1" has unmet peer dependency "eslint@^3 || ^4 || ^5 || ^6 || ^7 || ^8".
-warning "workspace-aggregator-a0994172-0510-4153-86cf-c181519bdad6 > config > eslint-config-next > eslint-plugin-react@7.31.11" has unmet peer dependency "eslint@^3 || ^4 || ^5 || ^6 || ^7 || ^8".
-warning "workspace-aggregator-a0994172-0510-4153-86cf-c181519bdad6 > config > eslint-config-next > eslint-plugin-react-hooks@5.0.0-canary-7118f5dd7-20230705" has unmet peer dependency "eslint@^3.0.0 || ^4.0.0 || ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0-0".
-warning "workspace-aggregator-a0994172-0510-4153-86cf-c181519bdad6 > config > eslint-config-next > @typescript-eslint/parser > @typescript-eslint/typescript-estree > tsutils@3.21.0" has unmet peer dependency "typescript@>=2.8.0 || >= 3.2.0-dev || >= 3.3.0-dev || >= 3.4.0-dev || >= 3.5.0-dev || >= 3.6.0-dev || >= 3.6.0-beta || >= 3.7.0-dev || >= 3.7.0-beta".
-[4/4] 🔨  Building fresh packages...
-success Saved lockfile.
-success Saved 2 new dependencies.
-info Direct dependencies
-info All dependencies
-├─ @types/uuid@10.0.0
-└─ ui@0.0.0
-✨  Done in 2.02s.
-✨  Done in 2.23s.
-Yousef@MacBook-Pro-tilhrende-Yousef LearningLab %
-</file>
-
 <file path="apps/api/src/main.ts">
 // apps/api/src/main.ts
 import { Logger, ValidationPipe } from '@nestjs/common'; // Importer ValidationPipe
@@ -3231,8 +3730,10 @@ bootstrap();
     "npm": ">=7.0.0",
     "node": ">=14.0.0"
   },
-  "packageManager": "yarn@1.22.17",
-  "dependencies": {}
+  "packageManager": "yarn@4.9.1",
+  "dependencies": {
+    "@nestjs/config": "^4.0.2"
+  }
 }
 </file>
 
@@ -3244,6 +3745,7 @@ bootstrap();
   "author": "",
   "private": true,
   "license": "UNLICENSED",
+  "packageManager": "yarn@4.9.1",
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",
@@ -3271,15 +3773,16 @@ bootstrap();
     "@prisma/client": "^5.1.0",
     "bcryptjs": "^3.0.2",
     "class-transformer": "^0.5.1",
-    "class-validator": "^0.14.2",
-    "joi": "^17.9.2",
+    "class-validator": "^0.14.2", 
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
     "passport-local": "^1.0.0",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^5.0.1",
     "rxjs": "^7.8.1",
-    "swagger-ui-express": "^5.0.0"
+    "swagger-ui-express": "^5.0.0",
+    "@repo/core": "workspace:*", 
+    "@repo/config": "workspace:*" 
   },
   "devDependencies": {
     "@nestjs/cli": "^10.1.11",
@@ -3293,7 +3796,7 @@ bootstrap();
     "@types/supertest": "^2.0.12",
     "@typescript-eslint/eslint-plugin": "^6.2.1",
     "@typescript-eslint/parser": "^6.2.1",
-    "eslint": "^8.46.0",
+    "eslint": "^8.57.1", 
     "eslint-config-prettier": "^8.9.0",
     "eslint-plugin-prettier": "^5.0.0",
     "jest": "^29.6.2",
@@ -3336,6 +3839,7 @@ bootstrap();
   "name": "web",
   "version": "0.0.0",
   "private": true,
+  "packageManager": "yarn@4.9.1", 
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -3351,8 +3855,10 @@ bootstrap();
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-redux": "^8.1.2",
-    "ui": "*",
-    "uuid": "^11.1.0"
+    "ui": "workspace:*", 
+    "uuid": "^11.1.0",
+    "@repo/core": "workspace:*", 
+    "@repo/config": "workspace:*"  
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^5.17.0",
@@ -3360,16 +3866,16 @@ bootstrap();
     "@testing-library/user-event": "14.4.3",
     "@types/node": "^20.4.5",
     "@types/react": "18.2.18",
-    "@types/uuid": "^10.0.0",
+    "@types/uuid": "^10.0.0", 
     "autoprefixer": "^10.4.14",
-    "config": "*",
+    "config": "workspace:*", 
     "eslint": "8.46.0",
     "jest": "^29.6.2",
     "jest-environment-jsdom": "^29.6.2",
     "next-transpile-modules": "10.0.1",
     "postcss": "^8.4.27",
     "tailwindcss": "^3.3.3",
-    "tsconfig": "*",
+    "tsconfig": "workspace:*", 
     "typescript": "^5.1.6"
   }
 }

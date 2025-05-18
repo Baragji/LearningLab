@@ -1,0 +1,12 @@
+{
+  "extends": "../tsconfig/base.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "baseUrl": "./src", // Gør det nemmere at have absolutte imports inden for pakken hvis nødvendigt
+    "paths": { // Eksempel på paths, kan justeres/fjernes efter behov
+      "@/*": ["*"]
+    }
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"]
+}
