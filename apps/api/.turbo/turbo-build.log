@@ -1,0 +1,4 @@
+yarn run v1.22.22
+$ rimraf dist
+$ nest build
+Done in 3.00s.

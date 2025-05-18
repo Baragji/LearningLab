@@ -1,0 +1,521 @@
+
+```
+LearningLab
+├─ .dockerignore
+├─ .repomix
+│  └─ bundles.json
+├─ .yarnrc.yml
+├─ LICENSE
+├─ Migration.txt
+├─ README.md
+├─ apps
+│  ├─ api
+│  │  ├─ .env
+│  │  ├─ .eslintrc.js
+│  │  ├─ .prettierrc
+│  │  ├─ Dockerfile
+│  │  ├─ dist
+│  │  │  ├─ app.controller.d.ts
+│  │  │  ├─ app.controller.d.ts.map
+│  │  │  ├─ app.controller.js
+│  │  │  ├─ app.controller.js.map
+│  │  │  ├─ app.module.d.ts
+│  │  │  ├─ app.module.d.ts.map
+│  │  │  ├─ app.module.js
+│  │  │  ├─ app.module.js.map
+│  │  │  ├─ app.service.d.ts
+│  │  │  ├─ app.service.d.ts.map
+│  │  │  ├─ app.service.js
+│  │  │  ├─ app.service.js.map
+│  │  │  ├─ auth
+│  │  │  │  ├─ auth.controller.d.ts
+│  │  │  │  ├─ auth.controller.d.ts.map
+│  │  │  │  ├─ auth.controller.js
+│  │  │  │  ├─ auth.controller.js.map
+│  │  │  │  ├─ auth.module.d.ts
+│  │  │  │  ├─ auth.module.d.ts.map
+│  │  │  │  ├─ auth.module.js
+│  │  │  │  ├─ auth.module.js.map
+│  │  │  │  ├─ auth.service.d.ts
+│  │  │  │  ├─ auth.service.d.ts.map
+│  │  │  │  ├─ auth.service.js
+│  │  │  │  ├─ auth.service.js.map
+│  │  │  │  ├─ dto
+│  │  │  │  │  ├─ forgot-password.dto.d.ts
+│  │  │  │  │  ├─ forgot-password.dto.d.ts.map
+│  │  │  │  │  ├─ forgot-password.dto.js
+│  │  │  │  │  ├─ forgot-password.dto.js.map
+│  │  │  │  │  ├─ login.dto.d.ts
+│  │  │  │  │  ├─ login.dto.d.ts.map
+│  │  │  │  │  ├─ login.dto.js
+│  │  │  │  │  ├─ login.dto.js.map
+│  │  │  │  │  ├─ reset-password.dto.d.ts
+│  │  │  │  │  ├─ reset-password.dto.d.ts.map
+│  │  │  │  │  ├─ reset-password.dto.js
+│  │  │  │  │  └─ reset-password.dto.js.map
+│  │  │  │  ├─ guards
+│  │  │  │  │  ├─ jwt-auth.guard.d.ts
+│  │  │  │  │  ├─ jwt-auth.guard.d.ts.map
+│  │  │  │  │  ├─ jwt-auth.guard.js
+│  │  │  │  │  ├─ jwt-auth.guard.js.map
+│  │  │  │  │  ├─ local-auth.guard.d.ts
+│  │  │  │  │  ├─ local-auth.guard.d.ts.map
+│  │  │  │  │  ├─ local-auth.guard.js
+│  │  │  │  │  └─ local-auth.guard.js.map
+│  │  │  │  └─ strategies
+│  │  │  │     ├─ jwt
+│  │  │  │     │  ├─ jwt.d.ts
+│  │  │  │     │  ├─ jwt.d.ts.map
+│  │  │  │     │  ├─ jwt.js
+│  │  │  │     │  └─ jwt.js.map
+│  │  │  │     └─ local
+│  │  │  │        ├─ local.d.ts
+│  │  │  │        ├─ local.d.ts.map
+│  │  │  │        ├─ local.js
+│  │  │  │        └─ local.js.map
+│  │  │  ├─ config
+│  │  │  │  ├─ environment-variables.d.ts
+│  │  │  │  ├─ environment-variables.d.ts.map
+│  │  │  │  ├─ environment-variables.js
+│  │  │  │  └─ environment-variables.js.map
+│  │  │  ├─ main.d.ts
+│  │  │  ├─ main.d.ts.map
+│  │  │  ├─ main.js
+│  │  │  ├─ main.js.map
+│  │  │  ├─ persistence
+│  │  │  │  ├─ persistence.module.d.ts
+│  │  │  │  ├─ persistence.module.d.ts.map
+│  │  │  │  ├─ persistence.module.js
+│  │  │  │  ├─ persistence.module.js.map
+│  │  │  │  └─ prisma
+│  │  │  │     ├─ prisma.service.d.ts
+│  │  │  │     ├─ prisma.service.d.ts.map
+│  │  │  │     ├─ prisma.service.js
+│  │  │  │     └─ prisma.service.js.map
+│  │  │  └─ users
+│  │  │     ├─ dto
+│  │  │     │  ├─ create-user.dto.d.ts
+│  │  │     │  ├─ create-user.dto.d.ts.map
+│  │  │     │  ├─ create-user.dto.js
+│  │  │     │  └─ create-user.dto.js.map
+│  │  │     ├─ users.controller.d.ts
+│  │  │     ├─ users.controller.d.ts.map
+│  │  │     ├─ users.controller.js
+│  │  │     ├─ users.controller.js.map
+│  │  │     ├─ users.module.d.ts
+│  │  │     ├─ users.module.d.ts.map
+│  │  │     ├─ users.module.js
+│  │  │     ├─ users.module.js.map
+│  │  │     ├─ users.service.d.ts
+│  │  │     ├─ users.service.d.ts.map
+│  │  │     ├─ users.service.js
+│  │  │     └─ users.service.js.map
+│  │  ├─ nest-cli.json
+│  │  ├─ package.json
+│  │  ├─ prisma
+│  │  │  ├─ migrations
+│  │  │  │  ├─ 20220307034109_initial_migrate
+│  │  │  │  │  └─ migration.sql
+│  │  │  │  ├─ 20250517073440_add_user_auth_fields
+│  │  │  │  │  └─ migration.sql
+│  │  │  │  ├─ 20250517122525_add_password_reset_fields
+│  │  │  │  │  └─ migration.sql
+│  │  │  │  └─ migration_lock.toml
+│  │  │  └─ schema.prisma
+│  │  ├─ src
+│  │  │  ├─ app.controller.spec.ts
+│  │  │  ├─ app.controller.ts
+│  │  │  ├─ app.module.ts
+│  │  │  ├─ app.service.ts
+│  │  │  ├─ auth
+│  │  │  │  ├─ auth.controller.ts
+│  │  │  │  ├─ auth.module.ts
+│  │  │  │  ├─ auth.service.ts
+│  │  │  │  ├─ dto
+│  │  │  │  │  ├─ forgot-password.dto.ts
+│  │  │  │  │  ├─ login.dto.ts
+│  │  │  │  │  └─ reset-password.dto.ts
+│  │  │  │  ├─ guards
+│  │  │  │  │  ├─ jwt-auth.guard.ts
+│  │  │  │  │  └─ local-auth.guard.ts
+│  │  │  │  └─ strategies
+│  │  │  │     ├─ jwt
+│  │  │  │     │  └─ jwt.ts
+│  │  │  │     └─ local
+│  │  │  │        └─ local.ts
+│  │  │  ├─ config
+│  │  │  │  └─ environment-variables.ts
+│  │  │  ├─ main.ts
+│  │  │  ├─ persistence
+│  │  │  │  ├─ persistence.module.ts
+│  │  │  │  └─ prisma
+│  │  │  │     ├─ prisma.service.spec.ts
+│  │  │  │     └─ prisma.service.ts
+│  │  │  └─ users
+│  │  │     ├─ dto
+│  │  │     │  └─ create-user.dto.ts
+│  │  │     ├─ users.controller.spec.ts
+│  │  │     ├─ users.controller.ts
+│  │  │     ├─ users.module.ts
+│  │  │     ├─ users.service.spec.ts
+│  │  │     └─ users.service.ts
+│  │  ├─ test
+│  │  │  ├─ app.e2e-spec.ts
+│  │  │  └─ jest-e2e.json
+│  │  ├─ tsconfig.json
+│  │  └─ webpack-hmr.config.js
+│  └─ web
+│     ├─ .env
+│     ├─ .env.example
+│     ├─ .eslintrc.js
+│     ├─ .swc
+│     │  └─ plugins
+│     │     └─ v7_macos_aarch64_0.98.5
+│     ├─ Dockerfile
+│     ├─ README.md
+│     ├─ jest.config.js
+│     ├─ jest.setup.js
+│     ├─ next-env.d.ts
+│     ├─ next.config.js
+│     ├─ package.json
+│     ├─ pages
+│     │  ├─ _app.tsx
+│     │  ├─ forgot-password.tsx
+│     │  ├─ index.tsx
+│     │  ├─ login.tsx
+│     │  ├─ profile.tsx
+│     │  ├─ reset-password.tsx
+│     │  └─ signup.tsx
+│     ├─ postcss.config.js
+│     ├─ src
+│     │  ├─ common
+│     │  ├─ components
+│     │  │  └─ auth
+│     │  │     └─ ProtectedRoute.tsx
+│     │  ├─ context
+│     │  │  └─ AuthContext.tsx
+│     │  ├─ screens
+│     │  │  ├─ admin
+│     │  │  ├─ auth
+│     │  │  │  ├─ forgot-password
+│     │  │  │  │  └─ forgot-password.tsx
+│     │  │  │  ├─ login
+│     │  │  │  │  ├─ login.test.tsx
+│     │  │  │  │  └─ login.tsx
+│     │  │  │  ├─ reset-password
+│     │  │  │  │  └─ reset-password.tsx
+│     │  │  │  └─ signup
+│     │  │  │     └─ signup.tsx
+│     │  │  ├─ common
+│     │  │  └─ employee
+│     │  ├─ store
+│     │  │  ├─ index.ts
+│     │  │  └─ services
+│     │  │     └─ api.ts
+│     │  └─ styles
+│     │     └─ global.css
+│     ├─ tailwind.config.js
+│     └─ tsconfig.json
+├─ docker-compose.yml
+├─ package-scripts.js
+├─ package.json
+├─ packages
+│  ├─ config
+│  │  ├─ eslint-preset.js
+│  │  ├─ nginx.conf
+│  │  ├─ package.json
+│  │  ├─ postcss.config.js
+│  │  ├─ src
+│  │  │  ├─ env.ts
+│  │  │  └─ index.ts
+│  │  ├─ tailwind.config.js
+│  │  └─ tsconfig.json
+│  ├─ core
+│  │  ├─ package.json
+│  │  ├─ src
+│  │  │  ├─ index.ts
+│  │  │  └─ types
+│  │  │     └─ user.types.ts
+│  │  └─ tsconfig.json
+│  ├─ tsconfig
+│  │  ├─ README.md
+│  │  ├─ base.json
+│  │  ├─ nestjs.json
+│  │  ├─ nextjs.json
+│  │  ├─ package.json
+│  │  └─ react-library.json
+│  └─ ui
+│     ├─ components
+│     │  └─ Button
+│     │     └─ Button.tsx
+│     ├─ index.tsx
+│     ├─ package.json
+│     └─ tsconfig.json
+├─ problems.txt
+├─ repomix-output.xml
+├─ src
+└─ turbo.json
+
+```
+```
+LearningLab
+├─ .dockerignore
+├─ .repomix
+│  └─ bundles.json
+├─ .yarn
+│  └─ releases
+│     └─ yarn-4.9.1.cjs
+├─ .yarnrc.yml
+├─ LICENSE
+├─ Migration.txt
+├─ README.md
+├─ Struktur.txt
+├─ apps
+│  ├─ api
+│  │  ├─ .env
+│  │  ├─ .eslintrc.js
+│  │  ├─ .prettierrc
+│  │  ├─ Dockerfile
+│  │  ├─ dist
+│  │  │  ├─ app.controller.d.ts
+│  │  │  ├─ app.controller.d.ts.map
+│  │  │  ├─ app.controller.js
+│  │  │  ├─ app.controller.js.map
+│  │  │  ├─ app.module.d.ts
+│  │  │  ├─ app.module.d.ts.map
+│  │  │  ├─ app.module.js
+│  │  │  ├─ app.module.js.map
+│  │  │  ├─ app.service.d.ts
+│  │  │  ├─ app.service.d.ts.map
+│  │  │  ├─ app.service.js
+│  │  │  ├─ app.service.js.map
+│  │  │  ├─ auth
+│  │  │  │  ├─ auth.controller.d.ts
+│  │  │  │  ├─ auth.controller.d.ts.map
+│  │  │  │  ├─ auth.controller.js
+│  │  │  │  ├─ auth.controller.js.map
+│  │  │  │  ├─ auth.module.d.ts
+│  │  │  │  ├─ auth.module.d.ts.map
+│  │  │  │  ├─ auth.module.js
+│  │  │  │  ├─ auth.module.js.map
+│  │  │  │  ├─ auth.service.d.ts
+│  │  │  │  ├─ auth.service.d.ts.map
+│  │  │  │  ├─ auth.service.js
+│  │  │  │  ├─ auth.service.js.map
+│  │  │  │  ├─ dto
+│  │  │  │  │  ├─ forgot-password.dto.d.ts
+│  │  │  │  │  ├─ forgot-password.dto.d.ts.map
+│  │  │  │  │  ├─ forgot-password.dto.js
+│  │  │  │  │  ├─ forgot-password.dto.js.map
+│  │  │  │  │  ├─ login.dto.d.ts
+│  │  │  │  │  ├─ login.dto.d.ts.map
+│  │  │  │  │  ├─ login.dto.js
+│  │  │  │  │  ├─ login.dto.js.map
+│  │  │  │  │  ├─ reset-password.dto.d.ts
+│  │  │  │  │  ├─ reset-password.dto.d.ts.map
+│  │  │  │  │  ├─ reset-password.dto.js
+│  │  │  │  │  └─ reset-password.dto.js.map
+│  │  │  │  ├─ guards
+│  │  │  │  │  ├─ jwt-auth.guard.d.ts
+│  │  │  │  │  ├─ jwt-auth.guard.d.ts.map
+│  │  │  │  │  ├─ jwt-auth.guard.js
+│  │  │  │  │  ├─ jwt-auth.guard.js.map
+│  │  │  │  │  ├─ local-auth.guard.d.ts
+│  │  │  │  │  ├─ local-auth.guard.d.ts.map
+│  │  │  │  │  ├─ local-auth.guard.js
+│  │  │  │  │  └─ local-auth.guard.js.map
+│  │  │  │  └─ strategies
+│  │  │  │     ├─ jwt
+│  │  │  │     │  ├─ jwt.d.ts
+│  │  │  │     │  ├─ jwt.d.ts.map
+│  │  │  │     │  ├─ jwt.js
+│  │  │  │     │  └─ jwt.js.map
+│  │  │  │     └─ local
+│  │  │  │        ├─ local.d.ts
+│  │  │  │        ├─ local.d.ts.map
+│  │  │  │        ├─ local.js
+│  │  │  │        └─ local.js.map
+│  │  │  ├─ config
+│  │  │  │  ├─ environment-variables.d.ts
+│  │  │  │  ├─ environment-variables.d.ts.map
+│  │  │  │  ├─ environment-variables.js
+│  │  │  │  └─ environment-variables.js.map
+│  │  │  ├─ main.d.ts
+│  │  │  ├─ main.d.ts.map
+│  │  │  ├─ main.js
+│  │  │  ├─ main.js.map
+│  │  │  ├─ persistence
+│  │  │  │  ├─ persistence.module.d.ts
+│  │  │  │  ├─ persistence.module.d.ts.map
+│  │  │  │  ├─ persistence.module.js
+│  │  │  │  ├─ persistence.module.js.map
+│  │  │  │  └─ prisma
+│  │  │  │     ├─ prisma.service.d.ts
+│  │  │  │     ├─ prisma.service.d.ts.map
+│  │  │  │     ├─ prisma.service.js
+│  │  │  │     └─ prisma.service.js.map
+│  │  │  └─ users
+│  │  │     ├─ dto
+│  │  │     │  ├─ create-user.dto.d.ts
+│  │  │     │  ├─ create-user.dto.d.ts.map
+│  │  │     │  ├─ create-user.dto.js
+│  │  │     │  └─ create-user.dto.js.map
+│  │  │     ├─ users.controller.d.ts
+│  │  │     ├─ users.controller.d.ts.map
+│  │  │     ├─ users.controller.js
+│  │  │     ├─ users.controller.js.map
+│  │  │     ├─ users.module.d.ts
+│  │  │     ├─ users.module.d.ts.map
+│  │  │     ├─ users.module.js
+│  │  │     ├─ users.module.js.map
+│  │  │     ├─ users.service.d.ts
+│  │  │     ├─ users.service.d.ts.map
+│  │  │     ├─ users.service.js
+│  │  │     └─ users.service.js.map
+│  │  ├─ nest-cli.json
+│  │  ├─ package.json
+│  │  ├─ prisma
+│  │  │  ├─ migrations
+│  │  │  │  ├─ 20220307034109_initial_migrate
+│  │  │  │  │  └─ migration.sql
+│  │  │  │  ├─ 20250517073440_add_user_auth_fields
+│  │  │  │  │  └─ migration.sql
+│  │  │  │  ├─ 20250517122525_add_password_reset_fields
+│  │  │  │  │  └─ migration.sql
+│  │  │  │  └─ migration_lock.toml
+│  │  │  └─ schema.prisma
+│  │  ├─ src
+│  │  │  ├─ app.controller.spec.ts
+│  │  │  ├─ app.controller.ts
+│  │  │  ├─ app.module.ts
+│  │  │  ├─ app.service.ts
+│  │  │  ├─ auth
+│  │  │  │  ├─ auth.controller.ts
+│  │  │  │  ├─ auth.module.ts
+│  │  │  │  ├─ auth.service.ts
+│  │  │  │  ├─ dto
+│  │  │  │  │  ├─ forgot-password.dto.ts
+│  │  │  │  │  ├─ login.dto.ts
+│  │  │  │  │  └─ reset-password.dto.ts
+│  │  │  │  ├─ guards
+│  │  │  │  │  ├─ jwt-auth.guard.ts
+│  │  │  │  │  └─ local-auth.guard.ts
+│  │  │  │  └─ strategies
+│  │  │  │     ├─ jwt
+│  │  │  │     │  └─ jwt.ts
+│  │  │  │     └─ local
+│  │  │  │        └─ local.ts
+│  │  │  ├─ config
+│  │  │  │  └─ environment-variables.ts
+│  │  │  ├─ main.ts
+│  │  │  ├─ persistence
+│  │  │  │  ├─ persistence.module.ts
+│  │  │  │  └─ prisma
+│  │  │  │     ├─ prisma.service.spec.ts
+│  │  │  │     └─ prisma.service.ts
+│  │  │  └─ users
+│  │  │     ├─ dto
+│  │  │     │  └─ create-user.dto.ts
+│  │  │     ├─ users.controller.spec.ts
+│  │  │     ├─ users.controller.ts
+│  │  │     ├─ users.module.ts
+│  │  │     ├─ users.service.spec.ts
+│  │  │     └─ users.service.ts
+│  │  ├─ test
+│  │  │  ├─ app.e2e-spec.ts
+│  │  │  └─ jest-e2e.json
+│  │  ├─ tsconfig.json
+│  │  └─ webpack-hmr.config.js
+│  └─ web
+│     ├─ .env
+│     ├─ .env.example
+│     ├─ .eslintrc.js
+│     ├─ .swc
+│     │  └─ plugins
+│     │     └─ v7_macos_aarch64_0.98.5
+│     ├─ Dockerfile
+│     ├─ README.md
+│     ├─ jest.config.js
+│     ├─ jest.setup.js
+│     ├─ next-env.d.ts
+│     ├─ next.config.js
+│     ├─ package.json
+│     ├─ pages
+│     │  ├─ _app.tsx
+│     │  ├─ forgot-password.tsx
+│     │  ├─ index.tsx
+│     │  ├─ login.tsx
+│     │  ├─ profile.tsx
+│     │  ├─ reset-password.tsx
+│     │  └─ signup.tsx
+│     ├─ postcss.config.js
+│     ├─ src
+│     │  ├─ common
+│     │  ├─ components
+│     │  │  └─ auth
+│     │  │     └─ ProtectedRoute.tsx
+│     │  ├─ context
+│     │  │  └─ AuthContext.tsx
+│     │  ├─ screens
+│     │  │  ├─ admin
+│     │  │  ├─ auth
+│     │  │  │  ├─ forgot-password
+│     │  │  │  │  └─ forgot-password.tsx
+│     │  │  │  ├─ login
+│     │  │  │  │  ├─ login.test.tsx
+│     │  │  │  │  └─ login.tsx
+│     │  │  │  ├─ reset-password
+│     │  │  │  │  └─ reset-password.tsx
+│     │  │  │  └─ signup
+│     │  │  │     └─ signup.tsx
+│     │  │  ├─ common
+│     │  │  └─ employee
+│     │  ├─ store
+│     │  │  ├─ index.ts
+│     │  │  └─ services
+│     │  │     └─ api.ts
+│     │  └─ styles
+│     │     └─ global.css
+│     ├─ tailwind.config.js
+│     └─ tsconfig.json
+├─ docker-compose.yml
+├─ package-scripts.js
+├─ package.json
+├─ packages
+│  ├─ config
+│  │  ├─ eslint-preset.js
+│  │  ├─ nginx.conf
+│  │  ├─ package.json
+│  │  ├─ postcss.config.js
+│  │  ├─ src
+│  │  │  ├─ env.ts
+│  │  │  └─ index.ts
+│  │  ├─ tailwind.config.js
+│  │  └─ tsconfig.json
+│  ├─ core
+│  │  ├─ package.json
+│  │  ├─ src
+│  │  │  ├─ index.ts
+│  │  │  └─ types
+│  │  │     └─ user.types.ts
+│  │  └─ tsconfig.json
+│  ├─ tsconfig
+│  │  ├─ README.md
+│  │  ├─ base.json
+│  │  ├─ nestjs.json
+│  │  ├─ nextjs.json
+│  │  ├─ package.json
+│  │  └─ react-library.json
+│  └─ ui
+│     ├─ components
+│     │  └─ Button
+│     │     └─ Button.tsx
+│     ├─ index.tsx
+│     ├─ package.json
+│     └─ tsconfig.json
+├─ problems.txt
+├─ repomix-output.xml
+├─ src
+└─ turbo.json
+
+```
