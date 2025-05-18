@@ -4,112 +4,21 @@ LearningLab
 ├─ .dockerignore
 ├─ .repomix
 │  └─ bundles.json
+├─ .yarn
+│  ├─ install-state.gz
+│  └─ releases
+│     └─ yarn-4.9.1.cjs
 ├─ .yarnrc.yml
 ├─ LICENSE
 ├─ Migration.txt
 ├─ README.md
 ├─ apps
 │  ├─ api
-│  │  ├─ .env
 │  │  ├─ .eslintrc.js
 │  │  ├─ .prettierrc
+│  │  ├─ .turbo
+│  │  │  └─ turbo-lint.log
 │  │  ├─ Dockerfile
-│  │  ├─ dist
-│  │  │  ├─ app.controller.d.ts
-│  │  │  ├─ app.controller.d.ts.map
-│  │  │  ├─ app.controller.js
-│  │  │  ├─ app.controller.js.map
-│  │  │  ├─ app.module.d.ts
-│  │  │  ├─ app.module.d.ts.map
-│  │  │  ├─ app.module.js
-│  │  │  ├─ app.module.js.map
-│  │  │  ├─ app.service.d.ts
-│  │  │  ├─ app.service.d.ts.map
-│  │  │  ├─ app.service.js
-│  │  │  ├─ app.service.js.map
-│  │  │  ├─ auth
-│  │  │  │  ├─ auth.controller.d.ts
-│  │  │  │  ├─ auth.controller.d.ts.map
-│  │  │  │  ├─ auth.controller.js
-│  │  │  │  ├─ auth.controller.js.map
-│  │  │  │  ├─ auth.module.d.ts
-│  │  │  │  ├─ auth.module.d.ts.map
-│  │  │  │  ├─ auth.module.js
-│  │  │  │  ├─ auth.module.js.map
-│  │  │  │  ├─ auth.service.d.ts
-│  │  │  │  ├─ auth.service.d.ts.map
-│  │  │  │  ├─ auth.service.js
-│  │  │  │  ├─ auth.service.js.map
-│  │  │  │  ├─ dto
-│  │  │  │  │  ├─ forgot-password.dto.d.ts
-│  │  │  │  │  ├─ forgot-password.dto.d.ts.map
-│  │  │  │  │  ├─ forgot-password.dto.js
-│  │  │  │  │  ├─ forgot-password.dto.js.map
-│  │  │  │  │  ├─ login.dto.d.ts
-│  │  │  │  │  ├─ login.dto.d.ts.map
-│  │  │  │  │  ├─ login.dto.js
-│  │  │  │  │  ├─ login.dto.js.map
-│  │  │  │  │  ├─ reset-password.dto.d.ts
-│  │  │  │  │  ├─ reset-password.dto.d.ts.map
-│  │  │  │  │  ├─ reset-password.dto.js
-│  │  │  │  │  └─ reset-password.dto.js.map
-│  │  │  │  ├─ guards
-│  │  │  │  │  ├─ jwt-auth.guard.d.ts
-│  │  │  │  │  ├─ jwt-auth.guard.d.ts.map
-│  │  │  │  │  ├─ jwt-auth.guard.js
-│  │  │  │  │  ├─ jwt-auth.guard.js.map
-│  │  │  │  │  ├─ local-auth.guard.d.ts
-│  │  │  │  │  ├─ local-auth.guard.d.ts.map
-│  │  │  │  │  ├─ local-auth.guard.js
-│  │  │  │  │  └─ local-auth.guard.js.map
-│  │  │  │  └─ strategies
-│  │  │  │     ├─ jwt
-│  │  │  │     │  ├─ jwt.d.ts
-│  │  │  │     │  ├─ jwt.d.ts.map
-│  │  │  │     │  ├─ jwt.js
-│  │  │  │     │  └─ jwt.js.map
-│  │  │  │     └─ local
-│  │  │  │        ├─ local.d.ts
-│  │  │  │        ├─ local.d.ts.map
-│  │  │  │        ├─ local.js
-│  │  │  │        └─ local.js.map
-│  │  │  ├─ config
-│  │  │  │  ├─ environment-variables.d.ts
-│  │  │  │  ├─ environment-variables.d.ts.map
-│  │  │  │  ├─ environment-variables.js
-│  │  │  │  └─ environment-variables.js.map
-│  │  │  ├─ main.d.ts
-│  │  │  ├─ main.d.ts.map
-│  │  │  ├─ main.js
-│  │  │  ├─ main.js.map
-│  │  │  ├─ persistence
-│  │  │  │  ├─ persistence.module.d.ts
-│  │  │  │  ├─ persistence.module.d.ts.map
-│  │  │  │  ├─ persistence.module.js
-│  │  │  │  ├─ persistence.module.js.map
-│  │  │  │  └─ prisma
-│  │  │  │     ├─ prisma.service.d.ts
-│  │  │  │     ├─ prisma.service.d.ts.map
-│  │  │  │     ├─ prisma.service.js
-│  │  │  │     └─ prisma.service.js.map
-│  │  │  └─ users
-│  │  │     ├─ dto
-│  │  │     │  ├─ create-user.dto.d.ts
-│  │  │     │  ├─ create-user.dto.d.ts.map
-│  │  │     │  ├─ create-user.dto.js
-│  │  │     │  └─ create-user.dto.js.map
-│  │  │     ├─ users.controller.d.ts
-│  │  │     ├─ users.controller.d.ts.map
-│  │  │     ├─ users.controller.js
-│  │  │     ├─ users.controller.js.map
-│  │  │     ├─ users.module.d.ts
-│  │  │     ├─ users.module.d.ts.map
-│  │  │     ├─ users.module.js
-│  │  │     ├─ users.module.js.map
-│  │  │     ├─ users.service.d.ts
-│  │  │     ├─ users.service.d.ts.map
-│  │  │     ├─ users.service.js
-│  │  │     └─ users.service.js.map
 │  │  ├─ nest-cli.json
 │  │  ├─ package.json
 │  │  ├─ prisma
@@ -165,12 +74,12 @@ LearningLab
 │  │  ├─ tsconfig.json
 │  │  └─ webpack-hmr.config.js
 │  └─ web
-│     ├─ .env
-│     ├─ .env.example
 │     ├─ .eslintrc.js
 │     ├─ .swc
 │     │  └─ plugins
 │     │     └─ v7_macos_aarch64_0.98.5
+│     ├─ .turbo
+│     │  └─ turbo-lint.log
 │     ├─ Dockerfile
 │     ├─ README.md
 │     ├─ jest.config.js
@@ -191,7 +100,6 @@ LearningLab
 │     │  ├─ common
 │     │  ├─ components
 │     │  │  └─ auth
-│     │  │     └─ ProtectedRoute.tsx
 │     │  ├─ context
 │     │  │  └─ AuthContext.tsx
 │     │  ├─ screens
@@ -252,9 +160,10 @@ LearningLab
 │     ├─ package.json
 │     └─ tsconfig.json
 ├─ problems.txt
-├─ repomix-output.xml
 ├─ src
-└─ turbo.json
+├─ terminal.txt
+├─ turbo.json
+└─ yarn.lock
 
 ```
 ```
@@ -263,6 +172,7 @@ LearningLab
 ├─ .repomix
 │  └─ bundles.json
 ├─ .yarn
+│  ├─ install-state.gz
 │  └─ releases
 │     └─ yarn-4.9.1.cjs
 ├─ .yarnrc.yml
@@ -272,106 +182,11 @@ LearningLab
 ├─ Struktur.txt
 ├─ apps
 │  ├─ api
-│  │  ├─ .env
 │  │  ├─ .eslintrc.js
 │  │  ├─ .prettierrc
+│  │  ├─ .turbo
+│  │  │  └─ turbo-lint.log
 │  │  ├─ Dockerfile
-│  │  ├─ dist
-│  │  │  ├─ app.controller.d.ts
-│  │  │  ├─ app.controller.d.ts.map
-│  │  │  ├─ app.controller.js
-│  │  │  ├─ app.controller.js.map
-│  │  │  ├─ app.module.d.ts
-│  │  │  ├─ app.module.d.ts.map
-│  │  │  ├─ app.module.js
-│  │  │  ├─ app.module.js.map
-│  │  │  ├─ app.service.d.ts
-│  │  │  ├─ app.service.d.ts.map
-│  │  │  ├─ app.service.js
-│  │  │  ├─ app.service.js.map
-│  │  │  ├─ auth
-│  │  │  │  ├─ auth.controller.d.ts
-│  │  │  │  ├─ auth.controller.d.ts.map
-│  │  │  │  ├─ auth.controller.js
-│  │  │  │  ├─ auth.controller.js.map
-│  │  │  │  ├─ auth.module.d.ts
-│  │  │  │  ├─ auth.module.d.ts.map
-│  │  │  │  ├─ auth.module.js
-│  │  │  │  ├─ auth.module.js.map
-│  │  │  │  ├─ auth.service.d.ts
-│  │  │  │  ├─ auth.service.d.ts.map
-│  │  │  │  ├─ auth.service.js
-│  │  │  │  ├─ auth.service.js.map
-│  │  │  │  ├─ dto
-│  │  │  │  │  ├─ forgot-password.dto.d.ts
-│  │  │  │  │  ├─ forgot-password.dto.d.ts.map
-│  │  │  │  │  ├─ forgot-password.dto.js
-│  │  │  │  │  ├─ forgot-password.dto.js.map
-│  │  │  │  │  ├─ login.dto.d.ts
-│  │  │  │  │  ├─ login.dto.d.ts.map
-│  │  │  │  │  ├─ login.dto.js
-│  │  │  │  │  ├─ login.dto.js.map
-│  │  │  │  │  ├─ reset-password.dto.d.ts
-│  │  │  │  │  ├─ reset-password.dto.d.ts.map
-│  │  │  │  │  ├─ reset-password.dto.js
-│  │  │  │  │  └─ reset-password.dto.js.map
-│  │  │  │  ├─ guards
-│  │  │  │  │  ├─ jwt-auth.guard.d.ts
-│  │  │  │  │  ├─ jwt-auth.guard.d.ts.map
-│  │  │  │  │  ├─ jwt-auth.guard.js
-│  │  │  │  │  ├─ jwt-auth.guard.js.map
-│  │  │  │  │  ├─ local-auth.guard.d.ts
-│  │  │  │  │  ├─ local-auth.guard.d.ts.map
-│  │  │  │  │  ├─ local-auth.guard.js
-│  │  │  │  │  └─ local-auth.guard.js.map
-│  │  │  │  └─ strategies
-│  │  │  │     ├─ jwt
-│  │  │  │     │  ├─ jwt.d.ts
-│  │  │  │     │  ├─ jwt.d.ts.map
-│  │  │  │     │  ├─ jwt.js
-│  │  │  │     │  └─ jwt.js.map
-│  │  │  │     └─ local
-│  │  │  │        ├─ local.d.ts
-│  │  │  │        ├─ local.d.ts.map
-│  │  │  │        ├─ local.js
-│  │  │  │        └─ local.js.map
-│  │  │  ├─ config
-│  │  │  │  ├─ environment-variables.d.ts
-│  │  │  │  ├─ environment-variables.d.ts.map
-│  │  │  │  ├─ environment-variables.js
-│  │  │  │  └─ environment-variables.js.map
-│  │  │  ├─ main.d.ts
-│  │  │  ├─ main.d.ts.map
-│  │  │  ├─ main.js
-│  │  │  ├─ main.js.map
-│  │  │  ├─ persistence
-│  │  │  │  ├─ persistence.module.d.ts
-│  │  │  │  ├─ persistence.module.d.ts.map
-│  │  │  │  ├─ persistence.module.js
-│  │  │  │  ├─ persistence.module.js.map
-│  │  │  │  └─ prisma
-│  │  │  │     ├─ prisma.service.d.ts
-│  │  │  │     ├─ prisma.service.d.ts.map
-│  │  │  │     ├─ prisma.service.js
-│  │  │  │     └─ prisma.service.js.map
-│  │  │  └─ users
-│  │  │     ├─ dto
-│  │  │     │  ├─ create-user.dto.d.ts
-│  │  │     │  ├─ create-user.dto.d.ts.map
-│  │  │     │  ├─ create-user.dto.js
-│  │  │     │  └─ create-user.dto.js.map
-│  │  │     ├─ users.controller.d.ts
-│  │  │     ├─ users.controller.d.ts.map
-│  │  │     ├─ users.controller.js
-│  │  │     ├─ users.controller.js.map
-│  │  │     ├─ users.module.d.ts
-│  │  │     ├─ users.module.d.ts.map
-│  │  │     ├─ users.module.js
-│  │  │     ├─ users.module.js.map
-│  │  │     ├─ users.service.d.ts
-│  │  │     ├─ users.service.d.ts.map
-│  │  │     ├─ users.service.js
-│  │  │     └─ users.service.js.map
 │  │  ├─ nest-cli.json
 │  │  ├─ package.json
 │  │  ├─ prisma
@@ -427,12 +242,12 @@ LearningLab
 │  │  ├─ tsconfig.json
 │  │  └─ webpack-hmr.config.js
 │  └─ web
-│     ├─ .env
-│     ├─ .env.example
 │     ├─ .eslintrc.js
 │     ├─ .swc
 │     │  └─ plugins
 │     │     └─ v7_macos_aarch64_0.98.5
+│     ├─ .turbo
+│     │  └─ turbo-lint.log
 │     ├─ Dockerfile
 │     ├─ README.md
 │     ├─ jest.config.js
@@ -453,7 +268,6 @@ LearningLab
 │     │  ├─ common
 │     │  ├─ components
 │     │  │  └─ auth
-│     │  │     └─ ProtectedRoute.tsx
 │     │  ├─ context
 │     │  │  └─ AuthContext.tsx
 │     │  ├─ screens
@@ -514,8 +328,9 @@ LearningLab
 │     ├─ package.json
 │     └─ tsconfig.json
 ├─ problems.txt
-├─ repomix-output.xml
 ├─ src
-└─ turbo.json
+├─ terminal.txt
+├─ turbo.json
+└─ yarn.lock
 
 ```
