@@ -1,54 +1,54 @@
-# This is a basic workflow to help you get started with Actions
+# .github/workflows/web.yaml
 
 name: web-ci
 
-# Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the master branch
   push:
-    branches: [master]
+    branches: [master] # Din nuværende primære branch. Overvej 'main' i fremtiden.
     paths:
       - "apps/web/**"
+      - ".github/workflows/web.yaml" # God praksis: Trigger også på ændringer i selve workflow-filen
   pull_request:
-    branches: [master]
+    branches: [master] # Din nuværende primære branch.
     paths:
       - "apps/web/**"
-
-  # Allows you to run this workflow manually from the Actions tab
+      - ".github/workflows/web.yaml"
   workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
   build:
-    # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     strategy:
       matrix:
-        node-version: [16.x]
+        node-version: [20.x] # Opdateret til en nyere LTS Node.js version (f.eks. 18.x eller 20.x). Du kan justere dette.
 
     steps:
-      - uses: actions/checkout@v2
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+      - name: Checkout repository
+        uses: actions/checkout@v4 # Opdateret fra v2
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4 # Opdateret fra v2
         with:
           node-version: ${{ matrix.node-version }}
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
+          cache: 'yarn' # Anbefalet måde at cache Yarn-afhængigheder på med setup-node@v4
 
-      - name: Cache node modules
-        uses: actions/cache@v2
-        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
-        with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
+      # Det er ikke altid nødvendigt at installere turbo globalt.
+      # Hvis 'turbo' er en devDependency i rod-package.json, kan du køre kommandoer med 'yarn turbo ...'
+      # Dette trin er bevaret fra din originale fil, men overvej om det kan fjernes.
+      - name: Install Turbo globally (overvej at køre via yarn turbo)
+        run: yarn global add turbo
 
-      - run: yarn global add turbo
-      - run: npx nps prepare.ci.web
-      - run: npx nps build.ci.web
-      - run: npx nps test.ci.web
+      # Kør 'yarn install --immutable' for at sikre, at yarn.lock ikke ændres og for at installere afhængigheder.
+      - name: Install dependencies
+        run: yarn install --immutable
+
+      # Dine eksisterende nps-kommandoer
+      - name: Run CI preparation for Web
+        run: npx nps prepare.ci.web
+
+      - name: Build Web
+        run: npx nps build.ci.web
+
+      - name: Test Web
+        run: npx nps test.ci.web
