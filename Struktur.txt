@@ -334,3 +334,173 @@ LearningLab
 └─ yarn.lock
 
 ```
+```
+LearningLab
+├─ .dockerignore
+├─ .repomix
+│  └─ bundles.json
+├─ .yarn
+│  ├─ install-state.gz
+│  └─ releases
+│     └─ yarn-4.9.1.cjs
+├─ .yarnrc.yml
+├─ LICENSE
+├─ Migration.txt
+├─ Opgave 2.3.txt
+├─ README.md
+├─ Struktur.txt
+├─ api
+│  └─ web.txt
+├─ apps
+│  ├─ api
+│  │  ├─ .eslintrc.js
+│  │  ├─ .prettierrc
+│  │  ├─ .turbo
+│  │  │  └─ turbo-lint.log
+│  │  ├─ Dockerfile
+│  │  ├─ nest-cli.json
+│  │  ├─ package.json
+│  │  ├─ prisma
+│  │  │  ├─ migrations
+│  │  │  │  ├─ 20220307034109_initial_migrate
+│  │  │  │  │  └─ migration.sql
+│  │  │  │  ├─ 20250517073440_add_user_auth_fields
+│  │  │  │  │  └─ migration.sql
+│  │  │  │  ├─ 20250517122525_add_password_reset_fields
+│  │  │  │  │  └─ migration.sql
+│  │  │  │  └─ migration_lock.toml
+│  │  │  └─ schema.prisma
+│  │  ├─ src
+│  │  │  ├─ app.controller.spec.ts
+│  │  │  ├─ app.controller.ts
+│  │  │  ├─ app.module.ts
+│  │  │  ├─ app.service.ts
+│  │  │  ├─ auth
+│  │  │  │  ├─ auth.controller.ts
+│  │  │  │  ├─ auth.module.ts
+│  │  │  │  ├─ auth.service.ts
+│  │  │  │  ├─ dto
+│  │  │  │  │  ├─ forgot-password.dto.ts
+│  │  │  │  │  ├─ login.dto.ts
+│  │  │  │  │  └─ reset-password.dto.ts
+│  │  │  │  ├─ guards
+│  │  │  │  │  ├─ jwt-auth.guard.ts
+│  │  │  │  │  └─ local-auth.guard.ts
+│  │  │  │  └─ strategies
+│  │  │  │     ├─ jwt
+│  │  │  │     │  └─ jwt.ts
+│  │  │  │     └─ local
+│  │  │  │        └─ local.ts
+│  │  │  ├─ config
+│  │  │  │  └─ environment-variables.ts
+│  │  │  ├─ main.ts
+│  │  │  ├─ persistence
+│  │  │  │  ├─ persistence.module.ts
+│  │  │  │  └─ prisma
+│  │  │  │     ├─ prisma.service.spec.ts
+│  │  │  │     └─ prisma.service.ts
+│  │  │  └─ users
+│  │  │     ├─ dto
+│  │  │     │  └─ create-user.dto.ts
+│  │  │     ├─ users.controller.spec.ts
+│  │  │     ├─ users.controller.ts
+│  │  │     ├─ users.module.ts
+│  │  │     ├─ users.service.spec.ts
+│  │  │     └─ users.service.ts
+│  │  ├─ test
+│  │  │  ├─ app.e2e-spec.ts
+│  │  │  └─ jest-e2e.json
+│  │  ├─ tsconfig.json
+│  │  └─ webpack-hmr.config.js
+│  └─ web
+│     ├─ .eslintrc.js
+│     ├─ .swc
+│     │  └─ plugins
+│     │     └─ v7_macos_aarch64_0.98.5
+│     ├─ .turbo
+│     │  └─ turbo-lint.log
+│     ├─ Dockerfile
+│     ├─ README.md
+│     ├─ jest.config.js
+│     ├─ jest.setup.js
+│     ├─ next-env.d.ts
+│     ├─ next.config.js
+│     ├─ package.json
+│     ├─ pages
+│     │  ├─ _app.tsx
+│     │  ├─ forgot-password.tsx
+│     │  ├─ index.tsx
+│     │  ├─ login.tsx
+│     │  ├─ profile.tsx
+│     │  ├─ reset-password.tsx
+│     │  └─ signup.tsx
+│     ├─ postcss.config.js
+│     ├─ src
+│     │  ├─ common
+│     │  ├─ components
+│     │  │  └─ auth
+│     │  ├─ context
+│     │  │  └─ AuthContext.tsx
+│     │  ├─ screens
+│     │  │  ├─ admin
+│     │  │  ├─ auth
+│     │  │  │  ├─ forgot-password
+│     │  │  │  │  └─ forgot-password.tsx
+│     │  │  │  ├─ login
+│     │  │  │  │  ├─ login.test.tsx
+│     │  │  │  │  └─ login.tsx
+│     │  │  │  ├─ reset-password
+│     │  │  │  │  └─ reset-password.tsx
+│     │  │  │  └─ signup
+│     │  │  │     └─ signup.tsx
+│     │  │  ├─ common
+│     │  │  └─ employee
+│     │  ├─ store
+│     │  │  ├─ index.ts
+│     │  │  └─ services
+│     │  │     └─ api.ts
+│     │  └─ styles
+│     │     └─ global.css
+│     ├─ tailwind.config.js
+│     └─ tsconfig.json
+├─ docker-compose.yml
+├─ package-scripts.js
+├─ package.json
+├─ packages
+│  ├─ config
+│  │  ├─ eslint-preset.js
+│  │  ├─ nginx.conf
+│  │  ├─ package.json
+│  │  ├─ postcss.config.js
+│  │  ├─ src
+│  │  │  ├─ env.ts
+│  │  │  └─ index.ts
+│  │  ├─ tailwind.config.js
+│  │  └─ tsconfig.json
+│  ├─ core
+│  │  ├─ package.json
+│  │  ├─ src
+│  │  │  ├─ index.ts
+│  │  │  └─ types
+│  │  │     └─ user.types.ts
+│  │  └─ tsconfig.json
+│  ├─ tsconfig
+│  │  ├─ README.md
+│  │  ├─ base.json
+│  │  ├─ nestjs.json
+│  │  ├─ nextjs.json
+│  │  ├─ package.json
+│  │  └─ react-library.json
+│  └─ ui
+│     ├─ components
+│     │  └─ Button
+│     │     └─ Button.tsx
+│     ├─ index.tsx
+│     ├─ package.json
+│     └─ tsconfig.json
+├─ src
+├─ terminal.txt
+├─ turbo.json
+└─ yarn.lock
+
+```
