@@ -1,4 +1,5 @@
 # render.yaml
+# Placeres i roden af dit monorepo
 
 services:
   # API Service (NestJS)
@@ -41,6 +42,9 @@ services:
       #   value: DIN_SENTRY_DSN_HER
       # - key: PORT # Render sætter automatisk PORT, men hvis din app forventer den anderledes
       #   value: 10000 # Render's default for web services
+
+    # Post Deploy Script (til at køre Prisma migrationer)
+    postDeployScript: yarn workspace api prisma migrate deploy
 
     # Health Check (valgfrit, men anbefalet)
     # Render vil bruge dette endpoint til at tjekke, om din service er sund.
