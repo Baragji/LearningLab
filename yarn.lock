@@ -8067,6 +8067,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"next-router-mock@npm:^1.0.2":
+  version: 1.0.2
+  resolution: "next-router-mock@npm:1.0.2"
+  peerDependencies:
+    next: ">=10.0.0"
+    react: ">=17.0.0"
+  checksum: 10c0/a19c0a05df90942467c0924bf95d8072d6f98152e421382ba39022d4e04e87dcd2ded818cf82f8cc6631712c2d27214cf66da957481be125880779c802870bf6
+  languageName: node
+  linkType: hard
+
 "next-transpile-modules@npm:10.0.1":
   version: 10.0.1
   resolution: "next-transpile-modules@npm:10.0.1"
@@ -11157,6 +11167,7 @@ __metadata:
     jest: "npm:^29.6.2"
     jest-environment-jsdom: "npm:^29.6.2"
     next: "npm:13.4.12"
+    next-router-mock: "npm:^1.0.2"
     next-transpile-modules: "npm:10.0.1"
     postcss: "npm:^8.4.27"
     react: "npm:18.2.0"
