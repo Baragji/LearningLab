@@ -681,16 +681,6 @@ module.exports = {
 }
 </file>
 
-<file path="apps/api/tsconfig.json">
-{
-  "extends": "tsconfig/nestjs.json",
-  "compilerOptions": {
-    "outDir": "./dist",
-    "baseUrl": "./"
-  }
-}
-</file>
-
 <file path="apps/web/pages/forgot-password.tsx">
 // apps/web/pages/forgot-password.tsx
 import { ForgotPasswordScreen } from '../src/screens/auth/forgot-password/forgot-password';
@@ -2136,6 +2126,20 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
 }
 </file>
 
+<file path="apps/api/tsconfig.json">
+{
+  "extends": "tsconfig/nestjs.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "baseUrl": "./"
+  },
+  "references": [
+    { "path": "../../packages/core" },
+    { "path": "../../packages/config" }
+  ]
+}
+</file>
+
 <file path="apps/api/webpack-hmr.config.js">
 /* eslint-disable @typescript-eslint/no-var-requires */
 const nodeExternals = require('webpack-node-externals');
@@ -3088,26 +3092,6 @@ export function LoginScreen() {
 }
 </file>
 
-<file path="packages/core/package.json">
-{
-  "name": "@repo/core",
-  "version": "0.0.0",
-  "private": true,
-  "packageManager": "yarn@4.9.1",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "scripts": {
-    "lint": "eslint . --ext .ts,.tsx",
-    "build": "tsc -p tsconfig.json"
-  },
-  "devDependencies": {
-    "eslint": "^8.57.1",
-    "tsconfig": "workspace:*",
-    "typescript": "^5.1.6"
-  }
-}
-</file>
-
 <file path="packages/tsconfig/package.json">
 {
   "name": "tsconfig",
@@ -3148,6 +3132,26 @@ import { AuthModule } from './auth/auth.module';
   providers: [AppService],
 })
 export class AppModule {}
+</file>
+
+<file path="packages/core/package.json">
+{
+  "name": "@repo/core",
+  "version": "0.0.0",
+  "private": true,
+  "packageManager": "yarn@4.9.1",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "lint": "eslint . --ext .ts,.tsx"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.1",
+    "tsconfig": "workspace:*",
+    "typescript": "^5.1.6"
+  }
+}
 </file>
 
 <file path=".gitignore">
@@ -3553,8 +3557,8 @@ Run `nps` in the terminal to see list of all available commands.
     "dist"
   ],
   "scripts": {
-    "lint": "eslint . --ext .ts,.tsx",
-    "build": "tsc -p tsconfig.json"
+    "build": "tsc -p tsconfig.json",
+    "lint": "eslint . --ext .ts,.tsx"
   },
   "dependencies": {
     "eslint-config-next": "^13.4.12",
@@ -3569,75 +3573,6 @@ Run `nps` in the terminal to see list of all available commands.
   },
   "license": "MIT"
 }
-</file>
-
-<file path="render.yaml">
-# render.yaml
-# Placeres i roden af dit monorepo
-
-services:
-  # API Service (NestJS)
-  - type: web # 'web' servicetype bruges til HTTP servere
-    name: api-service # Navnet på din service i Render dashboardet
-    env: node # Specificerer Node.js miljøet
-    nodeVersion: "22" # Specificerer Node.js versionen for at matche projektets krav
-    rootDir: apps/api # Angiver roden for API-projektet inden i monorepoet
-    plan: free # Specificerer Render planen (free tier til at starte med)
-    region: frankfurt # Vælg den region, der er tættest på dine brugere
-    
-    # Build-konfiguration
-    buildCommand: |
-      corepack enable
-      yarn install --immutable
-      yarn workspace api prisma generate
-      yarn turbo run build --filter=api # ÆNDRET: Brug Turborepo til at bygge api og dens dependencies
-    # Ovenstående buildCommand er justeret:
-    # 1. `corepack enable`: Aktiverer Corepack. Den bør nu automatisk bruge den vendored Yarn version.
-    # 2. `yarn install --immutable`: Installerer alle dependencies for hele monorepoet med den korrekte Yarn version.
-    # 3. `yarn workspace api prisma generate`: Sikrer at Prisma Client genereres specifikt for Render-miljøet.
-    # 4. `yarn turbo run build --filter=api`: Bygger 'api' appen OG dens lokale afhængigheder (@repo/core, @repo/config)
-    #    i den korrekte rækkefølge, baseret på din turbo.json konfiguration.
-
-    # Start-konfiguration
-    startCommand: node dist/main.js # Kommandoen til at starte din NestJS API efter build
-                                    # Tjek at stien `dist/main.js` matcher outputtet fra dit `nest build`
-
-    # Miljøvariabler
-    envVars:
-      - key: DATABASE_URL
-        fromDatabase:
-          name: learning-db # Matcher navnet på database-servicen defineret nedenfor
-          property: connectionString # Henter den fulde connection string
-      - key: JWT_SECRET
-        generateValue: true # Render genererer automatisk en sikker værdi for denne secret
-      - key: NODE_ENV
-        value: production # Sætter Node.js miljøet til produktion
-      # Tilføj andre nødvendige produktions-miljøvariabler her, f.eks.:
-      # - key: SENTRY_DSN
-      #   value: DIN_SENTRY_DSN_HER
-      # - key: PORT # Render sætter automatisk PORT, men hvis din app forventer den anderledes
-      #   value: 10000 # Render's default for web services
-
-    # Post Deploy Script (til at køre Prisma migrationer)
-    postDeployScript: yarn workspace api prisma migrate deploy
-
-    # Health Check (valgfrit, men anbefalet)
-    # Render vil bruge dette endpoint til at tjekke, om din service er sund.
-    # Dit nuværende API har et GET /api endpoint.
-    healthCheckPath: /api # Juster til dit faktiske health check endpoint (f.eks. /api/health)
-
-    # Auto-Deploy (valgfrit, men typisk ønsket)
-    # autoDeploy: true # Sæt til false hvis du vil deaktivere auto-deploy på push til din branch
-
-databases:
-  # Database Service (PostgreSQL)
-  - name: learning-db # Navnet på din database i Render dashboardet
-    plan: free # Specificerer Render planen (free tier til at starte med)
-    region: frankfurt # Vælg samme region som din API service for lav latency
-    ipAllowList: [] 
-    postgresMajorVersion: "15" # Specificerer PostgreSQL versionen (som streng ifølge Render docs)
-    # databaseName: learningdb_prod # Valgfrit: Navnet på selve databasen inde i PostgreSQL instansen
-    # user: db_user_prod # Valgfrit: Brugernavnet til databasen
 </file>
 
 <file path="terminal.txt">
@@ -3853,6 +3788,49 @@ Yousef@MacBook-Pro-tilhrende-Yousef LearningLab %
     "node": ">=22 <23"
   }
 }
+</file>
+
+<file path="render.yaml">
+# render.yaml
+services:
+  - type: web
+    name: api-service
+    env: node
+    rootDir: apps/api
+    plan: free
+    region: frankfurt
+
+    buildCommand: |
+      corepack enable
+      yarn install --immutable
+      yarn workspace api prisma generate
+      # 🚀 Bygger core, config og api i korrekt rækkefølge
+      npx turbo run build --filter=...api
+      # 🗄 Kør databasmigrationer
+      yarn workspace api prisma migrate deploy
+
+    startCommand: node dist/main.js
+    healthCheckPath: /api
+    autoDeploy: true
+
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: learning-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 1h
+      - key: NODE_ENV
+        value: production
+
+databases:
+  - name: learning-db
+    plan: free
+    region: frankfurt
+    ipAllowList: []
+    postgresMajorVersion: "15"
 </file>
 
 </files>
