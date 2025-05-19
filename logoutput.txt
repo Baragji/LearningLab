@@ -1,0 +1,335 @@
+Build and Test
+failed now in 36s
+
+1s
+2s
+4s
+0s
+20s
+Run yarn install --immutable
+! Corepack is about to download https://repo.yarnpkg.com/4.9.1/packages/yarnpkg-cli/bin/yarn.js
+➤ YN0000: · Yarn 4.9.1
+➤ YN0000: ┌ Resolution step
+Resolution step
+➤ YN0000: └ Completed in 0s 268ms
+➤ YN0000: ┌ Fetch step
+Fetch step
+➤ YN0000: └ Completed in 7s 434ms
+➤ YN0000: ┌ Link step
+Link step
+  ➤ YN0007: │ turbo@npm:1.10.12 must be built because it never has been before or the last one failed
+  ➤ YN0007: │ @nestjs/core@npm:10.4.17 [62573] must be built because it never has been before or the last one failed
+  ➤ YN0007: │ @prisma/engines@npm:5.22.0 must be built because it never has been before or the last one failed
+  ➤ YN0007: │ @swc/core@npm:1.11.24 [62573] must be built because it never has been before or the last one failed
+  ➤ YN0007: │ @scarf/scarf@npm:1.4.0 must be built because it never has been before or the last one failed
+  ➤ YN0007: │ unrs-resolver@npm:1.7.2 must be built because it never has been before or the last one failed
+  ➤ YN0007: │ prisma@npm:5.22.0 must be built because it never has been before or the last one failed
+  ➤ YN0007: │ @prisma/client@npm:5.22.0 [62573] must be built because it never has been before or the last one failed
+  ➤ YN0000: │ @prisma/client@npm:5.22.0 [62573] STDERR prisma:warn We could not find your Prisma schema in the default locations (see: https://pris.ly/d/prisma-schema-location).
+  ➤ YN0000: │ @prisma/client@npm:5.22.0 [62573] STDERR If you have a Prisma schema file in a custom path, you will need to run
+  ➤ YN0000: │ @prisma/client@npm:5.22.0 [62573] STDERR `prisma generate --schema=./path/to/your/schema.prisma` to generate Prisma Client.
+  ➤ YN0000: │ @prisma/client@npm:5.22.0 [62573] STDERR If you do not have a Prisma schema file yet, you can ignore this message.
+  ➤ YN0000: │ @prisma/client@npm:5.22.0 [62573] STDOUT 
+➤ YN0000: └ Completed in 10s 575ms
+➤ YN0000: · Done in 18s 461ms
+5s
+Run yarn turbo run test:ci build
+  
+• Packages in scope: @repo/config, @repo/core, api, tsconfig, ui, web
+• Running test:ci, build in 6 packages
+• Remote caching disabled
+api:test:ci
+Error: web#test:ci: command (/home/runner/work/LearningLab/LearningLab/apps/web) yarn run test:ci exited (1)
+ ERROR  run failed: command  exited (1)
+@repo/core:build
+web:test:ci
+  cache bypass, force executing 6d90b72ce02f0d3e
+    console.error
+      Error: Uncaught [Error: NextRouter was not mounted. https://nextjs.org/docs/messages/next-router-not-mounted]
+          at reportException (/home/runner/work/LearningLab/LearningLab/node_modules/jsdom/lib/jsdom/living/helpers/runtime-script-errors.js:66:24)
+          at innerInvokeEventListeners (/home/runner/work/LearningLab/LearningLab/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:353:9)
+          at invokeEventListeners (/home/runner/work/LearningLab/LearningLab/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:286:3)
+          at HTMLUnknownElementImpl._dispatch (/home/runner/work/LearningLab/LearningLab/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:233:9)
+          at HTMLUnknownElementImpl.dispatchEvent (/home/runner/work/LearningLab/LearningLab/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:104:17)
+          at HTMLUnknownElement.dispatchEvent (/home/runner/work/LearningLab/LearningLab/node_modules/jsdom/lib/jsdom/living/generated/EventTarget.js:241:34)
+          at Object.invokeGuardedCallbackDev (/home/runner/work/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom.development.js:4213:16)
+          at invokeGuardedCallback (/home/runner/work/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom.development.js:4277:31)
+          at beginWork$1 (/home/runner/work/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom.development.js:27451:7)
+          at performUnitOfWork (/home/runner/work/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom.development.js:26560:12)
+          at workLoopSync (/home/runner/work/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom.development.js:26466:5)
+          at renderRootSync (/home/runner/work/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom.development.js:26434:7)
+          at performConcurrentWorkOnRoot (/home/runner/work/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom.development.js:25738:74)
+          at flushActQueue (/home/runner/work/LearningLab/LearningLab/node_modules/react/cjs/react.development.js:2667:24)
+          at act (/home/runner/work/LearningLab/LearningLab/node_modules/react/cjs/react.development.js:2582:11)
+          at /home/runner/work/LearningLab/LearningLab/node_modules/@testing-library/react/dist/act-compat.js:47:25
+          at renderRoot (/home/runner/work/LearningLab/LearningLab/node_modules/@testing-library/react/dist/pure.js:180:26)
+          at render (/home/runner/work/LearningLab/LearningLab/node_modules/@testing-library/react/dist/pure.js:271:10)
+          at Object.<anonymous> (/home/runner/work/LearningLab/LearningLab/apps/web/src/screens/auth/login/login.test.tsx:7:9)
+          at Promise.then.completed (/home/runner/work/LearningLab/LearningLab/node_modules/jest-circus/build/utils.js:298:28)
+          at new Promise (<anonymous>)
+          at callAsyncCircusFn (/home/runner/work/LearningLab/LearningLab/node_modules/jest-circus/build/utils.js:231:10)
+          at _callCircusTest (/home/runner/work/LearningLab/LearningLab/node_modules/jest-circus/build/run.js:316:40)
+          at processTicksAndRejections (node:internal/process/task_queues:105:5)
+          at _runTest (/home/runner/work/LearningLab/LearningLab/node_modules/jest-circus/build/run.js:252:3)
+          at _runTestsForDescribeBlock (/home/runner/work/LearningLab/LearningLab/node_modules/jest-circus/build/run.js:126:9)
+          at run (/home/runner/work/LearningLab/LearningLab/node_modules/jest-circus/build/run.js:71:3)
+          at runAndTransformResultsToJestFormat (/home/runner/work/LearningLab/LearningLab/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:122:21)
+          at jestAdapter (/home/runner/work/LearningLab/LearningLab/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:79:19)
+          at runTestInternal (/home/runner/work/LearningLab/LearningLab/node_modules/jest-runner/build/runTest.js:367:16)
+          at runTest (/home/runner/work/LearningLab/LearningLab/node_modules/jest-runner/build/runTest.js:444:34) {
+        detail: Error: NextRouter was not mounted. https://nextjs.org/docs/messages/next-router-not-mounted
+            at useRouter (/home/runner/work/LearningLab/LearningLab/node_modules/next/src/client/router.ts:135:11)
+            at AuthProvider (/home/runner/work/LearningLab/LearningLab/apps/web/src/context/AuthContext.tsx:38:27)
+            at renderWithHooks (/home/runner/work/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom.development.js:16305:18)
+            at mountIndeterminateComponent (/home/runner/work/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom.development.js:20074:13)
+            at beginWork (/home/runner/work/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom.development.js:21587:16)
+            at HTMLUnknownElement.callCallback (/home/runner/work/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom.development.js:4164:14)
+            at HTMLUnknownElement.callTheUserObjectsOperation (/home/runner/work/LearningLab/LearningLab/node_modules/jsdom/lib/jsdom/living/generated/EventListener.js:26:30)
+            at innerInvokeEventListeners (/home/runner/work/LearningLab/LearningLab/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:350:25)
+            at invokeEventListeners (/home/runner/work/LearningLab/LearningLab/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:286:3)
+            at HTMLUnknownElementImpl._dispatch (/home/runner/work/LearningLab/LearningLab/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:233:9)
+            at HTMLUnknownElementImpl.dispatchEvent (/home/runner/work/LearningLab/LearningLab/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:104:17)
+            at HTMLUnknownElement.dispatchEvent (/home/runner/work/LearningLab/LearningLab/node_modules/jsdom/lib/jsdom/living/generated/EventTarget.js:241:34)
+            at Object.invokeGuardedCallbackDev (/home/runner/work/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom.development.js:4213:16)
+            at invokeGuardedCallback (/home/runner/work/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom.development.js:4277:31)
+            at beginWork$1 (/home/runner/work/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom.development.js:27451:7)
+            at performUnitOfWork (/home/runner/work/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom.development.js:26560:12)
+            at workLoopSync (/home/runner/work/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom.development.js:26466:5)
+            at renderRootSync (/home/runner/work/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom.development.js:26434:7)
+            at performConcurrentWorkOnRoot (/home/runner/work/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom.development.js:25738:74)
+            at flushActQueue (/home/runner/work/LearningLab/LearningLab/node_modules/react/cjs/react.development.js:2667:24)
+            at act (/home/runner/work/LearningLab/LearningLab/node_modules/react/cjs/react.development.js:2582:11)
+            at /home/runner/work/LearningLab/LearningLab/node_modules/@testing-library/react/dist/act-compat.js:47:25
+            at renderRoot (/home/runner/work/LearningLab/LearningLab/node_modules/@testing-library/react/dist/pure.js:180:26)
+            at render (/home/runner/work/LearningLab/LearningLab/node_modules/@testing-library/react/dist/pure.js:271:10)
+            at Object.<anonymous> (/home/runner/work/LearningLab/LearningLab/apps/web/src/screens/auth/login/login.test.tsx:7:9)
+            at Promise.then.completed (/home/runner/work/LearningLab/LearningLab/node_modules/jest-circus/build/utils.js:298:28)
+            at new Promise (<anonymous>)
+            at callAsyncCircusFn (/home/runner/work/LearningLab/LearningLab/node_modules/jest-circus/build/utils.js:231:10)
+            at _callCircusTest (/home/runner/work/LearningLab/LearningLab/node_modules/jest-circus/build/run.js:316:40)
+            at processTicksAndRejections (node:internal/process/task_queues:105:5)
+            at _runTest (/home/runner/work/LearningLab/LearningLab/node_modules/jest-circus/build/run.js:252:3)
+            at _runTestsForDescribeBlock (/home/runner/work/LearningLab/LearningLab/node_modules/jest-circus/build/run.js:126:9)
+            at run (/home/runner/work/LearningLab/LearningLab/node_modules/jest-circus/build/run.js:71:3)
+            at runAndTransformResultsToJestFormat (/home/runner/work/LearningLab/LearningLab/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:122:21)
+            at jestAdapter (/home/runner/work/LearningLab/LearningLab/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:79:19)
+            at runTestInternal (/home/runner/work/LearningLab/LearningLab/node_modules/jest-runner/build/runTest.js:367:16)
+            at runTest (/home/runner/work/LearningLab/LearningLab/node_modules/jest-runner/build/runTest.js:444:34),
+        type: 'unhandled exception'
+      }
+         5 |
+         6 | test("render login component", () => {
+      >  7 |   render(
+           |         ^
+         8 |     <AuthProvider>
+         9 |       <LoginScreen />
+        10 |     </AuthProvider>
+        at VirtualConsole.<anonymous> (../../node_modules/jest-environment-jsdom/build/index.js:63:23)
+        at reportException (../../node_modules/jsdom/lib/jsdom/living/helpers/runtime-script-errors.js:70:28)
+        at innerInvokeEventListeners (../../node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:353:9)
+        at invokeEventListeners (../../node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:286:3)
+        at HTMLUnknownElementImpl._dispatch (../../node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:233:9)
+        at HTMLUnknownElementImpl.dispatchEvent (../../node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:104:17)
+        at HTMLUnknownElement.dispatchEvent (../../node_modules/jsdom/lib/jsdom/living/generated/EventTarget.js:241:34)
+        at Object.invokeGuardedCallbackDev (../../node_modules/react-dom/cjs/react-dom.development.js:4213:16)
+        at invokeGuardedCallback (../../node_modules/react-dom/cjs/react-dom.development.js:4277:31)
+        at beginWork$1 (../../node_modules/react-dom/cjs/react-dom.development.js:27451:7)
+        at performUnitOfWork (../../node_modules/react-dom/cjs/react-dom.development.js:26560:12)
+        at workLoopSync (../../node_modules/react-dom/cjs/react-dom.development.js:26466:5)
+        at renderRootSync (../../node_modules/react-dom/cjs/react-dom.development.js:26434:7)
+        at performConcurrentWorkOnRoot (../../node_modules/react-dom/cjs/react-dom.development.js:25738:74)
+        at flushActQueue (../../node_modules/react/cjs/react.development.js:2667:24)
+        at act (../../node_modules/react/cjs/react.development.js:2582:11)
+        at ../../node_modules/@testing-library/react/dist/act-compat.js:47:25
+        at renderRoot (../../node_modules/@testing-library/react/dist/pure.js:180:26)
+        at render (../../node_modules/@testing-library/react/dist/pure.js:271:10)
+        at Object.<anonymous> (src/screens/auth/login/login.test.tsx:7:9)
+    console.error
+      Error: Uncaught [Error: NextRouter was not mounted. https://nextjs.org/docs/messages/next-router-not-mounted]
+          at reportException (/home/runner/work/LearningLab/LearningLab/node_modules/jsdom/lib/jsdom/living/helpers/runtime-script-errors.js:66:24)
+          at innerInvokeEventListeners (/home/runner/work/LearningLab/LearningLab/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:353:9)
+          at invokeEventListeners (/home/runner/work/LearningLab/LearningLab/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:286:3)
+          at HTMLUnknownElementImpl._dispatch (/home/runner/work/LearningLab/LearningLab/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:233:9)
+          at HTMLUnknownElementImpl.dispatchEvent (/home/runner/work/LearningLab/LearningLab/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:104:17)
+          at HTMLUnknownElement.dispatchEvent (/home/runner/work/LearningLab/LearningLab/node_modules/jsdom/lib/jsdom/living/generated/EventTarget.js:241:34)
+          at Object.invokeGuardedCallbackDev (/home/runner/work/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom.development.js:4213:16)
+          at invokeGuardedCallback (/home/runner/work/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom.development.js:4277:31)
+          at beginWork$1 (/home/runner/work/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom.development.js:27451:7)
+          at performUnitOfWork (/home/runner/work/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom.development.js:26560:12)
+          at workLoopSync (/home/runner/work/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom.development.js:26466:5)
+          at renderRootSync (/home/runner/work/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom.development.js:26434:7)
+          at recoverFromConcurrentError (/home/runner/work/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom.development.js:25850:20)
+          at performConcurrentWorkOnRoot (/home/runner/work/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom.development.js:25750:22)
+          at flushActQueue (/home/runner/work/LearningLab/LearningLab/node_modules/react/cjs/react.development.js:2667:24)
+          at act (/home/runner/work/LearningLab/LearningLab/node_modules/react/cjs/react.development.js:2582:11)
+          at /home/runner/work/LearningLab/LearningLab/node_modules/@testing-library/react/dist/act-compat.js:47:25
+          at renderRoot (/home/runner/work/LearningLab/LearningLab/node_modules/@testing-library/react/dist/pure.js:180:26)
+          at render (/home/runner/work/LearningLab/LearningLab/node_modules/@testing-library/react/dist/pure.js:271:10)
+          at Object.<anonymous> (/home/runner/work/LearningLab/LearningLab/apps/web/src/screens/auth/login/login.test.tsx:7:9)
+          at Promise.then.completed (/home/runner/work/LearningLab/LearningLab/node_modules/jest-circus/build/utils.js:298:28)
+          at new Promise (<anonymous>)
+          at callAsyncCircusFn (/home/runner/work/LearningLab/LearningLab/node_modules/jest-circus/build/utils.js:231:10)
+          at _callCircusTest (/home/runner/work/LearningLab/LearningLab/node_modules/jest-circus/build/run.js:316:40)
+          at processTicksAndRejections (node:internal/process/task_queues:105:5)
+          at _runTest (/home/runner/work/LearningLab/LearningLab/node_modules/jest-circus/build/run.js:252:3)
+          at _runTestsForDescribeBlock (/home/runner/work/LearningLab/LearningLab/node_modules/jest-circus/build/run.js:126:9)
+          at run (/home/runner/work/LearningLab/LearningLab/node_modules/jest-circus/build/run.js:71:3)
+          at runAndTransformResultsToJestFormat (/home/runner/work/LearningLab/LearningLab/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:122:21)
+          at jestAdapter (/home/runner/work/LearningLab/LearningLab/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:79:19)
+          at runTestInternal (/home/runner/work/LearningLab/LearningLab/node_modules/jest-runner/build/runTest.js:367:16)
+          at runTest (/home/runner/work/LearningLab/LearningLab/node_modules/jest-runner/build/runTest.js:444:34) {
+        detail: Error: NextRouter was not mounted. https://nextjs.org/docs/messages/next-router-not-mounted
+            at useRouter (/home/runner/work/LearningLab/LearningLab/node_modules/next/src/client/router.ts:135:11)
+            at AuthProvider (/home/runner/work/LearningLab/LearningLab/apps/web/src/context/AuthContext.tsx:38:27)
+            at renderWithHooks (/home/runner/work/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom.development.js:16305:18)
+            at mountIndeterminateComponent (/home/runner/work/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom.development.js:20074:13)
+            at beginWork (/home/runner/work/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom.development.js:21587:16)
+            at HTMLUnknownElement.callCallback (/home/runner/work/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom.development.js:4164:14)
+            at HTMLUnknownElement.callTheUserObjectsOperation (/home/runner/work/LearningLab/LearningLab/node_modules/jsdom/lib/jsdom/living/generated/EventListener.js:26:30)
+            at innerInvokeEventListeners (/home/runner/work/LearningLab/LearningLab/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:350:25)
+            at invokeEventListeners (/home/runner/work/LearningLab/LearningLab/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:286:3)
+            at HTMLUnknownElementImpl._dispatch (/home/runner/work/LearningLab/LearningLab/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:233:9)
+            at HTMLUnknownElementImpl.dispatchEvent (/home/runner/work/LearningLab/LearningLab/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:104:17)
+            at HTMLUnknownElement.dispatchEvent (/home/runner/work/LearningLab/LearningLab/node_modules/jsdom/lib/jsdom/living/generated/EventTarget.js:241:34)
+            at Object.invokeGuardedCallbackDev (/home/runner/work/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom.development.js:4213:16)
+            at invokeGuardedCallback (/home/runner/work/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom.development.js:4277:31)
+            at beginWork$1 (/home/runner/work/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom.development.js:27451:7)
+            at performUnitOfWork (/home/runner/work/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom.development.js:26560:12)
+            at workLoopSync (/home/runner/work/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom.development.js:26466:5)
+            at renderRootSync (/home/runner/work/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom.development.js:26434:7)
+            at recoverFromConcurrentError (/home/runner/work/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom.development.js:25850:20)
+            at performConcurrentWorkOnRoot (/home/runner/work/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom.development.js:25750:22)
+            at flushActQueue (/home/runner/work/LearningLab/LearningLab/node_modules/react/cjs/react.development.js:2667:24)
+            at act (/home/runner/work/LearningLab/LearningLab/node_modules/react/cjs/react.development.js:2582:11)
+            at /home/runner/work/LearningLab/LearningLab/node_modules/@testing-library/react/dist/act-compat.js:47:25
+            at renderRoot (/home/runner/work/LearningLab/LearningLab/node_modules/@testing-library/react/dist/pure.js:180:26)
+            at render (/home/runner/work/LearningLab/LearningLab/node_modules/@testing-library/react/dist/pure.js:271:10)
+            at Object.<anonymous> (/home/runner/work/LearningLab/LearningLab/apps/web/src/screens/auth/login/login.test.tsx:7:9)
+            at Promise.then.completed (/home/runner/work/LearningLab/LearningLab/node_modules/jest-circus/build/utils.js:298:28)
+            at new Promise (<anonymous>)
+            at callAsyncCircusFn (/home/runner/work/LearningLab/LearningLab/node_modules/jest-circus/build/utils.js:231:10)
+            at _callCircusTest (/home/runner/work/LearningLab/LearningLab/node_modules/jest-circus/build/run.js:316:40)
+            at processTicksAndRejections (node:internal/process/task_queues:105:5)
+            at _runTest (/home/runner/work/LearningLab/LearningLab/node_modules/jest-circus/build/run.js:252:3)
+            at _runTestsForDescribeBlock (/home/runner/work/LearningLab/LearningLab/node_modules/jest-circus/build/run.js:126:9)
+            at run (/home/runner/work/LearningLab/LearningLab/node_modules/jest-circus/build/run.js:71:3)
+            at runAndTransformResultsToJestFormat (/home/runner/work/LearningLab/LearningLab/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:122:21)
+            at jestAdapter (/home/runner/work/LearningLab/LearningLab/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:79:19)
+            at runTestInternal (/home/runner/work/LearningLab/LearningLab/node_modules/jest-runner/build/runTest.js:367:16)
+            at runTest (/home/runner/work/LearningLab/LearningLab/node_modules/jest-runner/build/runTest.js:444:34),
+        type: 'unhandled exception'
+      }
+         5 |
+         6 | test("render login component", () => {
+      >  7 |   render(
+           |         ^
+         8 |     <AuthProvider>
+         9 |       <LoginScreen />
+        10 |     </AuthProvider>
+        at VirtualConsole.<anonymous> (../../node_modules/jest-environment-jsdom/build/index.js:63:23)
+        at reportException (../../node_modules/jsdom/lib/jsdom/living/helpers/runtime-script-errors.js:70:28)
+        at innerInvokeEventListeners (../../node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:353:9)
+        at invokeEventListeners (../../node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:286:3)
+        at HTMLUnknownElementImpl._dispatch (../../node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:233:9)
+        at HTMLUnknownElementImpl.dispatchEvent (../../node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:104:17)
+        at HTMLUnknownElement.dispatchEvent (../../node_modules/jsdom/lib/jsdom/living/generated/EventTarget.js:241:34)
+        at Object.invokeGuardedCallbackDev (../../node_modules/react-dom/cjs/react-dom.development.js:4213:16)
+        at invokeGuardedCallback (../../node_modules/react-dom/cjs/react-dom.development.js:4277:31)
+        at beginWork$1 (../../node_modules/react-dom/cjs/react-dom.development.js:27451:7)
+        at performUnitOfWork (../../node_modules/react-dom/cjs/react-dom.development.js:26560:12)
+        at workLoopSync (../../node_modules/react-dom/cjs/react-dom.development.js:26466:5)
+        at renderRootSync (../../node_modules/react-dom/cjs/react-dom.development.js:26434:7)
+        at recoverFromConcurrentError (../../node_modules/react-dom/cjs/react-dom.development.js:25850:20)
+        at performConcurrentWorkOnRoot (../../node_modules/react-dom/cjs/react-dom.development.js:25750:22)
+        at flushActQueue (../../node_modules/react/cjs/react.development.js:2667:24)
+        at act (../../node_modules/react/cjs/react.development.js:2582:11)
+        at ../../node_modules/@testing-library/react/dist/act-compat.js:47:25
+        at renderRoot (../../node_modules/@testing-library/react/dist/pure.js:180:26)
+        at render (../../node_modules/@testing-library/react/dist/pure.js:271:10)
+        at Object.<anonymous> (src/screens/auth/login/login.test.tsx:7:9)
+    console.error
+      The above error occurred in the <AuthProvider> component:
+      
+          at children (/home/runner/work/LearningLab/LearningLab/apps/web/src/context/AuthContext.tsx:34:32)
+      
+      Consider adding an error boundary to your tree to customize error handling behavior.
+      Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+         5 |
+         6 | test("render login component", () => {
+      >  7 |   render(
+           |         ^
+         8 |     <AuthProvider>
+         9 |       <LoginScreen />
+        10 |     </AuthProvider>
+        at logCapturedError (../../node_modules/react-dom/cjs/react-dom.development.js:18687:23)
+        at update.callback (../../node_modules/react-dom/cjs/react-dom.development.js:18720:5)
+        at callCallback (../../node_modules/react-dom/cjs/react-dom.development.js:13923:12)
+        at commitUpdateQueue (../../node_modules/react-dom/cjs/react-dom.development.js:13944:9)
+        at commitLayoutEffectOnFiber (../../node_modules/react-dom/cjs/react-dom.development.js:23391:13)
+        at commitLayoutMountEffects_complete (../../node_modules/react-dom/cjs/react-dom.development.js:24688:9)
+        at commitLayoutEffects_begin (../../node_modules/react-dom/cjs/react-dom.development.js:24674:7)
+        at commitLayoutEffects (../../node_modules/react-dom/cjs/react-dom.development.js:24612:3)
+        at commitRootImpl (../../node_modules/react-dom/cjs/react-dom.development.js:26823:5)
+        at commitRoot (../../node_modules/react-dom/cjs/react-dom.development.js:26682:5)
+        at finishConcurrentRender (../../node_modules/react-dom/cjs/react-dom.development.js:25892:9)
+        at performConcurrentWorkOnRoot (../../node_modules/react-dom/cjs/react-dom.development.js:25809:7)
+        at flushActQueue (../../node_modules/react/cjs/react.development.js:2667:24)
+        at act (../../node_modules/react/cjs/react.development.js:2582:11)
+        at ../../node_modules/@testing-library/react/dist/act-compat.js:47:25
+        at renderRoot (../../node_modules/@testing-library/react/dist/pure.js:180:26)
+        at render (../../node_modules/@testing-library/react/dist/pure.js:271:10)
+        at Object.<anonymous> (src/screens/auth/login/login.test.tsx:7:9)
+  FAIL src/screens/auth/login/login.test.tsx
+    ✕ render login component (102 ms)
+    ● render login component
+      NextRouter was not mounted. https://nextjs.org/docs/messages/next-router-not-mounted
+        36 |   const [token, setToken] = useState<string | null>(null);
+        37 |   const [isLoading, setIsLoading] = useState<boolean>(true); // Start med loading true for at tjekke initial auth state
+      > 38 |   const router = useRouter();
+           |                           ^
+        39 |
+        40 |   // Funktion til at hente brugerprofil baseret på et token
+        41 |   const fetchUserProfile = async (currentToken: string) => {
+        at useRouter (../../node_modules/next/src/client/router.ts:135:11)
+        at AuthProvider (src/context/AuthContext.tsx:38:27)
+        at renderWithHooks (../../node_modules/react-dom/cjs/react-dom.development.js:16305:18)
+        at mountIndeterminateComponent (../../node_modules/react-dom/cjs/react-dom.development.js:20074:13)
+        at beginWork (../../node_modules/react-dom/cjs/react-dom.development.js:21587:16)
+        at beginWork$1 (../../node_modules/react-dom/cjs/react-dom.development.js:27426:14)
+        at performUnitOfWork (../../node_modules/react-dom/cjs/react-dom.development.js:26560:12)
+        at workLoopSync (../../node_modules/react-dom/cjs/react-dom.development.js:26466:5)
+        at renderRootSync (../../node_modules/react-dom/cjs/react-dom.development.js:26434:7)
+        at recoverFromConcurrentError (../../node_modules/react-dom/cjs/react-dom.development.js:25850:20)
+        at performConcurrentWorkOnRoot (../../node_modules/react-dom/cjs/react-dom.development.js:25750:22)
+        at flushActQueue (../../node_modules/react/cjs/react.development.js:2667:24)
+        at act (../../node_modules/react/cjs/react.development.js:2582:11)
+        at ../../node_modules/@testing-library/react/dist/act-compat.js:47:25
+        at renderRoot (../../node_modules/@testing-library/react/dist/pure.js:180:26)
+        at render (../../node_modules/@testing-library/react/dist/pure.js:271:10)
+        at Object.<anonymous> (src/screens/auth/login/login.test.tsx:7:9)
+  Test Suites: 1 failed, 1 total
+  Tests:       1 failed, 1 total
+  Snapshots:   0 total
+  Time:        1.54 s
+  Ran all test suites.
+  Error:  command finished with error: command (/home/runner/work/LearningLab/LearningLab/apps/web) yarn run test:ci exited (1)
+@repo/config:build
+ Tasks:    0 successful, 4 total
+Cached:    0 cached, 4 total
+  Time:    4.284s 
+Failed:    web#test:ci
+Error: Process completed with exit code 1.
+0s
+1s
+Post job cleanup.
+/usr/bin/git version
+git version 2.49.0
+Temporarily overriding HOME='/home/runner/work/_temp/59bdded1-7354-4741-a82a-13c0f9b2f7de' before making global git config changes
+Adding repository directory to the temporary git global config as a safe directory
+/usr/bin/git config --global --add safe.directory /home/runner/work/LearningLab/LearningLab
+/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+http.https://github.com/.extraheader
+/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
