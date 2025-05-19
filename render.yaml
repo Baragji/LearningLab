@@ -1,4 +1,3 @@
-# render.yaml – placer i roden af dit monorepo
 services:
   - type: web
     name: api-service
@@ -12,7 +11,7 @@ services:
       corepack enable
       yarn install --immutable
       yarn workspace api prisma generate
-      # Bygger api *og alle dens dependencies* (@repo/core, @repo/config)
+      # 🚀 Bygger alle afhængigheder til API'en med Turborepo (inkl. core + config)
       yarn turbo run build --filter=...api
 
     startCommand: node dist/main.js
@@ -24,12 +23,14 @@ services:
           property: connectionString
       - key: JWT_SECRET
         generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 1h
       - key: NODE_ENV
         value: production
 
     postDeployScript: yarn workspace api prisma migrate deploy
     healthCheckPath: /api
-    # autoDeploy: true   # aktivér hvis du vil have auto-deploy
+    autoDeploy: true
 
 databases:
   - name: learning-db
