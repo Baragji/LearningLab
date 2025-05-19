@@ -51,12 +51,12 @@ services:
     # Auto-Deploy (valgfrit, men typisk ønsket)
     # autoDeploy: true # Sæt til false hvis du vil deaktivere auto-deploy på push til din branch
 
+databases:
   # Database Service (PostgreSQL)
-  - type: pserv # 'pserv' for PostgreSQL service
-    name: learning-db # Navnet på din database i Render dashboardet
+  - name: learning-db # Navnet på din database i Render dashboardet
     plan: free # Specificerer Render planen (free tier til at starte med)
     region: frankfurt # Vælg samme region som din API service for lav latency
-    ipAllowList: [] # Tom liste tillader adgang fra alle Render services i samme konto.
-                      # For produktion kan du begrænse dette til specifikke IP'er eller Render services.
-    postgresMajorVersion: "15" # Specificerer PostgreSQL versionen (matcher din lokale opsætning)
-
+    ipAllowList: [] 
+    postgresMajorVersion: "15" # Specificerer PostgreSQL versionen (som streng ifølge Render docs)
+    # databaseName: learningdb_prod # Valgfrit: Navnet på selve databasen inde i PostgreSQL instansen
+    # user: db_user_prod # Valgfrit: Brugernavnet til databasen
