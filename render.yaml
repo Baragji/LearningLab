@@ -1,3 +1,4 @@
+# render.yaml
 services:
   - type: web
     name: api-service
@@ -10,9 +11,9 @@ services:
       corepack enable
       yarn install --immutable
       yarn workspace api prisma generate
-      # 🚀 Bygger core, config og api i den korrekte rækkefølge
-      yarn turbo run build --filter=...api
-      # 🗄 Kør migrationer som en del af build
+      # 🚀 Bygger core, config og api i korrekt rækkefølge
+      npx turbo run build --filter=...api
+      # 🗄 Kør databasmigrationer
       yarn workspace api prisma migrate deploy
 
     startCommand: node dist/main.js
