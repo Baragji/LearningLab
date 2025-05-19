@@ -14,18 +14,15 @@ services:
     # Build-konfiguration
     buildCommand: |
       corepack enable
-      corepack prepare yarn@4.9.1 --activate
       yarn install --immutable
       yarn workspace api prisma generate
-      yarn workspace api build
+      yarn turbo run build --filter=api # ÆNDRET: Brug Turborepo til at bygge api og dens dependencies
     # Ovenstående buildCommand er justeret:
-    # 1. `corepack enable`: Aktiverer Corepack.
-    # 2. `corepack prepare yarn@4.9.1 --activate`: Downloader og aktiverer den specifikke Yarn version (4.9.1) som defineret i package.json.
-    # 3. `yarn install --immutable`: Installerer alle dependencies for hele monorepoet med den korrekte Yarn version.
-    #    `--immutable` sikrer, at `yarn.lock` ikke ændres.
-    # 4. `yarn workspace api prisma generate`: Sikrer at Prisma Client genereres specifikt for Render-miljøet.
-    # 5. `yarn workspace api build`: Kører build-scriptet specifikt for din `api` app.
-    #    Dette antager, at dit `apps/api/package.json` har et `build` script (f.eks. `nest build`).
+    # 1. `corepack enable`: Aktiverer Corepack. Den bør nu automatisk bruge den vendored Yarn version.
+    # 2. `yarn install --immutable`: Installerer alle dependencies for hele monorepoet med den korrekte Yarn version.
+    # 3. `yarn workspace api prisma generate`: Sikrer at Prisma Client genereres specifikt for Render-miljøet.
+    # 4. `yarn turbo run build --filter=api`: Bygger 'api' appen OG dens lokale afhængigheder (@repo/core, @repo/config)
+    #    i den korrekte rækkefølge, baseret på din turbo.json konfiguration.
 
     # Start-konfiguration
     startCommand: node dist/main.js # Kommandoen til at starte din NestJS API efter build
