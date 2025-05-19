@@ -1,9 +1,13 @@
 {
-  "extends": "../tsconfig/base.json",
+  "extends": "tsconfig/base.json",
   "compilerOptions": {
+    "composite": true, // <--- TILFØJET
+    "declaration": true, // Sikrer .d.ts filer genereres, vigtigt for project references
+    "declarationMap": true, // Sikrer source maps for .d.ts filer
     "outDir": "dist",
-    "baseUrl": "./src", // Gør det nemmere at have absolutte imports inden for pakken hvis nødvendigt
-    "paths": { // Eksempel på paths, kan justeres/fjernes efter behov
+    "rootDir": "src", // Specificerer roden af input-filerne
+    "baseUrl": "./src",
+    "paths": {
       "@/*": ["*"]
     }
   },

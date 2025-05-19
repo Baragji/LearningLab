@@ -20,7 +20,7 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json --runInBand",
-    "test:ci": "jest --ci --runInBand"
+    "test:ci": "prisma generate && jest --ci --runInBand"
   },
   "dependencies": {
     "@nestjs/common": "^10.1.3",
@@ -43,7 +43,8 @@
     "reflect-metadata": "^0.1.13",
     "rimraf": "^5.0.1",
     "rxjs": "^7.8.2",
-    "swagger-ui-express": "^5.0.0"
+    "swagger-ui-express": "^5.0.0",
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.1.11",
@@ -52,6 +53,7 @@
     "@swc/core": "^1.11.24",
     "@swc/types": "^0.1.21",
     "@types/babel__core": "^7.20.5",
+    "@types/bcryptjs": "^2.4.6",
     "@types/express": "^5.0.2",
     "@types/jest": "^29.5.3",
     "@types/node": "^20.4.5",
@@ -61,6 +63,7 @@
     "@types/passport-local": "^1.0.38",
     "@types/prettier": "^3.0.0",
     "@types/supertest": "^2.0.12",
+    "@types/uuid": "^10.0.0",
     "@typescript-eslint/eslint-plugin": "^6.2.1",
     "@typescript-eslint/parser": "^6.2.1",
     "eslint": "^8.57.1",
@@ -97,6 +100,11 @@
       "**/*.(t|j)s"
     ],
     "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "moduleNameMapper": {
+      "^@repo/core/(.*)$": "<rootDir>/../../packages/core/src/$1",
+      "^@repo/config/(.*)$": "<rootDir>/../../packages/config/src/$1",
+      "^src/(.*)$": "<rootDir>/$1"
+    }
   }
 }
