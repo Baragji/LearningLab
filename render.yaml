@@ -1,5 +1,4 @@
 # render.yaml
-# Placeres i roden af dit monorepo
 
 services:
   # API Service (NestJS)
