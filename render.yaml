@@ -13,17 +13,15 @@ services:
     # Build-konfiguration
     buildCommand: |
       yarn install --immutable && \
+      yarn workspace api prisma generate && \
       yarn workspace api build
-      # yarn workspace api prisma generate # Sørger for at Prisma Client er genereret
-      # yarn workspace api build
     # Ovenstående buildCommand er justeret:
     # 1. `yarn install --immutable`: Installerer alle dependencies for hele monorepoet.
     #    Dette er vigtigt, da `api` kan have dependencies til andre `packages/*` i dit monorepo.
     #    `--immutable` sikrer, at `yarn.lock` ikke ændres.
-    # 2. `yarn workspace api build`: Kører build-scriptet specifikt for din `api` app.
+    # 2. `yarn workspace api prisma generate`: Sikrer at Prisma Client genereres specifikt for Render-miljøet.
+    # 3. `yarn workspace api build`: Kører build-scriptet specifikt for din `api` app.
     #    Dette antager, at dit `apps/api/package.json` har et `build` script (f.eks. `nest build`).
-    #    `prisma generate` køres typisk som en del af `nest build` eller `postinstall` i din `api` pakke,
-    #    men hvis ikke, kan det tilføjes her: `yarn workspace api prisma generate && yarn workspace api build`
 
     # Start-konfiguration
     startCommand: node dist/main.js # Kommandoen til at starte din NestJS API efter build
