@@ -1,0 +1,23 @@
+# Node
+node_modules
+
+# Yarn Berry cache
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/releases
+
+# Plug’n’Play files
+.pnp.cjs
+.pnp.loader.mjs
+
+# Build output
+.next
+dist
+out
+build
+coverage
+
+# Misc
+.env*
+.DS_Store
