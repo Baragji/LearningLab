@@ -3,5 +3,9 @@
   "compilerOptions": {
     "outDir": "./dist",
     "baseUrl": "./"
-  }
+  },
+  "references": [
+    { "path": "../../packages/core" },
+    { "path": "../../packages/config" }
+  ]
 }
