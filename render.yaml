@@ -2,7 +2,6 @@ services:
   - type: web
     name: api-service
     env: node
-    nodeVersion: "22"
     rootDir: apps/api
     plan: free
     region: frankfurt
@@ -11,10 +10,14 @@ services:
       corepack enable
       yarn install --immutable
       yarn workspace api prisma generate
-      # 🚀 Bygger alle afhængigheder til API'en med Turborepo (inkl. core + config)
+      # 🚀 Bygger core, config og api i den korrekte rækkefølge
       yarn turbo run build --filter=...api
+      # 🗄 Kør migrationer som en del af build
+      yarn workspace api prisma migrate deploy
 
     startCommand: node dist/main.js
+    healthCheckPath: /api
+    autoDeploy: true
 
     envVars:
       - key: DATABASE_URL
@@ -27,10 +30,6 @@ services:
         value: 1h
       - key: NODE_ENV
         value: production
-
-    postDeployScript: yarn workspace api prisma migrate deploy
-    healthCheckPath: /api
-    autoDeploy: true
 
 databases:
   - name: learning-db
