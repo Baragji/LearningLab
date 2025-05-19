@@ -37,11 +37,11 @@ jobs:
         run: yarn install --immutable
 
       - name: Run tests and build
-        # Dette kommando vil bruge Turborepo til at køre 'test' og 'build' scripts
+        # Dette kommando vil bruge Turborepo til at køre 'test:ci' og 'build' scripts
         # for alle workspaces (apps/api, apps/web, packages/*)
         # som defineret i deres respektive package.json filer og turbo.json.
-        # Sørg for, at dine 'test' og 'build' scripts er korrekt defineret i hver package.json.
-        run: yarn turbo run test build
+        # Sørg for, at dine 'test:ci' og 'build' scripts er korrekt defineret i hver package.json.
+        run: yarn turbo run test:ci build # <<< ÆNDRET HER
 
   deploy-render-api:
     name: Deploy API to Render
