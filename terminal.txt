@@ -1,20 +1,190 @@
-Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % yarn install
-
-➤ YN0000: · Yarn 4.9.1
-➤ YN0000: ┌ Resolution step
-➤ YN0085: │ + @nestjs/cli@npm:10.4.9, @nestjs/common@npm:10.4.17, and 1103 more.
-➤ YN0000: └ Completed in 1s 955ms
-➤ YN0000: ┌ Fetch step
-➤ YN0000: └ Completed in 0s 441ms
-➤ YN0000: ┌ Link step
-➤ YN0007: │ turbo@npm:1.10.12 must be built because it never has been before or the last one failed
-➤ YN0007: │ @nestjs/core@npm:10.4.17 [62573] must be built because it never has been before or the last one failed
-➤ YN0007: │ @prisma/engines@npm:5.22.0 must be built because it never has been before or the last one failed
-➤ YN0007: │ @swc/core@npm:1.11.24 [62573] must be built because it never has been before or the last one failed
-➤ YN0007: │ @scarf/scarf@npm:1.4.0 must be built because it never has been before or the last one failed
-➤ YN0007: │ unrs-resolver@npm:1.7.2 must be built because it never has been before or the last one failed
-➤ YN0007: │ prisma@npm:5.22.0 must be built because it never has been before or the last one failed
-➤ YN0007: │ @prisma/client@npm:5.22.0 [62573] must be built because it never has been before or the last one failed
-➤ YN0000: └ Completed in 9s 618ms
-➤ YN0000: · Done in 12s 139ms
-Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % 
+2025-05-19T16:21:22.7781899Z Current runner version: '2.324.0'
+2025-05-19T16:21:22.7806671Z ##[group]Runner Image Provisioner
+2025-05-19T16:21:22.7807505Z Hosted Compute Agent
+2025-05-19T16:21:22.7808006Z Version: 20250508.323
+2025-05-19T16:21:22.7808680Z Commit: 81b259f29879f73b4213d199e42d8c3465dae986
+2025-05-19T16:21:22.7809325Z Build Date: 2025-05-08T19:40:08Z
+2025-05-19T16:21:22.7809905Z ##[endgroup]
+2025-05-19T16:21:22.7810550Z ##[group]Operating System
+2025-05-19T16:21:22.7811311Z Ubuntu
+2025-05-19T16:21:22.7811759Z 24.04.2
+2025-05-19T16:21:22.7812271Z LTS
+2025-05-19T16:21:22.7812748Z ##[endgroup]
+2025-05-19T16:21:22.7813199Z ##[group]Runner Image
+2025-05-19T16:21:22.7813814Z Image: ubuntu-24.04
+2025-05-19T16:21:22.7814299Z Version: 20250511.1.0
+2025-05-19T16:21:22.7815302Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20250511.1/images/ubuntu/Ubuntu2404-Readme.md
+2025-05-19T16:21:22.7816870Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20250511.1
+2025-05-19T16:21:22.7817856Z ##[endgroup]
+2025-05-19T16:21:22.7818992Z ##[group]GITHUB_TOKEN Permissions
+2025-05-19T16:21:22.7820787Z Contents: read
+2025-05-19T16:21:22.7821651Z Metadata: read
+2025-05-19T16:21:22.7822240Z Packages: read
+2025-05-19T16:21:22.7822731Z ##[endgroup]
+2025-05-19T16:21:22.7824787Z Secret source: Actions
+2025-05-19T16:21:22.7825570Z Prepare workflow directory
+2025-05-19T16:21:22.8174630Z Prepare all required actions
+2025-05-19T16:21:22.8232261Z Getting action download info
+2025-05-19T16:21:23.3630411Z ##[group]Download immutable action package 'actions/checkout@v4'
+2025-05-19T16:21:23.3631683Z Version: 4.2.2
+2025-05-19T16:21:23.3632671Z Digest: sha256:ccb2698953eaebd21c7bf6268a94f9c26518a7e38e27e0b83c1fe1ad049819b1
+2025-05-19T16:21:23.3633962Z Source commit SHA: 11bd71901bbe5b1630ceea73d27597364c9af683
+2025-05-19T16:21:23.3634651Z ##[endgroup]
+2025-05-19T16:21:23.4274557Z ##[group]Download immutable action package 'actions/setup-node@v4'
+2025-05-19T16:21:23.4275373Z Version: 4.4.0
+2025-05-19T16:21:23.4276134Z Digest: sha256:9427cefe82346e992fb5b949e3569b39d537ae41aa3086483b14eceebfc16bc1
+2025-05-19T16:21:23.4277127Z Source commit SHA: 49933ea5288caeca8642d1e84afbd3f7d6820020
+2025-05-19T16:21:23.4277805Z ##[endgroup]
+2025-05-19T16:21:23.5912395Z Complete job name: Build and Test
+2025-05-19T16:21:23.6593280Z ##[group]Run actions/checkout@v4
+2025-05-19T16:21:23.6594090Z with:
+2025-05-19T16:21:23.6594461Z   fetch-depth: 0
+2025-05-19T16:21:23.6594875Z   repository: Baragji/LearningLab
+2025-05-19T16:21:23.6595527Z   token: ***
+2025-05-19T16:21:23.6595903Z   ssh-strict: true
+2025-05-19T16:21:23.6596283Z   ssh-user: git
+2025-05-19T16:21:23.6596684Z   persist-credentials: true
+2025-05-19T16:21:23.6597119Z   clean: true
+2025-05-19T16:21:23.6597515Z   sparse-checkout-cone-mode: true
+2025-05-19T16:21:23.6597977Z   fetch-tags: false
+2025-05-19T16:21:23.6598367Z   show-progress: true
+2025-05-19T16:21:23.6598756Z   lfs: false
+2025-05-19T16:21:23.6599122Z   submodules: false
+2025-05-19T16:21:23.6599510Z   set-safe-directory: true
+2025-05-19T16:21:23.6600165Z ##[endgroup]
+2025-05-19T16:21:23.7698268Z Syncing repository: Baragji/LearningLab
+2025-05-19T16:21:23.7699919Z ##[group]Getting Git version info
+2025-05-19T16:21:23.7700637Z Working directory is '/home/runner/work/LearningLab/LearningLab'
+2025-05-19T16:21:23.7701998Z [command]/usr/bin/git version
+2025-05-19T16:21:23.7746710Z git version 2.49.0
+2025-05-19T16:21:23.7773428Z ##[endgroup]
+2025-05-19T16:21:23.7789612Z Temporarily overriding HOME='/home/runner/work/_temp/b04ea420-d6a7-4634-a0bf-923ab033a7bc' before making global git config changes
+2025-05-19T16:21:23.7792211Z Adding repository directory to the temporary git global config as a safe directory
+2025-05-19T16:21:23.7804673Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/LearningLab/LearningLab
+2025-05-19T16:21:23.7841781Z Deleting the contents of '/home/runner/work/LearningLab/LearningLab'
+2025-05-19T16:21:23.7845785Z ##[group]Initializing the repository
+2025-05-19T16:21:23.7850590Z [command]/usr/bin/git init /home/runner/work/LearningLab/LearningLab
+2025-05-19T16:21:23.7909332Z hint: Using 'master' as the name for the initial branch. This default branch name
+2025-05-19T16:21:23.7910804Z hint: is subject to change. To configure the initial branch name to use in all
+2025-05-19T16:21:23.7912342Z hint: of your new repositories, which will suppress this warning, call:
+2025-05-19T16:21:23.7913234Z hint:
+2025-05-19T16:21:23.7913757Z hint: 	git config --global init.defaultBranch <name>
+2025-05-19T16:21:23.7915125Z hint:
+2025-05-19T16:21:23.7916111Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2025-05-19T16:21:23.7917730Z hint: 'development'. The just-created branch can be renamed via this command:
+2025-05-19T16:21:23.7919055Z hint:
+2025-05-19T16:21:23.7919782Z hint: 	git branch -m <name>
+2025-05-19T16:21:23.7921268Z Initialized empty Git repository in /home/runner/work/LearningLab/LearningLab/.git/
+2025-05-19T16:21:23.7926870Z [command]/usr/bin/git remote add origin https://github.com/Baragji/LearningLab
+2025-05-19T16:21:23.7959805Z ##[endgroup]
+2025-05-19T16:21:23.7960978Z ##[group]Disabling automatic garbage collection
+2025-05-19T16:21:23.7965666Z [command]/usr/bin/git config --local gc.auto 0
+2025-05-19T16:21:23.7995880Z ##[endgroup]
+2025-05-19T16:21:23.7997084Z ##[group]Setting up auth
+2025-05-19T16:21:23.8003949Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2025-05-19T16:21:23.8036522Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2025-05-19T16:21:23.8295298Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2025-05-19T16:21:23.8326119Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2025-05-19T16:21:23.8563085Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2025-05-19T16:21:23.8605226Z ##[endgroup]
+2025-05-19T16:21:23.8606553Z ##[group]Fetching the repository
+2025-05-19T16:21:23.8627963Z [command]/usr/bin/git -c protocol.version=2 fetch --prune --no-recurse-submodules origin +refs/heads/*:refs/remotes/origin/* +refs/tags/*:refs/tags/*
+2025-05-19T16:21:24.8116610Z From https://github.com/Baragji/LearningLab
+2025-05-19T16:21:24.8118519Z  * [new branch]      MainOld2               -> origin/MainOld2
+2025-05-19T16:21:24.8119705Z  * [new branch]      UltBlue0.1             -> origin/UltBlue0.1
+2025-05-19T16:21:24.8120725Z  * [new branch]      main                   -> origin/main
+2025-05-19T16:21:24.8122031Z  * [new tag]         v1.0.0-initial-working -> v1.0.0-initial-working
+2025-05-19T16:21:24.8156490Z [command]/usr/bin/git branch --list --remote origin/main
+2025-05-19T16:21:24.8179002Z   origin/main
+2025-05-19T16:21:24.8187979Z [command]/usr/bin/git rev-parse refs/remotes/origin/main
+2025-05-19T16:21:24.8208060Z d73d4b11f71d97f03ff9afc9f68888ba7d8df408
+2025-05-19T16:21:24.8214868Z ##[endgroup]
+2025-05-19T16:21:24.8216562Z ##[group]Determining the checkout info
+2025-05-19T16:21:24.8218236Z ##[endgroup]
+2025-05-19T16:21:24.8219501Z [command]/usr/bin/git sparse-checkout disable
+2025-05-19T16:21:24.8255569Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2025-05-19T16:21:24.8281329Z ##[group]Checking out the ref
+2025-05-19T16:21:24.8284473Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+2025-05-19T16:21:24.8556927Z Switched to a new branch 'main'
+2025-05-19T16:21:24.8558544Z branch 'main' set up to track 'origin/main'.
+2025-05-19T16:21:24.8569865Z ##[endgroup]
+2025-05-19T16:21:24.8607073Z [command]/usr/bin/git log -1 --format=%H
+2025-05-19T16:21:24.8630379Z d73d4b11f71d97f03ff9afc9f68888ba7d8df408
+2025-05-19T16:21:24.8921765Z ##[group]Run actions/setup-node@v4
+2025-05-19T16:21:24.8923126Z with:
+2025-05-19T16:21:24.8923919Z   node-version: 22
+2025-05-19T16:21:24.8924789Z   cache: yarn
+2025-05-19T16:21:24.8925613Z   always-auth: false
+2025-05-19T16:21:24.8926526Z   check-latest: false
+2025-05-19T16:21:24.8927735Z   token: ***
+2025-05-19T16:21:24.8928572Z ##[endgroup]
+2025-05-19T16:21:25.0709461Z Found in cache @ /opt/hostedtoolcache/node/22.15.0/x64
+2025-05-19T16:21:25.0717077Z ##[group]Environment details
+2025-05-19T16:21:25.5506328Z node: v22.15.0
+2025-05-19T16:21:25.5506802Z npm: 10.9.2
+2025-05-19T16:21:25.5507033Z yarn: 4.9.1
+2025-05-19T16:21:25.5507620Z ##[endgroup]
+2025-05-19T16:21:25.5530803Z [command]/usr/local/bin/yarn --version
+2025-05-19T16:21:25.8801614Z 4.9.1
+2025-05-19T16:21:25.8984341Z [command]/usr/local/bin/yarn config get cacheFolder
+2025-05-19T16:21:26.2287171Z /home/runner/.yarn/berry/cache
+2025-05-19T16:21:26.2576477Z [command]/usr/local/bin/yarn config get enableGlobalCache
+2025-05-19T16:21:26.5811412Z [33mtrue[39m
+2025-05-19T16:21:26.8657337Z yarn cache is not found
+2025-05-19T16:21:26.8780190Z ##[group]Run corepack enable
+2025-05-19T16:21:26.8780495Z [36;1mcorepack enable[0m
+2025-05-19T16:21:26.8928924Z shell: /usr/bin/bash -e {0}
+2025-05-19T16:21:26.8929190Z ##[endgroup]
+2025-05-19T16:21:27.0740740Z ##[group]Run yarn install --immutable
+2025-05-19T16:21:27.0741612Z [36;1myarn install --immutable[0m
+2025-05-19T16:21:27.0794439Z shell: /usr/bin/bash -e {0}
+2025-05-19T16:21:27.0794677Z ##[endgroup]
+2025-05-19T16:21:27.1343917Z ! Corepack is about to download https://repo.yarnpkg.com/4.9.1/packages/yarnpkg-cli/bin/yarn.js
+2025-05-19T16:21:27.8959000Z [94m➤[39m YN0000: · Yarn 4.9.1
+2025-05-19T16:21:27.9116769Z [94m➤[39m [90mYN0000[39m: ┌ Resolution step
+2025-05-19T16:21:27.9117772Z ##[group]Resolution step
+2025-05-19T16:21:28.1664373Z ##[endgroup]
+2025-05-19T16:21:28.1665529Z [94m➤[39m [90mYN0000[39m: └ Completed in 0s 255ms
+2025-05-19T16:21:28.2073232Z [94m➤[39m [90mYN0000[39m: ┌ Fetch step
+2025-05-19T16:21:28.2074527Z ##[group]Fetch step
+2025-05-19T16:21:35.7769039Z [94m➤[39m YN0013: │ [38;5;220m1072[39m packages were added to the project ([38;5;160m+ 586.92 MiB[39m).
+2025-05-19T16:21:35.7772524Z ##[endgroup]
+2025-05-19T16:21:35.7773285Z [94m➤[39m [90mYN0000[39m: └ Completed in 7s 572ms
+2025-05-19T16:21:35.8140487Z [94m➤[39m [90mYN0000[39m: ┌ Link step
+2025-05-19T16:21:35.8141655Z ##[group]Link step
+2025-05-19T16:21:41.4793069Z [94m➤[39m YN0007: │ [38;5;173mturbo[39m[38;5;111m@[39m[38;5;111mnpm:1.10.12[39m must be built because it never has been before or the last one failed
+2025-05-19T16:21:41.4801728Z [94m➤[39m YN0007: │ [38;5;166m@nestjs/[39m[38;5;173mcore[39m[38;5;111m@[39m[38;5;111mnpm:10.4.17 [62573][39m must be built because it never has been before or the last one failed
+2025-05-19T16:21:41.4804790Z [94m➤[39m YN0007: │ [38;5;166m@prisma/[39m[38;5;173mengines[39m[38;5;111m@[39m[38;5;111mnpm:5.22.0[39m must be built because it never has been before or the last one failed
+2025-05-19T16:21:41.4807011Z [94m➤[39m YN0007: │ [38;5;166m@swc/[39m[38;5;173mcore[39m[38;5;111m@[39m[38;5;111mnpm:1.11.24 [62573][39m must be built because it never has been before or the last one failed
+2025-05-19T16:21:41.4809016Z [94m➤[39m YN0007: │ [38;5;166m@scarf/[39m[38;5;173mscarf[39m[38;5;111m@[39m[38;5;111mnpm:1.4.0[39m must be built because it never has been before or the last one failed
+2025-05-19T16:21:41.4810974Z [94m➤[39m YN0007: │ [38;5;173munrs-resolver[39m[38;5;111m@[39m[38;5;111mnpm:1.7.2[39m must be built because it never has been before or the last one failed
+2025-05-19T16:21:43.8932751Z [94m➤[39m YN0007: │ [38;5;173mprisma[39m[38;5;111m@[39m[38;5;111mnpm:5.22.0[39m must be built because it never has been before or the last one failed
+2025-05-19T16:21:43.9675770Z [94m➤[39m YN0007: │ [38;5;166m@prisma/[39m[38;5;173mclient[39m[38;5;111m@[39m[38;5;111mnpm:5.22.0 [62573][39m must be built because it never has been before or the last one failed
+2025-05-19T16:21:45.1788348Z [94m➤[39m [90mYN0000[39m: │ [38;5;166m@prisma/[39m[38;5;173mclient[39m[38;5;111m@[39m[38;5;111mnpm:5.22.0 [62573][39m [31mSTDERR[39m prisma:warn We could not find your Prisma schema in the default locations (see: https://pris.ly/d/prisma-schema-location).
+2025-05-19T16:21:45.1792206Z [94m➤[39m [90mYN0000[39m: │ [38;5;166m@prisma/[39m[38;5;173mclient[39m[38;5;111m@[39m[38;5;111mnpm:5.22.0 [62573][39m [31mSTDERR[39m If you have a Prisma schema file in a custom path, you will need to run
+2025-05-19T16:21:45.1794421Z [94m➤[39m [90mYN0000[39m: │ [38;5;166m@prisma/[39m[38;5;173mclient[39m[38;5;111m@[39m[38;5;111mnpm:5.22.0 [62573][39m [31mSTDERR[39m `prisma generate --schema=./path/to/your/schema.prisma` to generate Prisma Client.
+2025-05-19T16:21:45.1796208Z [94m➤[39m [90mYN0000[39m: │ [38;5;166m@prisma/[39m[38;5;173mclient[39m[38;5;111m@[39m[38;5;111mnpm:5.22.0 [62573][39m [31mSTDERR[39m If you do not have a Prisma schema file yet, you can ignore this message.
+2025-05-19T16:21:45.1797357Z [94m➤[39m [90mYN0000[39m: │ [38;5;166m@prisma/[39m[38;5;173mclient[39m[38;5;111m@[39m[38;5;111mnpm:5.22.0 [62573][39m [32mSTDOUT[39m 
+2025-05-19T16:21:46.0123517Z ##[endgroup]
+2025-05-19T16:21:46.0124612Z [94m➤[39m [90mYN0000[39m: └ Completed in 10s 199ms
+2025-05-19T16:21:46.0910491Z [94m➤[39m YN0000: · Done in 18s 196ms
+2025-05-19T16:21:46.3033171Z ##[group]Run yarn turbo run test build
+2025-05-19T16:21:46.3033490Z [36;1myarn turbo run test build[0m
+2025-05-19T16:21:46.3090440Z shell: /usr/bin/bash -e {0}
+2025-05-19T16:21:46.3090672Z ##[endgroup]
+2025-05-19T16:21:47.3486574Z  ERROR  run failed: error preparing engine: Could not find the following tasks in project: test
+2025-05-19T16:21:47.3487997Z Turbo error: error preparing engine: Could not find the following tasks in project: test
+2025-05-19T16:21:47.3730541Z ##[error]Process completed with exit code 1.
+2025-05-19T16:21:47.3828405Z Post job cleanup.
+2025-05-19T16:21:47.4783449Z [command]/usr/bin/git version
+2025-05-19T16:21:47.4820329Z git version 2.49.0
+2025-05-19T16:21:47.4865244Z Temporarily overriding HOME='/home/runner/work/_temp/8f5f8a0d-7ac5-454a-9115-e321d3dc9636' before making global git config changes
+2025-05-19T16:21:47.4866704Z Adding repository directory to the temporary git global config as a safe directory
+2025-05-19T16:21:47.4871767Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/LearningLab/LearningLab
+2025-05-19T16:21:47.4907919Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2025-05-19T16:21:47.4941426Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2025-05-19T16:21:47.5165718Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2025-05-19T16:21:47.5186482Z http.https://github.com/.extraheader
+2025-05-19T16:21:47.5198465Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2025-05-19T16:21:47.5228116Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2025-05-19T16:21:47.5546586Z Cleaning up orphan processes
