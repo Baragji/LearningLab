@@ -163,6 +163,7 @@ packages/
     postcss.config.js
     tailwind.config.js
     tsconfig.json
+    tsconfig.tsbuildinfo
   core/
     src/
       types/
@@ -170,6 +171,7 @@ packages/
       index.ts
     package.json
     tsconfig.json
+    tsconfig.tsbuildinfo
   tsconfig/
     base.json
     nestjs.json
@@ -188,354 +190,165 @@ packages/
 .node-version
 .yarnrc.yml
 LICENSE
-logoutput.txt
 package-scripts.js
 package.json
 README.md
 render.yaml
 Struktur.txt
+terminalfejl.txt
 turbo.json
 </directory_structure>
 
 <files>
 This section contains the contents of the repository's files.
 
-<file path="logoutput.txt">
-Build and Test
-failed now in 36s
+<file path="packages/config/tsconfig.tsbuildinfo">
+{"fileNames":["../../node_modules/typescript/lib/lib.d.ts","../../node_modules/typescript/lib/lib.es5.d.ts","../../node_modules/typescript/lib/lib.es2015.d.ts","../../node_modules/typescript/lib/lib.es2016.d.ts","../../node_modules/typescript/lib/lib.es2017.d.ts","../../node_modules/typescript/lib/lib.es2018.d.ts","../../node_modules/typescript/lib/lib.es2019.d.ts","../../node_modules/typescript/lib/lib.es2020.d.ts","../../node_modules/typescript/lib/lib.dom.d.ts","../../node_modules/typescript/lib/lib.dom.iterable.d.ts","../../node_modules/typescript/lib/lib.webworker.importscripts.d.ts","../../node_modules/typescript/lib/lib.scripthost.d.ts","../../node_modules/typescript/lib/lib.es2015.core.d.ts","../../node_modules/typescript/lib/lib.es2015.collection.d.ts","../../node_modules/typescript/lib/lib.es2015.generator.d.ts","../../node_modules/typescript/lib/lib.es2015.iterable.d.ts","../../node_modules/typescript/lib/lib.es2015.promise.d.ts","../../node_modules/typescript/lib/lib.es2015.proxy.d.ts","../../node_modules/typescript/lib/lib.es2015.reflect.d.ts","../../node_modules/typescript/lib/lib.es2015.symbol.d.ts","../../node_modules/typescript/lib/lib.es2015.symbol.wellknown.d.ts","../../node_modules/typescript/lib/lib.es2016.array.include.d.ts","../../node_modules/typescript/lib/lib.es2016.intl.d.ts","../../node_modules/typescript/lib/lib.es2017.arraybuffer.d.ts","../../node_modules/typescript/lib/lib.es2017.date.d.ts","../../node_modules/typescript/lib/lib.es2017.object.d.ts","../../node_modules/typescript/lib/lib.es2017.sharedmemory.d.ts","../../node_modules/typescript/lib/lib.es2017.string.d.ts","../../node_modules/typescript/lib/lib.es2017.intl.d.ts","../../node_modules/typescript/lib/lib.es2017.typedarrays.d.ts","../../node_modules/typescript/lib/lib.es2018.asyncgenerator.d.ts","../../node_modules/typescript/lib/lib.es2018.asynciterable.d.ts","../../node_modules/typescript/lib/lib.es2018.intl.d.ts","../../node_modules/typescript/lib/lib.es2018.promise.d.ts","../../node_modules/typescript/lib/lib.es2018.regexp.d.ts","../../node_modules/typescript/lib/lib.es2019.array.d.ts","../../node_modules/typescript/lib/lib.es2019.object.d.ts","../../node_modules/typescript/lib/lib.es2019.string.d.ts","../../node_modules/typescript/lib/lib.es2019.symbol.d.ts","../../node_modules/typescript/lib/lib.es2019.intl.d.ts","../../node_modules/typescript/lib/lib.es2020.bigint.d.ts","../../node_modules/typescript/lib/lib.es2020.date.d.ts","../../node_modules/typescript/lib/lib.es2020.promise.d.ts","../../node_modules/typescript/lib/lib.es2020.sharedmemory.d.ts","../../node_modules/typescript/lib/lib.es2020.string.d.ts","../../node_modules/typescript/lib/lib.es2020.symbol.wellknown.d.ts","../../node_modules/typescript/lib/lib.es2020.intl.d.ts","../../node_modules/typescript/lib/lib.es2020.number.d.ts","../../node_modules/typescript/lib/lib.decorators.d.ts","../../node_modules/typescript/lib/lib.decorators.legacy.d.ts","../../node_modules/zod/dist/commonjs/v3/helpers/typealiases.d.ts","../../node_modules/zod/dist/commonjs/v3/helpers/util.d.ts","../../node_modules/zod/dist/commonjs/v3/zoderror.d.ts","../../node_modules/zod/dist/commonjs/v3/locales/en.d.ts","../../node_modules/zod/dist/commonjs/v3/errors.d.ts","../../node_modules/zod/dist/commonjs/v3/helpers/parseutil.d.ts","../../node_modules/zod/dist/commonjs/v3/helpers/enumutil.d.ts","../../node_modules/zod/dist/commonjs/v3/helpers/errorutil.d.ts","../../node_modules/zod/dist/commonjs/v3/helpers/partialutil.d.ts","../../node_modules/zod/dist/commonjs/v3/standard-schema.d.ts","../../node_modules/zod/dist/commonjs/v3/types.d.ts","../../node_modules/zod/dist/commonjs/v3/external.d.ts","../../node_modules/zod/dist/commonjs/v3/index.d.ts","../../node_modules/zod/dist/commonjs/index.d.ts","./src/env.ts","./src/index.ts","../../node_modules/@types/aria-query/index.d.ts","../../node_modules/@babel/types/lib/index.d.ts","../../node_modules/@types/babel__generator/index.d.ts","../../node_modules/@babel/parser/typings/babel-parser.d.ts","../../node_modules/@types/babel__template/index.d.ts","../../node_modules/@types/babel__traverse/index.d.ts","../../node_modules/@types/babel__core/index.d.ts","../../node_modules/@types/bcryptjs/index.d.ts","../../node_modules/@types/node/compatibility/disposable.d.ts","../../node_modules/@types/node/compatibility/indexable.d.ts","../../node_modules/@types/node/compatibility/iterators.d.ts","../../node_modules/@types/node/compatibility/index.d.ts","../../node_modules/@types/node/globals.typedarray.d.ts","../../node_modules/@types/node/buffer.buffer.d.ts","../../node_modules/buffer/index.d.ts","../../node_modules/undici-types/header.d.ts","../../node_modules/undici-types/readable.d.ts","../../node_modules/undici-types/file.d.ts","../../node_modules/undici-types/fetch.d.ts","../../node_modules/undici-types/formdata.d.ts","../../node_modules/undici-types/connector.d.ts","../../node_modules/undici-types/client.d.ts","../../node_modules/undici-types/errors.d.ts","../../node_modules/undici-types/dispatcher.d.ts","../../node_modules/undici-types/global-dispatcher.d.ts","../../node_modules/undici-types/global-origin.d.ts","../../node_modules/undici-types/pool-stats.d.ts","../../node_modules/undici-types/pool.d.ts","../../node_modules/undici-types/handlers.d.ts","../../node_modules/undici-types/balanced-pool.d.ts","../../node_modules/undici-types/agent.d.ts","../../node_modules/undici-types/mock-interceptor.d.ts","../../node_modules/undici-types/mock-agent.d.ts","../../node_modules/undici-types/mock-client.d.ts","../../node_modules/undici-types/mock-pool.d.ts","../../node_modules/undici-types/mock-errors.d.ts","../../node_modules/undici-types/proxy-agent.d.ts","../../node_modules/undici-types/env-http-proxy-agent.d.ts","../../node_modules/undici-types/retry-handler.d.ts","../../node_modules/undici-types/retry-agent.d.ts","../../node_modules/undici-types/api.d.ts","../../node_modules/undici-types/interceptors.d.ts","../../node_modules/undici-types/util.d.ts","../../node_modules/undici-types/cookies.d.ts","../../node_modules/undici-types/patch.d.ts","../../node_modules/undici-types/websocket.d.ts","../../node_modules/undici-types/eventsource.d.ts","../../node_modules/undici-types/filereader.d.ts","../../node_modules/undici-types/diagnostics-channel.d.ts","../../node_modules/undici-types/content-type.d.ts","../../node_modules/undici-types/cache.d.ts","../../node_modules/undici-types/index.d.ts","../../node_modules/@types/node/globals.d.ts","../../node_modules/@types/node/assert.d.ts","../../node_modules/@types/node/assert/strict.d.ts","../../node_modules/@types/node/async_hooks.d.ts","../../node_modules/@types/node/buffer.d.ts","../../node_modules/@types/node/child_process.d.ts","../../node_modules/@types/node/cluster.d.ts","../../node_modules/@types/node/console.d.ts","../../node_modules/@types/node/constants.d.ts","../../node_modules/@types/node/crypto.d.ts","../../node_modules/@types/node/dgram.d.ts","../../node_modules/@types/node/diagnostics_channel.d.ts","../../node_modules/@types/node/dns.d.ts","../../node_modules/@types/node/dns/promises.d.ts","../../node_modules/@types/node/domain.d.ts","../../node_modules/@types/node/dom-events.d.ts","../../node_modules/@types/node/events.d.ts","../../node_modules/@types/node/fs.d.ts","../../node_modules/@types/node/fs/promises.d.ts","../../node_modules/@types/node/http.d.ts","../../node_modules/@types/node/http2.d.ts","../../node_modules/@types/node/https.d.ts","../../node_modules/@types/node/inspector.d.ts","../../node_modules/@types/node/module.d.ts","../../node_modules/@types/node/net.d.ts","../../node_modules/@types/node/os.d.ts","../../node_modules/@types/node/path.d.ts","../../node_modules/@types/node/perf_hooks.d.ts","../../node_modules/@types/node/process.d.ts","../../node_modules/@types/node/punycode.d.ts","../../node_modules/@types/node/querystring.d.ts","../../node_modules/@types/node/readline.d.ts","../../node_modules/@types/node/readline/promises.d.ts","../../node_modules/@types/node/repl.d.ts","../../node_modules/@types/node/sea.d.ts","../../node_modules/@types/node/sqlite.d.ts","../../node_modules/@types/node/stream.d.ts","../../node_modules/@types/node/stream/promises.d.ts","../../node_modules/@types/node/stream/consumers.d.ts","../../node_modules/@types/node/stream/web.d.ts","../../node_modules/@types/node/string_decoder.d.ts","../../node_modules/@types/node/test.d.ts","../../node_modules/@types/node/timers.d.ts","../../node_modules/@types/node/timers/promises.d.ts","../../node_modules/@types/node/tls.d.ts","../../node_modules/@types/node/trace_events.d.ts","../../node_modules/@types/node/tty.d.ts","../../node_modules/@types/node/url.d.ts","../../node_modules/@types/node/util.d.ts","../../node_modules/@types/node/v8.d.ts","../../node_modules/@types/node/vm.d.ts","../../node_modules/@types/node/wasi.d.ts","../../node_modules/@types/node/worker_threads.d.ts","../../node_modules/@types/node/zlib.d.ts","../../node_modules/@types/node/index.d.ts","../../node_modules/@types/connect/index.d.ts","../../node_modules/@types/body-parser/index.d.ts","../../node_modules/@types/cookiejar/index.d.ts","../../node_modules/@types/estree/index.d.ts","../../node_modules/@types/json-schema/index.d.ts","../../node_modules/@types/eslint/use-at-your-own-risk.d.ts","../../node_modules/@types/eslint/index.d.ts","../../node_modules/@types/eslint-scope/index.d.ts","../../node_modules/@types/mime/index.d.ts","../../node_modules/@types/send/index.d.ts","../../node_modules/@types/qs/index.d.ts","../../node_modules/@types/range-parser/index.d.ts","../../node_modules/@types/express-serve-static-core/index.d.ts","../../node_modules/@types/http-errors/index.d.ts","../../node_modules/@types/serve-static/index.d.ts","../../node_modules/@types/express/index.d.ts","../../node_modules/@types/graceful-fs/index.d.ts","../../node_modules/@types/hoist-non-react-statics/node_modules/@types/react/global.d.ts","../../node_modules/csstype/index.d.ts","../../node_modules/@types/hoist-non-react-statics/node_modules/@types/react/index.d.ts","../../node_modules/@types/hoist-non-react-statics/index.d.ts","../../node_modules/@types/istanbul-lib-coverage/index.d.ts","../../node_modules/@types/istanbul-lib-report/index.d.ts","../../node_modules/@types/istanbul-reports/index.d.ts","../../node_modules/@jest/expect-utils/build/index.d.ts","../../node_modules/chalk/index.d.ts","../../node_modules/@sinclair/typebox/typebox.d.ts","../../node_modules/@jest/schemas/build/index.d.ts","../../node_modules/pretty-format/build/index.d.ts","../../node_modules/jest-diff/build/index.d.ts","../../node_modules/jest-matcher-utils/build/index.d.ts","../../node_modules/expect/build/index.d.ts","../../node_modules/@types/jest/index.d.ts","../../node_modules/parse5/dist/common/html.d.ts","../../node_modules/parse5/dist/common/token.d.ts","../../node_modules/parse5/dist/common/error-codes.d.ts","../../node_modules/parse5/dist/tokenizer/preprocessor.d.ts","../../node_modules/parse5/dist/tokenizer/index.d.ts","../../node_modules/parse5/dist/tree-adapters/interface.d.ts","../../node_modules/parse5/dist/parser/open-element-stack.d.ts","../../node_modules/parse5/dist/parser/formatting-element-list.d.ts","../../node_modules/parse5/dist/parser/index.d.ts","../../node_modules/parse5/dist/tree-adapters/default.d.ts","../../node_modules/parse5/dist/serializer/index.d.ts","../../node_modules/parse5/dist/common/foreign-content.d.ts","../../node_modules/parse5/dist/index.d.ts","../../node_modules/@types/tough-cookie/index.d.ts","../../node_modules/@types/jsdom/base.d.ts","../../node_modules/@types/jsdom/index.d.ts","../../node_modules/@types/json5/index.d.ts","../../node_modules/@types/jsonwebtoken/index.d.ts","../../node_modules/@types/methods/index.d.ts","../../node_modules/@types/ms/index.d.ts","../../node_modules/@types/node-notifier/notifiers/notificationcenter.d.ts","../../node_modules/@types/node-notifier/notifiers/notifysend.d.ts","../../node_modules/@types/node-notifier/notifiers/toaster.d.ts","../../node_modules/@types/node-notifier/notifiers/balloon.d.ts","../../node_modules/@types/node-notifier/notifiers/growl.d.ts","../../node_modules/@types/node-notifier/index.d.ts","../../node_modules/@types/passport/index.d.ts","../../node_modules/@types/passport-jwt/node_modules/@types/jsonwebtoken/index.d.ts","../../node_modules/@types/passport-strategy/index.d.ts","../../node_modules/@types/passport-jwt/index.d.ts","../../node_modules/@types/passport-local/index.d.ts","../../node_modules/prettier/doc.d.ts","../../node_modules/prettier/index.d.ts","../../node_modules/@types/prop-types/index.d.ts","../../node_modules/@types/react/global.d.ts","../../node_modules/@types/react/index.d.ts","../../node_modules/@types/react-dom/index.d.ts","../../node_modules/@types/scheduler/index.d.ts","../../node_modules/@types/semver/classes/semver.d.ts","../../node_modules/@types/semver/functions/parse.d.ts","../../node_modules/@types/semver/functions/valid.d.ts","../../node_modules/@types/semver/functions/clean.d.ts","../../node_modules/@types/semver/functions/inc.d.ts","../../node_modules/@types/semver/functions/diff.d.ts","../../node_modules/@types/semver/functions/major.d.ts","../../node_modules/@types/semver/functions/minor.d.ts","../../node_modules/@types/semver/functions/patch.d.ts","../../node_modules/@types/semver/functions/prerelease.d.ts","../../node_modules/@types/semver/functions/compare.d.ts","../../node_modules/@types/semver/functions/rcompare.d.ts","../../node_modules/@types/semver/functions/compare-loose.d.ts","../../node_modules/@types/semver/functions/compare-build.d.ts","../../node_modules/@types/semver/functions/sort.d.ts","../../node_modules/@types/semver/functions/rsort.d.ts","../../node_modules/@types/semver/functions/gt.d.ts","../../node_modules/@types/semver/functions/lt.d.ts","../../node_modules/@types/semver/functions/eq.d.ts","../../node_modules/@types/semver/functions/neq.d.ts","../../node_modules/@types/semver/functions/gte.d.ts","../../node_modules/@types/semver/functions/lte.d.ts","../../node_modules/@types/semver/functions/cmp.d.ts","../../node_modules/@types/semver/functions/coerce.d.ts","../../node_modules/@types/semver/classes/comparator.d.ts","../../node_modules/@types/semver/classes/range.d.ts","../../node_modules/@types/semver/functions/satisfies.d.ts","../../node_modules/@types/semver/ranges/max-satisfying.d.ts","../../node_modules/@types/semver/ranges/min-satisfying.d.ts","../../node_modules/@types/semver/ranges/to-comparators.d.ts","../../node_modules/@types/semver/ranges/min-version.d.ts","../../node_modules/@types/semver/ranges/valid.d.ts","../../node_modules/@types/semver/ranges/outside.d.ts","../../node_modules/@types/semver/ranges/gtr.d.ts","../../node_modules/@types/semver/ranges/ltr.d.ts","../../node_modules/@types/semver/ranges/intersects.d.ts","../../node_modules/@types/semver/ranges/simplify.d.ts","../../node_modules/@types/semver/ranges/subset.d.ts","../../node_modules/@types/semver/internals/identifiers.d.ts","../../node_modules/@types/semver/index.d.ts","../../node_modules/@types/stack-utils/index.d.ts","../../node_modules/@types/superagent/lib/agent-base.d.ts","../../node_modules/@types/superagent/lib/node/response.d.ts","../../node_modules/@types/superagent/types.d.ts","../../node_modules/@types/superagent/lib/node/agent.d.ts","../../node_modules/@types/superagent/lib/request-base.d.ts","../../node_modules/form-data/index.d.ts","../../node_modules/@types/superagent/lib/node/http2wrapper.d.ts","../../node_modules/@types/superagent/lib/node/index.d.ts","../../node_modules/@types/superagent/index.d.ts","../../node_modules/@types/supertest/index.d.ts","../../node_modules/@types/testing-library__jest-dom/matchers.d.ts","../../node_modules/@types/testing-library__jest-dom/index.d.ts","../../node_modules/@types/use-sync-external-store/index.d.ts","../../node_modules/@types/uuid/index.d.ts","../../node_modules/@types/validator/lib/isboolean.d.ts","../../node_modules/@types/validator/lib/isemail.d.ts","../../node_modules/@types/validator/lib/isfqdn.d.ts","../../node_modules/@types/validator/lib/isiban.d.ts","../../node_modules/@types/validator/lib/isiso31661alpha2.d.ts","../../node_modules/@types/validator/lib/isiso4217.d.ts","../../node_modules/@types/validator/lib/isiso6391.d.ts","../../node_modules/@types/validator/lib/istaxid.d.ts","../../node_modules/@types/validator/lib/isurl.d.ts","../../node_modules/@types/validator/index.d.ts","../../node_modules/@types/yargs-parser/index.d.ts","../../node_modules/@types/yargs/index.d.ts"],"fileIdsList":[[68,80,123],[80,123],[80,123,200],[68,69,70,71,72,80,123],[68,70,80,123],[80,123,138,173,174],[80,123,138,173],[80,123,177,180],[80,123,177,178,179],[80,123,180],[80,123,135,138,173,183,184,185],[80,123,175,186,188],[80,123,136,173],[80,123,193],[80,123,191,192],[80,123,195],[80,123,196],[80,123,202,205,297],[80,123,135,169,173,219,220,222],[80,123,221],[80,123,128,173],[80,123,173,227,228,229,230,231],[80,123,232],[80,120,123],[80,122,123],[123],[80,123,128,158],[80,123,124,129,135,136,143,155,166],[80,123,124,125,135,143],[75,76,77,80,123],[80,123,126,167],[80,123,127,128,136,144],[80,123,128,155,163],[80,123,129,131,135,143],[80,122,123,130],[80,123,131,132],[80,123,135],[80,123,133,135],[80,122,123,135],[80,123,135,136,137,155,166],[80,123,135,136,137,150,155,158],[80,118,123,171],[80,118,123,131,135,138,143,155,166],[80,123,135,136,138,139,143,155,163,166],[80,123,138,140,155,163,166],[78,79,80,119,120,121,122,123,124,125,126,127,128,129,130,131,132,133,134,135,136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159,160,161,162,163,164,165,166,167,168,169,170,171,172],[80,123,135,141],[80,123,142,166],[80,123,131,135,143,155],[80,123,144],[80,123,145],[80,122,123,146],[80,120,121,122,123,124,125,126,127,128,129,130,131,132,133,135,136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159,160,161,162,163,164,165,166,167,168,169,170,171,172],[80,123,148],[80,123,149],[80,123,135,150,151],[80,123,150,152,167,169],[80,123,135,155,156,158],[80,123,157,158],[80,123,155,156],[80,123,158],[80,123,159],[80,120,123,155],[80,123,135,161,162],[80,123,161,162],[80,123,128,143,155,163],[80,123,164],[80,123,143,165],[80,123,138,149,166],[80,123,128,167],[80,123,155,168],[80,123,142,169],[80,123,170],[80,123,128,135,137,146,155,166,169,171],[80,123,155,172],[80,123,234,235],[80,123,128,173,226],[80,123,189,233,235],[80,123,189,233],[80,123,138,189],[80,123,242],[80,123,192,240,241],[80,123,245,284],[80,123,245,269,284],[80,123,284],[80,123,245],[80,123,245,270,284],[80,123,245,246,247,248,249,250,251,252,253,254,255,256,257,258,259,260,261,262,263,264,265,266,267,268,269,270,271,272,273,274,275,276,277,278,279,280,281,282,283],[80,123,270,284],[80,123,136,155,173,182],[80,123,138,173,183,187],[80,123,293],[80,123,176,225,286,288,294],[80,123,139,143,155,163,173],[80,123,136,138,139,140,143,155,225,287,288,289,290,291,292],[80,123,138,155,293],[80,123,136,287,288],[80,123,166,287],[80,123,294],[80,123,205,206,296],[80,123,300,301,302,303,304,305,306,307,308],[80,123,310],[80,123,198,204],[80,123,138,155,173],[80,123,202],[80,123,199,203],[80,123,208],[80,123,207,208],[80,123,207],[80,123,207,208,209,211,212,215,216,217,218],[80,123,208,212],[80,123,207,208,209,211,212,213,214],[80,123,207,212],[80,123,212,216],[80,123,208,209,210],[80,123,209],[80,123,207,208,212],[80,123,238],[80,123,201],[80,90,94,123,166],[80,90,123,155,166],[80,85,123],[80,87,90,123,163,166],[80,123,143,163],[80,123,173],[80,85,123,173],[80,87,90,123,143,166],[80,82,83,86,89,123,135,155,166],[80,90,97,123],[80,82,88,123],[80,90,111,112,123],[80,86,90,123,158,166,173],[80,111,123,173],[80,84,85,123,173],[80,90,123],[80,84,85,86,87,88,89,90,91,92,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,112,113,114,115,116,117,123],[80,90,105,123],[80,90,97,98,123],[80,88,90,98,99,123],[80,89,123],[80,82,85,90,123],[80,90,94,98,99,123],[80,94,123],[80,88,90,93,123,166],[80,82,87,90,97,123],[80,123,155],[80,85,90,111,123,171,173],[63,80,123],[53,54,80,123],[51,52,53,55,56,61,80,123],[52,53,80,123],[61,80,123],[62,80,123],[53,80,123],[51,52,53,56,57,58,59,60,80,123],[51,52,63,80,123],[64,80,123],[65,80,123]],"fileInfos":[{"version":"a7297ff837fcdf174a9524925966429eb8e5feecc2cc55cc06574e6b092c1eaa","impliedFormat":1},{"version":"69684132aeb9b5642cbcd9e22dff7818ff0ee1aa831728af0ecf97d3364d5546","affectsGlobalScope":true,"impliedFormat":1},{"version":"45b7ab580deca34ae9729e97c13cfd999df04416a79116c3bfb483804f85ded4","impliedFormat":1},{"version":"3facaf05f0c5fc569c5649dd359892c98a85557e3e0c847964caeb67076f4d75","impliedFormat":1},{"version":"e44bb8bbac7f10ecc786703fe0a6a4b952189f908707980ba8f3c8975a760962","impliedFormat":1},{"version":"5e1c4c362065a6b95ff952c0eab010f04dcd2c3494e813b493ecfd4fcb9fc0d8","impliedFormat":1},{"version":"68d73b4a11549f9c0b7d352d10e91e5dca8faa3322bfb77b661839c42b1ddec7","impliedFormat":1},{"version":"5efce4fc3c29ea84e8928f97adec086e3dc876365e0982cc8479a07954a3efd4","impliedFormat":1},{"version":"092c2bfe125ce69dbb1223c85d68d4d2397d7d8411867b5cc03cec902c233763","affectsGlobalScope":true,"impliedFormat":1},{"version":"07f073f19d67f74d732b1adea08e1dc66b1b58d77cb5b43931dee3d798a2fd53","affectsGlobalScope":true,"impliedFormat":1},{"version":"80e18897e5884b6723488d4f5652167e7bb5024f946743134ecc4aa4ee731f89","affectsGlobalScope":true,"impliedFormat":1},{"version":"cd034f499c6cdca722b60c04b5b1b78e058487a7085a8e0d6fb50809947ee573","affectsGlobalScope":true,"impliedFormat":1},{"version":"c57796738e7f83dbc4b8e65132f11a377649c00dd3eee333f672b8f0a6bea671","affectsGlobalScope":true,"impliedFormat":1},{"version":"dc2df20b1bcdc8c2d34af4926e2c3ab15ffe1160a63e58b7e09833f616efff44","affectsGlobalScope":true,"impliedFormat":1},{"version":"515d0b7b9bea2e31ea4ec968e9edd2c39d3eebf4a2d5cbd04e88639819ae3b71","affectsGlobalScope":true,"impliedFormat":1},{"version":"0559b1f683ac7505ae451f9a96ce4c3c92bdc71411651ca6ddb0e88baaaad6a3","affectsGlobalScope":true,"impliedFormat":1},{"version":"0dc1e7ceda9b8b9b455c3a2d67b0412feab00bd2f66656cd8850e8831b08b537","affectsGlobalScope":true,"impliedFormat":1},{"version":"ce691fb9e5c64efb9547083e4a34091bcbe5bdb41027e310ebba8f7d96a98671","affectsGlobalScope":true,"impliedFormat":1},{"version":"8d697a2a929a5fcb38b7a65594020fcef05ec1630804a33748829c5ff53640d0","affectsGlobalScope":true,"impliedFormat":1},{"version":"4ff2a353abf8a80ee399af572debb8faab2d33ad38c4b4474cff7f26e7653b8d","affectsGlobalScope":true,"impliedFormat":1},{"version":"936e80ad36a2ee83fc3caf008e7c4c5afe45b3cf3d5c24408f039c1d47bdc1df","affectsGlobalScope":true,"impliedFormat":1},{"version":"d15bea3d62cbbdb9797079416b8ac375ae99162a7fba5de2c6c505446486ac0a","affectsGlobalScope":true,"impliedFormat":1},{"version":"68d18b664c9d32a7336a70235958b8997ebc1c3b8505f4f1ae2b7e7753b87618","affectsGlobalScope":true,"impliedFormat":1},{"version":"eb3d66c8327153d8fa7dd03f9c58d351107fe824c79e9b56b462935176cdf12a","affectsGlobalScope":true,"impliedFormat":1},{"version":"38f0219c9e23c915ef9790ab1d680440d95419ad264816fa15009a8851e79119","affectsGlobalScope":true,"impliedFormat":1},{"version":"69ab18c3b76cd9b1be3d188eaf8bba06112ebbe2f47f6c322b5105a6fbc45a2e","affectsGlobalScope":true,"impliedFormat":1},{"version":"fef8cfad2e2dc5f5b3d97a6f4f2e92848eb1b88e897bb7318cef0e2820bceaab","affectsGlobalScope":true,"impliedFormat":1},{"version":"2f11ff796926e0832f9ae148008138ad583bd181899ab7dd768a2666700b1893","affectsGlobalScope":true,"impliedFormat":1},{"version":"4de680d5bb41c17f7f68e0419412ca23c98d5749dcaaea1896172f06435891fc","affectsGlobalScope":true,"impliedFormat":1},{"version":"954296b30da6d508a104a3a0b5d96b76495c709785c1d11610908e63481ee667","affectsGlobalScope":true,"impliedFormat":1},{"version":"ac9538681b19688c8eae65811b329d3744af679e0bdfa5d842d0e32524c73e1c","affectsGlobalScope":true,"impliedFormat":1},{"version":"0a969edff4bd52585473d24995c5ef223f6652d6ef46193309b3921d65dd4376","affectsGlobalScope":true,"impliedFormat":1},{"version":"9e9fbd7030c440b33d021da145d3232984c8bb7916f277e8ffd3dc2e3eae2bdb","affectsGlobalScope":true,"impliedFormat":1},{"version":"811ec78f7fefcabbda4bfa93b3eb67d9ae166ef95f9bff989d964061cbf81a0c","affectsGlobalScope":true,"impliedFormat":1},{"version":"717937616a17072082152a2ef351cb51f98802fb4b2fdabd32399843875974ca","affectsGlobalScope":true,"impliedFormat":1},{"version":"d7e7d9b7b50e5f22c915b525acc5a49a7a6584cf8f62d0569e557c5cfc4b2ac2","affectsGlobalScope":true,"impliedFormat":1},{"version":"71c37f4c9543f31dfced6c7840e068c5a5aacb7b89111a4364b1d5276b852557","affectsGlobalScope":true,"impliedFormat":1},{"version":"576711e016cf4f1804676043e6a0a5414252560eb57de9faceee34d79798c850","affectsGlobalScope":true,"impliedFormat":1},{"version":"89c1b1281ba7b8a96efc676b11b264de7a8374c5ea1e6617f11880a13fc56dc6","affectsGlobalScope":true,"impliedFormat":1},{"version":"74f7fa2d027d5b33eb0471c8e82a6c87216223181ec31247c357a3e8e2fddc5b","affectsGlobalScope":true,"impliedFormat":1},{"version":"d6d7ae4d1f1f3772e2a3cde568ed08991a8ae34a080ff1151af28b7f798e22ca","affectsGlobalScope":true,"impliedFormat":1},{"version":"063600664504610fe3e99b717a1223f8b1900087fab0b4cad1496a114744f8df","affectsGlobalScope":true,"impliedFormat":1},{"version":"934019d7e3c81950f9a8426d093458b65d5aff2c7c1511233c0fd5b941e608ab","affectsGlobalScope":true,"impliedFormat":1},{"version":"52ada8e0b6e0482b728070b7639ee42e83a9b1c22d205992756fe020fd9f4a47","affectsGlobalScope":true,"impliedFormat":1},{"version":"3bdefe1bfd4d6dee0e26f928f93ccc128f1b64d5d501ff4a8cf3c6371200e5e6","affectsGlobalScope":true,"impliedFormat":1},{"version":"59fb2c069260b4ba00b5643b907ef5d5341b167e7d1dbf58dfd895658bda2867","affectsGlobalScope":true,"impliedFormat":1},{"version":"639e512c0dfc3fad96a84caad71b8834d66329a1f28dc95e3946c9b58176c73a","affectsGlobalScope":true,"impliedFormat":1},{"version":"368af93f74c9c932edd84c58883e736c9e3d53cec1fe24c0b0ff451f529ceab1","affectsGlobalScope":true,"impliedFormat":1},{"version":"8e7f8264d0fb4c5339605a15daadb037bf238c10b654bb3eee14208f860a32ea","affectsGlobalScope":true,"impliedFormat":1},{"version":"782dec38049b92d4e85c1585fbea5474a219c6984a35b004963b00beb1aab538","affectsGlobalScope":true,"impliedFormat":1},{"version":"d3cfde44f8089768ebb08098c96d01ca260b88bccf238d55eee93f1c620ff5a5","impliedFormat":1},{"version":"293eadad9dead44c6fd1db6de552663c33f215c55a1bfa2802a1bceed88ff0ec","impliedFormat":1},{"version":"54f6ec6ea75acea6eb23635617252d249145edbc7bcd9d53f2d70280d2aef953","impliedFormat":1},{"version":"c25ce98cca43a3bfa885862044be0d59557be4ecd06989b2001a83dcf69620fd","impliedFormat":1},{"version":"8e71e53b02c152a38af6aec45e288cc65bede077b92b9b43b3cb54a37978bb33","impliedFormat":1},{"version":"754a9396b14ca3a4241591afb4edc644b293ccc8a3397f49be4dfd520c08acb3","impliedFormat":1},{"version":"f672c876c1a04a223cf2023b3d91e8a52bb1544c576b81bf64a8fec82be9969c","impliedFormat":1},{"version":"e4b03ddcf8563b1c0aee782a185286ed85a255ce8a30df8453aade2188bbc904","impliedFormat":1},{"version":"de2316e90fc6d379d83002f04ad9698bc1e5285b4d52779778f454dd12ce9f44","impliedFormat":1},{"version":"25b3f581e12ede11e5739f57a86e8668fbc0124f6649506def306cad2c59d262","impliedFormat":1},{"version":"b004b3c5e264455f82c17e41eae9aa677b669171ff199148c202042bd6a3bdd2","impliedFormat":1},{"version":"5d26d2e47e2352def36f89a3e8bf8581da22b7f857e07ef3114cd52cf4813445","impliedFormat":1},{"version":"3db2efd285e7328d8014b54a7fce3f4861ebcdc655df40517092ed0050983617","impliedFormat":1},{"version":"d5d39a24c759df40480a4bfc0daffd364489702fdbcbdfc1711cde34f8739995","impliedFormat":1},{"version":"b80d3cc89a695f7587a1769298acce24258e6d0b88d1a721aaa7c7e5c3d34406","signature":"d532376ee00d97ffad4216e4e6c69aaffc596d3747c407562b11649b7f52e29a"},{"version":"419f2e846ff214a315952fcc0bdd46fe533041ebf53604a69dd96308fa6dec9a","signature":"33ff0b5a255e0137097c96d38c260d7dd83d73fb2788d2bceaa28cec9f03f1f9"},{"version":"ae77d81a5541a8abb938a0efedf9ac4bea36fb3a24cc28cfa11c598863aba571","impliedFormat":1},{"version":"d88b3dc8b7055665059ea06ffafce9467fc4bdfa7cb2d7a6f4262556bb482b0d","impliedFormat":1},{"version":"b6d03c9cfe2cf0ba4c673c209fcd7c46c815b2619fd2aad59fc4229aaef2ed43","impliedFormat":1},{"version":"32ddc6ad753ae79571bbf28cebff7a383bf7f562ac5ef5d25c94ef7f71609d49","impliedFormat":1},{"version":"670a76db379b27c8ff42f1ba927828a22862e2ab0b0908e38b671f0e912cc5ed","impliedFormat":1},{"version":"81df92841a7a12d551fcbc7e4e83dbb7d54e0c73f33a82162d13e9ae89700079","impliedFormat":1},{"version":"069bebfee29864e3955378107e243508b163e77ab10de6a5ee03ae06939f0bb9","impliedFormat":1},{"version":"a3d3f704c5339a36da3ca8c62b29072f87e86c783b8452d235992142ec71aa2d","impliedFormat":1},{"version":"70521b6ab0dcba37539e5303104f29b721bfb2940b2776da4cc818c07e1fefc1","affectsGlobalScope":true,"impliedFormat":1},{"version":"030e350db2525514580ed054f712ffb22d273e6bc7eddc1bb7eda1e0ba5d395e","affectsGlobalScope":true,"impliedFormat":1},{"version":"d153a11543fd884b596587ccd97aebbeed950b26933ee000f94009f1ab142848","affectsGlobalScope":true,"impliedFormat":1},{"version":"21d819c173c0cf7cc3ce57c3276e77fd9a8a01d35a06ad87158781515c9a438a","impliedFormat":1},{"version":"a79e62f1e20467e11a904399b8b18b18c0c6eea6b50c1168bf215356d5bebfaf","affectsGlobalScope":true,"impliedFormat":1},{"version":"d802f0e6b5188646d307f070d83512e8eb94651858de8a82d1e47f60fb6da4e2","affectsGlobalScope":true,"impliedFormat":1},{"version":"8e9c23ba78aabc2e0a27033f18737a6df754067731e69dc5f52823957d60a4b6","impliedFormat":1},{"version":"5929864ce17fba74232584d90cb721a89b7ad277220627cc97054ba15a98ea8f","impliedFormat":1},{"version":"763fe0f42b3d79b440a9b6e51e9ba3f3f91352469c1e4b3b67bfa4ff6352f3f4","impliedFormat":1},{"version":"25c8056edf4314820382a5fdb4bb7816999acdcb929c8f75e3f39473b87e85bc","impliedFormat":1},{"version":"c464d66b20788266e5353b48dc4aa6bc0dc4a707276df1e7152ab0c9ae21fad8","impliedFormat":1},{"version":"78d0d27c130d35c60b5e5566c9f1e5be77caf39804636bc1a40133919a949f21","impliedFormat":1},{"version":"c6fd2c5a395f2432786c9cb8deb870b9b0e8ff7e22c029954fabdd692bff6195","impliedFormat":1},{"version":"1d6e127068ea8e104a912e42fc0a110e2aa5a66a356a917a163e8cf9a65e4a75","impliedFormat":1},{"version":"5ded6427296cdf3b9542de4471d2aa8d3983671d4cac0f4bf9c637208d1ced43","impliedFormat":1},{"version":"7f182617db458e98fc18dfb272d40aa2fff3a353c44a89b2c0ccb3937709bfb5","impliedFormat":1},{"version":"cadc8aced301244057c4e7e73fbcae534b0f5b12a37b150d80e5a45aa4bebcbd","impliedFormat":1},{"version":"385aab901643aa54e1c36f5ef3107913b10d1b5bb8cbcd933d4263b80a0d7f20","impliedFormat":1},{"version":"9670d44354bab9d9982eca21945686b5c24a3f893db73c0dae0fd74217a4c219","impliedFormat":1},{"version":"0b8a9268adaf4da35e7fa830c8981cfa22adbbe5b3f6f5ab91f6658899e657a7","impliedFormat":1},{"version":"11396ed8a44c02ab9798b7dca436009f866e8dae3c9c25e8c1fbc396880bf1bb","impliedFormat":1},{"version":"ba7bc87d01492633cb5a0e5da8a4a42a1c86270e7b3d2dea5d156828a84e4882","impliedFormat":1},{"version":"4893a895ea92c85345017a04ed427cbd6a1710453338df26881a6019432febdd","impliedFormat":1},{"version":"c21dc52e277bcfc75fac0436ccb75c204f9e1b3fa5e12729670910639f27343e","impliedFormat":1},{"version":"13f6f39e12b1518c6650bbb220c8985999020fe0f21d818e28f512b7771d00f9","impliedFormat":1},{"version":"9b5369969f6e7175740bf51223112ff209f94ba43ecd3bb09eefff9fd675624a","impliedFormat":1},{"version":"4fe9e626e7164748e8769bbf74b538e09607f07ed17c2f20af8d680ee49fc1da","impliedFormat":1},{"version":"24515859bc0b836719105bb6cc3d68255042a9f02a6022b3187948b204946bd2","impliedFormat":1},{"version":"ea0148f897b45a76544ae179784c95af1bd6721b8610af9ffa467a518a086a43","impliedFormat":1},{"version":"24c6a117721e606c9984335f71711877293a9651e44f59f3d21c1ea0856f9cc9","impliedFormat":1},{"version":"dd3273ead9fbde62a72949c97dbec2247ea08e0c6952e701a483d74ef92d6a17","impliedFormat":1},{"version":"405822be75ad3e4d162e07439bac80c6bcc6dbae1929e179cf467ec0b9ee4e2e","impliedFormat":1},{"version":"0db18c6e78ea846316c012478888f33c11ffadab9efd1cc8bcc12daded7a60b6","impliedFormat":1},{"version":"e61be3f894b41b7baa1fbd6a66893f2579bfad01d208b4ff61daef21493ef0a8","impliedFormat":1},{"version":"bd0532fd6556073727d28da0edfd1736417a3f9f394877b6d5ef6ad88fba1d1a","impliedFormat":1},{"version":"89167d696a849fce5ca508032aabfe901c0868f833a8625d5a9c6e861ef935d2","impliedFormat":1},{"version":"615ba88d0128ed16bf83ef8ccbb6aff05c3ee2db1cc0f89ab50a4939bfc1943f","impliedFormat":1},{"version":"a4d551dbf8746780194d550c88f26cf937caf8d56f102969a110cfaed4b06656","impliedFormat":1},{"version":"8bd86b8e8f6a6aa6c49b71e14c4ffe1211a0e97c80f08d2c8cc98838006e4b88","impliedFormat":1},{"version":"317e63deeb21ac07f3992f5b50cdca8338f10acd4fbb7257ebf56735bf52ab00","impliedFormat":1},{"version":"4732aec92b20fb28c5fe9ad99521fb59974289ed1e45aecb282616202184064f","impliedFormat":1},{"version":"2e85db9e6fd73cfa3d7f28e0ab6b55417ea18931423bd47b409a96e4a169e8e6","impliedFormat":1},{"version":"c46e079fe54c76f95c67fb89081b3e399da2c7d109e7dca8e4b58d83e332e605","impliedFormat":1},{"version":"bf67d53d168abc1298888693338cb82854bdb2e69ef83f8a0092093c2d562107","impliedFormat":1},{"version":"88d9a77d2abc23a7d26625dd6dae5b57199a8693b85c9819355651c9d9bab90f","affectsGlobalScope":true,"impliedFormat":1},{"version":"a38efe83ff77c34e0f418a806a01ca3910c02ee7d64212a59d59bca6c2c38fa1","impliedFormat":1},{"version":"7394959e5a741b185456e1ef5d64599c36c60a323207450991e7a42e08911419","impliedFormat":1},{"version":"3fe4022ba1e738034e38ad9afacbf0f1f16b458ed516326f5bf9e4a31e9be1dc","impliedFormat":1},{"version":"a957197054b074bcdf5555d26286e8461680c7c878040d0f4e2d5509a7524944","affectsGlobalScope":true,"impliedFormat":1},{"version":"4314c7a11517e221f7296b46547dbc4df047115b182f544d072bdccffa57fc72","impliedFormat":1},{"version":"e9b97d69510658d2f4199b7d384326b7c4053b9e6645f5c19e1c2a54ede427fc","impliedFormat":1},{"version":"c2510f124c0293ab80b1777c44d80f812b75612f297b9857406468c0f4dafe29","affectsGlobalScope":true,"impliedFormat":1},{"version":"5524481e56c48ff486f42926778c0a3cce1cc85dc46683b92b1271865bcf015a","impliedFormat":1},{"version":"f478f6f5902dc144c0d6d7bdc919c5177cac4d17a8ca8653c2daf6d7dc94317f","affectsGlobalScope":true,"impliedFormat":1},{"version":"19d5f8d3930e9f99aa2c36258bf95abbe5adf7e889e6181872d1cdba7c9a7dd5","impliedFormat":1},{"version":"b200675fd112ffef97c166d0341fb33f6e29e9f27660adde7868e95c5bc98beb","impliedFormat":1},{"version":"a6bf63d17324010ca1fbf0389cab83f93389bb0b9a01dc8a346d092f65b3605f","impliedFormat":1},{"version":"e009777bef4b023a999b2e5b9a136ff2cde37dc3f77c744a02840f05b18be8ff","impliedFormat":1},{"version":"1e0d1f8b0adfa0b0330e028c7941b5a98c08b600efe7f14d2d2a00854fb2f393","impliedFormat":1},{"version":"ee1ee365d88c4c6c0c0a5a5701d66ebc27ccd0bcfcfaa482c6e2e7fe7b98edf7","affectsGlobalScope":true,"impliedFormat":1},{"version":"88bc59b32d0d5b4e5d9632ac38edea23454057e643684c3c0b94511296f2998c","affectsGlobalScope":true,"impliedFormat":1},{"version":"a0a1dda070290b92da5a50113b73ecc4dd6bcbffad66e3c86503d483eafbadcf","impliedFormat":1},{"version":"59dcad36c4549175a25998f6a8b33c1df8e18df9c12ebad1dfb25af13fd4b1ce","impliedFormat":1},{"version":"9ba5b6a30cb7961b68ad4fb18dca148db151c2c23b8d0a260fc18b83399d19d3","impliedFormat":1},{"version":"3f3edb8e44e3b9df3b7ca3219ab539710b6a7f4fe16bd884d441af207e03cd57","impliedFormat":1},{"version":"528b62e4272e3ddfb50e8eed9e359dedea0a4d171c3eb8f337f4892aac37b24b","impliedFormat":1},{"version":"d71535813e39c23baa113bc4a29a0e187b87d1105ccc8c5a6ebaca38d9a9bff2","impliedFormat":1},{"version":"8cf7e92bdb2862c2d28ba4535c43dc599cfbc0025db5ed9973d9b708dcbe3d98","affectsGlobalScope":true,"impliedFormat":1},{"version":"278e70975bd456bba5874eaee17692355432e8d379b809a97f6af0eee2b702d8","impliedFormat":1},{"version":"b1b6ee0d012aeebe11d776a155d8979730440082797695fc8e2a5c326285678f","impliedFormat":1},{"version":"45875bcae57270aeb3ebc73a5e3fb4c7b9d91d6b045f107c1d8513c28ece71c0","impliedFormat":1},{"version":"1dc73f8854e5c4506131c4d95b3a6c24d0c80336d3758e95110f4c7b5cb16397","affectsGlobalScope":true,"impliedFormat":1},{"version":"636302a00dfd1f9fe6e8e91e4e9350c6518dcc8d51a474e4fc3a9ba07135100b","affectsGlobalScope":true,"impliedFormat":1},{"version":"3f16a7e4deafa527ed9995a772bb380eb7d3c2c0fd4ae178c5263ed18394db2c","impliedFormat":1},{"version":"933921f0bb0ec12ef45d1062a1fc0f27635318f4d294e4d99de9a5493e618ca2","impliedFormat":1},{"version":"71a0f3ad612c123b57239a7749770017ecfe6b66411488000aba83e4546fde25","impliedFormat":1},{"version":"8145e07aad6da5f23f2fcd8c8e4c5c13fb26ee986a79d03b0829b8fce152d8b2","impliedFormat":1},{"version":"e1120271ebbc9952fdc7b2dd3e145560e52e06956345e6fdf91d70ca4886464f","impliedFormat":1},{"version":"814118df420c4e38fe5ae1b9a3bafb6e9c2aa40838e528cde908381867be6466","impliedFormat":1},{"version":"e1ce1d622f1e561f6cdf246372ead3bbc07ce0342024d0e9c7caf3136f712698","impliedFormat":1},{"version":"c878f74b6d10b267f6075c51ac1d8becd15b4aa6a58f79c0cfe3b24908357f60","impliedFormat":1},{"version":"37ba7b45141a45ce6e80e66f2a96c8a5ab1bcef0fc2d0f56bb58df96ec67e972","impliedFormat":1},{"version":"125d792ec6c0c0f657d758055c494301cc5fdb327d9d9d5960b3f129aff76093","impliedFormat":1},{"version":"27e4532aaaa1665d0dd19023321e4dc12a35a741d6b8e1ca3517fcc2544e0efe","affectsGlobalScope":true,"impliedFormat":1},{"version":"2754d8221d77c7b382096651925eb476f1066b3348da4b73fe71ced7801edada","impliedFormat":1},{"version":"8c2ad42d5d1a2e8e6112625767f8794d9537f1247907378543106f7ba6c7df90","affectsGlobalScope":true,"impliedFormat":1},{"version":"f0be1b8078cd549d91f37c30c222c2a187ac1cf981d994fb476a1adc61387b14","affectsGlobalScope":true,"impliedFormat":1},{"version":"0aaed1d72199b01234152f7a60046bc947f1f37d78d182e9ae09c4289e06a592","impliedFormat":1},{"version":"98ffdf93dfdd206516971d28e3e473f417a5cfd41172e46b4ce45008f640588e","impliedFormat":1},{"version":"66ba1b2c3e3a3644a1011cd530fb444a96b1b2dfe2f5e837a002d41a1a799e60","impliedFormat":1},{"version":"7e514f5b852fdbc166b539fdd1f4e9114f29911592a5eb10a94bb3a13ccac3c4","impliedFormat":1},{"version":"7d6ff413e198d25639f9f01f16673e7df4e4bd2875a42455afd4ecc02ef156da","affectsGlobalScope":true,"impliedFormat":1},{"version":"12e8ce658dd17662d82fb0509d2057afc5e6ee30369a2e9e0957eff725b1f11d","affectsGlobalScope":true,"impliedFormat":1},{"version":"74736930d108365d7bbe740c7154706ccfb1b2a3855a897963ab3e5c07ecbf19","impliedFormat":1},{"version":"858f999b3e4a45a4e74766d43030941466460bf8768361d254234d5870480a53","impliedFormat":1},{"version":"ac5ed35e649cdd8143131964336ab9076937fa91802ec760b3ea63b59175c10a","impliedFormat":1},{"version":"63b05afa6121657f25e99e1519596b0826cda026f09372c9100dfe21417f4bd6","affectsGlobalScope":true,"impliedFormat":1},{"version":"3797dd6f4ea3dc15f356f8cdd3128bfa18122213b38a80d6c1f05d8e13cbdad8","impliedFormat":1},{"version":"ad90122e1cb599b3bc06a11710eb5489101be678f2920f2322b0ac3e195af78d","impliedFormat":1},{"version":"104c67f0da1bdf0d94865419247e20eded83ce7f9911a1aa75fc675c077ca66e","impliedFormat":1},{"version":"cc0d0b339f31ce0ab3b7a5b714d8e578ce698f1e13d7f8c60bfb766baeb1d35c","impliedFormat":1},{"version":"0dc6940ff35d845686a118ee7384713a84024d60ef26f25a2f87992ec7ddbd64","impliedFormat":1},{"version":"e2b48abff5a8adc6bb1cd13a702b9ef05e6045a98e7cfa95a8779b53b6d0e69d","impliedFormat":1},{"version":"f3d8c757e148ad968f0d98697987db363070abada5f503da3c06aefd9d4248c1","impliedFormat":1},{"version":"a4a39b5714adfcadd3bbea6698ca2e942606d833bde62ad5fb6ec55f5e438ff8","impliedFormat":1},{"version":"bbc1d029093135d7d9bfa4b38cbf8761db505026cc458b5e9c8b74f4000e5e75","impliedFormat":1},{"version":"1f68ab0e055994eb337b67aa87d2a15e0200951e9664959b3866ee6f6b11a0fe","impliedFormat":1},{"version":"d3f2d715f57df3f04bf7b16dde01dec10366f64fce44503c92b8f78f614c1769","impliedFormat":1},{"version":"b78cd10245a90e27e62d0558564f5d9a16576294eee724a59ae21b91f9269e4a","impliedFormat":1},{"version":"baac9896d29bcc55391d769e408ff400d61273d832dd500f21de766205255acb","impliedFormat":1},{"version":"2f5747b1508ccf83fad0c251ba1e5da2f5a30b78b09ffa1cfaf633045160afed","impliedFormat":1},{"version":"86ea91bfa7fef1eeb958056f30f1db4e0680bc9b5132e5e9d6e9cfd773c0c4fd","affectsGlobalScope":true,"impliedFormat":1},{"version":"b71c603a539078a5e3a039b20f2b0a0d1708967530cf97dec8850a9ca45baa2b","impliedFormat":1},{"version":"0e13570a7e86c6d83dd92e81758a930f63747483e2cd34ef36fcdb47d1f9726a","impliedFormat":1},{"version":"d26a79f97f25eb1c5fc36a8552e4decc7ad11104a016d31b1307c3afaf48feb1","impliedFormat":1},{"version":"afe73051ff6a03a9565cbd8ebb0e956ee3df5e913ad5c1ded64218aabfa3dcb5","impliedFormat":1},{"version":"742d4b7b02ffc3ba3c4258a3d196457da2b3fec0125872fd0776c50302a11b9d","affectsGlobalScope":true,"impliedFormat":1},{"version":"8a8eb4ebffd85e589a1cc7c178e291626c359543403d58c9cd22b81fab5b1fb9","impliedFormat":1},{"version":"03566a51ebc848dec449a4ed69518e9f20caa6ac123fa32676aaaabe64adae8e","impliedFormat":1},{"version":"b2d0630483bf337ef9dac326c3334a245aa4946e9f60f12baf7da5be44beafbb","impliedFormat":1},{"version":"035a5df183489c2e22f3cf59fc1ed2b043d27f357eecc0eb8d8e840059d44245","impliedFormat":1},{"version":"a4809f4d92317535e6b22b01019437030077a76fec1d93b9881c9ed4738fcc54","impliedFormat":1},{"version":"5f53fa0bd22096d2a78533f94e02c899143b8f0f9891a46965294ee8b91a9434","impliedFormat":1},{"version":"cdcc132f207d097d7d3aa75615ab9a2e71d6a478162dde8b67f88ea19f3e54de","impliedFormat":1},{"version":"0d14fa22c41fdc7277e6f71473b20ebc07f40f00e38875142335d5b63cdfc9d2","impliedFormat":1},{"version":"c085e9aa62d1ae1375794c1fb927a445fa105fed891a7e24edbb1c3300f7384a","impliedFormat":1},{"version":"f315e1e65a1f80992f0509e84e4ae2df15ecd9ef73df975f7c98813b71e4c8da","impliedFormat":1},{"version":"5b9586e9b0b6322e5bfbd2c29bd3b8e21ab9d871f82346cb71020e3d84bae73e","impliedFormat":1},{"version":"3e70a7e67c2cb16f8cd49097360c0309fe9d1e3210ff9222e9dac1f8df9d4fb6","impliedFormat":1},{"version":"ab68d2a3e3e8767c3fba8f80de099a1cfc18c0de79e42cb02ae66e22dfe14a66","impliedFormat":1},{"version":"d96cc6598148bf1a98fb2e8dcf01c63a4b3558bdaec6ef35e087fd0562eb40ec","impliedFormat":1},{"version":"f8db4fea512ab759b2223b90ecbbe7dae919c02f8ce95ec03f7fb1cf757cfbeb","affectsGlobalScope":true,"impliedFormat":1},{"version":"19990350fca066265b2c190c9b6cde1229f35002ea2d4df8c9e397e9942f6c89","impliedFormat":99},{"version":"8fb8fdda477cd7382477ffda92c2bb7d9f7ef583b1aa531eb6b2dc2f0a206c10","impliedFormat":99},{"version":"66995b0c991b5c5d42eff1d950733f85482c7419f7296ab8952e03718169e379","impliedFormat":99},{"version":"9863f888da357e35e013ca3465b794a490a198226bd8232c2f81fb44e16ff323","impliedFormat":99},{"version":"b4c6184d78303b0816e779a48bef779b15aea4a66028eb819aac0abee8407dea","impliedFormat":99},{"version":"db085d2171d48938a99e851dafe0e486dce9859e5dfa73c21de5ed3d4d6fb0c5","impliedFormat":99},{"version":"62a3ad1ddd1f5974b3bf105680b3e09420f2230711d6520a521fab2be1a32838","impliedFormat":99},{"version":"a77be6fc44c876bc10c897107f84eaba10790913ebdcad40fcda7e47469b2160","impliedFormat":99},{"version":"06cf55b6da5cef54eaaf51cdc3d4e5ebf16adfdd9ebd20cec7fe719be9ced017","impliedFormat":99},{"version":"91f5dbcdb25d145a56cffe957ec665256827892d779ef108eb2f3864faff523b","impliedFormat":99},{"version":"052ba354bab8fb943e0bc05a0769f7b81d7c3b3c6cd0f5cfa53c7b2da2a525c5","impliedFormat":99},{"version":"927955a3de5857e0a1c575ced5a4245e74e6821d720ed213141347dd1870197f","impliedFormat":99},{"version":"fec804d54cd97dd77e956232fc37dc13f53e160d4bbeeb5489e86eeaa91f7ebd","impliedFormat":99},{"version":"03c258e060b7da220973f84b89615e4e9850e9b5d30b3a8e4840b3e3268ae8eb","impliedFormat":1},{"version":"fd0589ca571ad090b531d8c095e26caa53d4825c64d3ff2b2b1ab95d72294175","impliedFormat":1},{"version":"669843ecafb89ae1e944df06360e8966219e4c1c34c0d28aa2503272cdd444a7","affectsGlobalScope":true,"impliedFormat":1},{"version":"96d14f21b7652903852eef49379d04dbda28c16ed36468f8c9fa08f7c14c9538","impliedFormat":1},{"version":"abd6ccdaae9905ea2ec85488fdce744930862327633eebd40d429511f6a1d5da","impliedFormat":1},{"version":"b0f9ef6423d6b29dde29fd60d83d215796b2c1b76bfca28ac374ae18702cfb8e","impliedFormat":1},{"version":"fb893a0dfc3c9fb0f9ca93d0648694dd95f33cbad2c0f2c629f842981dfd4e2e","impliedFormat":1},{"version":"c29631b0a8dc394e1333b5a6e337a6451db910d8175e8e0bca45b0291a42c95b","impliedFormat":1},{"version":"8099f6b618fed3019711f6ded5d52846e543cd9c338836f60cc9b477ec953af0","impliedFormat":1},{"version":"c7f50d9037061e6ec6e381e55121eb071a3599e5423508408a42f23e0f0a57fd","impliedFormat":1},{"version":"cbf4e3a05c7514febcf87c277dd917d90fc6e43cce3d86c47528b78de590a930","impliedFormat":1},{"version":"0c4bc6dfbb69fe9979014739e9ad53d4fb0b0a1b40d7281a6d2d40ed9573893b","impliedFormat":1},{"version":"c38549da7b7ef6ba5de4d1adb2f0296f744c6ae2fb3385647b0e02875092c4f1","impliedFormat":1},{"version":"ff155930718467b27e379e4a195e4607ce277f805cad9d2fa5f4fd5dec224df6","affectsGlobalScope":true,"impliedFormat":1},{"version":"818e7c86776c67f49dbd781d445e13297b59aa7262e54b065b1332d7dcc6f59a","impliedFormat":1},{"version":"03c92769f389dbd9e45232f7eb01c3e0f482b62555aaf2029dcbf380d5cee9e4","impliedFormat":1},{"version":"32d7f70fd3498bc76a46dab8b03af4215f445f490f8e213c80cf06b636a4e413","impliedFormat":1},{"version":"17668c1aab598920796050ee5a00d961ede5e92595f6ac8908a975ed75a537e5","impliedFormat":1},{"version":"f63cb353cd53da6be4a34f6fdece6316dac14fd62cccf9a4d2ce6bab2c37bc8c","impliedFormat":1},{"version":"54751c34f1e8c3bedd7a4501762c8a9567160ac76bd6bc35b73429d3e2cf2ec7","impliedFormat":1},{"version":"65ff5a0aefd7817a03c1ad04fee85c9cdd3ec415cc3c9efec85d8008d4d5e4ee","impliedFormat":1},{"version":"549df62b64a71004aee17685b445a8289013daf96246ce4d9b087d13d7a27a61","affectsGlobalScope":true,"impliedFormat":1},{"version":"40a1b33c67109be18a961127873e8ba198429eacf11a468b4a052cddc9a73f8d","affectsGlobalScope":true,"impliedFormat":1},{"version":"17ed71200119e86ccef2d96b73b02ce8854b76ad6bd21b5021d4269bec527b5f","impliedFormat":1},{"version":"4ef960df4f672e93b479f88211ed8b5cfa8a598b97aafa3396cacdc3341e3504","impliedFormat":1},{"version":"cf3d384d082b933d987c4e2fe7bfb8710adfd9dc8155190056ed6695a25a559e","impliedFormat":1},{"version":"9871b7ee672bc16c78833bdab3052615834b08375cb144e4d2cba74473f4a589","impliedFormat":1},{"version":"c863198dae89420f3c552b5a03da6ed6d0acfa3807a64772b895db624b0de707","impliedFormat":1},{"version":"8b03a5e327d7db67112ebbc93b4f744133eda2c1743dbb0a990c61a8007823ef","impliedFormat":1},{"version":"86c73f2ee1752bac8eeeece234fd05dfcf0637a4fbd8032e4f5f43102faa8eec","impliedFormat":1},{"version":"42fad1f540271e35ca37cecda12c4ce2eef27f0f5cf0f8dd761d723c744d3159","impliedFormat":1},{"version":"ff3743a5de32bee10906aff63d1de726f6a7fd6ee2da4b8229054dfa69de2c34","impliedFormat":1},{"version":"83acd370f7f84f203e71ebba33ba61b7f1291ca027d7f9a662c6307d74e4ac22","impliedFormat":1},{"version":"1445cec898f90bdd18b2949b9590b3c012f5b7e1804e6e329fb0fe053946d5ec","impliedFormat":1},{"version":"0e5318ec2275d8da858b541920d9306650ae6ac8012f0e872fe66eb50321a669","impliedFormat":1},{"version":"cf530297c3fb3a92ec9591dd4fa229d58b5981e45fe6702a0bd2bea53a5e59be","impliedFormat":1},{"version":"c1f6f7d08d42148ddfe164d36d7aba91f467dbcb3caa715966ff95f55048b3a4","impliedFormat":1},{"version":"f4e9bf9103191ef3b3612d3ec0044ca4044ca5be27711fe648ada06fad4bcc85","impliedFormat":1},{"version":"0c1ee27b8f6a00097c2d6d91a21ee4d096ab52c1e28350f6362542b55380059a","impliedFormat":1},{"version":"7677d5b0db9e020d3017720f853ba18f415219fb3a9597343b1b1012cfd699f7","impliedFormat":1},{"version":"bc1c6bc119c1784b1a2be6d9c47addec0d83ef0d52c8fbe1f14a51b4dfffc675","impliedFormat":1},{"version":"52cf2ce99c2a23de70225e252e9822a22b4e0adb82643ab0b710858810e00bf1","impliedFormat":1},{"version":"770625067bb27a20b9826255a8d47b6b5b0a2d3dfcbd21f89904c731f671ba77","impliedFormat":1},{"version":"d1ed6765f4d7906a05968fb5cd6d1db8afa14dbe512a4884e8ea5c0f5e142c80","impliedFormat":1},{"version":"799c0f1b07c092626cf1efd71d459997635911bb5f7fc1196efe449bba87e965","impliedFormat":1},{"version":"2a184e4462b9914a30b1b5c41cf80c6d3428f17b20d3afb711fff3f0644001fd","impliedFormat":1},{"version":"9eabde32a3aa5d80de34af2c2206cdc3ee094c6504a8d0c2d6d20c7c179503cc","impliedFormat":1},{"version":"397c8051b6cfcb48aa22656f0faca2553c5f56187262135162ee79d2b2f6c966","impliedFormat":1},{"version":"a8ead142e0c87dcd5dc130eba1f8eeed506b08952d905c47621dc2f583b1bff9","impliedFormat":1},{"version":"a02f10ea5f73130efca046429254a4e3c06b5475baecc8f7b99a0014731be8b3","impliedFormat":1},{"version":"c2576a4083232b0e2d9bd06875dd43d371dee2e090325a9eac0133fd5650c1cb","impliedFormat":1},{"version":"4c9a0564bb317349de6a24eb4efea8bb79898fa72ad63a1809165f5bd42970dd","impliedFormat":1},{"version":"f40ac11d8859092d20f953aae14ba967282c3bb056431a37fced1866ec7a2681","impliedFormat":1},{"version":"cc11e9e79d4746cc59e0e17473a59d6f104692fd0eeea1bdb2e206eabed83b03","impliedFormat":1},{"version":"b444a410d34fb5e98aa5ee2b381362044f4884652e8bc8a11c8fe14bbd85518e","impliedFormat":1},{"version":"c35808c1f5e16d2c571aa65067e3cb95afeff843b259ecfa2fc107a9519b5392","impliedFormat":1},{"version":"14d5dc055143e941c8743c6a21fa459f961cbc3deedf1bfe47b11587ca4b3ef5","impliedFormat":1},{"version":"a3ad4e1fc542751005267d50a6298e6765928c0c3a8dce1572f2ba6ca518661c","impliedFormat":1},{"version":"f237e7c97a3a89f4591afd49ecb3bd8d14f51a1c4adc8fcae3430febedff5eb6","impliedFormat":1},{"version":"3ffdfbec93b7aed71082af62b8c3e0cc71261cc68d796665faa1e91604fbae8f","impliedFormat":1},{"version":"662201f943ed45b1ad600d03a90dffe20841e725203ced8b708c91fcd7f9379a","impliedFormat":1},{"version":"c9ef74c64ed051ea5b958621e7fb853fe3b56e8787c1587aefc6ea988b3c7e79","impliedFormat":1},{"version":"2462ccfac5f3375794b861abaa81da380f1bbd9401de59ffa43119a0b644253d","impliedFormat":1},{"version":"34baf65cfee92f110d6653322e2120c2d368ee64b3c7981dff08ed105c4f19b0","impliedFormat":1},{"version":"844ab83672160ca57a2a2ea46da4c64200d8c18d4ebb2087819649cad099ff0e","impliedFormat":1},{"version":"ab82804a14454734010dcdcd43f564ff7b0389bee4c5692eec76ff5b30d4cf66","impliedFormat":1},{"version":"e7bb49fac2aa46a13011b5eb5e4a8648f70a28aea1853fab2444dd4fcb4d4ec7","impliedFormat":1},{"version":"464e45d1a56dae066d7e1a2f32e55b8de4bfb072610c3483a4091d73c9924908","impliedFormat":1},{"version":"da318e126ac39362c899829547cc8ee24fa3e8328b52cdd27e34173cf19c7941","impliedFormat":1},{"version":"24bd01a91f187b22456c7171c07dbf44f3ad57ebd50735aab5c13fa23d7114b4","impliedFormat":1},{"version":"4738eefeaaba4d4288a08c1c226a76086095a4d5bcc7826d2564e7c29da47671","impliedFormat":1},{"version":"736097ddbb2903bef918bb3b5811ef1c9c5656f2a73bd39b22a91b9cc2525e50","impliedFormat":1},{"version":"dbec715e9e82df297e49e3ed0029f6151aa40517ebfd6fcdba277a8a2e1d3a1b","impliedFormat":1},{"version":"097f1f8ca02e8940cfdcca553279e281f726485fa6fb214b3c9f7084476f6bcc","impliedFormat":1},{"version":"8f75e211a2e83ff216eb66330790fb6412dcda2feb60c4f165c903cf375633ee","impliedFormat":1},{"version":"dbe69644ab6e699ad2ef740056c637c34f3348af61d3764ff555d623703525db","impliedFormat":1},{"version":"3f36c0c7508302f3dca3dc5ab0a66d822b2222f70c24bb1796ddb5c9d1168a05","impliedFormat":1},{"version":"b23d5b89c465872587e130f427b39458b8e3ad16385f98446e9e86151ba6eb15","affectsGlobalScope":true,"impliedFormat":1},{"version":"61f41da9aaa809e5142b1d849d4e70f3e09913a5cb32c629bf6e61ef27967ff7","impliedFormat":1},{"version":"f874ea4d0091b0a44362a5f74d26caab2e66dec306c2bf7e8965f5106e784c3b","impliedFormat":1},{"version":"c6cdcd12d577032b84eed1de4d2de2ae343463701a25961b202cff93989439fb","impliedFormat":1},{"version":"203d75f653988a418930fb16fda8e84dea1fac7e38abdaafd898f257247e0860","impliedFormat":1},{"version":"c5b3da7e2ecd5968f723282aba49d8d1a2e178d0afe48998dad93f81e2724091","impliedFormat":1},{"version":"efd2860dc74358ffa01d3de4c8fa2f966ae52c13c12b41ad931c078151b36601","impliedFormat":1},{"version":"09acacae732e3cc67a6415026cfae979ebe900905500147a629837b790a366b3","impliedFormat":1},{"version":"f7b622759e094a3c2e19640e0cb233b21810d2762b3e894ef7f415334125eb22","impliedFormat":1},{"version":"99236ea5c4c583082975823fd19bcce6a44963c5c894e20384bc72e7eccf9b03","impliedFormat":1},{"version":"f6688a02946a3f7490aa9e26d76d1c97a388e42e77388cbab010b69982c86e9e","impliedFormat":1},{"version":"9f642953aba68babd23de41de85d4e97f0c39ef074cb8ab8aa7d55237f62aff6","impliedFormat":1},{"version":"529ac413f6eada3a1780c4050f4d4853488fc00652f45101737863e9ac519bff","impliedFormat":1},{"version":"bae8d023ef6b23df7da26f51cea44321f95817c190342a36882e93b80d07a960","impliedFormat":1},{"version":"26a770cec4bd2e7dbba95c6e536390fffe83c6268b78974a93727903b515c4e7","impliedFormat":1}],"root":[65,66],"options":{"composite":true,"declaration":true,"declarationMap":true,"esModuleInterop":true,"inlineSources":false,"noUnusedLocals":false,"noUnusedParameters":false,"outDir":"./dist","rootDir":"./src","skipLibCheck":true,"strict":true},"referencedMap":[[70,1],[68,2],[198,2],[201,3],[200,2],[67,2],[73,4],[69,1],[71,5],[72,1],[74,2],[175,6],[174,7],[176,2],[181,8],[180,9],[179,10],[177,2],[186,11],[189,12],[190,13],[194,14],[191,2],[193,15],[187,2],[195,2],[196,16],[197,17],[206,18],[221,19],[222,20],[178,2],[223,2],[224,21],[225,2],[182,2],[226,2],[232,22],[230,23],[231,23],[227,23],[228,23],[229,23],[120,24],[121,24],[122,25],[80,26],[123,27],[124,28],[125,29],[75,2],[78,30],[76,2],[77,2],[126,31],[127,32],[128,33],[129,34],[130,35],[131,36],[132,36],[134,37],[133,38],[135,39],[136,40],[137,41],[119,42],[79,2],[138,43],[139,44],[140,45],[173,46],[141,47],[142,48],[143,49],[144,50],[145,51],[146,52],[147,53],[148,54],[149,55],[150,56],[151,56],[152,57],[153,2],[154,2],[155,58],[157,59],[156,60],[158,61],[159,62],[160,63],[161,64],[162,65],[163,66],[164,67],[165,68],[166,69],[167,70],[168,71],[169,72],[170,73],[171,74],[172,75],[236,76],[234,77],[237,78],[235,79],[233,80],[240,2],[184,2],[185,2],[243,81],[241,2],[242,82],[244,2],[269,83],[270,84],[245,85],[248,85],[267,83],[268,83],[258,83],[257,86],[255,83],[250,83],[263,83],[261,83],[265,83],[249,83],[262,83],[266,83],[251,83],[252,83],[264,83],[246,83],[253,83],[254,83],[256,83],[260,83],[271,87],[259,83],[247,83],[284,88],[283,2],[278,87],[280,89],[279,87],[272,87],[273,87],[275,87],[277,87],[281,89],[282,89],[274,89],[276,89],[183,90],[188,91],[285,2],[294,92],[286,2],[289,93],[292,94],[293,95],[287,96],[290,97],[288,98],[295,99],[297,100],[296,2],[220,2],[298,2],[299,2],[309,101],[300,2],[301,2],[302,2],[303,2],[304,2],[305,2],[306,2],[307,2],[308,2],[310,2],[311,102],[81,2],[199,2],[192,2],[205,103],[291,104],[203,105],[204,106],[209,107],[218,108],[207,2],[208,109],[219,110],[214,111],[215,112],[213,113],[217,114],[211,115],[210,116],[216,117],[212,108],[238,2],[239,118],[202,119],[1,2],[49,2],[50,2],[9,2],[10,2],[14,2],[13,2],[3,2],[15,2],[16,2],[17,2],[18,2],[19,2],[20,2],[21,2],[22,2],[4,2],[23,2],[24,2],[5,2],[25,2],[29,2],[26,2],[27,2],[28,2],[30,2],[31,2],[32,2],[6,2],[33,2],[34,2],[35,2],[36,2],[7,2],[40,2],[37,2],[38,2],[39,2],[41,2],[8,2],[42,2],[47,2],[48,2],[43,2],[44,2],[45,2],[46,2],[2,2],[12,2],[11,2],[97,120],[107,121],[96,120],[117,122],[88,123],[87,124],[116,125],[110,126],[115,127],[90,128],[104,129],[89,130],[113,131],[85,132],[84,125],[114,133],[86,134],[91,135],[92,2],[95,135],[82,2],[118,136],[108,137],[99,138],[100,139],[102,140],[98,141],[101,142],[111,125],[93,143],[94,144],[103,145],[83,146],[106,137],[105,135],[109,2],[112,147],[64,148],[55,149],[62,150],[57,2],[58,2],[56,151],[59,152],[51,2],[52,2],[63,153],[54,154],[60,2],[61,155],[53,156],[65,157],[66,158]],"latestChangedDtsFile":"./dist/index.d.ts","version":"5.8.3"}
+</file>
 
-1s
-2s
-4s
-0s
-20s
-Run yarn install --immutable
-! Corepack is about to download https://repo.yarnpkg.com/4.9.1/packages/yarnpkg-cli/bin/yarn.js
-➤ YN0000: · Yarn 4.9.1
-➤ YN0000: ┌ Resolution step
-Resolution step
-➤ YN0000: └ Completed in 0s 268ms
-➤ YN0000: ┌ Fetch step
-Fetch step
-➤ YN0000: └ Completed in 7s 434ms
-➤ YN0000: ┌ Link step
-Link step
-  ➤ YN0007: │ turbo@npm:1.10.12 must be built because it never has been before or the last one failed
-  ➤ YN0007: │ @nestjs/core@npm:10.4.17 [62573] must be built because it never has been before or the last one failed
-  ➤ YN0007: │ @prisma/engines@npm:5.22.0 must be built because it never has been before or the last one failed
-  ➤ YN0007: │ @swc/core@npm:1.11.24 [62573] must be built because it never has been before or the last one failed
-  ➤ YN0007: │ @scarf/scarf@npm:1.4.0 must be built because it never has been before or the last one failed
-  ➤ YN0007: │ unrs-resolver@npm:1.7.2 must be built because it never has been before or the last one failed
-  ➤ YN0007: │ prisma@npm:5.22.0 must be built because it never has been before or the last one failed
-  ➤ YN0007: │ @prisma/client@npm:5.22.0 [62573] must be built because it never has been before or the last one failed
-  ➤ YN0000: │ @prisma/client@npm:5.22.0 [62573] STDERR prisma:warn We could not find your Prisma schema in the default locations (see: https://pris.ly/d/prisma-schema-location).
-  ➤ YN0000: │ @prisma/client@npm:5.22.0 [62573] STDERR If you have a Prisma schema file in a custom path, you will need to run
-  ➤ YN0000: │ @prisma/client@npm:5.22.0 [62573] STDERR `prisma generate --schema=./path/to/your/schema.prisma` to generate Prisma Client.
-  ➤ YN0000: │ @prisma/client@npm:5.22.0 [62573] STDERR If you do not have a Prisma schema file yet, you can ignore this message.
-  ➤ YN0000: │ @prisma/client@npm:5.22.0 [62573] STDOUT 
-➤ YN0000: └ Completed in 10s 575ms
-➤ YN0000: · Done in 18s 461ms
-5s
-Run yarn turbo run test:ci build
-  
-• Packages in scope: @repo/config, @repo/core, api, tsconfig, ui, web
-• Running test:ci, build in 6 packages
+<file path="packages/core/tsconfig.tsbuildinfo">
+{"fileNames":["../../node_modules/typescript/lib/lib.d.ts","../../node_modules/typescript/lib/lib.es5.d.ts","../../node_modules/typescript/lib/lib.es2015.d.ts","../../node_modules/typescript/lib/lib.es2016.d.ts","../../node_modules/typescript/lib/lib.es2017.d.ts","../../node_modules/typescript/lib/lib.es2018.d.ts","../../node_modules/typescript/lib/lib.es2019.d.ts","../../node_modules/typescript/lib/lib.es2020.d.ts","../../node_modules/typescript/lib/lib.dom.d.ts","../../node_modules/typescript/lib/lib.dom.iterable.d.ts","../../node_modules/typescript/lib/lib.webworker.importscripts.d.ts","../../node_modules/typescript/lib/lib.scripthost.d.ts","../../node_modules/typescript/lib/lib.es2015.core.d.ts","../../node_modules/typescript/lib/lib.es2015.collection.d.ts","../../node_modules/typescript/lib/lib.es2015.generator.d.ts","../../node_modules/typescript/lib/lib.es2015.iterable.d.ts","../../node_modules/typescript/lib/lib.es2015.promise.d.ts","../../node_modules/typescript/lib/lib.es2015.proxy.d.ts","../../node_modules/typescript/lib/lib.es2015.reflect.d.ts","../../node_modules/typescript/lib/lib.es2015.symbol.d.ts","../../node_modules/typescript/lib/lib.es2015.symbol.wellknown.d.ts","../../node_modules/typescript/lib/lib.es2016.array.include.d.ts","../../node_modules/typescript/lib/lib.es2016.intl.d.ts","../../node_modules/typescript/lib/lib.es2017.arraybuffer.d.ts","../../node_modules/typescript/lib/lib.es2017.date.d.ts","../../node_modules/typescript/lib/lib.es2017.object.d.ts","../../node_modules/typescript/lib/lib.es2017.sharedmemory.d.ts","../../node_modules/typescript/lib/lib.es2017.string.d.ts","../../node_modules/typescript/lib/lib.es2017.intl.d.ts","../../node_modules/typescript/lib/lib.es2017.typedarrays.d.ts","../../node_modules/typescript/lib/lib.es2018.asyncgenerator.d.ts","../../node_modules/typescript/lib/lib.es2018.asynciterable.d.ts","../../node_modules/typescript/lib/lib.es2018.intl.d.ts","../../node_modules/typescript/lib/lib.es2018.promise.d.ts","../../node_modules/typescript/lib/lib.es2018.regexp.d.ts","../../node_modules/typescript/lib/lib.es2019.array.d.ts","../../node_modules/typescript/lib/lib.es2019.object.d.ts","../../node_modules/typescript/lib/lib.es2019.string.d.ts","../../node_modules/typescript/lib/lib.es2019.symbol.d.ts","../../node_modules/typescript/lib/lib.es2019.intl.d.ts","../../node_modules/typescript/lib/lib.es2020.bigint.d.ts","../../node_modules/typescript/lib/lib.es2020.date.d.ts","../../node_modules/typescript/lib/lib.es2020.promise.d.ts","../../node_modules/typescript/lib/lib.es2020.sharedmemory.d.ts","../../node_modules/typescript/lib/lib.es2020.string.d.ts","../../node_modules/typescript/lib/lib.es2020.symbol.wellknown.d.ts","../../node_modules/typescript/lib/lib.es2020.intl.d.ts","../../node_modules/typescript/lib/lib.es2020.number.d.ts","../../node_modules/typescript/lib/lib.decorators.d.ts","../../node_modules/typescript/lib/lib.decorators.legacy.d.ts","./src/types/user.types.ts","./src/index.ts","../../node_modules/@types/aria-query/index.d.ts","../../node_modules/@babel/types/lib/index.d.ts","../../node_modules/@types/babel__generator/index.d.ts","../../node_modules/@babel/parser/typings/babel-parser.d.ts","../../node_modules/@types/babel__template/index.d.ts","../../node_modules/@types/babel__traverse/index.d.ts","../../node_modules/@types/babel__core/index.d.ts","../../node_modules/@types/bcryptjs/index.d.ts","../../node_modules/@types/node/compatibility/disposable.d.ts","../../node_modules/@types/node/compatibility/indexable.d.ts","../../node_modules/@types/node/compatibility/iterators.d.ts","../../node_modules/@types/node/compatibility/index.d.ts","../../node_modules/@types/node/globals.typedarray.d.ts","../../node_modules/@types/node/buffer.buffer.d.ts","../../node_modules/buffer/index.d.ts","../../node_modules/undici-types/header.d.ts","../../node_modules/undici-types/readable.d.ts","../../node_modules/undici-types/file.d.ts","../../node_modules/undici-types/fetch.d.ts","../../node_modules/undici-types/formdata.d.ts","../../node_modules/undici-types/connector.d.ts","../../node_modules/undici-types/client.d.ts","../../node_modules/undici-types/errors.d.ts","../../node_modules/undici-types/dispatcher.d.ts","../../node_modules/undici-types/global-dispatcher.d.ts","../../node_modules/undici-types/global-origin.d.ts","../../node_modules/undici-types/pool-stats.d.ts","../../node_modules/undici-types/pool.d.ts","../../node_modules/undici-types/handlers.d.ts","../../node_modules/undici-types/balanced-pool.d.ts","../../node_modules/undici-types/agent.d.ts","../../node_modules/undici-types/mock-interceptor.d.ts","../../node_modules/undici-types/mock-agent.d.ts","../../node_modules/undici-types/mock-client.d.ts","../../node_modules/undici-types/mock-pool.d.ts","../../node_modules/undici-types/mock-errors.d.ts","../../node_modules/undici-types/proxy-agent.d.ts","../../node_modules/undici-types/env-http-proxy-agent.d.ts","../../node_modules/undici-types/retry-handler.d.ts","../../node_modules/undici-types/retry-agent.d.ts","../../node_modules/undici-types/api.d.ts","../../node_modules/undici-types/interceptors.d.ts","../../node_modules/undici-types/util.d.ts","../../node_modules/undici-types/cookies.d.ts","../../node_modules/undici-types/patch.d.ts","../../node_modules/undici-types/websocket.d.ts","../../node_modules/undici-types/eventsource.d.ts","../../node_modules/undici-types/filereader.d.ts","../../node_modules/undici-types/diagnostics-channel.d.ts","../../node_modules/undici-types/content-type.d.ts","../../node_modules/undici-types/cache.d.ts","../../node_modules/undici-types/index.d.ts","../../node_modules/@types/node/globals.d.ts","../../node_modules/@types/node/assert.d.ts","../../node_modules/@types/node/assert/strict.d.ts","../../node_modules/@types/node/async_hooks.d.ts","../../node_modules/@types/node/buffer.d.ts","../../node_modules/@types/node/child_process.d.ts","../../node_modules/@types/node/cluster.d.ts","../../node_modules/@types/node/console.d.ts","../../node_modules/@types/node/constants.d.ts","../../node_modules/@types/node/crypto.d.ts","../../node_modules/@types/node/dgram.d.ts","../../node_modules/@types/node/diagnostics_channel.d.ts","../../node_modules/@types/node/dns.d.ts","../../node_modules/@types/node/dns/promises.d.ts","../../node_modules/@types/node/domain.d.ts","../../node_modules/@types/node/dom-events.d.ts","../../node_modules/@types/node/events.d.ts","../../node_modules/@types/node/fs.d.ts","../../node_modules/@types/node/fs/promises.d.ts","../../node_modules/@types/node/http.d.ts","../../node_modules/@types/node/http2.d.ts","../../node_modules/@types/node/https.d.ts","../../node_modules/@types/node/inspector.d.ts","../../node_modules/@types/node/module.d.ts","../../node_modules/@types/node/net.d.ts","../../node_modules/@types/node/os.d.ts","../../node_modules/@types/node/path.d.ts","../../node_modules/@types/node/perf_hooks.d.ts","../../node_modules/@types/node/process.d.ts","../../node_modules/@types/node/punycode.d.ts","../../node_modules/@types/node/querystring.d.ts","../../node_modules/@types/node/readline.d.ts","../../node_modules/@types/node/readline/promises.d.ts","../../node_modules/@types/node/repl.d.ts","../../node_modules/@types/node/sea.d.ts","../../node_modules/@types/node/sqlite.d.ts","../../node_modules/@types/node/stream.d.ts","../../node_modules/@types/node/stream/promises.d.ts","../../node_modules/@types/node/stream/consumers.d.ts","../../node_modules/@types/node/stream/web.d.ts","../../node_modules/@types/node/string_decoder.d.ts","../../node_modules/@types/node/test.d.ts","../../node_modules/@types/node/timers.d.ts","../../node_modules/@types/node/timers/promises.d.ts","../../node_modules/@types/node/tls.d.ts","../../node_modules/@types/node/trace_events.d.ts","../../node_modules/@types/node/tty.d.ts","../../node_modules/@types/node/url.d.ts","../../node_modules/@types/node/util.d.ts","../../node_modules/@types/node/v8.d.ts","../../node_modules/@types/node/vm.d.ts","../../node_modules/@types/node/wasi.d.ts","../../node_modules/@types/node/worker_threads.d.ts","../../node_modules/@types/node/zlib.d.ts","../../node_modules/@types/node/index.d.ts","../../node_modules/@types/connect/index.d.ts","../../node_modules/@types/body-parser/index.d.ts","../../node_modules/@types/cookiejar/index.d.ts","../../node_modules/@types/estree/index.d.ts","../../node_modules/@types/json-schema/index.d.ts","../../node_modules/@types/eslint/use-at-your-own-risk.d.ts","../../node_modules/@types/eslint/index.d.ts","../../node_modules/@types/eslint-scope/index.d.ts","../../node_modules/@types/mime/index.d.ts","../../node_modules/@types/send/index.d.ts","../../node_modules/@types/qs/index.d.ts","../../node_modules/@types/range-parser/index.d.ts","../../node_modules/@types/express-serve-static-core/index.d.ts","../../node_modules/@types/http-errors/index.d.ts","../../node_modules/@types/serve-static/index.d.ts","../../node_modules/@types/express/index.d.ts","../../node_modules/@types/graceful-fs/index.d.ts","../../node_modules/@types/hoist-non-react-statics/node_modules/@types/react/global.d.ts","../../node_modules/csstype/index.d.ts","../../node_modules/@types/hoist-non-react-statics/node_modules/@types/react/index.d.ts","../../node_modules/@types/hoist-non-react-statics/index.d.ts","../../node_modules/@types/istanbul-lib-coverage/index.d.ts","../../node_modules/@types/istanbul-lib-report/index.d.ts","../../node_modules/@types/istanbul-reports/index.d.ts","../../node_modules/@jest/expect-utils/build/index.d.ts","../../node_modules/chalk/index.d.ts","../../node_modules/@sinclair/typebox/typebox.d.ts","../../node_modules/@jest/schemas/build/index.d.ts","../../node_modules/pretty-format/build/index.d.ts","../../node_modules/jest-diff/build/index.d.ts","../../node_modules/jest-matcher-utils/build/index.d.ts","../../node_modules/expect/build/index.d.ts","../../node_modules/@types/jest/index.d.ts","../../node_modules/parse5/dist/common/html.d.ts","../../node_modules/parse5/dist/common/token.d.ts","../../node_modules/parse5/dist/common/error-codes.d.ts","../../node_modules/parse5/dist/tokenizer/preprocessor.d.ts","../../node_modules/parse5/dist/tokenizer/index.d.ts","../../node_modules/parse5/dist/tree-adapters/interface.d.ts","../../node_modules/parse5/dist/parser/open-element-stack.d.ts","../../node_modules/parse5/dist/parser/formatting-element-list.d.ts","../../node_modules/parse5/dist/parser/index.d.ts","../../node_modules/parse5/dist/tree-adapters/default.d.ts","../../node_modules/parse5/dist/serializer/index.d.ts","../../node_modules/parse5/dist/common/foreign-content.d.ts","../../node_modules/parse5/dist/index.d.ts","../../node_modules/@types/tough-cookie/index.d.ts","../../node_modules/@types/jsdom/base.d.ts","../../node_modules/@types/jsdom/index.d.ts","../../node_modules/@types/json5/index.d.ts","../../node_modules/@types/jsonwebtoken/index.d.ts","../../node_modules/@types/methods/index.d.ts","../../node_modules/@types/ms/index.d.ts","../../node_modules/@types/node-notifier/notifiers/notificationcenter.d.ts","../../node_modules/@types/node-notifier/notifiers/notifysend.d.ts","../../node_modules/@types/node-notifier/notifiers/toaster.d.ts","../../node_modules/@types/node-notifier/notifiers/balloon.d.ts","../../node_modules/@types/node-notifier/notifiers/growl.d.ts","../../node_modules/@types/node-notifier/index.d.ts","../../node_modules/@types/passport/index.d.ts","../../node_modules/@types/passport-jwt/node_modules/@types/jsonwebtoken/index.d.ts","../../node_modules/@types/passport-strategy/index.d.ts","../../node_modules/@types/passport-jwt/index.d.ts","../../node_modules/@types/passport-local/index.d.ts","../../node_modules/prettier/doc.d.ts","../../node_modules/prettier/index.d.ts","../../node_modules/@types/prop-types/index.d.ts","../../node_modules/@types/react/global.d.ts","../../node_modules/@types/react/index.d.ts","../../node_modules/@types/react-dom/index.d.ts","../../node_modules/@types/scheduler/index.d.ts","../../node_modules/@types/semver/classes/semver.d.ts","../../node_modules/@types/semver/functions/parse.d.ts","../../node_modules/@types/semver/functions/valid.d.ts","../../node_modules/@types/semver/functions/clean.d.ts","../../node_modules/@types/semver/functions/inc.d.ts","../../node_modules/@types/semver/functions/diff.d.ts","../../node_modules/@types/semver/functions/major.d.ts","../../node_modules/@types/semver/functions/minor.d.ts","../../node_modules/@types/semver/functions/patch.d.ts","../../node_modules/@types/semver/functions/prerelease.d.ts","../../node_modules/@types/semver/functions/compare.d.ts","../../node_modules/@types/semver/functions/rcompare.d.ts","../../node_modules/@types/semver/functions/compare-loose.d.ts","../../node_modules/@types/semver/functions/compare-build.d.ts","../../node_modules/@types/semver/functions/sort.d.ts","../../node_modules/@types/semver/functions/rsort.d.ts","../../node_modules/@types/semver/functions/gt.d.ts","../../node_modules/@types/semver/functions/lt.d.ts","../../node_modules/@types/semver/functions/eq.d.ts","../../node_modules/@types/semver/functions/neq.d.ts","../../node_modules/@types/semver/functions/gte.d.ts","../../node_modules/@types/semver/functions/lte.d.ts","../../node_modules/@types/semver/functions/cmp.d.ts","../../node_modules/@types/semver/functions/coerce.d.ts","../../node_modules/@types/semver/classes/comparator.d.ts","../../node_modules/@types/semver/classes/range.d.ts","../../node_modules/@types/semver/functions/satisfies.d.ts","../../node_modules/@types/semver/ranges/max-satisfying.d.ts","../../node_modules/@types/semver/ranges/min-satisfying.d.ts","../../node_modules/@types/semver/ranges/to-comparators.d.ts","../../node_modules/@types/semver/ranges/min-version.d.ts","../../node_modules/@types/semver/ranges/valid.d.ts","../../node_modules/@types/semver/ranges/outside.d.ts","../../node_modules/@types/semver/ranges/gtr.d.ts","../../node_modules/@types/semver/ranges/ltr.d.ts","../../node_modules/@types/semver/ranges/intersects.d.ts","../../node_modules/@types/semver/ranges/simplify.d.ts","../../node_modules/@types/semver/ranges/subset.d.ts","../../node_modules/@types/semver/internals/identifiers.d.ts","../../node_modules/@types/semver/index.d.ts","../../node_modules/@types/stack-utils/index.d.ts","../../node_modules/@types/superagent/lib/agent-base.d.ts","../../node_modules/@types/superagent/lib/node/response.d.ts","../../node_modules/@types/superagent/types.d.ts","../../node_modules/@types/superagent/lib/node/agent.d.ts","../../node_modules/@types/superagent/lib/request-base.d.ts","../../node_modules/form-data/index.d.ts","../../node_modules/@types/superagent/lib/node/http2wrapper.d.ts","../../node_modules/@types/superagent/lib/node/index.d.ts","../../node_modules/@types/superagent/index.d.ts","../../node_modules/@types/supertest/index.d.ts","../../node_modules/@types/testing-library__jest-dom/matchers.d.ts","../../node_modules/@types/testing-library__jest-dom/index.d.ts","../../node_modules/@types/use-sync-external-store/index.d.ts","../../node_modules/@types/uuid/index.d.ts","../../node_modules/@types/validator/lib/isboolean.d.ts","../../node_modules/@types/validator/lib/isemail.d.ts","../../node_modules/@types/validator/lib/isfqdn.d.ts","../../node_modules/@types/validator/lib/isiban.d.ts","../../node_modules/@types/validator/lib/isiso31661alpha2.d.ts","../../node_modules/@types/validator/lib/isiso4217.d.ts","../../node_modules/@types/validator/lib/isiso6391.d.ts","../../node_modules/@types/validator/lib/istaxid.d.ts","../../node_modules/@types/validator/lib/isurl.d.ts","../../node_modules/@types/validator/index.d.ts","../../node_modules/@types/yargs-parser/index.d.ts","../../node_modules/@types/yargs/index.d.ts"],"fileIdsList":[[54,66,109],[66,109],[66,109,186],[54,55,56,57,58,66,109],[54,56,66,109],[66,109,124,159,160],[66,109,124,159],[66,109,163,166],[66,109,163,164,165],[66,109,166],[66,109,121,124,159,169,170,171],[66,109,161,172,174],[66,109,122,159],[66,109,179],[66,109,177,178],[66,109,181],[66,109,182],[66,109,188,191,283],[66,109,121,155,159,205,206,208],[66,109,207],[66,109,114,159],[66,109,159,213,214,215,216,217],[66,109,218],[66,106,109],[66,108,109],[109],[66,109,114,144],[66,109,110,115,121,122,129,141,152],[66,109,110,111,121,129],[61,62,63,66,109],[66,109,112,153],[66,109,113,114,122,130],[66,109,114,141,149],[66,109,115,117,121,129],[66,108,109,116],[66,109,117,118],[66,109,121],[66,109,119,121],[66,108,109,121],[66,109,121,122,123,141,152],[66,109,121,122,123,136,141,144],[66,104,109,157],[66,104,109,117,121,124,129,141,152],[66,109,121,122,124,125,129,141,149,152],[66,109,124,126,141,149,152],[64,65,66,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,127,128,129,130,131,132,133,134,135,136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,153,154,155,156,157,158],[66,109,121,127],[66,109,128,152],[66,109,117,121,129,141],[66,109,130],[66,109,131],[66,108,109,132],[66,106,107,108,109,110,111,112,113,114,115,116,117,118,119,121,122,123,124,125,126,127,128,129,130,131,132,133,134,135,136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,153,154,155,156,157,158],[66,109,134],[66,109,135],[66,109,121,136,137],[66,109,136,138,153,155],[66,109,121,141,142,144],[66,109,143,144],[66,109,141,142],[66,109,144],[66,109,145],[66,106,109,141],[66,109,121,147,148],[66,109,147,148],[66,109,114,129,141,149],[66,109,150],[66,109,129,151],[66,109,124,135,152],[66,109,114,153],[66,109,141,154],[66,109,128,155],[66,109,156],[66,109,114,121,123,132,141,152,155,157],[66,109,141,158],[66,109,220,221],[66,109,114,159,212],[66,109,175,219,221],[66,109,175,219],[66,109,124,175],[66,109,228],[66,109,178,226,227],[66,109,231,270],[66,109,231,255,270],[66,109,270],[66,109,231],[66,109,231,256,270],[66,109,231,232,233,234,235,236,237,238,239,240,241,242,243,244,245,246,247,248,249,250,251,252,253,254,255,256,257,258,259,260,261,262,263,264,265,266,267,268,269],[66,109,256,270],[66,109,122,141,159,168],[66,109,124,159,169,173],[66,109,279],[66,109,162,211,272,274,280],[66,109,125,129,141,149,159],[66,109,122,124,125,126,129,141,211,273,274,275,276,277,278],[66,109,124,141,279],[66,109,122,273,274],[66,109,152,273],[66,109,280],[66,109,191,192,282],[66,109,286,287,288,289,290,291,292,293,294],[66,109,296],[66,109,184,190],[66,109,124,141,159],[66,109,188],[66,109,185,189],[66,109,194],[66,109,193,194],[66,109,193],[66,109,193,194,195,197,198,201,202,203,204],[66,109,194,198],[66,109,193,194,195,197,198,199,200],[66,109,193,198],[66,109,198,202],[66,109,194,195,196],[66,109,195],[66,109,193,194,198],[66,109,224],[66,109,187],[66,76,80,109,152],[66,76,109,141,152],[66,71,109],[66,73,76,109,149,152],[66,109,129,149],[66,109,159],[66,71,109,159],[66,73,76,109,129,152],[66,68,69,72,75,109,121,141,152],[66,76,83,109],[66,68,74,109],[66,76,97,98,109],[66,72,76,109,144,152,159],[66,97,109,159],[66,70,71,109,159],[66,76,109],[66,70,71,72,73,74,75,76,77,78,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,98,99,100,101,102,103,109],[66,76,91,109],[66,76,83,84,109],[66,74,76,84,85,109],[66,75,109],[66,68,71,76,109],[66,76,80,84,85,109],[66,80,109],[66,74,76,79,109,152],[66,68,73,76,83,109],[66,109,141],[66,71,76,97,109,157,159],[51,66,109]],"fileInfos":[{"version":"a7297ff837fcdf174a9524925966429eb8e5feecc2cc55cc06574e6b092c1eaa","impliedFormat":1},{"version":"69684132aeb9b5642cbcd9e22dff7818ff0ee1aa831728af0ecf97d3364d5546","affectsGlobalScope":true,"impliedFormat":1},{"version":"45b7ab580deca34ae9729e97c13cfd999df04416a79116c3bfb483804f85ded4","impliedFormat":1},{"version":"3facaf05f0c5fc569c5649dd359892c98a85557e3e0c847964caeb67076f4d75","impliedFormat":1},{"version":"e44bb8bbac7f10ecc786703fe0a6a4b952189f908707980ba8f3c8975a760962","impliedFormat":1},{"version":"5e1c4c362065a6b95ff952c0eab010f04dcd2c3494e813b493ecfd4fcb9fc0d8","impliedFormat":1},{"version":"68d73b4a11549f9c0b7d352d10e91e5dca8faa3322bfb77b661839c42b1ddec7","impliedFormat":1},{"version":"5efce4fc3c29ea84e8928f97adec086e3dc876365e0982cc8479a07954a3efd4","impliedFormat":1},{"version":"092c2bfe125ce69dbb1223c85d68d4d2397d7d8411867b5cc03cec902c233763","affectsGlobalScope":true,"impliedFormat":1},{"version":"07f073f19d67f74d732b1adea08e1dc66b1b58d77cb5b43931dee3d798a2fd53","affectsGlobalScope":true,"impliedFormat":1},{"version":"80e18897e5884b6723488d4f5652167e7bb5024f946743134ecc4aa4ee731f89","affectsGlobalScope":true,"impliedFormat":1},{"version":"cd034f499c6cdca722b60c04b5b1b78e058487a7085a8e0d6fb50809947ee573","affectsGlobalScope":true,"impliedFormat":1},{"version":"c57796738e7f83dbc4b8e65132f11a377649c00dd3eee333f672b8f0a6bea671","affectsGlobalScope":true,"impliedFormat":1},{"version":"dc2df20b1bcdc8c2d34af4926e2c3ab15ffe1160a63e58b7e09833f616efff44","affectsGlobalScope":true,"impliedFormat":1},{"version":"515d0b7b9bea2e31ea4ec968e9edd2c39d3eebf4a2d5cbd04e88639819ae3b71","affectsGlobalScope":true,"impliedFormat":1},{"version":"0559b1f683ac7505ae451f9a96ce4c3c92bdc71411651ca6ddb0e88baaaad6a3","affectsGlobalScope":true,"impliedFormat":1},{"version":"0dc1e7ceda9b8b9b455c3a2d67b0412feab00bd2f66656cd8850e8831b08b537","affectsGlobalScope":true,"impliedFormat":1},{"version":"ce691fb9e5c64efb9547083e4a34091bcbe5bdb41027e310ebba8f7d96a98671","affectsGlobalScope":true,"impliedFormat":1},{"version":"8d697a2a929a5fcb38b7a65594020fcef05ec1630804a33748829c5ff53640d0","affectsGlobalScope":true,"impliedFormat":1},{"version":"4ff2a353abf8a80ee399af572debb8faab2d33ad38c4b4474cff7f26e7653b8d","affectsGlobalScope":true,"impliedFormat":1},{"version":"936e80ad36a2ee83fc3caf008e7c4c5afe45b3cf3d5c24408f039c1d47bdc1df","affectsGlobalScope":true,"impliedFormat":1},{"version":"d15bea3d62cbbdb9797079416b8ac375ae99162a7fba5de2c6c505446486ac0a","affectsGlobalScope":true,"impliedFormat":1},{"version":"68d18b664c9d32a7336a70235958b8997ebc1c3b8505f4f1ae2b7e7753b87618","affectsGlobalScope":true,"impliedFormat":1},{"version":"eb3d66c8327153d8fa7dd03f9c58d351107fe824c79e9b56b462935176cdf12a","affectsGlobalScope":true,"impliedFormat":1},{"version":"38f0219c9e23c915ef9790ab1d680440d95419ad264816fa15009a8851e79119","affectsGlobalScope":true,"impliedFormat":1},{"version":"69ab18c3b76cd9b1be3d188eaf8bba06112ebbe2f47f6c322b5105a6fbc45a2e","affectsGlobalScope":true,"impliedFormat":1},{"version":"fef8cfad2e2dc5f5b3d97a6f4f2e92848eb1b88e897bb7318cef0e2820bceaab","affectsGlobalScope":true,"impliedFormat":1},{"version":"2f11ff796926e0832f9ae148008138ad583bd181899ab7dd768a2666700b1893","affectsGlobalScope":true,"impliedFormat":1},{"version":"4de680d5bb41c17f7f68e0419412ca23c98d5749dcaaea1896172f06435891fc","affectsGlobalScope":true,"impliedFormat":1},{"version":"954296b30da6d508a104a3a0b5d96b76495c709785c1d11610908e63481ee667","affectsGlobalScope":true,"impliedFormat":1},{"version":"ac9538681b19688c8eae65811b329d3744af679e0bdfa5d842d0e32524c73e1c","affectsGlobalScope":true,"impliedFormat":1},{"version":"0a969edff4bd52585473d24995c5ef223f6652d6ef46193309b3921d65dd4376","affectsGlobalScope":true,"impliedFormat":1},{"version":"9e9fbd7030c440b33d021da145d3232984c8bb7916f277e8ffd3dc2e3eae2bdb","affectsGlobalScope":true,"impliedFormat":1},{"version":"811ec78f7fefcabbda4bfa93b3eb67d9ae166ef95f9bff989d964061cbf81a0c","affectsGlobalScope":true,"impliedFormat":1},{"version":"717937616a17072082152a2ef351cb51f98802fb4b2fdabd32399843875974ca","affectsGlobalScope":true,"impliedFormat":1},{"version":"d7e7d9b7b50e5f22c915b525acc5a49a7a6584cf8f62d0569e557c5cfc4b2ac2","affectsGlobalScope":true,"impliedFormat":1},{"version":"71c37f4c9543f31dfced6c7840e068c5a5aacb7b89111a4364b1d5276b852557","affectsGlobalScope":true,"impliedFormat":1},{"version":"576711e016cf4f1804676043e6a0a5414252560eb57de9faceee34d79798c850","affectsGlobalScope":true,"impliedFormat":1},{"version":"89c1b1281ba7b8a96efc676b11b264de7a8374c5ea1e6617f11880a13fc56dc6","affectsGlobalScope":true,"impliedFormat":1},{"version":"74f7fa2d027d5b33eb0471c8e82a6c87216223181ec31247c357a3e8e2fddc5b","affectsGlobalScope":true,"impliedFormat":1},{"version":"d6d7ae4d1f1f3772e2a3cde568ed08991a8ae34a080ff1151af28b7f798e22ca","affectsGlobalScope":true,"impliedFormat":1},{"version":"063600664504610fe3e99b717a1223f8b1900087fab0b4cad1496a114744f8df","affectsGlobalScope":true,"impliedFormat":1},{"version":"934019d7e3c81950f9a8426d093458b65d5aff2c7c1511233c0fd5b941e608ab","affectsGlobalScope":true,"impliedFormat":1},{"version":"52ada8e0b6e0482b728070b7639ee42e83a9b1c22d205992756fe020fd9f4a47","affectsGlobalScope":true,"impliedFormat":1},{"version":"3bdefe1bfd4d6dee0e26f928f93ccc128f1b64d5d501ff4a8cf3c6371200e5e6","affectsGlobalScope":true,"impliedFormat":1},{"version":"59fb2c069260b4ba00b5643b907ef5d5341b167e7d1dbf58dfd895658bda2867","affectsGlobalScope":true,"impliedFormat":1},{"version":"639e512c0dfc3fad96a84caad71b8834d66329a1f28dc95e3946c9b58176c73a","affectsGlobalScope":true,"impliedFormat":1},{"version":"368af93f74c9c932edd84c58883e736c9e3d53cec1fe24c0b0ff451f529ceab1","affectsGlobalScope":true,"impliedFormat":1},{"version":"8e7f8264d0fb4c5339605a15daadb037bf238c10b654bb3eee14208f860a32ea","affectsGlobalScope":true,"impliedFormat":1},{"version":"782dec38049b92d4e85c1585fbea5474a219c6984a35b004963b00beb1aab538","affectsGlobalScope":true,"impliedFormat":1},{"version":"d270c4e567f5339afb4deea840667532b6889ff7bb24102242bc2493c28ab2f5","signature":"a24e353dbf5a93fb13ef96433697faf1b795415ce065634f2d41dba5093fba4b"},{"version":"cdb293cb82b83090413728cd64f0635b56e738e7a2cbc6beb93c284790f6b3eb","signature":"6919c280ff56bc3e4c56dae6c9f8d88836d4d002e1c14a038d6b4883ffc869ab"},{"version":"ae77d81a5541a8abb938a0efedf9ac4bea36fb3a24cc28cfa11c598863aba571","impliedFormat":1},{"version":"d88b3dc8b7055665059ea06ffafce9467fc4bdfa7cb2d7a6f4262556bb482b0d","impliedFormat":1},{"version":"b6d03c9cfe2cf0ba4c673c209fcd7c46c815b2619fd2aad59fc4229aaef2ed43","impliedFormat":1},{"version":"32ddc6ad753ae79571bbf28cebff7a383bf7f562ac5ef5d25c94ef7f71609d49","impliedFormat":1},{"version":"670a76db379b27c8ff42f1ba927828a22862e2ab0b0908e38b671f0e912cc5ed","impliedFormat":1},{"version":"81df92841a7a12d551fcbc7e4e83dbb7d54e0c73f33a82162d13e9ae89700079","impliedFormat":1},{"version":"069bebfee29864e3955378107e243508b163e77ab10de6a5ee03ae06939f0bb9","impliedFormat":1},{"version":"a3d3f704c5339a36da3ca8c62b29072f87e86c783b8452d235992142ec71aa2d","impliedFormat":1},{"version":"70521b6ab0dcba37539e5303104f29b721bfb2940b2776da4cc818c07e1fefc1","affectsGlobalScope":true,"impliedFormat":1},{"version":"030e350db2525514580ed054f712ffb22d273e6bc7eddc1bb7eda1e0ba5d395e","affectsGlobalScope":true,"impliedFormat":1},{"version":"d153a11543fd884b596587ccd97aebbeed950b26933ee000f94009f1ab142848","affectsGlobalScope":true,"impliedFormat":1},{"version":"21d819c173c0cf7cc3ce57c3276e77fd9a8a01d35a06ad87158781515c9a438a","impliedFormat":1},{"version":"a79e62f1e20467e11a904399b8b18b18c0c6eea6b50c1168bf215356d5bebfaf","affectsGlobalScope":true,"impliedFormat":1},{"version":"d802f0e6b5188646d307f070d83512e8eb94651858de8a82d1e47f60fb6da4e2","affectsGlobalScope":true,"impliedFormat":1},{"version":"8e9c23ba78aabc2e0a27033f18737a6df754067731e69dc5f52823957d60a4b6","impliedFormat":1},{"version":"5929864ce17fba74232584d90cb721a89b7ad277220627cc97054ba15a98ea8f","impliedFormat":1},{"version":"763fe0f42b3d79b440a9b6e51e9ba3f3f91352469c1e4b3b67bfa4ff6352f3f4","impliedFormat":1},{"version":"25c8056edf4314820382a5fdb4bb7816999acdcb929c8f75e3f39473b87e85bc","impliedFormat":1},{"version":"c464d66b20788266e5353b48dc4aa6bc0dc4a707276df1e7152ab0c9ae21fad8","impliedFormat":1},{"version":"78d0d27c130d35c60b5e5566c9f1e5be77caf39804636bc1a40133919a949f21","impliedFormat":1},{"version":"c6fd2c5a395f2432786c9cb8deb870b9b0e8ff7e22c029954fabdd692bff6195","impliedFormat":1},{"version":"1d6e127068ea8e104a912e42fc0a110e2aa5a66a356a917a163e8cf9a65e4a75","impliedFormat":1},{"version":"5ded6427296cdf3b9542de4471d2aa8d3983671d4cac0f4bf9c637208d1ced43","impliedFormat":1},{"version":"7f182617db458e98fc18dfb272d40aa2fff3a353c44a89b2c0ccb3937709bfb5","impliedFormat":1},{"version":"cadc8aced301244057c4e7e73fbcae534b0f5b12a37b150d80e5a45aa4bebcbd","impliedFormat":1},{"version":"385aab901643aa54e1c36f5ef3107913b10d1b5bb8cbcd933d4263b80a0d7f20","impliedFormat":1},{"version":"9670d44354bab9d9982eca21945686b5c24a3f893db73c0dae0fd74217a4c219","impliedFormat":1},{"version":"0b8a9268adaf4da35e7fa830c8981cfa22adbbe5b3f6f5ab91f6658899e657a7","impliedFormat":1},{"version":"11396ed8a44c02ab9798b7dca436009f866e8dae3c9c25e8c1fbc396880bf1bb","impliedFormat":1},{"version":"ba7bc87d01492633cb5a0e5da8a4a42a1c86270e7b3d2dea5d156828a84e4882","impliedFormat":1},{"version":"4893a895ea92c85345017a04ed427cbd6a1710453338df26881a6019432febdd","impliedFormat":1},{"version":"c21dc52e277bcfc75fac0436ccb75c204f9e1b3fa5e12729670910639f27343e","impliedFormat":1},{"version":"13f6f39e12b1518c6650bbb220c8985999020fe0f21d818e28f512b7771d00f9","impliedFormat":1},{"version":"9b5369969f6e7175740bf51223112ff209f94ba43ecd3bb09eefff9fd675624a","impliedFormat":1},{"version":"4fe9e626e7164748e8769bbf74b538e09607f07ed17c2f20af8d680ee49fc1da","impliedFormat":1},{"version":"24515859bc0b836719105bb6cc3d68255042a9f02a6022b3187948b204946bd2","impliedFormat":1},{"version":"ea0148f897b45a76544ae179784c95af1bd6721b8610af9ffa467a518a086a43","impliedFormat":1},{"version":"24c6a117721e606c9984335f71711877293a9651e44f59f3d21c1ea0856f9cc9","impliedFormat":1},{"version":"dd3273ead9fbde62a72949c97dbec2247ea08e0c6952e701a483d74ef92d6a17","impliedFormat":1},{"version":"405822be75ad3e4d162e07439bac80c6bcc6dbae1929e179cf467ec0b9ee4e2e","impliedFormat":1},{"version":"0db18c6e78ea846316c012478888f33c11ffadab9efd1cc8bcc12daded7a60b6","impliedFormat":1},{"version":"e61be3f894b41b7baa1fbd6a66893f2579bfad01d208b4ff61daef21493ef0a8","impliedFormat":1},{"version":"bd0532fd6556073727d28da0edfd1736417a3f9f394877b6d5ef6ad88fba1d1a","impliedFormat":1},{"version":"89167d696a849fce5ca508032aabfe901c0868f833a8625d5a9c6e861ef935d2","impliedFormat":1},{"version":"615ba88d0128ed16bf83ef8ccbb6aff05c3ee2db1cc0f89ab50a4939bfc1943f","impliedFormat":1},{"version":"a4d551dbf8746780194d550c88f26cf937caf8d56f102969a110cfaed4b06656","impliedFormat":1},{"version":"8bd86b8e8f6a6aa6c49b71e14c4ffe1211a0e97c80f08d2c8cc98838006e4b88","impliedFormat":1},{"version":"317e63deeb21ac07f3992f5b50cdca8338f10acd4fbb7257ebf56735bf52ab00","impliedFormat":1},{"version":"4732aec92b20fb28c5fe9ad99521fb59974289ed1e45aecb282616202184064f","impliedFormat":1},{"version":"2e85db9e6fd73cfa3d7f28e0ab6b55417ea18931423bd47b409a96e4a169e8e6","impliedFormat":1},{"version":"c46e079fe54c76f95c67fb89081b3e399da2c7d109e7dca8e4b58d83e332e605","impliedFormat":1},{"version":"bf67d53d168abc1298888693338cb82854bdb2e69ef83f8a0092093c2d562107","impliedFormat":1},{"version":"88d9a77d2abc23a7d26625dd6dae5b57199a8693b85c9819355651c9d9bab90f","affectsGlobalScope":true,"impliedFormat":1},{"version":"a38efe83ff77c34e0f418a806a01ca3910c02ee7d64212a59d59bca6c2c38fa1","impliedFormat":1},{"version":"7394959e5a741b185456e1ef5d64599c36c60a323207450991e7a42e08911419","impliedFormat":1},{"version":"3fe4022ba1e738034e38ad9afacbf0f1f16b458ed516326f5bf9e4a31e9be1dc","impliedFormat":1},{"version":"a957197054b074bcdf5555d26286e8461680c7c878040d0f4e2d5509a7524944","affectsGlobalScope":true,"impliedFormat":1},{"version":"4314c7a11517e221f7296b46547dbc4df047115b182f544d072bdccffa57fc72","impliedFormat":1},{"version":"e9b97d69510658d2f4199b7d384326b7c4053b9e6645f5c19e1c2a54ede427fc","impliedFormat":1},{"version":"c2510f124c0293ab80b1777c44d80f812b75612f297b9857406468c0f4dafe29","affectsGlobalScope":true,"impliedFormat":1},{"version":"5524481e56c48ff486f42926778c0a3cce1cc85dc46683b92b1271865bcf015a","impliedFormat":1},{"version":"f478f6f5902dc144c0d6d7bdc919c5177cac4d17a8ca8653c2daf6d7dc94317f","affectsGlobalScope":true,"impliedFormat":1},{"version":"19d5f8d3930e9f99aa2c36258bf95abbe5adf7e889e6181872d1cdba7c9a7dd5","impliedFormat":1},{"version":"b200675fd112ffef97c166d0341fb33f6e29e9f27660adde7868e95c5bc98beb","impliedFormat":1},{"version":"a6bf63d17324010ca1fbf0389cab83f93389bb0b9a01dc8a346d092f65b3605f","impliedFormat":1},{"version":"e009777bef4b023a999b2e5b9a136ff2cde37dc3f77c744a02840f05b18be8ff","impliedFormat":1},{"version":"1e0d1f8b0adfa0b0330e028c7941b5a98c08b600efe7f14d2d2a00854fb2f393","impliedFormat":1},{"version":"ee1ee365d88c4c6c0c0a5a5701d66ebc27ccd0bcfcfaa482c6e2e7fe7b98edf7","affectsGlobalScope":true,"impliedFormat":1},{"version":"88bc59b32d0d5b4e5d9632ac38edea23454057e643684c3c0b94511296f2998c","affectsGlobalScope":true,"impliedFormat":1},{"version":"a0a1dda070290b92da5a50113b73ecc4dd6bcbffad66e3c86503d483eafbadcf","impliedFormat":1},{"version":"59dcad36c4549175a25998f6a8b33c1df8e18df9c12ebad1dfb25af13fd4b1ce","impliedFormat":1},{"version":"9ba5b6a30cb7961b68ad4fb18dca148db151c2c23b8d0a260fc18b83399d19d3","impliedFormat":1},{"version":"3f3edb8e44e3b9df3b7ca3219ab539710b6a7f4fe16bd884d441af207e03cd57","impliedFormat":1},{"version":"528b62e4272e3ddfb50e8eed9e359dedea0a4d171c3eb8f337f4892aac37b24b","impliedFormat":1},{"version":"d71535813e39c23baa113bc4a29a0e187b87d1105ccc8c5a6ebaca38d9a9bff2","impliedFormat":1},{"version":"8cf7e92bdb2862c2d28ba4535c43dc599cfbc0025db5ed9973d9b708dcbe3d98","affectsGlobalScope":true,"impliedFormat":1},{"version":"278e70975bd456bba5874eaee17692355432e8d379b809a97f6af0eee2b702d8","impliedFormat":1},{"version":"b1b6ee0d012aeebe11d776a155d8979730440082797695fc8e2a5c326285678f","impliedFormat":1},{"version":"45875bcae57270aeb3ebc73a5e3fb4c7b9d91d6b045f107c1d8513c28ece71c0","impliedFormat":1},{"version":"1dc73f8854e5c4506131c4d95b3a6c24d0c80336d3758e95110f4c7b5cb16397","affectsGlobalScope":true,"impliedFormat":1},{"version":"636302a00dfd1f9fe6e8e91e4e9350c6518dcc8d51a474e4fc3a9ba07135100b","affectsGlobalScope":true,"impliedFormat":1},{"version":"3f16a7e4deafa527ed9995a772bb380eb7d3c2c0fd4ae178c5263ed18394db2c","impliedFormat":1},{"version":"933921f0bb0ec12ef45d1062a1fc0f27635318f4d294e4d99de9a5493e618ca2","impliedFormat":1},{"version":"71a0f3ad612c123b57239a7749770017ecfe6b66411488000aba83e4546fde25","impliedFormat":1},{"version":"8145e07aad6da5f23f2fcd8c8e4c5c13fb26ee986a79d03b0829b8fce152d8b2","impliedFormat":1},{"version":"e1120271ebbc9952fdc7b2dd3e145560e52e06956345e6fdf91d70ca4886464f","impliedFormat":1},{"version":"814118df420c4e38fe5ae1b9a3bafb6e9c2aa40838e528cde908381867be6466","impliedFormat":1},{"version":"e1ce1d622f1e561f6cdf246372ead3bbc07ce0342024d0e9c7caf3136f712698","impliedFormat":1},{"version":"c878f74b6d10b267f6075c51ac1d8becd15b4aa6a58f79c0cfe3b24908357f60","impliedFormat":1},{"version":"37ba7b45141a45ce6e80e66f2a96c8a5ab1bcef0fc2d0f56bb58df96ec67e972","impliedFormat":1},{"version":"125d792ec6c0c0f657d758055c494301cc5fdb327d9d9d5960b3f129aff76093","impliedFormat":1},{"version":"27e4532aaaa1665d0dd19023321e4dc12a35a741d6b8e1ca3517fcc2544e0efe","affectsGlobalScope":true,"impliedFormat":1},{"version":"2754d8221d77c7b382096651925eb476f1066b3348da4b73fe71ced7801edada","impliedFormat":1},{"version":"8c2ad42d5d1a2e8e6112625767f8794d9537f1247907378543106f7ba6c7df90","affectsGlobalScope":true,"impliedFormat":1},{"version":"f0be1b8078cd549d91f37c30c222c2a187ac1cf981d994fb476a1adc61387b14","affectsGlobalScope":true,"impliedFormat":1},{"version":"0aaed1d72199b01234152f7a60046bc947f1f37d78d182e9ae09c4289e06a592","impliedFormat":1},{"version":"98ffdf93dfdd206516971d28e3e473f417a5cfd41172e46b4ce45008f640588e","impliedFormat":1},{"version":"66ba1b2c3e3a3644a1011cd530fb444a96b1b2dfe2f5e837a002d41a1a799e60","impliedFormat":1},{"version":"7e514f5b852fdbc166b539fdd1f4e9114f29911592a5eb10a94bb3a13ccac3c4","impliedFormat":1},{"version":"7d6ff413e198d25639f9f01f16673e7df4e4bd2875a42455afd4ecc02ef156da","affectsGlobalScope":true,"impliedFormat":1},{"version":"12e8ce658dd17662d82fb0509d2057afc5e6ee30369a2e9e0957eff725b1f11d","affectsGlobalScope":true,"impliedFormat":1},{"version":"74736930d108365d7bbe740c7154706ccfb1b2a3855a897963ab3e5c07ecbf19","impliedFormat":1},{"version":"858f999b3e4a45a4e74766d43030941466460bf8768361d254234d5870480a53","impliedFormat":1},{"version":"ac5ed35e649cdd8143131964336ab9076937fa91802ec760b3ea63b59175c10a","impliedFormat":1},{"version":"63b05afa6121657f25e99e1519596b0826cda026f09372c9100dfe21417f4bd6","affectsGlobalScope":true,"impliedFormat":1},{"version":"3797dd6f4ea3dc15f356f8cdd3128bfa18122213b38a80d6c1f05d8e13cbdad8","impliedFormat":1},{"version":"ad90122e1cb599b3bc06a11710eb5489101be678f2920f2322b0ac3e195af78d","impliedFormat":1},{"version":"104c67f0da1bdf0d94865419247e20eded83ce7f9911a1aa75fc675c077ca66e","impliedFormat":1},{"version":"cc0d0b339f31ce0ab3b7a5b714d8e578ce698f1e13d7f8c60bfb766baeb1d35c","impliedFormat":1},{"version":"0dc6940ff35d845686a118ee7384713a84024d60ef26f25a2f87992ec7ddbd64","impliedFormat":1},{"version":"e2b48abff5a8adc6bb1cd13a702b9ef05e6045a98e7cfa95a8779b53b6d0e69d","impliedFormat":1},{"version":"f3d8c757e148ad968f0d98697987db363070abada5f503da3c06aefd9d4248c1","impliedFormat":1},{"version":"a4a39b5714adfcadd3bbea6698ca2e942606d833bde62ad5fb6ec55f5e438ff8","impliedFormat":1},{"version":"bbc1d029093135d7d9bfa4b38cbf8761db505026cc458b5e9c8b74f4000e5e75","impliedFormat":1},{"version":"1f68ab0e055994eb337b67aa87d2a15e0200951e9664959b3866ee6f6b11a0fe","impliedFormat":1},{"version":"d3f2d715f57df3f04bf7b16dde01dec10366f64fce44503c92b8f78f614c1769","impliedFormat":1},{"version":"b78cd10245a90e27e62d0558564f5d9a16576294eee724a59ae21b91f9269e4a","impliedFormat":1},{"version":"baac9896d29bcc55391d769e408ff400d61273d832dd500f21de766205255acb","impliedFormat":1},{"version":"2f5747b1508ccf83fad0c251ba1e5da2f5a30b78b09ffa1cfaf633045160afed","impliedFormat":1},{"version":"86ea91bfa7fef1eeb958056f30f1db4e0680bc9b5132e5e9d6e9cfd773c0c4fd","affectsGlobalScope":true,"impliedFormat":1},{"version":"b71c603a539078a5e3a039b20f2b0a0d1708967530cf97dec8850a9ca45baa2b","impliedFormat":1},{"version":"0e13570a7e86c6d83dd92e81758a930f63747483e2cd34ef36fcdb47d1f9726a","impliedFormat":1},{"version":"d26a79f97f25eb1c5fc36a8552e4decc7ad11104a016d31b1307c3afaf48feb1","impliedFormat":1},{"version":"afe73051ff6a03a9565cbd8ebb0e956ee3df5e913ad5c1ded64218aabfa3dcb5","impliedFormat":1},{"version":"742d4b7b02ffc3ba3c4258a3d196457da2b3fec0125872fd0776c50302a11b9d","affectsGlobalScope":true,"impliedFormat":1},{"version":"8a8eb4ebffd85e589a1cc7c178e291626c359543403d58c9cd22b81fab5b1fb9","impliedFormat":1},{"version":"03566a51ebc848dec449a4ed69518e9f20caa6ac123fa32676aaaabe64adae8e","impliedFormat":1},{"version":"b2d0630483bf337ef9dac326c3334a245aa4946e9f60f12baf7da5be44beafbb","impliedFormat":1},{"version":"035a5df183489c2e22f3cf59fc1ed2b043d27f357eecc0eb8d8e840059d44245","impliedFormat":1},{"version":"a4809f4d92317535e6b22b01019437030077a76fec1d93b9881c9ed4738fcc54","impliedFormat":1},{"version":"5f53fa0bd22096d2a78533f94e02c899143b8f0f9891a46965294ee8b91a9434","impliedFormat":1},{"version":"cdcc132f207d097d7d3aa75615ab9a2e71d6a478162dde8b67f88ea19f3e54de","impliedFormat":1},{"version":"0d14fa22c41fdc7277e6f71473b20ebc07f40f00e38875142335d5b63cdfc9d2","impliedFormat":1},{"version":"c085e9aa62d1ae1375794c1fb927a445fa105fed891a7e24edbb1c3300f7384a","impliedFormat":1},{"version":"f315e1e65a1f80992f0509e84e4ae2df15ecd9ef73df975f7c98813b71e4c8da","impliedFormat":1},{"version":"5b9586e9b0b6322e5bfbd2c29bd3b8e21ab9d871f82346cb71020e3d84bae73e","impliedFormat":1},{"version":"3e70a7e67c2cb16f8cd49097360c0309fe9d1e3210ff9222e9dac1f8df9d4fb6","impliedFormat":1},{"version":"ab68d2a3e3e8767c3fba8f80de099a1cfc18c0de79e42cb02ae66e22dfe14a66","impliedFormat":1},{"version":"d96cc6598148bf1a98fb2e8dcf01c63a4b3558bdaec6ef35e087fd0562eb40ec","impliedFormat":1},{"version":"f8db4fea512ab759b2223b90ecbbe7dae919c02f8ce95ec03f7fb1cf757cfbeb","affectsGlobalScope":true,"impliedFormat":1},{"version":"19990350fca066265b2c190c9b6cde1229f35002ea2d4df8c9e397e9942f6c89","impliedFormat":99},{"version":"8fb8fdda477cd7382477ffda92c2bb7d9f7ef583b1aa531eb6b2dc2f0a206c10","impliedFormat":99},{"version":"66995b0c991b5c5d42eff1d950733f85482c7419f7296ab8952e03718169e379","impliedFormat":99},{"version":"9863f888da357e35e013ca3465b794a490a198226bd8232c2f81fb44e16ff323","impliedFormat":99},{"version":"b4c6184d78303b0816e779a48bef779b15aea4a66028eb819aac0abee8407dea","impliedFormat":99},{"version":"db085d2171d48938a99e851dafe0e486dce9859e5dfa73c21de5ed3d4d6fb0c5","impliedFormat":99},{"version":"62a3ad1ddd1f5974b3bf105680b3e09420f2230711d6520a521fab2be1a32838","impliedFormat":99},{"version":"a77be6fc44c876bc10c897107f84eaba10790913ebdcad40fcda7e47469b2160","impliedFormat":99},{"version":"06cf55b6da5cef54eaaf51cdc3d4e5ebf16adfdd9ebd20cec7fe719be9ced017","impliedFormat":99},{"version":"91f5dbcdb25d145a56cffe957ec665256827892d779ef108eb2f3864faff523b","impliedFormat":99},{"version":"052ba354bab8fb943e0bc05a0769f7b81d7c3b3c6cd0f5cfa53c7b2da2a525c5","impliedFormat":99},{"version":"927955a3de5857e0a1c575ced5a4245e74e6821d720ed213141347dd1870197f","impliedFormat":99},{"version":"fec804d54cd97dd77e956232fc37dc13f53e160d4bbeeb5489e86eeaa91f7ebd","impliedFormat":99},{"version":"03c258e060b7da220973f84b89615e4e9850e9b5d30b3a8e4840b3e3268ae8eb","impliedFormat":1},{"version":"fd0589ca571ad090b531d8c095e26caa53d4825c64d3ff2b2b1ab95d72294175","impliedFormat":1},{"version":"669843ecafb89ae1e944df06360e8966219e4c1c34c0d28aa2503272cdd444a7","affectsGlobalScope":true,"impliedFormat":1},{"version":"96d14f21b7652903852eef49379d04dbda28c16ed36468f8c9fa08f7c14c9538","impliedFormat":1},{"version":"abd6ccdaae9905ea2ec85488fdce744930862327633eebd40d429511f6a1d5da","impliedFormat":1},{"version":"b0f9ef6423d6b29dde29fd60d83d215796b2c1b76bfca28ac374ae18702cfb8e","impliedFormat":1},{"version":"fb893a0dfc3c9fb0f9ca93d0648694dd95f33cbad2c0f2c629f842981dfd4e2e","impliedFormat":1},{"version":"c29631b0a8dc394e1333b5a6e337a6451db910d8175e8e0bca45b0291a42c95b","impliedFormat":1},{"version":"8099f6b618fed3019711f6ded5d52846e543cd9c338836f60cc9b477ec953af0","impliedFormat":1},{"version":"c7f50d9037061e6ec6e381e55121eb071a3599e5423508408a42f23e0f0a57fd","impliedFormat":1},{"version":"cbf4e3a05c7514febcf87c277dd917d90fc6e43cce3d86c47528b78de590a930","impliedFormat":1},{"version":"0c4bc6dfbb69fe9979014739e9ad53d4fb0b0a1b40d7281a6d2d40ed9573893b","impliedFormat":1},{"version":"c38549da7b7ef6ba5de4d1adb2f0296f744c6ae2fb3385647b0e02875092c4f1","impliedFormat":1},{"version":"ff155930718467b27e379e4a195e4607ce277f805cad9d2fa5f4fd5dec224df6","affectsGlobalScope":true,"impliedFormat":1},{"version":"818e7c86776c67f49dbd781d445e13297b59aa7262e54b065b1332d7dcc6f59a","impliedFormat":1},{"version":"03c92769f389dbd9e45232f7eb01c3e0f482b62555aaf2029dcbf380d5cee9e4","impliedFormat":1},{"version":"32d7f70fd3498bc76a46dab8b03af4215f445f490f8e213c80cf06b636a4e413","impliedFormat":1},{"version":"17668c1aab598920796050ee5a00d961ede5e92595f6ac8908a975ed75a537e5","impliedFormat":1},{"version":"f63cb353cd53da6be4a34f6fdece6316dac14fd62cccf9a4d2ce6bab2c37bc8c","impliedFormat":1},{"version":"54751c34f1e8c3bedd7a4501762c8a9567160ac76bd6bc35b73429d3e2cf2ec7","impliedFormat":1},{"version":"65ff5a0aefd7817a03c1ad04fee85c9cdd3ec415cc3c9efec85d8008d4d5e4ee","impliedFormat":1},{"version":"549df62b64a71004aee17685b445a8289013daf96246ce4d9b087d13d7a27a61","affectsGlobalScope":true,"impliedFormat":1},{"version":"40a1b33c67109be18a961127873e8ba198429eacf11a468b4a052cddc9a73f8d","affectsGlobalScope":true,"impliedFormat":1},{"version":"17ed71200119e86ccef2d96b73b02ce8854b76ad6bd21b5021d4269bec527b5f","impliedFormat":1},{"version":"4ef960df4f672e93b479f88211ed8b5cfa8a598b97aafa3396cacdc3341e3504","impliedFormat":1},{"version":"cf3d384d082b933d987c4e2fe7bfb8710adfd9dc8155190056ed6695a25a559e","impliedFormat":1},{"version":"9871b7ee672bc16c78833bdab3052615834b08375cb144e4d2cba74473f4a589","impliedFormat":1},{"version":"c863198dae89420f3c552b5a03da6ed6d0acfa3807a64772b895db624b0de707","impliedFormat":1},{"version":"8b03a5e327d7db67112ebbc93b4f744133eda2c1743dbb0a990c61a8007823ef","impliedFormat":1},{"version":"86c73f2ee1752bac8eeeece234fd05dfcf0637a4fbd8032e4f5f43102faa8eec","impliedFormat":1},{"version":"42fad1f540271e35ca37cecda12c4ce2eef27f0f5cf0f8dd761d723c744d3159","impliedFormat":1},{"version":"ff3743a5de32bee10906aff63d1de726f6a7fd6ee2da4b8229054dfa69de2c34","impliedFormat":1},{"version":"83acd370f7f84f203e71ebba33ba61b7f1291ca027d7f9a662c6307d74e4ac22","impliedFormat":1},{"version":"1445cec898f90bdd18b2949b9590b3c012f5b7e1804e6e329fb0fe053946d5ec","impliedFormat":1},{"version":"0e5318ec2275d8da858b541920d9306650ae6ac8012f0e872fe66eb50321a669","impliedFormat":1},{"version":"cf530297c3fb3a92ec9591dd4fa229d58b5981e45fe6702a0bd2bea53a5e59be","impliedFormat":1},{"version":"c1f6f7d08d42148ddfe164d36d7aba91f467dbcb3caa715966ff95f55048b3a4","impliedFormat":1},{"version":"f4e9bf9103191ef3b3612d3ec0044ca4044ca5be27711fe648ada06fad4bcc85","impliedFormat":1},{"version":"0c1ee27b8f6a00097c2d6d91a21ee4d096ab52c1e28350f6362542b55380059a","impliedFormat":1},{"version":"7677d5b0db9e020d3017720f853ba18f415219fb3a9597343b1b1012cfd699f7","impliedFormat":1},{"version":"bc1c6bc119c1784b1a2be6d9c47addec0d83ef0d52c8fbe1f14a51b4dfffc675","impliedFormat":1},{"version":"52cf2ce99c2a23de70225e252e9822a22b4e0adb82643ab0b710858810e00bf1","impliedFormat":1},{"version":"770625067bb27a20b9826255a8d47b6b5b0a2d3dfcbd21f89904c731f671ba77","impliedFormat":1},{"version":"d1ed6765f4d7906a05968fb5cd6d1db8afa14dbe512a4884e8ea5c0f5e142c80","impliedFormat":1},{"version":"799c0f1b07c092626cf1efd71d459997635911bb5f7fc1196efe449bba87e965","impliedFormat":1},{"version":"2a184e4462b9914a30b1b5c41cf80c6d3428f17b20d3afb711fff3f0644001fd","impliedFormat":1},{"version":"9eabde32a3aa5d80de34af2c2206cdc3ee094c6504a8d0c2d6d20c7c179503cc","impliedFormat":1},{"version":"397c8051b6cfcb48aa22656f0faca2553c5f56187262135162ee79d2b2f6c966","impliedFormat":1},{"version":"a8ead142e0c87dcd5dc130eba1f8eeed506b08952d905c47621dc2f583b1bff9","impliedFormat":1},{"version":"a02f10ea5f73130efca046429254a4e3c06b5475baecc8f7b99a0014731be8b3","impliedFormat":1},{"version":"c2576a4083232b0e2d9bd06875dd43d371dee2e090325a9eac0133fd5650c1cb","impliedFormat":1},{"version":"4c9a0564bb317349de6a24eb4efea8bb79898fa72ad63a1809165f5bd42970dd","impliedFormat":1},{"version":"f40ac11d8859092d20f953aae14ba967282c3bb056431a37fced1866ec7a2681","impliedFormat":1},{"version":"cc11e9e79d4746cc59e0e17473a59d6f104692fd0eeea1bdb2e206eabed83b03","impliedFormat":1},{"version":"b444a410d34fb5e98aa5ee2b381362044f4884652e8bc8a11c8fe14bbd85518e","impliedFormat":1},{"version":"c35808c1f5e16d2c571aa65067e3cb95afeff843b259ecfa2fc107a9519b5392","impliedFormat":1},{"version":"14d5dc055143e941c8743c6a21fa459f961cbc3deedf1bfe47b11587ca4b3ef5","impliedFormat":1},{"version":"a3ad4e1fc542751005267d50a6298e6765928c0c3a8dce1572f2ba6ca518661c","impliedFormat":1},{"version":"f237e7c97a3a89f4591afd49ecb3bd8d14f51a1c4adc8fcae3430febedff5eb6","impliedFormat":1},{"version":"3ffdfbec93b7aed71082af62b8c3e0cc71261cc68d796665faa1e91604fbae8f","impliedFormat":1},{"version":"662201f943ed45b1ad600d03a90dffe20841e725203ced8b708c91fcd7f9379a","impliedFormat":1},{"version":"c9ef74c64ed051ea5b958621e7fb853fe3b56e8787c1587aefc6ea988b3c7e79","impliedFormat":1},{"version":"2462ccfac5f3375794b861abaa81da380f1bbd9401de59ffa43119a0b644253d","impliedFormat":1},{"version":"34baf65cfee92f110d6653322e2120c2d368ee64b3c7981dff08ed105c4f19b0","impliedFormat":1},{"version":"844ab83672160ca57a2a2ea46da4c64200d8c18d4ebb2087819649cad099ff0e","impliedFormat":1},{"version":"ab82804a14454734010dcdcd43f564ff7b0389bee4c5692eec76ff5b30d4cf66","impliedFormat":1},{"version":"e7bb49fac2aa46a13011b5eb5e4a8648f70a28aea1853fab2444dd4fcb4d4ec7","impliedFormat":1},{"version":"464e45d1a56dae066d7e1a2f32e55b8de4bfb072610c3483a4091d73c9924908","impliedFormat":1},{"version":"da318e126ac39362c899829547cc8ee24fa3e8328b52cdd27e34173cf19c7941","impliedFormat":1},{"version":"24bd01a91f187b22456c7171c07dbf44f3ad57ebd50735aab5c13fa23d7114b4","impliedFormat":1},{"version":"4738eefeaaba4d4288a08c1c226a76086095a4d5bcc7826d2564e7c29da47671","impliedFormat":1},{"version":"736097ddbb2903bef918bb3b5811ef1c9c5656f2a73bd39b22a91b9cc2525e50","impliedFormat":1},{"version":"dbec715e9e82df297e49e3ed0029f6151aa40517ebfd6fcdba277a8a2e1d3a1b","impliedFormat":1},{"version":"097f1f8ca02e8940cfdcca553279e281f726485fa6fb214b3c9f7084476f6bcc","impliedFormat":1},{"version":"8f75e211a2e83ff216eb66330790fb6412dcda2feb60c4f165c903cf375633ee","impliedFormat":1},{"version":"dbe69644ab6e699ad2ef740056c637c34f3348af61d3764ff555d623703525db","impliedFormat":1},{"version":"3f36c0c7508302f3dca3dc5ab0a66d822b2222f70c24bb1796ddb5c9d1168a05","impliedFormat":1},{"version":"b23d5b89c465872587e130f427b39458b8e3ad16385f98446e9e86151ba6eb15","affectsGlobalScope":true,"impliedFormat":1},{"version":"61f41da9aaa809e5142b1d849d4e70f3e09913a5cb32c629bf6e61ef27967ff7","impliedFormat":1},{"version":"f874ea4d0091b0a44362a5f74d26caab2e66dec306c2bf7e8965f5106e784c3b","impliedFormat":1},{"version":"c6cdcd12d577032b84eed1de4d2de2ae343463701a25961b202cff93989439fb","impliedFormat":1},{"version":"203d75f653988a418930fb16fda8e84dea1fac7e38abdaafd898f257247e0860","impliedFormat":1},{"version":"c5b3da7e2ecd5968f723282aba49d8d1a2e178d0afe48998dad93f81e2724091","impliedFormat":1},{"version":"efd2860dc74358ffa01d3de4c8fa2f966ae52c13c12b41ad931c078151b36601","impliedFormat":1},{"version":"09acacae732e3cc67a6415026cfae979ebe900905500147a629837b790a366b3","impliedFormat":1},{"version":"f7b622759e094a3c2e19640e0cb233b21810d2762b3e894ef7f415334125eb22","impliedFormat":1},{"version":"99236ea5c4c583082975823fd19bcce6a44963c5c894e20384bc72e7eccf9b03","impliedFormat":1},{"version":"f6688a02946a3f7490aa9e26d76d1c97a388e42e77388cbab010b69982c86e9e","impliedFormat":1},{"version":"9f642953aba68babd23de41de85d4e97f0c39ef074cb8ab8aa7d55237f62aff6","impliedFormat":1},{"version":"529ac413f6eada3a1780c4050f4d4853488fc00652f45101737863e9ac519bff","impliedFormat":1},{"version":"bae8d023ef6b23df7da26f51cea44321f95817c190342a36882e93b80d07a960","impliedFormat":1},{"version":"26a770cec4bd2e7dbba95c6e536390fffe83c6268b78974a93727903b515c4e7","impliedFormat":1}],"root":[51,52],"options":{"composite":true,"declaration":true,"declarationMap":true,"esModuleInterop":true,"inlineSources":false,"noUnusedLocals":false,"noUnusedParameters":false,"outDir":"./dist","rootDir":"./src","skipLibCheck":true,"strict":true},"referencedMap":[[56,1],[54,2],[184,2],[187,3],[186,2],[53,2],[59,4],[55,1],[57,5],[58,1],[60,2],[161,6],[160,7],[162,2],[167,8],[166,9],[165,10],[163,2],[172,11],[175,12],[176,13],[180,14],[177,2],[179,15],[173,2],[181,2],[182,16],[183,17],[192,18],[207,19],[208,20],[164,2],[209,2],[210,21],[211,2],[168,2],[212,2],[218,22],[216,23],[217,23],[213,23],[214,23],[215,23],[106,24],[107,24],[108,25],[66,26],[109,27],[110,28],[111,29],[61,2],[64,30],[62,2],[63,2],[112,31],[113,32],[114,33],[115,34],[116,35],[117,36],[118,36],[120,37],[119,38],[121,39],[122,40],[123,41],[105,42],[65,2],[124,43],[125,44],[126,45],[159,46],[127,47],[128,48],[129,49],[130,50],[131,51],[132,52],[133,53],[134,54],[135,55],[136,56],[137,56],[138,57],[139,2],[140,2],[141,58],[143,59],[142,60],[144,61],[145,62],[146,63],[147,64],[148,65],[149,66],[150,67],[151,68],[152,69],[153,70],[154,71],[155,72],[156,73],[157,74],[158,75],[222,76],[220,77],[223,78],[221,79],[219,80],[226,2],[170,2],[171,2],[229,81],[227,2],[228,82],[230,2],[255,83],[256,84],[231,85],[234,85],[253,83],[254,83],[244,83],[243,86],[241,83],[236,83],[249,83],[247,83],[251,83],[235,83],[248,83],[252,83],[237,83],[238,83],[250,83],[232,83],[239,83],[240,83],[242,83],[246,83],[257,87],[245,83],[233,83],[270,88],[269,2],[264,87],[266,89],[265,87],[258,87],[259,87],[261,87],[263,87],[267,89],[268,89],[260,89],[262,89],[169,90],[174,91],[271,2],[280,92],[272,2],[275,93],[278,94],[279,95],[273,96],[276,97],[274,98],[281,99],[283,100],[282,2],[206,2],[284,2],[285,2],[295,101],[286,2],[287,2],[288,2],[289,2],[290,2],[291,2],[292,2],[293,2],[294,2],[296,2],[297,102],[67,2],[185,2],[178,2],[191,103],[277,104],[189,105],[190,106],[195,107],[204,108],[193,2],[194,109],[205,110],[200,111],[201,112],[199,113],[203,114],[197,115],[196,116],[202,117],[198,108],[224,2],[225,118],[188,119],[1,2],[49,2],[50,2],[9,2],[10,2],[14,2],[13,2],[3,2],[15,2],[16,2],[17,2],[18,2],[19,2],[20,2],[21,2],[22,2],[4,2],[23,2],[24,2],[5,2],[25,2],[29,2],[26,2],[27,2],[28,2],[30,2],[31,2],[32,2],[6,2],[33,2],[34,2],[35,2],[36,2],[7,2],[40,2],[37,2],[38,2],[39,2],[41,2],[8,2],[42,2],[47,2],[48,2],[43,2],[44,2],[45,2],[46,2],[2,2],[12,2],[11,2],[83,120],[93,121],[82,120],[103,122],[74,123],[73,124],[102,125],[96,126],[101,127],[76,128],[90,129],[75,130],[99,131],[71,132],[70,125],[100,133],[72,134],[77,135],[78,2],[81,135],[68,2],[104,136],[94,137],[85,138],[86,139],[88,140],[84,141],[87,142],[97,125],[79,143],[80,144],[89,145],[69,146],[92,137],[91,135],[95,2],[98,147],[52,148],[51,2]],"latestChangedDtsFile":"./dist/index.d.ts","version":"5.8.3"}
+</file>
+
+<file path="terminalfejl.txt">
+direnv: loading ~/Dokumenter/Kodefiler/Projekt m. Ejaz template/LearningLab/LearningLab/.envrc                          
+direnv: export +DATABASE_URL +JWT_EXPIRES_IN +JWT_SECRET +NEXT_PUBLIC_API_URL ~PATH
+Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % cd apps/api
+npx prisma generate
+cd ../..
+Environment variables loaded from .env
+Prisma schema loaded from prisma/schema.prisma
+
+✔ Generated Prisma Client (v5.22.0) to ./../../node_modules/@prisma/client in 49ms
+
+Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+
+Tip: Curious about the SQL queries Prisma ORM generates? Optimize helps you enhance your visibility: https://pris.ly/tip-2-optimize
+
+┌─────────────────────────────────────────────────────────┐
+│  Update available 5.22.0 -> 6.8.2                       │
+│                                                         │
+│  This is a major update - please follow the guide at    │
+│  https://pris.ly/d/major-version-upgrade                │
+│                                                         │
+│  Run the following to update                            │
+│    npm i --save-dev prisma@latest                       │
+│    npm i @prisma/client@latest                          │
+└─────────────────────────────────────────────────────────┘
+Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % yarn workspace @repo/core build
+yarn workspace @repo/config build
+Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % yarn turbo run test:ci --filter=api
+• Packages in scope: api
+• Running test:ci in 1 packages
 • Remote caching disabled
-api:test:ci
-Error: web#test:ci: command (/home/runner/work/LearningLab/LearningLab/apps/web) yarn run test:ci exited (1)
+api:test:ci: cache bypass, force executing a41419894772f85c
+api:test:ci: Environment variables loaded from .env
+api:test:ci: Prisma schema loaded from prisma/schema.prisma
+api:test:ci: 
+api:test:ci: ✔ Generated Prisma Client (v5.22.0) to ./../../node_modules/@prisma/client in 44ms
+api:test:ci: 
+api:test:ci: Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+api:test:ci: 
+api:test:ci: Tip: Curious about the SQL queries Prisma ORM generates? Optimize helps you enhance your visibility: https://pris.ly/tip-2-optimize
+api:test:ci: 
+api:test:ci: FAIL src/users/users.service.spec.ts
+api:test:ci:   ● UsersService › create › should create and return a user if email does not exist
+api:test:ci: 
+api:test:ci:     TypeError: Cannot redefine property: hash
+api:test:ci:         at Function.defineProperty (<anonymous>)
+api:test:ci: 
+api:test:ci:       74 |       prisma.user.findUnique.mockResolvedValue(null);
+api:test:ci:       75 |       prisma.user.create.mockResolvedValue(mockPrismaUser);
+api:test:ci:     > 76 |       jest.spyOn(bcrypt, 'hash').mockResolvedValue('hashedpassword' as never);
+api:test:ci:          |            ^
+api:test:ci:       77 |
+api:test:ci:       78 |       const result = await service.create(createUserDto);
+api:test:ci:       79 |
+api:test:ci: 
+api:test:ci:       at ModuleMocker.spyOn (../../../node_modules/jest-mock/build/index.js:776:16)
+api:test:ci:       at Object.<anonymous> (users/users.service.spec.ts:76:12)
+api:test:ci: 
+api:test:ci:   ● UsersService › create › should throw InternalServerErrorException on hashing error
+api:test:ci: 
+api:test:ci:     TypeError: Cannot redefine property: hash
+api:test:ci:         at Function.defineProperty (<anonymous>)
+api:test:ci: 
+api:test:ci:       107 |     it('should throw InternalServerErrorException on hashing error', async () => {
+api:test:ci:       108 |       prisma.user.findUnique.mockResolvedValue(null);
+api:test:ci:     > 109 |       jest.spyOn(bcrypt, 'hash').mockRejectedValue(new Error("Hashing failed") as never);
+api:test:ci:           |            ^
+api:test:ci:       110 |
+api:test:ci:       111 |       await expect(service.create(createUserDto)).rejects.toThrow(InternalServerErrorException);
+api:test:ci:       112 |       expect(prisma.user.create).not.toHaveBeenCalled();
+api:test:ci: 
+api:test:ci:       at ModuleMocker.spyOn (../../../node_modules/jest-mock/build/index.js:776:16)
+api:test:ci:       at Object.<anonymous> (users/users.service.spec.ts:109:12)
+api:test:ci: 
+api:test:ci:   ● UsersService › create › should throw ConflictException on Prisma P2002 error during create
+api:test:ci: 
+api:test:ci:     TypeError: Cannot redefine property: hash
+api:test:ci:         at Function.defineProperty (<anonymous>)
+api:test:ci: 
+api:test:ci:       118 |     it('should throw ConflictException on Prisma P2002 error during create', async () => {
+api:test:ci:       119 |       prisma.user.findUnique.mockResolvedValue(null);
+api:test:ci:     > 120 |       jest.spyOn(bcrypt, 'hash').mockResolvedValue('hashedpassword' as never);
+api:test:ci:           |            ^
+api:test:ci:       121 |       const prismaError = { code: 'P2002', meta: { target: ['email'] } };
+api:test:ci:       122 |       prisma.user.create.mockRejectedValue(prismaError);
+api:test:ci:       123 |
+api:test:ci: 
+api:test:ci:       at ModuleMocker.spyOn (../../../node_modules/jest-mock/build/index.js:776:16)
+api:test:ci:       at Object.<anonymous> (users/users.service.spec.ts:120:12)
+api:test:ci: 
+api:test:ci:   ● UsersService › create › should throw InternalServerErrorException on other Prisma errors during create
+api:test:ci: 
+api:test:ci:     TypeError: Cannot redefine property: hash
+api:test:ci:         at Function.defineProperty (<anonymous>)
+api:test:ci: 
+api:test:ci:       128 |     it('should throw InternalServerErrorException on other Prisma errors during create', async () => {
+api:test:ci:       129 |       prisma.user.findUnique.mockResolvedValue(null);
+api:test:ci:     > 130 |       jest.spyOn(bcrypt, 'hash').mockResolvedValue('hashedpassword' as never);
+api:test:ci:           |            ^
+api:test:ci:       131 |       prisma.user.create.mockRejectedValue(new Error("Some other DB error"));
+api:test:ci:       132 |
+api:test:ci:       133 |       await expect(service.create(createUserDto)).rejects.toThrow(InternalServerErrorException);
+api:test:ci: 
+api:test:ci:       at ModuleMocker.spyOn (../../../node_modules/jest-mock/build/index.js:776:16)
+api:test:ci:       at Object.<anonymous> (users/users.service.spec.ts:130:12)
+api:test:ci: 
+api:test:ci: PASS src/users/users.controller.spec.ts
+api:test:ci: FAIL src/persistence/prisma/prisma.service.spec.ts
+api:test:ci:   ● PrismaService › should call $connect on module init
+api:test:ci: 
+api:test:ci:     TypeError: service.onModuleInit is not a function
+api:test:ci: 
+api:test:ci:       42 |
+api:test:ci:       43 |   it('should call $connect on module init', async () => {
+api:test:ci:     > 44 |     await service.onModuleInit();
+api:test:ci:          |                   ^
+api:test:ci:       45 |     expect(mockPrismaClientInstance.$connect).toHaveBeenCalledTimes(1);
+api:test:ci:       46 |   });
+api:test:ci:       47 |
+api:test:ci: 
+api:test:ci:       at Object.<anonymous> (persistence/prisma/prisma.service.spec.ts:44:19)
+api:test:ci: 
+api:test:ci: PASS src/app.controller.spec.ts
+api:test:ci: 
+api:test:ci: Test Suites: 2 failed, 2 passed, 4 total
+api:test:ci: Tests:       5 failed, 11 passed, 16 total
+api:test:ci: Snapshots:   0 total
+api:test:ci: Time:        1.252 s
+api:test:ci: Ran all test suites.
+api:test:ci: ERROR: command finished with error: command (/Users/Yousef_1/Dokumenter/Kodefiler/Projekt m. Ejaz template/LearningLab/LearningLab/apps/api) yarn run test:ci exited (1)
+api#test:ci: command (/Users/Yousef_1/Dokumenter/Kodefiler/Projekt m. Ejaz template/LearningLab/LearningLab/apps/api) yarn run test:ci exited (1)
+
+ Tasks:    0 successful, 1 total
+Cached:    0 cached, 1 total
+  Time:    3.619s 
+Failed:    api#test:ci
+
  ERROR  run failed: command  exited (1)
-@repo/core:build
-web:test:ci
-  cache bypass, force executing 6d90b72ce02f0d3e
-    console.error
-      Error: Uncaught [Error: NextRouter was not mounted. https://nextjs.org/docs/messages/next-router-not-mounted]
-          at reportException (/home/runner/work/LearningLab/LearningLab/node_modules/jsdom/lib/jsdom/living/helpers/runtime-script-errors.js:66:24)
-          at innerInvokeEventListeners (/home/runner/work/LearningLab/LearningLab/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:353:9)
-          at invokeEventListeners (/home/runner/work/LearningLab/LearningLab/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:286:3)
-          at HTMLUnknownElementImpl._dispatch (/home/runner/work/LearningLab/LearningLab/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:233:9)
-          at HTMLUnknownElementImpl.dispatchEvent (/home/runner/work/LearningLab/LearningLab/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:104:17)
-          at HTMLUnknownElement.dispatchEvent (/home/runner/work/LearningLab/LearningLab/node_modules/jsdom/lib/jsdom/living/generated/EventTarget.js:241:34)
-          at Object.invokeGuardedCallbackDev (/home/runner/work/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom.development.js:4213:16)
-          at invokeGuardedCallback (/home/runner/work/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom.development.js:4277:31)
-          at beginWork$1 (/home/runner/work/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom.development.js:27451:7)
-          at performUnitOfWork (/home/runner/work/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom.development.js:26560:12)
-          at workLoopSync (/home/runner/work/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom.development.js:26466:5)
-          at renderRootSync (/home/runner/work/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom.development.js:26434:7)
-          at performConcurrentWorkOnRoot (/home/runner/work/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom.development.js:25738:74)
-          at flushActQueue (/home/runner/work/LearningLab/LearningLab/node_modules/react/cjs/react.development.js:2667:24)
-          at act (/home/runner/work/LearningLab/LearningLab/node_modules/react/cjs/react.development.js:2582:11)
-          at /home/runner/work/LearningLab/LearningLab/node_modules/@testing-library/react/dist/act-compat.js:47:25
-          at renderRoot (/home/runner/work/LearningLab/LearningLab/node_modules/@testing-library/react/dist/pure.js:180:26)
-          at render (/home/runner/work/LearningLab/LearningLab/node_modules/@testing-library/react/dist/pure.js:271:10)
-          at Object.<anonymous> (/home/runner/work/LearningLab/LearningLab/apps/web/src/screens/auth/login/login.test.tsx:7:9)
-          at Promise.then.completed (/home/runner/work/LearningLab/LearningLab/node_modules/jest-circus/build/utils.js:298:28)
-          at new Promise (<anonymous>)
-          at callAsyncCircusFn (/home/runner/work/LearningLab/LearningLab/node_modules/jest-circus/build/utils.js:231:10)
-          at _callCircusTest (/home/runner/work/LearningLab/LearningLab/node_modules/jest-circus/build/run.js:316:40)
-          at processTicksAndRejections (node:internal/process/task_queues:105:5)
-          at _runTest (/home/runner/work/LearningLab/LearningLab/node_modules/jest-circus/build/run.js:252:3)
-          at _runTestsForDescribeBlock (/home/runner/work/LearningLab/LearningLab/node_modules/jest-circus/build/run.js:126:9)
-          at run (/home/runner/work/LearningLab/LearningLab/node_modules/jest-circus/build/run.js:71:3)
-          at runAndTransformResultsToJestFormat (/home/runner/work/LearningLab/LearningLab/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:122:21)
-          at jestAdapter (/home/runner/work/LearningLab/LearningLab/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:79:19)
-          at runTestInternal (/home/runner/work/LearningLab/LearningLab/node_modules/jest-runner/build/runTest.js:367:16)
-          at runTest (/home/runner/work/LearningLab/LearningLab/node_modules/jest-runner/build/runTest.js:444:34) {
-        detail: Error: NextRouter was not mounted. https://nextjs.org/docs/messages/next-router-not-mounted
-            at useRouter (/home/runner/work/LearningLab/LearningLab/node_modules/next/src/client/router.ts:135:11)
-            at AuthProvider (/home/runner/work/LearningLab/LearningLab/apps/web/src/context/AuthContext.tsx:38:27)
-            at renderWithHooks (/home/runner/work/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom.development.js:16305:18)
-            at mountIndeterminateComponent (/home/runner/work/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom.development.js:20074:13)
-            at beginWork (/home/runner/work/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom.development.js:21587:16)
-            at HTMLUnknownElement.callCallback (/home/runner/work/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom.development.js:4164:14)
-            at HTMLUnknownElement.callTheUserObjectsOperation (/home/runner/work/LearningLab/LearningLab/node_modules/jsdom/lib/jsdom/living/generated/EventListener.js:26:30)
-            at innerInvokeEventListeners (/home/runner/work/LearningLab/LearningLab/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:350:25)
-            at invokeEventListeners (/home/runner/work/LearningLab/LearningLab/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:286:3)
-            at HTMLUnknownElementImpl._dispatch (/home/runner/work/LearningLab/LearningLab/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:233:9)
-            at HTMLUnknownElementImpl.dispatchEvent (/home/runner/work/LearningLab/LearningLab/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:104:17)
-            at HTMLUnknownElement.dispatchEvent (/home/runner/work/LearningLab/LearningLab/node_modules/jsdom/lib/jsdom/living/generated/EventTarget.js:241:34)
-            at Object.invokeGuardedCallbackDev (/home/runner/work/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom.development.js:4213:16)
-            at invokeGuardedCallback (/home/runner/work/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom.development.js:4277:31)
-            at beginWork$1 (/home/runner/work/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom.development.js:27451:7)
-            at performUnitOfWork (/home/runner/work/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom.development.js:26560:12)
-            at workLoopSync (/home/runner/work/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom.development.js:26466:5)
-            at renderRootSync (/home/runner/work/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom.development.js:26434:7)
-            at performConcurrentWorkOnRoot (/home/runner/work/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom.development.js:25738:74)
-            at flushActQueue (/home/runner/work/LearningLab/LearningLab/node_modules/react/cjs/react.development.js:2667:24)
-            at act (/home/runner/work/LearningLab/LearningLab/node_modules/react/cjs/react.development.js:2582:11)
-            at /home/runner/work/LearningLab/LearningLab/node_modules/@testing-library/react/dist/act-compat.js:47:25
-            at renderRoot (/home/runner/work/LearningLab/LearningLab/node_modules/@testing-library/react/dist/pure.js:180:26)
-            at render (/home/runner/work/LearningLab/LearningLab/node_modules/@testing-library/react/dist/pure.js:271:10)
-            at Object.<anonymous> (/home/runner/work/LearningLab/LearningLab/apps/web/src/screens/auth/login/login.test.tsx:7:9)
-            at Promise.then.completed (/home/runner/work/LearningLab/LearningLab/node_modules/jest-circus/build/utils.js:298:28)
-            at new Promise (<anonymous>)
-            at callAsyncCircusFn (/home/runner/work/LearningLab/LearningLab/node_modules/jest-circus/build/utils.js:231:10)
-            at _callCircusTest (/home/runner/work/LearningLab/LearningLab/node_modules/jest-circus/build/run.js:316:40)
-            at processTicksAndRejections (node:internal/process/task_queues:105:5)
-            at _runTest (/home/runner/work/LearningLab/LearningLab/node_modules/jest-circus/build/run.js:252:3)
-            at _runTestsForDescribeBlock (/home/runner/work/LearningLab/LearningLab/node_modules/jest-circus/build/run.js:126:9)
-            at run (/home/runner/work/LearningLab/LearningLab/node_modules/jest-circus/build/run.js:71:3)
-            at runAndTransformResultsToJestFormat (/home/runner/work/LearningLab/LearningLab/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:122:21)
-            at jestAdapter (/home/runner/work/LearningLab/LearningLab/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:79:19)
-            at runTestInternal (/home/runner/work/LearningLab/LearningLab/node_modules/jest-runner/build/runTest.js:367:16)
-            at runTest (/home/runner/work/LearningLab/LearningLab/node_modules/jest-runner/build/runTest.js:444:34),
-        type: 'unhandled exception'
-      }
-         5 |
-         6 | test("render login component", () => {
-      >  7 |   render(
-           |         ^
-         8 |     <AuthProvider>
-         9 |       <LoginScreen />
-        10 |     </AuthProvider>
-        at VirtualConsole.<anonymous> (../../node_modules/jest-environment-jsdom/build/index.js:63:23)
-        at reportException (../../node_modules/jsdom/lib/jsdom/living/helpers/runtime-script-errors.js:70:28)
-        at innerInvokeEventListeners (../../node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:353:9)
-        at invokeEventListeners (../../node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:286:3)
-        at HTMLUnknownElementImpl._dispatch (../../node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:233:9)
-        at HTMLUnknownElementImpl.dispatchEvent (../../node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:104:17)
-        at HTMLUnknownElement.dispatchEvent (../../node_modules/jsdom/lib/jsdom/living/generated/EventTarget.js:241:34)
-        at Object.invokeGuardedCallbackDev (../../node_modules/react-dom/cjs/react-dom.development.js:4213:16)
-        at invokeGuardedCallback (../../node_modules/react-dom/cjs/react-dom.development.js:4277:31)
-        at beginWork$1 (../../node_modules/react-dom/cjs/react-dom.development.js:27451:7)
-        at performUnitOfWork (../../node_modules/react-dom/cjs/react-dom.development.js:26560:12)
-        at workLoopSync (../../node_modules/react-dom/cjs/react-dom.development.js:26466:5)
-        at renderRootSync (../../node_modules/react-dom/cjs/react-dom.development.js:26434:7)
-        at performConcurrentWorkOnRoot (../../node_modules/react-dom/cjs/react-dom.development.js:25738:74)
-        at flushActQueue (../../node_modules/react/cjs/react.development.js:2667:24)
-        at act (../../node_modules/react/cjs/react.development.js:2582:11)
-        at ../../node_modules/@testing-library/react/dist/act-compat.js:47:25
-        at renderRoot (../../node_modules/@testing-library/react/dist/pure.js:180:26)
-        at render (../../node_modules/@testing-library/react/dist/pure.js:271:10)
-        at Object.<anonymous> (src/screens/auth/login/login.test.tsx:7:9)
-    console.error
-      Error: Uncaught [Error: NextRouter was not mounted. https://nextjs.org/docs/messages/next-router-not-mounted]
-          at reportException (/home/runner/work/LearningLab/LearningLab/node_modules/jsdom/lib/jsdom/living/helpers/runtime-script-errors.js:66:24)
-          at innerInvokeEventListeners (/home/runner/work/LearningLab/LearningLab/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:353:9)
-          at invokeEventListeners (/home/runner/work/LearningLab/LearningLab/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:286:3)
-          at HTMLUnknownElementImpl._dispatch (/home/runner/work/LearningLab/LearningLab/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:233:9)
-          at HTMLUnknownElementImpl.dispatchEvent (/home/runner/work/LearningLab/LearningLab/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:104:17)
-          at HTMLUnknownElement.dispatchEvent (/home/runner/work/LearningLab/LearningLab/node_modules/jsdom/lib/jsdom/living/generated/EventTarget.js:241:34)
-          at Object.invokeGuardedCallbackDev (/home/runner/work/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom.development.js:4213:16)
-          at invokeGuardedCallback (/home/runner/work/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom.development.js:4277:31)
-          at beginWork$1 (/home/runner/work/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom.development.js:27451:7)
-          at performUnitOfWork (/home/runner/work/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom.development.js:26560:12)
-          at workLoopSync (/home/runner/work/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom.development.js:26466:5)
-          at renderRootSync (/home/runner/work/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom.development.js:26434:7)
-          at recoverFromConcurrentError (/home/runner/work/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom.development.js:25850:20)
-          at performConcurrentWorkOnRoot (/home/runner/work/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom.development.js:25750:22)
-          at flushActQueue (/home/runner/work/LearningLab/LearningLab/node_modules/react/cjs/react.development.js:2667:24)
-          at act (/home/runner/work/LearningLab/LearningLab/node_modules/react/cjs/react.development.js:2582:11)
-          at /home/runner/work/LearningLab/LearningLab/node_modules/@testing-library/react/dist/act-compat.js:47:25
-          at renderRoot (/home/runner/work/LearningLab/LearningLab/node_modules/@testing-library/react/dist/pure.js:180:26)
-          at render (/home/runner/work/LearningLab/LearningLab/node_modules/@testing-library/react/dist/pure.js:271:10)
-          at Object.<anonymous> (/home/runner/work/LearningLab/LearningLab/apps/web/src/screens/auth/login/login.test.tsx:7:9)
-          at Promise.then.completed (/home/runner/work/LearningLab/LearningLab/node_modules/jest-circus/build/utils.js:298:28)
-          at new Promise (<anonymous>)
-          at callAsyncCircusFn (/home/runner/work/LearningLab/LearningLab/node_modules/jest-circus/build/utils.js:231:10)
-          at _callCircusTest (/home/runner/work/LearningLab/LearningLab/node_modules/jest-circus/build/run.js:316:40)
-          at processTicksAndRejections (node:internal/process/task_queues:105:5)
-          at _runTest (/home/runner/work/LearningLab/LearningLab/node_modules/jest-circus/build/run.js:252:3)
-          at _runTestsForDescribeBlock (/home/runner/work/LearningLab/LearningLab/node_modules/jest-circus/build/run.js:126:9)
-          at run (/home/runner/work/LearningLab/LearningLab/node_modules/jest-circus/build/run.js:71:3)
-          at runAndTransformResultsToJestFormat (/home/runner/work/LearningLab/LearningLab/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:122:21)
-          at jestAdapter (/home/runner/work/LearningLab/LearningLab/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:79:19)
-          at runTestInternal (/home/runner/work/LearningLab/LearningLab/node_modules/jest-runner/build/runTest.js:367:16)
-          at runTest (/home/runner/work/LearningLab/LearningLab/node_modules/jest-runner/build/runTest.js:444:34) {
-        detail: Error: NextRouter was not mounted. https://nextjs.org/docs/messages/next-router-not-mounted
-            at useRouter (/home/runner/work/LearningLab/LearningLab/node_modules/next/src/client/router.ts:135:11)
-            at AuthProvider (/home/runner/work/LearningLab/LearningLab/apps/web/src/context/AuthContext.tsx:38:27)
-            at renderWithHooks (/home/runner/work/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom.development.js:16305:18)
-            at mountIndeterminateComponent (/home/runner/work/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom.development.js:20074:13)
-            at beginWork (/home/runner/work/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom.development.js:21587:16)
-            at HTMLUnknownElement.callCallback (/home/runner/work/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom.development.js:4164:14)
-            at HTMLUnknownElement.callTheUserObjectsOperation (/home/runner/work/LearningLab/LearningLab/node_modules/jsdom/lib/jsdom/living/generated/EventListener.js:26:30)
-            at innerInvokeEventListeners (/home/runner/work/LearningLab/LearningLab/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:350:25)
-            at invokeEventListeners (/home/runner/work/LearningLab/LearningLab/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:286:3)
-            at HTMLUnknownElementImpl._dispatch (/home/runner/work/LearningLab/LearningLab/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:233:9)
-            at HTMLUnknownElementImpl.dispatchEvent (/home/runner/work/LearningLab/LearningLab/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:104:17)
-            at HTMLUnknownElement.dispatchEvent (/home/runner/work/LearningLab/LearningLab/node_modules/jsdom/lib/jsdom/living/generated/EventTarget.js:241:34)
-            at Object.invokeGuardedCallbackDev (/home/runner/work/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom.development.js:4213:16)
-            at invokeGuardedCallback (/home/runner/work/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom.development.js:4277:31)
-            at beginWork$1 (/home/runner/work/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom.development.js:27451:7)
-            at performUnitOfWork (/home/runner/work/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom.development.js:26560:12)
-            at workLoopSync (/home/runner/work/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom.development.js:26466:5)
-            at renderRootSync (/home/runner/work/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom.development.js:26434:7)
-            at recoverFromConcurrentError (/home/runner/work/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom.development.js:25850:20)
-            at performConcurrentWorkOnRoot (/home/runner/work/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom.development.js:25750:22)
-            at flushActQueue (/home/runner/work/LearningLab/LearningLab/node_modules/react/cjs/react.development.js:2667:24)
-            at act (/home/runner/work/LearningLab/LearningLab/node_modules/react/cjs/react.development.js:2582:11)
-            at /home/runner/work/LearningLab/LearningLab/node_modules/@testing-library/react/dist/act-compat.js:47:25
-            at renderRoot (/home/runner/work/LearningLab/LearningLab/node_modules/@testing-library/react/dist/pure.js:180:26)
-            at render (/home/runner/work/LearningLab/LearningLab/node_modules/@testing-library/react/dist/pure.js:271:10)
-            at Object.<anonymous> (/home/runner/work/LearningLab/LearningLab/apps/web/src/screens/auth/login/login.test.tsx:7:9)
-            at Promise.then.completed (/home/runner/work/LearningLab/LearningLab/node_modules/jest-circus/build/utils.js:298:28)
-            at new Promise (<anonymous>)
-            at callAsyncCircusFn (/home/runner/work/LearningLab/LearningLab/node_modules/jest-circus/build/utils.js:231:10)
-            at _callCircusTest (/home/runner/work/LearningLab/LearningLab/node_modules/jest-circus/build/run.js:316:40)
-            at processTicksAndRejections (node:internal/process/task_queues:105:5)
-            at _runTest (/home/runner/work/LearningLab/LearningLab/node_modules/jest-circus/build/run.js:252:3)
-            at _runTestsForDescribeBlock (/home/runner/work/LearningLab/LearningLab/node_modules/jest-circus/build/run.js:126:9)
-            at run (/home/runner/work/LearningLab/LearningLab/node_modules/jest-circus/build/run.js:71:3)
-            at runAndTransformResultsToJestFormat (/home/runner/work/LearningLab/LearningLab/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:122:21)
-            at jestAdapter (/home/runner/work/LearningLab/LearningLab/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:79:19)
-            at runTestInternal (/home/runner/work/LearningLab/LearningLab/node_modules/jest-runner/build/runTest.js:367:16)
-            at runTest (/home/runner/work/LearningLab/LearningLab/node_modules/jest-runner/build/runTest.js:444:34),
-        type: 'unhandled exception'
-      }
-         5 |
-         6 | test("render login component", () => {
-      >  7 |   render(
-           |         ^
-         8 |     <AuthProvider>
-         9 |       <LoginScreen />
-        10 |     </AuthProvider>
-        at VirtualConsole.<anonymous> (../../node_modules/jest-environment-jsdom/build/index.js:63:23)
-        at reportException (../../node_modules/jsdom/lib/jsdom/living/helpers/runtime-script-errors.js:70:28)
-        at innerInvokeEventListeners (../../node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:353:9)
-        at invokeEventListeners (../../node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:286:3)
-        at HTMLUnknownElementImpl._dispatch (../../node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:233:9)
-        at HTMLUnknownElementImpl.dispatchEvent (../../node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:104:17)
-        at HTMLUnknownElement.dispatchEvent (../../node_modules/jsdom/lib/jsdom/living/generated/EventTarget.js:241:34)
-        at Object.invokeGuardedCallbackDev (../../node_modules/react-dom/cjs/react-dom.development.js:4213:16)
-        at invokeGuardedCallback (../../node_modules/react-dom/cjs/react-dom.development.js:4277:31)
-        at beginWork$1 (../../node_modules/react-dom/cjs/react-dom.development.js:27451:7)
-        at performUnitOfWork (../../node_modules/react-dom/cjs/react-dom.development.js:26560:12)
-        at workLoopSync (../../node_modules/react-dom/cjs/react-dom.development.js:26466:5)
-        at renderRootSync (../../node_modules/react-dom/cjs/react-dom.development.js:26434:7)
-        at recoverFromConcurrentError (../../node_modules/react-dom/cjs/react-dom.development.js:25850:20)
-        at performConcurrentWorkOnRoot (../../node_modules/react-dom/cjs/react-dom.development.js:25750:22)
-        at flushActQueue (../../node_modules/react/cjs/react.development.js:2667:24)
-        at act (../../node_modules/react/cjs/react.development.js:2582:11)
-        at ../../node_modules/@testing-library/react/dist/act-compat.js:47:25
-        at renderRoot (../../node_modules/@testing-library/react/dist/pure.js:180:26)
-        at render (../../node_modules/@testing-library/react/dist/pure.js:271:10)
-        at Object.<anonymous> (src/screens/auth/login/login.test.tsx:7:9)
-    console.error
-      The above error occurred in the <AuthProvider> component:
-      
-          at children (/home/runner/work/LearningLab/LearningLab/apps/web/src/context/AuthContext.tsx:34:32)
-      
-      Consider adding an error boundary to your tree to customize error handling behavior.
-      Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
-         5 |
-         6 | test("render login component", () => {
-      >  7 |   render(
-           |         ^
-         8 |     <AuthProvider>
-         9 |       <LoginScreen />
-        10 |     </AuthProvider>
-        at logCapturedError (../../node_modules/react-dom/cjs/react-dom.development.js:18687:23)
-        at update.callback (../../node_modules/react-dom/cjs/react-dom.development.js:18720:5)
-        at callCallback (../../node_modules/react-dom/cjs/react-dom.development.js:13923:12)
-        at commitUpdateQueue (../../node_modules/react-dom/cjs/react-dom.development.js:13944:9)
-        at commitLayoutEffectOnFiber (../../node_modules/react-dom/cjs/react-dom.development.js:23391:13)
-        at commitLayoutMountEffects_complete (../../node_modules/react-dom/cjs/react-dom.development.js:24688:9)
-        at commitLayoutEffects_begin (../../node_modules/react-dom/cjs/react-dom.development.js:24674:7)
-        at commitLayoutEffects (../../node_modules/react-dom/cjs/react-dom.development.js:24612:3)
-        at commitRootImpl (../../node_modules/react-dom/cjs/react-dom.development.js:26823:5)
-        at commitRoot (../../node_modules/react-dom/cjs/react-dom.development.js:26682:5)
-        at finishConcurrentRender (../../node_modules/react-dom/cjs/react-dom.development.js:25892:9)
-        at performConcurrentWorkOnRoot (../../node_modules/react-dom/cjs/react-dom.development.js:25809:7)
-        at flushActQueue (../../node_modules/react/cjs/react.development.js:2667:24)
-        at act (../../node_modules/react/cjs/react.development.js:2582:11)
-        at ../../node_modules/@testing-library/react/dist/act-compat.js:47:25
-        at renderRoot (../../node_modules/@testing-library/react/dist/pure.js:180:26)
-        at render (../../node_modules/@testing-library/react/dist/pure.js:271:10)
-        at Object.<anonymous> (src/screens/auth/login/login.test.tsx:7:9)
-  FAIL src/screens/auth/login/login.test.tsx
-    ✕ render login component (102 ms)
-    ● render login component
-      NextRouter was not mounted. https://nextjs.org/docs/messages/next-router-not-mounted
-        36 |   const [token, setToken] = useState<string | null>(null);
-        37 |   const [isLoading, setIsLoading] = useState<boolean>(true); // Start med loading true for at tjekke initial auth state
-      > 38 |   const router = useRouter();
-           |                           ^
-        39 |
-        40 |   // Funktion til at hente brugerprofil baseret på et token
-        41 |   const fetchUserProfile = async (currentToken: string) => {
-        at useRouter (../../node_modules/next/src/client/router.ts:135:11)
-        at AuthProvider (src/context/AuthContext.tsx:38:27)
-        at renderWithHooks (../../node_modules/react-dom/cjs/react-dom.development.js:16305:18)
-        at mountIndeterminateComponent (../../node_modules/react-dom/cjs/react-dom.development.js:20074:13)
-        at beginWork (../../node_modules/react-dom/cjs/react-dom.development.js:21587:16)
-        at beginWork$1 (../../node_modules/react-dom/cjs/react-dom.development.js:27426:14)
-        at performUnitOfWork (../../node_modules/react-dom/cjs/react-dom.development.js:26560:12)
-        at workLoopSync (../../node_modules/react-dom/cjs/react-dom.development.js:26466:5)
-        at renderRootSync (../../node_modules/react-dom/cjs/react-dom.development.js:26434:7)
-        at recoverFromConcurrentError (../../node_modules/react-dom/cjs/react-dom.development.js:25850:20)
-        at performConcurrentWorkOnRoot (../../node_modules/react-dom/cjs/react-dom.development.js:25750:22)
-        at flushActQueue (../../node_modules/react/cjs/react.development.js:2667:24)
-        at act (../../node_modules/react/cjs/react.development.js:2582:11)
-        at ../../node_modules/@testing-library/react/dist/act-compat.js:47:25
-        at renderRoot (../../node_modules/@testing-library/react/dist/pure.js:180:26)
-        at render (../../node_modules/@testing-library/react/dist/pure.js:271:10)
-        at Object.<anonymous> (src/screens/auth/login/login.test.tsx:7:9)
-  Test Suites: 1 failed, 1 total
-  Tests:       1 failed, 1 total
-  Snapshots:   0 total
-  Time:        1.54 s
-  Ran all test suites.
-  Error:  command finished with error: command (/home/runner/work/LearningLab/LearningLab/apps/web) yarn run test:ci exited (1)
-@repo/config:build
- Tasks:    0 successful, 4 total
-Cached:    0 cached, 4 total
-  Time:    4.284s 
-Failed:    web#test:ci
-Error: Process completed with exit code 1.
-0s
-1s
-Post job cleanup.
-/usr/bin/git version
-git version 2.49.0
-Temporarily overriding HOME='/home/runner/work/_temp/59bdded1-7354-4741-a82a-13c0f9b2f7de' before making global git config changes
-Adding repository directory to the temporary git global config as a safe directory
-/usr/bin/git config --global --add safe.directory /home/runner/work/LearningLab/LearningLab
-/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
-/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
-/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
-http.https://github.com/.extraheader
-/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
-/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+Yousef@MacBook-Pro-tilhrende-Yousef LearningLab %
 </file>
 
 <file path=".repomix/bundles.json">
@@ -780,27 +593,6 @@ export const validationSchemaForEnv = Joi.object<EnvironmentVariables, true>({
 });
 </file>
 
-<file path="apps/api/src/persistence/prisma/prisma.service.spec.ts">
-import { Test, TestingModule } from '@nestjs/testing';
-import { PrismaService } from './prisma.service';
-
-describe('PrismaService', () => {
-  let service: PrismaService;
-
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [PrismaService],
-    }).compile();
-
-    service = module.get<PrismaService>(PrismaService);
-  });
-
-  it('should be defined', () => {
-    expect(service).toBeDefined();
-  });
-});
-</file>
-
 <file path="apps/api/src/persistence/persistence.module.ts">
 import { Module } from '@nestjs/common';
 import { PrismaService } from './prisma/prisma.service';
@@ -813,22 +605,88 @@ export class PersistenceModule {}
 </file>
 
 <file path="apps/api/src/users/users.controller.spec.ts">
+// apps/api/src/users/users.controller.spec.ts
 import { Test, TestingModule } from '@nestjs/testing';
 import { UsersController } from './users.controller';
+import { UsersService } from './users.service';
+import { CreateUserDto } from './dto/create-user.dto';
+import { Role as CoreRole, User as CoreUser } from '@repo/core';
+import { ConflictException, HttpStatus } from '@nestjs/common';
+import { ValidationPipe } from '@nestjs/common'; // Tilføjet for at teste med ValidationPipe
+
+// Mock UsersService for at isolere controlleren
+const mockUsersService = {
+  create: jest.fn(),
+  // Tilføj andre metoder fra UsersService, hvis controlleren kommer til at bruge dem
+};
 
 describe('UsersController', () => {
   let controller: UsersController;
+  let service: typeof mockUsersService;
 
   beforeEach(async () => {
+    mockUsersService.create.mockReset(); // Nulstil mock før hver test
+
     const module: TestingModule = await Test.createTestingModule({
       controllers: [UsersController],
-    }).compile();
+      providers: [
+        {
+          provide: UsersService,
+          useValue: mockUsersService,
+        },
+      ],
+    })
+    // Det er ikke nødvendigt at tilføje ValidationPipe globalt her for unit tests,
+    // medmindre du specifikt vil teste dens integration på controller-niveau.
+    // For at teste DTO validering, sker det typisk i E2E tests eller ved at kalde pipen manuelt.
+    .compile();
 
     controller = module.get<UsersController>(UsersController);
+    service = module.get(UsersService);
   });
 
   it('should be defined', () => {
     expect(controller).toBeDefined();
+  });
+
+  describe('signUp', () => {
+    const createUserDto: CreateUserDto = {
+      email: 'newuser@example.com',
+      password: 'password123',
+      name: 'New User',
+      role: CoreRole.USER,
+    };
+
+    const expectedUserResult: Omit<CoreUser, 'passwordHash'> = {
+      id: 2,
+      email: 'newuser@example.com',
+      name: 'New User',
+      role: CoreRole.USER,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+
+    it('should call UsersService.create with the DTO and return the created user', async () => {
+      service.create.mockResolvedValue(expectedUserResult);
+
+      // Da ValidationPipe anvendes via @UsePipes decorator, vil den køre.
+      // For en unit test af controlleren stoler vi på, at pipen virker,
+      // eller tester den separat/i E2E.
+      const result = await controller.signUp(createUserDto);
+
+      expect(service.create).toHaveBeenCalledWith(createUserDto);
+      expect(result).toEqual(expectedUserResult);
+      // HttpStatus.CREATED (201) checkes typisk i E2E tests, da HttpCode decorator styrer NestJS's respons.
+    });
+
+    it('should propagate ConflictException if UsersService.create throws it', async () => {
+      service.create.mockRejectedValue(new ConflictException('Email already exists'));
+
+      await expect(controller.signUp(createUserDto)).rejects.toThrow(ConflictException);
+      expect(service.create).toHaveBeenCalledWith(createUserDto);
+    });
+
+    // Du kan tilføje flere tests her for andre fejltyper eller scenarier
   });
 });
 </file>
@@ -849,51 +707,46 @@ import { PersistenceModule } from '../persistence/persistence.module'; // Import
 export class UsersModule {}
 </file>
 
-<file path="apps/api/src/users/users.service.spec.ts">
-import { Test, TestingModule } from '@nestjs/testing';
-import { UsersService } from './users.service';
-
-describe('UsersService', () => {
-  let service: UsersService;
-
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [UsersService],
-    }).compile();
-
-    service = module.get<UsersService>(UsersService);
-  });
-
-  it('should be defined', () => {
-    expect(service).toBeDefined();
-  });
-});
-</file>
-
 <file path="apps/api/src/app.controller.spec.ts">
+// apps/api/src/app.controller.spec.ts
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { PersistenceModule } from './persistence/persistence.module';
+// PrismaService mockes for at undgå databaseafhængighed, selvom AppService måske ikke bruger den direkte.
+// Det gør testen mere robust over for ændringer i AppService's afhængigheder.
+import { PrismaService } from './persistence/prisma/prisma.service';
+
+// Mock implementation for PrismaService - kan være tom, hvis AppService ikke interagerer med den.
+const mockPrismaService = {};
 
 describe('AppController', () => {
   let appController: AppController;
+  let appService: AppService;
 
   beforeEach(async () => {
-    const app: TestingModule = await Test.createTestingModule({
-      imports: [PersistenceModule],
+    const moduleRef: TestingModule = await Test.createTestingModule({
       controllers: [AppController],
-      providers: [AppService],
+      providers: [
+        AppService,
+        {
+          provide: PrismaService,
+          useValue: mockPrismaService,
+        },
+      ],
     }).compile();
 
-    appController = app.get<AppController>(AppController);
+    appController = moduleRef.get<AppController>(AppController);
+    appService = moduleRef.get<AppService>(AppService);
   });
 
   describe('root', () => {
     it('should return "Hello World!"', async () => {
-      expect(await appController.getHello()).toEqual({
-        message: 'Hello World',
-      });
+      const expectedResult = { message: 'Hello World' };
+      // Spy på appService.getHello for at sikre, at den kaldes, og for at kontrollere dens output.
+      jest.spyOn(appService, 'getHello').mockResolvedValue(expectedResult);
+
+      expect(await appController.getHello()).toBe(expectedResult);
+      expect(appService.getHello).toHaveBeenCalled();
     });
   });
 });
@@ -1891,15 +1744,6 @@ const customJestConfig = {
 module.exports = createJestConfig(customJestConfig);
 </file>
 
-<file path="apps/web/jest.setup.js">
-// Optional: configure or set up a testing framework before each test.
-// If you delete this file, remove `setupFilesAfterEnv` from `jest.config.js`
-
-// Used for __tests__/testing-library.js
-// Learn more: https://github.com/testing-library/jest-dom
-import "@testing-library/jest-dom/extend-expect";
-</file>
-
 <file path="apps/web/next-env.d.ts">
 /// <reference types="next" />
 /// <reference types="next/image-types/global" />
@@ -2103,17 +1947,20 @@ module.exports = {
 
 <file path="packages/config/tsconfig.json">
 {
-  "extends": "tsconfig/base.json", // Eller tsconfig/react-library.json hvis relevant for fremtidig brug
+  "extends": "tsconfig/base.json",
   "compilerOptions": {
+    "composite": true, // <--- TILFØJET
+    "declaration": true, // Sikrer .d.ts filer genereres
+    "declarationMap": true, // Sikrer source maps for .d.ts filer
     "outDir": "dist",
-    "rootDir": "src", // Specificerer roden af input-filerne
+    "rootDir": "src",
     "baseUrl": "./src",
     "paths": {
       "@/*": ["*"]
     }
   },
   "include": ["src"],
-  "exclude": ["node_modules", "dist", "*.js", "*.conf"] // Ekskluder eksisterende .js og .conf filer fra TS-kompilering
+  "exclude": ["node_modules", "dist", "*.js", "*.conf"]
 }
 </file>
 
@@ -2163,11 +2010,15 @@ export * from './types/user.types';
 
 <file path="packages/core/tsconfig.json">
 {
-  "extends": "../tsconfig/base.json",
+  "extends": "tsconfig/base.json",
   "compilerOptions": {
+    "composite": true, // <--- TILFØJET
+    "declaration": true, // Sikrer .d.ts filer genereres, vigtigt for project references
+    "declarationMap": true, // Sikrer source maps for .d.ts filer
     "outDir": "dist",
-    "baseUrl": "./src", // Gør det nemmere at have absolutte imports inden for pakken hvis nødvendigt
-    "paths": { // Eksempel på paths, kan justeres/fjernes efter behov
+    "rootDir": "src", // Specificerer roden af input-filerne
+    "baseUrl": "./src",
+    "paths": {
       "@/*": ["*"]
     }
   },
@@ -2484,6 +2335,61 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
 }
 </file>
 
+<file path="apps/api/src/persistence/prisma/prisma.service.spec.ts">
+// apps/api/src/persistence/prisma/prisma.service.spec.ts
+import { Test, TestingModule } from '@nestjs/testing';
+import { PrismaService } from './prisma.service';
+// Importer IKKE PrismaClient her, da vi vil mocke dens adfærd på PrismaService instansen
+
+describe('PrismaService', () => {
+  let service: PrismaService;
+  let mockConnect: jest.Mock;
+  let mockDisconnect: jest.Mock; // Tilføjet for fuldstændighed, hvis du tester onModuleDestroy
+
+  beforeEach(async () => {
+    mockConnect = jest.fn().mockResolvedValue(undefined);
+    mockDisconnect = jest.fn().mockResolvedValue(undefined);
+
+    // Vi opretter en "spy" på PrismaService's prototype for $connect.
+    // Dette er en mere direkte måde at mocke metoder på en klasse, der extender en anden.
+    // Det antager, at PrismaService arver $connect fra PrismaClient.
+    jest.spyOn(PrismaService.prototype, '$connect' as any).mockImplementation(mockConnect);
+    jest.spyOn(PrismaService.prototype, '$disconnect' as any).mockImplementation(mockDisconnect);
+
+
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [PrismaService],
+    }).compile();
+
+    service = module.get<PrismaService>(PrismaService);
+  });
+
+  afterEach(() => {
+    // Gendan de originale metoder efter hver test for at undgå sideeffekter
+    jest.restoreAllMocks();
+  });
+
+  it('should be defined', () => {
+    expect(service).toBeDefined();
+  });
+
+  it('should call $connect on module init', async () => {
+    // onModuleInit er en metode direkte på PrismaService, den burde være tilgængelig.
+    // Når onModuleInit kalder 'await this.$connect()', vil vores mockConnect blive kaldt.
+    await service.onModuleInit();
+    expect(mockConnect).toHaveBeenCalledTimes(1);
+  });
+
+  // Eksempel hvis du implementerer OnModuleDestroy
+  // it('should call $disconnect on module destroy', async () => {
+  //   if (typeof service.onModuleDestroy === 'function') {
+  //     await service.onModuleDestroy(); // Antaget at du implementerer OnModuleDestroy
+  //     expect(mockDisconnect).toHaveBeenCalledTimes(1);
+  //   }
+  // });
+});
+</file>
+
 <file path="apps/api/src/persistence/prisma/prisma.service.ts">
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
@@ -2494,6 +2400,175 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
     await this.$connect();
   }
 }
+</file>
+
+<file path="apps/api/src/users/users.service.spec.ts">
+// apps/api/src/users/users.service.spec.ts
+import * as bcrypt from 'bcryptjs';
+
+jest.mock('bcryptjs', () => ({
+  ...jest.requireActual('bcryptjs'),
+  hash: jest.fn(),
+  compare: jest.fn(),
+}));
+
+import { Test, TestingModule } from '@nestjs/testing';
+import { UsersService } from './users.service';
+import { PrismaService } from '../persistence/prisma/prisma.service';
+import { ConflictException, InternalServerErrorException } from '@nestjs/common';
+import { CreateUserDto } from './dto/create-user.dto';
+import { Role as CoreRole } from '@repo/core';
+// ÆNDRET IMPORT: Importer hele Prisma namespace
+import { Prisma } from '@prisma/client';
+
+// Definer dine Prisma-typer baseret på Prisma namespace
+type PrismaUserType = Prisma.User;
+type PrismaRoleType = Prisma.Role;
+
+const mockPrismaService = {
+  user: {
+    findUnique: jest.fn(),
+    create: jest.fn(),
+  },
+};
+
+const mockPrismaUserResult: PrismaUserType = {
+  id: 1,
+  email: 'test@example.com',
+  passwordHash: 'hashedpassword',
+  name: 'Test User',
+  role: 'USER' as PrismaRoleType,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  passwordResetToken: null,
+  passwordResetExpires: null,
+};
+
+describe('UsersService', () => {
+  let service: UsersService;
+
+  beforeEach(async () => {
+    mockPrismaService.user.findUnique.mockReset();
+    mockPrismaService.user.create.mockReset();
+    (bcrypt.hash as jest.Mock).mockReset();
+    (bcrypt.compare as jest.Mock).mockReset();
+
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [
+        UsersService,
+        {
+          provide: PrismaService,
+          useValue: mockPrismaService,
+        },
+      ],
+    }).compile();
+
+    service = module.get<UsersService>(UsersService);
+  });
+
+  it('should be defined', () => {
+    expect(service).toBeDefined();
+  });
+
+  describe('create', () => {
+    const createUserDto: CreateUserDto = {
+      email: 'test@example.com',
+      password: 'password123',
+      name: 'Test User',
+      role: CoreRole.USER,
+    };
+
+    it('should create and return a user if email does not exist', async () => {
+      mockPrismaService.user.findUnique.mockResolvedValue(null);
+      mockPrismaService.user.create.mockResolvedValue(mockPrismaUserResult);
+      (bcrypt.hash as jest.Mock).mockResolvedValue('hashedpassword');
+
+      const result = await service.create(createUserDto);
+
+      expect(mockPrismaService.user.findUnique).toHaveBeenCalledWith({ where: { email: createUserDto.email } });
+      expect(bcrypt.hash).toHaveBeenCalledWith(createUserDto.password, 10);
+      expect(mockPrismaService.user.create).toHaveBeenCalledWith(expect.objectContaining({
+        data: expect.objectContaining({
+          email: createUserDto.email,
+          passwordHash: 'hashedpassword',
+          name: createUserDto.name,
+          role: createUserDto.role as PrismaRoleType,
+        }),
+      }));
+      expect(result).toEqual(expect.objectContaining({
+        id: mockPrismaUserResult.id,
+        email: mockPrismaUserResult.email,
+        name: mockPrismaUserResult.name,
+        role: mockPrismaUserResult.role as CoreRole,
+      }));
+      expect(result).not.toHaveProperty('passwordHash');
+    });
+
+    it('should throw ConflictException if email already exists', async () => {
+      mockPrismaService.user.findUnique.mockResolvedValue(mockPrismaUserResult);
+      await expect(service.create(createUserDto)).rejects.toThrow(ConflictException);
+      expect(mockPrismaService.user.create).not.toHaveBeenCalled();
+    });
+
+    it('should throw InternalServerErrorException on hashing error', async () => {
+      mockPrismaService.user.findUnique.mockResolvedValue(null);
+      (bcrypt.hash as jest.Mock).mockRejectedValue(new Error("Hashing failed"));
+
+      await expect(service.create(createUserDto)).rejects.toThrow(InternalServerErrorException);
+      expect(mockPrismaService.user.create).not.toHaveBeenCalled();
+    });
+
+
+    it('should throw ConflictException on Prisma P2002 error during create', async () => {
+      mockPrismaService.user.findUnique.mockResolvedValue(null);
+      (bcrypt.hash as jest.Mock).mockResolvedValue('hashedpassword');
+      const prismaError = { code: 'P2002', meta: { target: ['email'] } };
+      mockPrismaService.user.create.mockRejectedValue(prismaError);
+
+      await expect(service.create(createUserDto)).rejects.toThrow(ConflictException);
+    });
+
+    it('should throw InternalServerErrorException on other Prisma errors during create', async () => {
+      mockPrismaService.user.findUnique.mockResolvedValue(null);
+      (bcrypt.hash as jest.Mock).mockResolvedValue('hashedpassword');
+      mockPrismaService.user.create.mockRejectedValue(new Error("Some other DB error"));
+
+      await expect(service.create(createUserDto)).rejects.toThrow(InternalServerErrorException);
+    });
+  });
+
+  describe('findOneByEmail', () => {
+    it('should return a user if found', async () => {
+      const email = 'test@example.com';
+      mockPrismaService.user.findUnique.mockResolvedValue(mockPrismaUserResult);
+      const result = await service.findOneByEmail(email);
+      expect(result).toEqual(mockPrismaUserResult);
+      expect(mockPrismaService.user.findUnique).toHaveBeenCalledWith({ where: { email } });
+    });
+
+    it('should return null if user not found', async () => {
+      mockPrismaService.user.findUnique.mockResolvedValue(null);
+      const result = await service.findOneByEmail('notfound@example.com');
+      expect(result).toBeNull();
+    });
+  });
+
+  describe('findOneById', () => {
+    it('should return a user if found', async () => {
+      const id = 1;
+      mockPrismaService.user.findUnique.mockResolvedValue(mockPrismaUserResult);
+      const result = await service.findOneById(id);
+      expect(result).toEqual(mockPrismaUserResult);
+      expect(mockPrismaService.user.findUnique).toHaveBeenCalledWith({ where: { id } });
+    });
+
+    it('should return null if user not found', async () => {
+      mockPrismaService.user.findUnique.mockResolvedValue(null);
+      const result = await service.findOneById(999);
+      expect(result).toBeNull();
+    });
+  });
+});
 </file>
 
 <file path="apps/api/tsconfig.json">
@@ -2560,21 +2635,6 @@ function MyApp({ Component, pageProps }: AppProps) {
 export default MyApp;
 </file>
 
-<file path="apps/web/src/screens/auth/login/login.test.tsx">
-// apps/web/src/screens/auth/login/login.test.tsx
-import { render } from "@testing-library/react";
-import { LoginScreen } from "./login";
-import { AuthProvider } from '../../../context/AuthContext'; // Sørg for korrekt importsti
-
-test("render login component", () => {
-  render(
-    <AuthProvider>
-      <LoginScreen />
-    </AuthProvider>
-  );
-});
-</file>
-
 <file path="apps/web/src/store/services/api.ts">
 // Filsti: apps/web/src/store/services/api.ts
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
@@ -2611,6 +2671,43 @@ export const api = createApi({
 });
 
 export const { useHelloQuery } = api;
+</file>
+
+<file path="apps/web/jest.setup.js">
+// apps/web/jest.setup.js
+// Optional: configure or set up a testing framework before each test.
+// If you delete this file, remove `setupFilesAfterEnv` from `jest.config.js`
+
+// Used for __tests__/testing-library.js
+// Learn more: https://github.com/testing-library/jest-dom
+import "@testing-library/jest-dom/extend-expect";
+
+// Tilføj denne linje for at mocke next/router globalt for dine tests i web-appen
+jest.mock('next/router', () => require('next-router-mock'));
+
+// Valgfrit: Du kan initialisere den mockede router med en default rute her,
+// hvis mange af dine tests forventer at starte på en bestemt side.
+// require('next-router-mock').default.mockImplementation(() => ({
+//   pathname: '/',
+//   asPath: '/',
+//   query: {},
+//   route: '/',
+//   push: jest.fn(),
+//   replace: jest.fn(),
+//   reload: jest.fn(),
+//   back: jest.fn(),
+//   prefetch: jest.fn().mockResolvedValue(undefined),
+//   beforePopState: jest.fn(),
+//   events: {
+//     on: jest.fn(),
+//     off: jest.fn(),
+//     emit: jest.fn(),
+//   },
+//   isFallback: false,
+//   isLocaleDomain: false,
+//   isReady: true,
+//   basePath: '',
+// }));
 </file>
 
 <file path="apps/web/postcss.config.js">
@@ -3094,119 +3191,6 @@ export class UsersController {
 }
 </file>
 
-<file path="apps/api/src/users/users.service.ts">
-// apps/api/src/users/users.service.ts
-    import {
-      Injectable,
-      ConflictException,
-      InternalServerErrorException,
-    } from '@nestjs/common';
-    import { PrismaService } from '../persistence/prisma/prisma.service';
-    import { CreateUserDto } from './dto/create-user.dto';
-    import * as bcrypt from 'bcryptjs';
-    import { User as PrismaUser, Role as PrismaRole } from '@prisma/client'; // Omdøb Prisma types for klarhed
-    import { User as CoreUser, Role as CoreRole } from '@repo/core'; // Importer Core types
-
-    @Injectable()
-    export class UsersService {
-      constructor(private prisma: PrismaService) {}
-
-      /**
-       * Helper function to map a PrismaUser object to a CoreUser object (omitting passwordHash).
-       * @param user The PrismaUser object.
-       * @returns A CoreUser object without the passwordHash.
-       */
-      private mapToCoreUser(user: PrismaUser): Omit<CoreUser, 'passwordHash'> {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { passwordHash, ...result } = user;
-        return {
-          ...result,
-          // Ensure enum compatibility if names are identical (which they are: USER, ADMIN)
-          role: user.role as CoreRole,
-          // Ensure Date objects are correctly typed if they come from JSON,
-          // though Prisma typically returns Date objects directly.
-          createdAt: new Date(user.createdAt),
-          updatedAt: new Date(user.updatedAt),
-        };
-      }
-
-      async create(
-        createUserDto: CreateUserDto,
-      ): Promise<Omit<CoreUser, 'passwordHash'>> { // Returtype er nu baseret på CoreUser
-        const { email, password, name, role } = createUserDto;
-
-        const existingUser = await this.prisma.user.findUnique({
-          where: { email },
-        });
-
-        if (existingUser) {
-          throw new ConflictException(
-            'En bruger med denne email eksisterer allerede.',
-          );
-        }
-
-        const saltRounds = 10;
-        let hashedPassword;
-        try {
-          hashedPassword = await bcrypt.hash(password, saltRounds);
-        } catch (error) {
-          console.error('Fejl under hashing af password:', error);
-          throw new InternalServerErrorException(
-            'Der opstod en intern fejl under brugeroprettelse (hashing).',
-          );
-        }
-
-        try {
-          const prismaUser = await this.prisma.user.create({
-            data: {
-              email,
-              passwordHash: hashedPassword,
-              name: name || null,
-              // Map CoreRole from DTO to PrismaRole for database operation
-              role: (role as unknown as PrismaRole) || PrismaRole.USER,
-            },
-          });
-          // Map den oprettede PrismaUser til CoreUser format før returnering
-          return this.mapToCoreUser(prismaUser);
-        } catch (error) {
-          if (
-            error &&
-            typeof error === 'object' &&
-            'code' in error &&
-            error.code === 'P2002'
-          ) {
-            throw new ConflictException(
-              'En bruger med denne email eksisterer allerede (databasefejl).',
-            );
-          }
-          console.error('Databasefejl under brugeroprettelse:', error);
-          throw new InternalServerErrorException(
-            'Der opstod en databasefejl under brugeroprettelse.',
-          );
-        }
-      }
-
-      // Metoder der bruges internt af f.eks. AuthService kan stadig returnere PrismaUser
-      async findOneByEmail(email: string): Promise<PrismaUser | null> {
-        return this.prisma.user.findUnique({
-          where: { email },
-        });
-      }
-
-      async findOneById(id: number): Promise<PrismaUser | null> {
-        return this.prisma.user.findUnique({
-          where: { id },
-        });
-      }
-
-      // Valgfri: Hvis du vil have en metode, der eksplicit returnerer CoreUser for auth-formål
-      async findOneByEmailForAuth(email: string): Promise<Omit<CoreUser, 'passwordHash'> | null> {
-        const prismaUser = await this.findOneByEmail(email);
-        return prismaUser ? this.mapToCoreUser(prismaUser) : null;
-      }
-    }
-</file>
-
 <file path="apps/web/pages/profile.tsx">
 // apps/web/pages/profile.tsx
 import React from 'react'; // useEffect er fjernet, da ProtectedRoute håndterer det
@@ -3279,6 +3263,26 @@ export default function WrappedProfilePage() {
     </ProtectedRoute>
   );
 }
+</file>
+
+<file path="apps/web/src/screens/auth/login/login.test.tsx">
+// apps/web/src/screens/auth/login/login.test.tsx
+import { render } from "@testing-library/react";
+import { LoginScreen } from "./login";
+import { AuthProvider } from '../../../context/AuthContext'; // Sørg for korrekt importsti
+
+// Det er ikke længere nødvendigt at mocke next/router her,
+// hvis du gør det globalt i jest.setup.js (anbefalet)
+// Hvis du *ikke* har en jest.setup.js eller foretrækker at gøre det her:
+// jest.mock('next/router', () => require('next-router-mock'));
+
+test("render login component", () => {
+  render(
+    <AuthProvider>
+      <LoginScreen />
+    </AuthProvider>
+  );
+});
 </file>
 
 <file path="apps/web/src/screens/auth/login/login.tsx">
@@ -3428,6 +3432,112 @@ export function LoginScreen() {
     "nextjs.json",
     "react-library.json"
   ]
+}
+</file>
+
+<file path="apps/api/src/users/users.service.ts">
+// apps/api/src/users/users.service.ts
+import {
+  Injectable,
+  ConflictException,
+  InternalServerErrorException,
+} from '@nestjs/common';
+import { PrismaService } from '../persistence/prisma/prisma.service';
+import { CreateUserDto } from './dto/create-user.dto';
+import * as bcrypt from 'bcryptjs';
+// ÆNDRET IMPORT: Importer hele Prisma namespace og tilgå typer derfra
+import { Prisma } from '@prisma/client'; // Importer Prisma namespace
+import { User as CoreUser, Role as CoreRole } from '@repo/core';
+
+// Definer dine Prisma-typer baseret på Prisma namespace
+type PrismaUserType = Prisma.User;
+type PrismaRoleType = Prisma.Role;
+
+@Injectable()
+export class UsersService {
+  constructor(private prisma: PrismaService) {}
+
+  private mapToCoreUser(user: PrismaUserType): Omit<CoreUser, 'passwordHash'> {
+    const { passwordHash, passwordResetToken, passwordResetExpires, ...result } = user;
+    return {
+      ...result,
+      name: result.name ?? undefined,
+      role: user.role as CoreRole, // Antager at PrismaRoleType og CoreRole er kompatible
+      createdAt: new Date(user.createdAt),
+      updatedAt: new Date(user.updatedAt),
+    };
+  }
+
+  async create(
+    createUserDto: CreateUserDto,
+  ): Promise<Omit<CoreUser, 'passwordHash'>> {
+    const { email, password, name, role } = createUserDto;
+
+    const existingUser = await this.prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (existingUser) {
+      throw new ConflictException(
+        'En bruger med denne email eksisterer allerede.',
+      );
+    }
+
+    const saltRounds = 10;
+    let hashedPassword;
+    try {
+      hashedPassword = await bcrypt.hash(password, saltRounds);
+    } catch (error) {
+      console.error('Fejl under hashing af password:', error);
+      throw new InternalServerErrorException(
+        'Der opstod en intern fejl under brugeroprettelse (hashing).',
+      );
+    }
+
+    try {
+      const prismaUser = await this.prisma.user.create({
+        data: {
+          email,
+          passwordHash: hashedPassword,
+          name: name || null,
+          role: (role as unknown as PrismaRoleType) || ('USER' as PrismaRoleType),
+        },
+      });
+      return this.mapToCoreUser(prismaUser);
+    } catch (error) {
+      if (
+        error &&
+        typeof error === 'object' &&
+        'code' in error &&
+        error.code === 'P2002'
+      ) {
+        throw new ConflictException(
+          'En bruger med denne email eksisterer allerede (databasefejl).',
+        );
+      }
+      console.error('Databasefejl under brugeroprettelse:', error);
+      throw new InternalServerErrorException(
+        'Der opstod en databasefejl under brugeroprettelse.',
+      );
+    }
+  }
+
+  async findOneByEmail(email: string): Promise<PrismaUserType | null> {
+    return this.prisma.user.findUnique({
+      where: { email },
+    });
+  }
+
+  async findOneById(id: number): Promise<PrismaUserType | null> {
+    return this.prisma.user.findUnique({
+      where: { id },
+    });
+  }
+
+  async findOneByEmailForAuth(email: string): Promise<Omit<CoreUser, 'passwordHash'> | null> {
+    const prismaUser = await this.findOneByEmail(email);
+    return prismaUser ? this.mapToCoreUser(prismaUser) : null;
+  }
 }
 </file>
 
@@ -4090,7 +4200,7 @@ LearningLab
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json --runInBand",
-    "test:ci": "jest --ci --runInBand"
+    "test:ci": "prisma generate && jest --ci --runInBand"
   },
   "dependencies": {
     "@nestjs/common": "^10.1.3",
@@ -4113,7 +4223,8 @@ LearningLab
     "reflect-metadata": "^0.1.13",
     "rimraf": "^5.0.1",
     "rxjs": "^7.8.2",
-    "swagger-ui-express": "^5.0.0"
+    "swagger-ui-express": "^5.0.0",
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.1.11",
@@ -4122,6 +4233,7 @@ LearningLab
     "@swc/core": "^1.11.24",
     "@swc/types": "^0.1.21",
     "@types/babel__core": "^7.20.5",
+    "@types/bcryptjs": "^2.4.6",
     "@types/express": "^5.0.2",
     "@types/jest": "^29.5.3",
     "@types/node": "^20.4.5",
@@ -4131,6 +4243,7 @@ LearningLab
     "@types/passport-local": "^1.0.38",
     "@types/prettier": "^3.0.0",
     "@types/supertest": "^2.0.12",
+    "@types/uuid": "^10.0.0",
     "@typescript-eslint/eslint-plugin": "^6.2.1",
     "@typescript-eslint/parser": "^6.2.1",
     "eslint": "^8.57.1",
@@ -4167,7 +4280,12 @@ LearningLab
       "**/*.(t|j)s"
     ],
     "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "moduleNameMapper": {
+      "^@repo/core/(.*)$": "<rootDir>/../../packages/core/src/$1",
+      "^@repo/config/(.*)$": "<rootDir>/../../packages/config/src/$1",
+      "^src/(.*)$": "<rootDir>/$1"
+    }
   }
 }
 </file>

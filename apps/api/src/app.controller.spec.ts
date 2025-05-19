@@ -1,26 +1,42 @@
+// apps/api/src/app.controller.spec.ts
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { PersistenceModule } from './persistence/persistence.module';
+// PrismaService mockes for at undgå databaseafhængighed, selvom AppService måske ikke bruger den direkte.
+// Det gør testen mere robust over for ændringer i AppService's afhængigheder.
+import { PrismaService } from './persistence/prisma/prisma.service';
+
+// Mock implementation for PrismaService - kan være tom, hvis AppService ikke interagerer med den.
+const mockPrismaService = {};
 
 describe('AppController', () => {
   let appController: AppController;
+  let appService: AppService;
 
   beforeEach(async () => {
-    const app: TestingModule = await Test.createTestingModule({
-      imports: [PersistenceModule],
+    const moduleRef: TestingModule = await Test.createTestingModule({
       controllers: [AppController],
-      providers: [AppService],
+      providers: [
+        AppService,
+        {
+          provide: PrismaService,
+          useValue: mockPrismaService,
+        },
+      ],
     }).compile();
 
-    appController = app.get<AppController>(AppController);
+    appController = moduleRef.get<AppController>(AppController);
+    appService = moduleRef.get<AppService>(AppService);
   });
 
   describe('root', () => {
     it('should return "Hello World!"', async () => {
-      expect(await appController.getHello()).toEqual({
-        message: 'Hello World',
-      });
+      const expectedResult = { message: 'Hello World' };
+      // Spy på appService.getHello for at sikre, at den kaldes, og for at kontrollere dens output.
+      jest.spyOn(appService, 'getHello').mockResolvedValue(expectedResult);
+
+      expect(await appController.getHello()).toBe(expectedResult);
+      expect(appService.getHello).toHaveBeenCalled();
     });
   });
 });

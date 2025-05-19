@@ -1,13 +1,16 @@
 {
-  "extends": "tsconfig/base.json", // Eller tsconfig/react-library.json hvis relevant for fremtidig brug
+  "extends": "tsconfig/base.json",
   "compilerOptions": {
+    "composite": true, // <--- TILFØJET
+    "declaration": true, // Sikrer .d.ts filer genereres
+    "declarationMap": true, // Sikrer source maps for .d.ts filer
     "outDir": "dist",
-    "rootDir": "src", // Specificerer roden af input-filerne
+    "rootDir": "src",
     "baseUrl": "./src",
     "paths": {
       "@/*": ["*"]
     }
   },
   "include": ["src"],
-  "exclude": ["node_modules", "dist", "*.js", "*.conf"] // Ekskluder eksisterende .js og .conf filer fra TS-kompilering
+  "exclude": ["node_modules", "dist", "*.js", "*.conf"]
 }
