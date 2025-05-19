@@ -1,0 +1,64 @@
+# render.yaml
+# Placeres i roden af dit monorepo
+
+services:
+  # API Service (NestJS)
+  - type: web # 'web' servicetype bruges til HTTP servere
+    name: api-service # Navnet på din service i Render dashboardet
+    env: node # Specificerer Node.js miljøet
+    rootDir: apps/api # Angiver roden for API-projektet inden i monorepoet
+    plan: free # Specificerer Render planen (free tier til at starte med)
+    region: frankfurt # Vælg den region, der er tættest på dine brugere
+    
+    # Build-konfiguration
+    buildCommand: |
+      yarn install --immutable && \
+      yarn workspace api build
+      # yarn workspace api prisma generate # Sørger for at Prisma Client er genereret
+      # yarn workspace api build
+    # Ovenstående buildCommand er justeret:
+    # 1. `yarn install --immutable`: Installerer alle dependencies for hele monorepoet.
+    #    Dette er vigtigt, da `api` kan have dependencies til andre `packages/*` i dit monorepo.
+    #    `--immutable` sikrer, at `yarn.lock` ikke ændres.
+    # 2. `yarn workspace api build`: Kører build-scriptet specifikt for din `api` app.
+    #    Dette antager, at dit `apps/api/package.json` har et `build` script (f.eks. `nest build`).
+    #    `prisma generate` køres typisk som en del af `nest build` eller `postinstall` i din `api` pakke,
+    #    men hvis ikke, kan det tilføjes her: `yarn workspace api prisma generate && yarn workspace api build`
+
+    # Start-konfiguration
+    startCommand: node dist/main.js # Kommandoen til at starte din NestJS API efter build
+                                    # Tjek at stien `dist/main.js` matcher outputtet fra dit `nest build`
+
+    # Miljøvariabler
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: learning-db # Matcher navnet på database-servicen defineret nedenfor
+          property: connectionString # Henter den fulde connection string
+      - key: JWT_SECRET
+        generateValue: true # Render genererer automatisk en sikker værdi for denne secret
+      - key: NODE_ENV
+        value: production # Sætter Node.js miljøet til produktion
+      # Tilføj andre nødvendige produktions-miljøvariabler her, f.eks.:
+      # - key: SENTRY_DSN
+      #   value: DIN_SENTRY_DSN_HER
+      # - key: PORT # Render sætter automatisk PORT, men hvis din app forventer den anderledes
+      #   value: 10000 # Render's default for web services
+
+    # Health Check (valgfrit, men anbefalet)
+    # Render vil bruge dette endpoint til at tjekke, om din service er sund.
+    # Dit nuværende API har et GET /api endpoint.
+    healthCheckPath: /api # Juster til dit faktiske health check endpoint (f.eks. /api/health)
+
+    # Auto-Deploy (valgfrit, men typisk ønsket)
+    # autoDeploy: true # Sæt til false hvis du vil deaktivere auto-deploy på push til din branch
+
+  # Database Service (PostgreSQL)
+  - type: pserv # 'pserv' for PostgreSQL service
+    name: learning-db # Navnet på din database i Render dashboardet
+    plan: free # Specificerer Render planen (free tier til at starte med)
+    region: frankfurt # Vælg samme region som din API service for lav latency
+    ipAllowList: [] # Tom liste tillader adgang fra alle Render services i samme konto.
+                      # For produktion kan du begrænse dette til specifikke IP'er eller Render services.
+    postgresMajorVersion: "15" # Specificerer PostgreSQL versionen (matcher din lokale opsætning)
+
