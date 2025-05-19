@@ -6,21 +6,24 @@ services:
   - type: web # 'web' servicetype bruges til HTTP servere
     name: api-service # Navnet på din service i Render dashboardet
     env: node # Specificerer Node.js miljøet
+    nodeVersion: "22" # Specificerer Node.js versionen for at matche projektets krav
     rootDir: apps/api # Angiver roden for API-projektet inden i monorepoet
     plan: free # Specificerer Render planen (free tier til at starte med)
     region: frankfurt # Vælg den region, der er tættest på dine brugere
     
     # Build-konfiguration
     buildCommand: |
+      corepack enable && \
       yarn install --immutable && \
       yarn workspace api prisma generate && \
       yarn workspace api build
     # Ovenstående buildCommand er justeret:
-    # 1. `yarn install --immutable`: Installerer alle dependencies for hele monorepoet.
+    # 1. `corepack enable`: Aktiverer Corepack, så den korrekte Yarn version (defineret i package.json) bruges.
+    # 2. `yarn install --immutable`: Installerer alle dependencies for hele monorepoet.
     #    Dette er vigtigt, da `api` kan have dependencies til andre `packages/*` i dit monorepo.
     #    `--immutable` sikrer, at `yarn.lock` ikke ændres.
-    # 2. `yarn workspace api prisma generate`: Sikrer at Prisma Client genereres specifikt for Render-miljøet.
-    # 3. `yarn workspace api build`: Kører build-scriptet specifikt for din `api` app.
+    # 3. `yarn workspace api prisma generate`: Sikrer at Prisma Client genereres specifikt for Render-miljøet.
+    # 4. `yarn workspace api build`: Kører build-scriptet specifikt for din `api` app.
     #    Dette antager, at dit `apps/api/package.json` har et `build` script (f.eks. `nest build`).
 
     # Start-konfiguration
