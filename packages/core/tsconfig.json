@@ -6,8 +6,11 @@
     "declarationMap": true,
     "outDir": "dist",
     "rootDir": "src",
-    "baseUrl": "./src"
+    "baseUrl": "./src",
+    "module": "commonjs",
+    "target": "es2017",
+    "sourceMap": true
   },
-  "include": ["src"],
+  "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]
 }

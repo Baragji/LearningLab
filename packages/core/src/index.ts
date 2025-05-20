@@ -6,7 +6,11 @@
  * bør eksporteres herfra, så de nemt kan importeres i andre pakker (apps/web, apps/api, etc.).
  */
 
+// User types
 export * from './types/user.types';
-// Tilføj andre eksports her efterhånden som pakken vokser, f.eks.:
-// export * from './types/course.types';
-// export * from './utils/formatter.utils';
+
+// Pensum types
+export * from './types/pensum.types';
+
+// Quiz types
+export * from './types/quiz.types';

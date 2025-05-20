@@ -3,9 +3,23 @@
   "compilerOptions": {
     "outDir": "./dist",
     "baseUrl": "./",
-    "rootDir": "src"
+    "skipLibCheck": true,
+    "composite": true,
+    "paths": {
+      "@repo/core": ["../../packages/core/src"],
+      "@repo/core/*": ["../../packages/core/src/*"],
+      "@repo/config": ["../../packages/config/src"],
+      "@repo/config/*": ["../../packages/config/src/*"]
+    },
+    "typeRoots": [
+      "./node_modules/@types",
+      "./src/types"
+    ]
   },
-  "include": ["src"],
+  "include": [
+    "src/**/*", 
+    "src/types/*.d.ts"
+  ],
   "exclude": ["node_modules", "dist"],
   "references": [
     { "path": "../../packages/core" },
