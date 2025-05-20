@@ -1,0 +1,328 @@
+Strategi for Robust Samarbejde og Håndtering af Genstarter
+
+For at sikre en stabil og effektiv udviklingsproces, især med tanke på potentielle session-genstarter og AI'ens "hukommelsestab", følger vi disse strategier:
+
+Canvas-dokumentet som Fælles Hukommelse: Dette dokument (samarbejdsproces_template) er vores primære, persistente referencepunkt. Det indeholder den overordnede vision, roller, meta-plan, detaljeret projektplan og denne samarbejdsstrategi. Det opdateres løbende.
+
+Granulær Opdeling af Opgaver:
+
+I "Detaljeret Projektplan" vil hver "Opgave" blive yderligere nedbrudt i mindre "Delopgaver/Action Steps".
+
+Hver delopgave skal være lille, fokuseret på få filændringer, og resultere i en testbar ændring.
+
+Eksplicit "State Capture" ved Behov:
+
+Inden du (brugeren) afslutter en session, eller hvis der er mistanke om, at AI'en mister kontekst, kan du bede om en "Kort Statusrapport".
+
+Denne rapport skal indeholde:
+
+Den allersidste kodeblok AI'en leverede.
+
+Den præcise fil den tilhører.
+
+Den specifikke (del)opgave vi arbejdede på.
+
+Det allernæste aftalte lille skridt.
+
+Denne rapport bruges til hurtig briefing ved genstart.
+
+Hyppige "Checkpoints" i Canvas-dokumentet:
+
+Efter hver succesfuldt implementeret og testet (del)opgave opdateres dens status i "Detaljeret Projektplan" til "✅ Færdig".
+
+Fokus på Én Ting Ad Gangen:
+
+Vi bestræber os på kun at arbejde på én (del)opgave ad gangen. Den nuværende skal være implementeret, testet og markeret som færdig, før vi går videre.
+
+Strategisk Kodelevering:
+
+Ved start på nye, større filer/moduler leveres relevant kode (f.eks. repomixOLD.xml).
+
+Ved små, iterative ændringer i samme fil kan det være tilstrækkeligt kun at levere indholdet af den specifikke fil.
+
+Regelmæssige Synkroniserings- og Opsummeringspunkter:
+
+AI'en vil proaktivt give korte opsummeringer efter afslutning af logiske dele af en opgave eller efter et antal interaktioner for at sikre fælles forståelse.
+
+Arbejdsproces: Template
+
+Dette dokument beskriver den aftalte arbejdsproces mellem dig (brugeren) og mig (AI-assistenten) for udviklingen og færdiggørelsen af Next.js-applikationen "Template".
+
+Overordnet Mål: At udvikle en robust og generisk læringsplatform-template baseret på den tidligere udviklede platform (repomixOLD.xml). Denne template skal kunne tilpasses forskellige faglige indhold (f.eks. Quran-arabisk, laborant-studier) via konfigurerbare "indholdsscripts". Når template-kernen er færdig, kan vi implementere specifikke funktioner og indhold for "Template". UI-elementer og læringer fra den nyere v0.dev-genererede platform vil blive brugt som inspiration til frontend.
+
+Vores Roller:
+
+Din Rolle (Brugeren):
+
+Identifikation af Arbejdsområder: Du udpeger, hvilke specifikke filer, komponenter eller funktionaliteter vi skal arbejde på, typisk med udgangspunkt i din overordnede projektplan.
+
+Levering af Kodebase: Du leverer den relevante kode, oftest via repomix-output.xml eller ved at indsætte specifikke kodeblokke.
+
+Test og Validering: Du indsætter den af mig leverede kode i dit lokale VS Code udviklingsmiljø. Her tester du grundigt for at sikre, at koden virker som forventet, og at der ikke opstår nye fejl.
+
+Fejlrapportering: Hvis du opdager fejl, uoverensstemmelser, eller hvis funktionaliteten ikke er som ønsket, rapporterer du dette tilbage til mig. Dette kan være via en fejl.txt fil, beskrivelser af problemet, eller skærmbilleder.
+
+Overordnet Projektledelse: Du bevarer det overordnede overblik over projektet, prioriterer opgaver og sikrer, at vi bevæger os i den rigtige retning i henhold til projektplanen. Du definerer også de overordnede krav til "template"-funktionaliteten og de forskellige "indholdsscripts".
+
+Min Rolle (AI-Assistent):
+
+Kodeanalyse og -forståelse: Jeg analyserer den kode og de problemstillinger, du præsenterer.
+
+Kodeudvikling og -modifikation: Jeg skriver ny kode, refaktorerer eksisterende kode og implementerer løsninger baseret på dine anmodninger og vores aftalte mål.
+
+Fokus på Kvalitet:
+
+Best Practice: Jeg bestræber mig på at følge anerkendte "best practices" for Next.js, React, TypeScript, NestJS, Prisma og generel webudvikling.
+
+Template-Design: Jeg vil designe datamodeller, API'er og frontend-komponenter med henblik på genbrugelighed og tilpasning via "indholdsscripts".
+
+Fejlretning: Jeg retter de fejl, der identificeres.
+
+Levering af Kode: Jeg leverer den opdaterede kode til dig i et klart og brugbart format.
+
+Vigtigt: Da du (brugeren) har angivet, at du ikke selv koder, vil jeg altid bestræbe mig på at levere komplette og selvstændige kodeblokke, der er klar til test, frem for kun at levere ændrede linjer eller fragmenter.
+
+Forklaring og Rådgivning: Jeg forklarer de ændringer, jeg har lavet, de bagvedliggende koncepter, og kan give råd om alternative løsninger.
+
+Iterativ Proces: Vi arbejder iterativt på mindre, afgrænsede dele. Du leverer input, jeg output, du tester, og vi justerer.
+
+Kommunikation: Klar og præcis kommunikation er nøglen.
+
+Meta-Plan: Vejen til en Detaljeret Projektplan (for den gamle platform)
+
+(Dette afsnit forbliver som det er, da det beskriver processen for at nå frem til den detaljerede plan)
+
+Detaljeret Projektplan: Generisk Læringsplatform Template (baseret på repomixOLD.xml)
+
+Fokus er at bygge en generisk kerneplatform. Specifikke funktioner for "Template" eller andre fagområder vil blive bygget ovenpå denne kerne senere.
+
+Milesten 1: Backend Stabilisering og Konfiguration (apps/api)
+
+Mål: Få backend-API'en (apps/api) til at køre stabilt, rette CI/CD-fejl fra terminalfejl.txt, og implementere nødvendige konfigurationsforbedringer fra forslag.txt.
+
+Status: Ikke påbegyndt.
+
+Opgaver: (Disse forbliver stort set som tidligere defineret, da de er fundamentale for en fungerende backend)
+
+Fejlretning af Test-setup (apps/api):
+
+Korriger moduleNameMapper for @repo/core etc.
+
+Ret PrismaClient mocking i prisma.service.spec.ts.
+
+Sikre prisma generate før tests.
+
+Implementering af Konfigurationsforbedringer (apps/api, packages/config):
+
+Udvid/konsolider miljøvariabel-validering (Zod i packages/config/src/env.ts) for JWT_SECRET, JWT_EXPIRES_IN, SALT_ROUNDS.
+
+Korrekt ConfigModule setup i apps/api/src/app.module.ts.
+
+Opdater services til at bruge ConfigService for envs.
+
+Opdater tests til at mocke ConfigService.
+
+CI/CD Pipeline Justering (.github/workflows/ci.yml):
+
+Ret web#test:ci fejl (NextRouter was not mounted).
+
+Verificer prisma generate i CI for api.
+
+Database Migrationer og Konfiguration (apps/api/prisma):
+
+Gennemgå User-model.
+
+Bekræft DATABASE_URL opsætning.
+
+Milesten 2: Bruger Autentificering Færdiggørelse (apps/api og apps/web)
+
+Mål: Sikre et robust og komplet brugerautentificeringsflow.
+
+Status: Ikke påbegyndt (afventer Milesten 1).
+
+Opgaver: (Disse forbliver stort set som tidligere defineret)
+
+Backend (apps/api): Færdiggør UsersService, AuthService (inkl. forgot/reset password token-logik, ekskl. e-mail afsendelse for nu), AuthController, Passport strategier, DTOs.
+
+Frontend (apps/web): Færdiggør AuthContext (inkl. signup, forgot/reset password API-kald), Login, Signup, Forgot/Reset Password sider, Profil side, ProtectedRoute.
+
+Milesten 3: Etablering af Kerne-Pakker & Generisk Datamodel Fundament
+
+Mål: Oprette og strukturere de delte packages og definere de centrale, generiske datamodeller for platformens indhold.
+
+Status: Ikke påbegyndt.
+
+Opgaver:
+
+Oprettelse/Strukturering af packages/core:
+
+Opgave: Initialiser pakken. Flyt/definer fælles TypeScript interfaces/typer/enums (f.eks. User, Role). Prisma-specifikke decorators hører til i Prisma schema, ikke her.
+
+Filer: packages/core/package.json, packages/core/tsconfig.json, packages/core/src/types/user.types.ts, packages/core/src/index.ts.
+
+Oprettelse/Strukturering af packages/config:
+
+Opgave: Initialiser pakken. Færdiggør centraliseret håndtering af miljøvariabler med Zod-validering.
+
+Filer: packages/config/package.json, packages/config/tsconfig.json, packages/config/src/env.ts, packages/config/src/index.ts.
+
+Refaktorering af apps/api og apps/web til at bruge packages/core og packages/config.
+
+Definition af Generiske Pensum Datamodeller (apps/api/prisma/schema.prisma og packages/core/src/types):
+
+Opgave: Design og implementer Prisma-modeller for:
+
+Course (title, description, slug, subjectAreaId (til at linke til et "fagligt script"/kontekst)).
+
+SubjectArea (eller ContentContext) (name, slug - f.eks. "template-arabic", "lab-tech").
+
+Module (title, description, order, courseId).
+
+Lesson (title, description, order, moduleId).
+
+ContentBlock (type: TEXT, IMAGE_URL, VIDEO_URL, QUIZ_REF; content: string; order; lessonId).
+
+Opgave: Definer tilsvarende TypeScript-typer i packages/core/src/types/pensum.types.ts (eller lignende).
+
+Opgave: Kør Prisma migration.
+
+Definition af Generiske Quiz Datamodeller (apps/api/prisma/schema.prisma og packages/core/src/types):
+
+Opgave: Design og implementer Prisma-modeller for:
+
+Quiz (title, description, lessonId? eller moduleId?).
+
+Question (text, type: MULTIPLE_CHOICE, FILL_IN_BLANK, MATCHING; quizId).
+
+AnswerOption (text, isCorrect, questionId).
+
+UserProgress (userId, lessonId (status: COMPLETED), quizId (score, quizAttemptId)).
+
+QuizAttempt (userId, quizId, score, startedAt, completedAt).
+
+UserAnswer (quizAttemptId, questionId, selectedAnswerOptionId?, inputText?).
+
+Opgave: Definer tilsvarende TypeScript-typer i packages/core/src/types/quiz.types.ts (eller lignende).
+
+Opgave: Kør Prisma migration.
+
+Milesten 4: Implementering af Generisk Pensum & Quiz Backend (apps/api)
+
+Mål: Skabe API-endpoints til at håndtere (CRUD) og levere det generiske pensum- og quizindhold.
+
+Status: Ikke påbegyndt.
+
+Opgaver:
+
+Pensum Service & Controller:
+
+Implementer PensumService med CRUD-metoder for Course, Module, Lesson, ContentBlock.
+
+Opret PensumController med beskyttede endpoints (admin for CUD, public for R). API'et skal kunne filtrere baseret på subjectAreaId.
+
+Quiz Service & Controller:
+
+Implementer QuizService med CRUD for Quiz, Question, AnswerOption.
+
+Implementer logik i QuizService for at starte en quiz, modtage svar, evaluere og gemme QuizAttemptog UserAnswer.
+
+Opret QuizController (bruger-rettet) og evt. QuizAdminController (admin-rettet).
+
+UserProgress Service & Controller (udvidelse):
+
+Udvid/opret service til at håndtere opdatering af UserProgress for lektioner og quizzer.
+
+Milesten 5: Grundlæggende Frontend for Template (apps/web)
+
+Mål: Implementere de basale UI-sider og komponenter, der kan vise og interagere med det generiske pensum og quiz-system. UI-inspiration fra v0.dev-platformen.
+
+Status: Ikke påbegyndt.
+
+Opgaver:
+
+Basis UI-Komponenter (packages/ui):
+
+Opret/flyt genbrugelige UI-komponenter (f.eks. Button, Card, Input, Progress) til packages/ui, inspireret af Shadcn UI / v0.dev.
+
+Sider til Visning af Pensum:
+
+Kursusoversigt (liste af kurser for et givent subjectArea).
+
+Kursusdetaljeside (viser moduler/fag i et kursus).
+
+Lektionsvisningsside (renderer ContentBlocks dynamisk, inkl. tekst, billeder, video-embeds).
+
+Sider til Quiz-afvikling:
+
+Start quiz side.
+
+Spørgsmålsvisning (tilpasset Question.type).
+
+Resultatside.
+
+Grundlæggende Admin UI (meget simpelt til start):
+
+Formularer/lister til at oprette/redigere Course, Module, Lesson, ContentBlock.
+
+Formularer/lister til at oprette/redigere Quiz, Question, AnswerOption.
+
+Integration med Backend:
+
+Opdater apps/web/src/store/services/api.ts (RTK Query) med endpoints til at hente og sende data til de nye pensum- og quiz-API'er.
+
+Forbind frontend-siderne til disse API-kald.
+
+Responsivt Design & Grundlæggende Tilgængelighed: Sikre at de nye sider er responsive og følger basale tilgængelighedsprincipper.
+
+Milesten 6: Indholdsscripts & Første Instansiering (f.eks. Laborantstudie / Arabiske studier )
+
+Mål: Definere og implementere mekanismen for "indholdsscripts" og lave en første instansiering af platformen med indhold for "Template".
+
+Status: Ikke påbegyndt.
+
+Opgaver:
+
+Strategi og Implementering af "Indholdsscripts":
+
+Sammen: Fastlæg formatet (JSON, Markdown, database seeding script?).
+
+Jeg (AI) & Du (Bruger): Implementer logikken i backend til at indlæse/fortolke disse scripts og populere/filtrere databasen/API-svar.
+
+Oprettelse af Indholdsscript for Template:
+
+Du (Bruger): Begynd at strukturere det faglige indhold (alfabet, gloser, grammatik, suraer) i det aftalte script-format.
+
+Test af Template med Template Arabic Indhold:
+
+Indlæs Template Arabic scriptet og verificer, at platformen viser indholdet korrekt.
+
+Næste Skridt (efter denne plan er godkendt):
+
+Vi starter med Milesten 1: Backend Stabilisering og Konfiguration. Den første konkrete opgave vil være Opgave 1.1: Fejlretning af Test-setup (apps/api), startende med moduleNameMapper-problematikken.
+
+Nuværende Status (Gammel "Template" - repomixOLD.xml):
+
+Milesten 1: Projektopsætning & Grundlæggende Struktur
+
+Status: Stort set færdig (monorepo, grundlæggende apps/packages struktur).
+
+Næste skridt: Gennemgå og rette fejl fra terminalfejl.txt relateret til CI/CD og test-setup. Implementere forslag fra forslag.txt.
+
+Milesten 2: Kerne Backend & Database
+
+Status: Påbegyndt (Prisma-schema findes, NestJS API-struktur er der).
+
+Funktionalitet: Brugeroprettelse, login-logik (skal verificeres/færdiggøres).
+
+Data: Databasemodeller for User er defineret.
+
+Næste skridt: Sikre stabil backend, færdiggøre/teste auth-flow, definere yderligere datamodeller for indhold.
+
+Milesten 3: Frontend UI & Grundlæggende Sider (baseret på apps/web i repomixOLD.xml)
+
+Status: Påbegyndt (Grundlæggende Next.js app findes).
+
+UI: Minimalistisk. Skal opdateres/erstattes med UI fra den nye v0.dev-genererede platform.
+
+Næste skridt: Planlægge integration af UI-komponenter og sidestrukturer fra den nye platform, når backend er mere stabil.
+

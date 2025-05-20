@@ -1,57 +1,33 @@
 // apps/web/src/screens/auth/signup/signup.tsx
 import React, { useState, FormEvent } from 'react';
 import { useRouter } from 'next/router';
-// Vi kan overveje at bruge useAuth() her, hvis vi vil logge brugeren ind automatisk efter signup,
-// men lad os starte simpelt og bare omdirigere til login.
-// import { useAuth } from '../../../context/AuthContext';
+import { useAuth } from '../../../context/AuthContext';
 
 export function SignupScreen() {
   const router = useRouter();
-  // const { login } = useAuth(); // Hvis du vil logge ind automatisk
+  const { signup, isLoading: authIsLoading } = useAuth();
 
   const [name, setName] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [confirmPassword, setConfirmPassword] = useState<string>('');
-  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setIsLoading(true);
     setError(null);
     setSuccessMessage(null);
 
     if (password !== confirmPassword) {
       setError('Adgangskoderne matcher ikke.');
-      setIsLoading(false);
       return;
     }
 
     try {
-      const response = await fetch('/api/users/signup', { // Kalder dit backend signup endpoint
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ name: name || undefined, email, password }), // Send name kun hvis det er udfyldt
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        let errorMessage = 'Registrering fejlede.';
-        if (errorData && errorData.message) {
-          if (Array.isArray(errorData.message)) {
-            errorMessage = errorData.message.join(', ');
-          } else {
-            errorMessage = errorData.message;
-          }
-        }
-        throw new Error(errorMessage);
-      }
-
-      // const userData = await response.json(); // Brugerdata fra backend efter oprettelse
+      // Brug signup funktionen fra AuthContext
+      await signup(name || undefined, email, password);
+      
       console.log('Registrering succesfuld');
       setSuccessMessage('Din konto er blevet oprettet! Du bliver nu sendt til login-siden.');
       
@@ -60,19 +36,9 @@ export function SignupScreen() {
         router.push('/login');
       }, 3000); // 3 sekunders forsinkelse
 
-      // Alternativt: Log brugeren direkte ind
-      // try {
-      //   await login(email, password); // Antager at din AuthContext's login er tilgængelig
-      //   // router.push('/profile'); // AuthContext's login håndterer omdirigering
-      // } catch (loginError: any) {
-      //   setError(`Konto oprettet, men automatisk login fejlede: ${loginError.message}. Prøv at logge ind manuelt.`);
-      // }
-
     } catch (err: any) {
       console.error('Registreringsfejl:', err);
       setError(err.message || 'Der opstod en uventet fejl under registrering.');
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -98,7 +64,7 @@ export function SignupScreen() {
               autoComplete="name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              disabled={isLoading}
+              disabled={authIsLoading}
               className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm disabled:bg-gray-50"
               placeholder="Dit fulde navn"
             />
@@ -120,7 +86,7 @@ export function SignupScreen() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              disabled={isLoading}
+              disabled={authIsLoading}
               className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm disabled:bg-gray-50"
               placeholder="din@email.com"
             />
@@ -142,7 +108,7 @@ export function SignupScreen() {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              disabled={isLoading}
+              disabled={authIsLoading}
               className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm disabled:bg-gray-50"
               placeholder="Vælg en stærk adgangskode"
             />
@@ -164,7 +130,7 @@ export function SignupScreen() {
               required
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              disabled={isLoading}
+              disabled={authIsLoading}
               className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm disabled:bg-gray-50"
               placeholder="Gentag din adgangskode"
             />
@@ -188,10 +154,10 @@ export function SignupScreen() {
           <div>
             <button
               type="submit"
-              disabled={isLoading || !!successMessage} // Deaktiver også hvis succesbesked vises
+              disabled={authIsLoading || !!successMessage} // Deaktiver også hvis succesbesked vises
               className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-indigo-400 disabled:cursor-not-allowed transition-colors duration-150"
             >
-              {isLoading ? (
+              {authIsLoading ? (
                 <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                   {/* ... spinner SVG ... */}
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>

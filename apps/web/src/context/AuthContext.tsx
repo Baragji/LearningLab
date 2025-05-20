@@ -19,7 +19,9 @@ interface AuthContextType {
   isLoading: boolean; // Til at vise loading state under auth operationer
   login: (email: string, password: string) => Promise<void>; // Funktion til at logge ind
   logout: () => void; // Funktion til at logge ud
-  // Vi kan tilføje signup, forgotPassword, resetPassword funktioner her senere
+  signup: (name: string | undefined, email: string, password: string) => Promise<void>; // Funktion til at oprette en ny bruger
+  forgotPassword: (email: string) => Promise<string>; // Funktion til at anmode om nulstilling af adgangskode
+  resetPassword: (token: string, newPassword: string, confirmPassword: string) => Promise<string>; // Funktion til at nulstille adgangskode
 }
 
 // Opret AuthContext med en default værdi (typisk undefined eller null)
@@ -41,7 +43,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const fetchUserProfile = async (currentToken: string) => {
     setIsLoading(true);
     try {
-      const response = await fetch('/api/auth/profile', {
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL || '/api';
+      const response = await fetch(`${baseUrl}/auth/profile`, {
         headers: {
           'Authorization': `Bearer ${currentToken}`,
           'Content-Type': 'application/json',
@@ -88,15 +91,23 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const login = async (email: string, password: string) => {
     setIsLoading(true);
     try {
-      const response = await fetch('/api/auth/login', {
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL || '/api';
+      const response = await fetch(`${baseUrl}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Login fejlede');
+        let errorMessage = 'Login fejlede';
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.message || errorMessage;
+        } catch (parseError) {
+          console.error('Kunne ikke parse fejlsvar som JSON:', parseError);
+          errorMessage = `Login fejlede med status ${response.status}: ${response.statusText}`;
+        }
+        throw new Error(errorMessage);
       }
 
       const data: { access_token: string } = await response.json();
@@ -123,6 +134,151 @@ export function AuthProvider({ children }: AuthProviderProps) {
     router.push('/login'); // Omdiriger til login-siden efter logout
   };
 
+  // Signup funktion
+  const signup = async (name: string | undefined, email: string, password: string) => {
+    setIsLoading(true);
+    try {
+      // Brug baseUrl fra miljøvariabel eller fallback til relativ sti
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL || '/api';
+      const response = await fetch(`${baseUrl}/users/signup`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name, email, password }),
+      });
+
+      if (!response.ok) {
+        let errorMessage = 'Registrering fejlede.';
+        try {
+          const errorData = await response.json();
+          if (errorData && errorData.message) {
+            if (Array.isArray(errorData.message)) {
+              errorMessage = errorData.message.join(', ');
+            } else {
+              errorMessage = errorData.message;
+            }
+          }
+        } catch (parseError) {
+          console.error('Kunne ikke parse fejlsvar som JSON:', parseError);
+          errorMessage = `Registrering fejlede med status ${response.status}: ${response.statusText}`;
+        }
+        throw new Error(errorMessage);
+      }
+
+      console.log('AuthContext: Registrering succesfuld');
+      // Vi kunne automatisk logge brugeren ind her, men lad os holde det simpelt
+      // og lade brugeren logge ind manuelt
+    } catch (error: any) {
+      console.error('AuthContext: Registreringsfejl:', error);
+      throw error; // Kast fejlen videre, så SignupScreen kan fange den og vise den
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Forgot Password funktion
+  const forgotPassword = async (email: string) => {
+    setIsLoading(true);
+    try {
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL || '/api';
+      const response = await fetch(`${baseUrl}/auth/forgot-password`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      if (!response.ok) {
+        let errorMessage = 'Anmodning om nulstilling af adgangskode fejlede.';
+        try {
+          const data = await response.json();
+          if (data && data.message) {
+            if (Array.isArray(data.message)) {
+              errorMessage = data.message.join(', ');
+            } else {
+              errorMessage = data.message;
+            }
+          }
+        } catch (parseError) {
+          console.error('Kunne ikke parse fejlsvar som JSON:', parseError);
+          errorMessage = `Anmodning om nulstilling af adgangskode fejlede med status ${response.status}: ${response.statusText}`;
+        }
+        throw new Error(errorMessage);
+      }
+      
+      let data;
+      try {
+        data = await response.json();
+      } catch (parseError) {
+        console.error('Kunne ikke parse succesfuldt svar som JSON:', parseError);
+        data = { message: 'Hvis din email findes i systemet, vil du modtage et link til at nulstille dit password.' };
+      }
+      
+      console.log('AuthContext: Anmodning om glemt adgangskode succesfuld');
+      return data.message || 'Hvis din email findes i systemet, vil du modtage et link til at nulstille dit password.';
+    } catch (error: any) {
+      console.error('AuthContext: Fejl ved glemt adgangskode:', error);
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Reset Password funktion
+  const resetPassword = async (token: string, newPassword: string, confirmPassword: string) => {
+    setIsLoading(true);
+    try {
+      if (newPassword !== confirmPassword) {
+        throw new Error('De nye adgangskoder matcher ikke.');
+      }
+
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL || '/api';
+      const response = await fetch(`${baseUrl}/auth/reset-password`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ token, newPassword, confirmPassword }),
+      });
+
+      if (!response.ok) {
+        let errorMessage = 'Nulstilling af adgangskode fejlede.';
+        try {
+          const data = await response.json();
+          if (data && data.message) {
+            if (Array.isArray(data.message)) {
+              errorMessage = data.message.join(', ');
+            } else {
+              errorMessage = data.message;
+            }
+          }
+        } catch (parseError) {
+          console.error('Kunne ikke parse fejlsvar som JSON:', parseError);
+          errorMessage = `Nulstilling af adgangskode fejlede med status ${response.status}: ${response.statusText}`;
+        }
+        throw new Error(errorMessage);
+      }
+      
+      let data;
+      try {
+        data = await response.json();
+      } catch (parseError) {
+        console.error('Kunne ikke parse succesfuldt svar som JSON:', parseError);
+        data = { message: 'Din adgangskode er blevet nulstillet! Du bliver nu sendt til login-siden.' };
+      }
+      
+      console.log('AuthContext: Nulstilling af adgangskode succesfuld');
+      return data.message || 'Din adgangskode er blevet nulstillet! Du bliver nu sendt til login-siden.';
+    } catch (error: any) {
+      console.error('AuthContext: Fejl ved nulstilling af adgangskode:', error);
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   // Værdien, der gøres tilgængelig for alle consumers af context'en
   const value = {
     user,
@@ -130,6 +286,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
     isLoading,
     login,
     logout,
+    signup,
+    forgotPassword,
+    resetPassword,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
