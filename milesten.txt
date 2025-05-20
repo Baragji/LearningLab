@@ -1,0 +1,242 @@
+
+
+ybaragji@gmail.com, 2m ago
+kan du tjekke at hele milesten 2 er fejlfri og iht. best practice? "Milesten 2: Bruger Autentificering Færdiggørelse (apps/api og apps/web)
+
+Mål: Sikre et robust og komplet brugerautentificeringsflow.
+
+Status: Ikke påbegyndt (afventer Milesten 1).
+
+Opgaver: (Disse forbliver stort set som tidligere defineret)
+
+Backend (apps/api): Færdiggør UsersService, AuthService (inkl. forgot/reset password token-logik, ekskl. e-mail afsendelse for nu), AuthController, Passport strategier, DTOs.
+
+Frontend (apps/web): Færdiggør AuthContext (inkl. signup, forgot/reset password API-kald), Login, Signup, Forgot/Reset Password sider, Profil side, ProtectedRoute."
+
+Coding Agent
+For at tjekke om Milesten 2 er fejlfri og i overensstemmelse med best practices, skal jeg først undersøge den eksisterende kodebase for at forstå den nuværende implementering af brugerautentificering. Lad mig starte med at undersøge de relevante filer i projektet.
+
+Lad mig søge efter auth-relaterede filer i API-delen:
+
+Lad mig undersøge de eksisterende auth-filer mere detaljeret:
+
+Lad mig undersøge AuthController:
+
+Lad mig undersøge JWT-strategien:
+
+Lad mig undersøge auth.module.ts:
+
+Lad mig undersøge DTO'erne:
+
+Lad mig undersøge UsersService:
+
+Lad mig undersøge frontend-delen af autentificeringen:
+
+Lad mig undersøge AuthContext:
+
+Lad mig undersøge ProtectedRoute-komponenten:
+
+Lad mig undersøge signup-siden:
+
+Lad mig undersøge reset-password-siden:
+
+Baseret på min gennemgang af kodebasen for Milesten 2: Bruger Autentificering Færdiggørelse, kan jeg give følgende vurdering:
+
+Vurdering af Milesten 2: Bruger Autentificering Færdiggørelse
+Overordnet vurdering
+Implementeringen af brugerautentificering er generelt solid og følger best practices for både backend (NestJS) og frontend (Next.js). Der er dog nogle områder, der kan forbedres for at sikre en mere robust og sikker løsning.
+
+Backend (apps/api)
+Styrker:
+Sikker håndtering af passwords: Bruger bcrypt til hashing med konfigurerbar salt rounds.
+JWT-baseret autentificering: Korrekt implementering af JWT med Passport.
+Komplet password reset flow: Implementering af forgot/reset password funktionalitet.
+Validering af input: Bruger class-validator til at validere DTO'er.
+Sikkerhedsbevidst design: Returnerer generiske fejlmeddelelser for at undgå information disclosure.
+Forbedringsmuligheder:
+Manglende rate limiting: Der er ikke implementeret rate limiting for login-forsøg, hvilket kan gøre systemet sårbart over for brute force-angreb.
+Password kompleksitet: ResetPasswordDto har en kommentar om at tilføje en regex for password kompleksitet, men det er ikke implementeret.
+Fejlhåndtering: Nogle fejlmeddelelser logges direkte til konsollen, hvilket kan være problematisk i produktion.
+Manglende CSRF-beskyttelse: Der er ikke implementeret CSRF-beskyttelse for auth endpoints.
+Manglende refresh token: Systemet bruger kun access tokens, ikke refresh tokens, hvilket kan føre til hyppigere login.
+Frontend (apps/web)
+Styrker:
+Centraliseret auth state: Bruger React Context til at håndtere auth state på tværs af applikationen.
+Sikker token opbevaring: Gemmer token i localStorage og håndterer det korrekt.
+Beskyttede ruter: ProtectedRoute-komponenten sikrer, at kun autentificerede brugere kan tilgå beskyttede sider.
+Brugervenlige formularer: Gode fejlmeddelelser og loading states.
+Komplet auth flow: Login, signup, forgot password og reset password er alle implementeret.
+Forbedringsmuligheder:
+Brug af localStorage: Tokens gemmes i localStorage, hvilket kan være sårbart over for XSS-angreb. HttpOnly cookies ville være mere sikre.
+Manglende token refresh: Der er ingen automatisk fornyelse af tokens, når de udløber.
+Anchor tags vs. Next.js Links: Bruger <a href> i stedet for Next.js <Link> komponenter, hvilket kan påvirke client-side navigation.
+Manglende form validering på frontend: Validering sker primært på backend, men frontend validering kunne forbedre brugeroplevelsen.
+Direkte API-kald i ResetPasswordScreen: Bruger fetch direkte i stedet for at bruge AuthContext's resetPassword funktion.
+Anbefalede forbedringer
+Backend:
+Implementer rate limiting: Tilføj rate limiting middleware for login og password reset endpoints.
+
+// Eksempel på rate limiting middleware
+import { Injectable } from '@nestjs/common';
+import { ThrottlerGuard } from '@nestjs/throttler';
+
+@Injectable()
+export class LoginThrottlerGuard extends ThrottlerGuard {
+  protected getTracker(req: Record<string, any>): string {
+    return req.ip; // eller en kombination af IP og email
+  }
+}
+Forbedret password validering: Implementer en stærkere password policy.
+
+// I reset-password.dto.ts
+@Matches(
+  /((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/,
+  { message: 'Passwordet er for svagt. Det skal indeholde store og små bogstaver, tal og specialtegn.' }
+)
+newPassword: string;
+Struktureret fejlhåndtering: Implementer en global exception filter.
+
+// Eksempel på global exception filter
+@Catch()
+export class GlobalExceptionFilter implements ExceptionFilter {
+  catch(exception: unknown, host: ArgumentsHost) {
+    // Håndter og log fejl på en struktureret måde
+  }
+}
+Frontend:
+Brug HttpOnly cookies: Overvej at bruge HttpOnly cookies i stedet for localStorage.
+
+// Dette kræver ændringer i både backend og frontend
+// Backend skal sætte cookies i stedet for at returnere tokens
+// Frontend skal inkludere credentials i fetch-kald
+fetch('/api/auth/login', {
+  method: 'POST',
+  credentials: 'include', // Inkluder cookies
+  // ...
+});
+Implementer token refresh: Tilføj logik til at forny tokens, før de udløber.
+
+// I AuthContext.tsx
+useEffect(() => {
+  if (token) {
+    const decoded = jwtDecode(token);
+    const expiresAt = decoded.exp * 1000; // Convert to milliseconds
+    const timeUntilExpiry = expiresAt - Date.now();
+    
+    // Refresh token 5 minutter før udløb
+    const refreshTimeout = setTimeout(() => {
+      refreshToken();
+    }, timeUntilExpiry - 5 * 60 * 1000);
+    
+    return () => clearTimeout(refreshTimeout);
+  }
+}, [token]);
+Brug Next.js Links: Erstat anchor tags med Next.js Links.
+
+import Link from 'next/link';
+
+// I stedet for
+<a href="/login">Log ind</a>
+
+// Brug
+<Link href="/login">
+  <a className="font-medium text-indigo-600 hover:text-indigo-500">Log ind</a>
+</Link>
+Frontend validering: Tilføj Formik eller React Hook Form med Yup/Zod validering.
+
+// Eksempel med React Hook Form og Yup
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
+
+const schema = yup.object({
+  email: yup.string().email('Ugyldig email').required('Email er påkrævet'),
+  password: yup.string().min(8, 'Password skal være mindst 8 tegn').required('Password er påkrævet'),
+});
+
+// I komponenten
+const { register, handleSubmit, formState: { errors } } = useForm({
+  resolver: yupResolver(schema)
+});
+Konsistent API-kald: Brug AuthContext's resetPassword funktion i ResetPasswordScreen.
+
+// I ResetPasswordScreen.tsx
+const { resetPassword, isLoading: authIsLoading } = useAuth();
+
+// I handleSubmit
+try {
+  const message = await resetPassword(token, newPassword, confirmPassword);
+  setSuccessMessage(message);
+  // ...
+} catch (err) {
+  // ...
+}
+Konklusion
+Milesten 2 har en solid implementering af brugerautentificering, men der er plads til forbedringer, især omkring sikkerhed og brugeroplevelse. Ved at implementere de foreslåede forbedringer vil systemet blive mere robust, sikkert og brugervenligt.
+
+Overordnet set er kodebasen velstruktureret og følger mange best practices, men de nævnte forbedringer vil løfte kvaliteten yderligere og sikre en mere komplet og sikker autentificeringsløsning.
+
+
+
+
+
+Codebase
+Milesten 3: Etablering af Kerne-Pakker & Generisk Datamodel Fundament
+
+Mål: Oprette og strukturere de delte packages og definere de centrale, generiske datamodeller for platformens indhold.
+
+Status: Ikke påbegyndt.
+
+Opgaver:
+
+Oprettelse/Strukturering af packages/core:
+
+Opgave: Initialiser pakken. Flyt/definer fælles TypeScript interfaces/typer/enums (f.eks. User, Role). Prisma-specifikke decorators hører til i Prisma schema, ikke her.
+
+Filer: packages/core/package.json, packages/core/tsconfig.json, packages/core/src/types/user.types.ts, packages/core/src/index.ts.
+
+Oprettelse/Strukturering af packages/config:
+
+Opgave: Initialiser pakken. Færdiggør centraliseret håndtering af miljøvariabler med Zod-validering.
+
+Filer: packages/config/package.json, packages/config/tsconfig.json, packages/config/src/env.ts, packages/config/src/index.ts.
+
+Refaktorering af apps/api og apps/web til at bruge packages/core og packages/config.
+
+Definition af Generiske Pensum Datamodeller (apps/api/prisma/schema.prisma og packages/core/src/types):
+
+Opgave: Design og implementer Prisma-modeller for:
+
+Course (title, description, slug, subjectAreaId (til at linke til et "fagligt script"/kontekst)).
+
+SubjectArea (eller ContentContext) (name, slug - f.eks. "template-arabic", "lab-tech").
+
+Module (title, description, order, courseId).
+
+Lesson (title, description, order, moduleId).
+
+ContentBlock (type: TEXT, IMAGE_URL, VIDEO_URL, QUIZ_REF; content: string; order; lessonId).
+
+Opgave: Definer tilsvarende TypeScript-typer i packages/core/src/types/pensum.types.ts (eller lignende).
+
+Opgave: Kør Prisma migration.
+
+Definition af Generiske Quiz Datamodeller (apps/api/prisma/schema.prisma og packages/core/src/types):
+
+Opgave: Design og implementer Prisma-modeller for:
+
+Quiz (title, description, lessonId? eller moduleId?).
+
+Question (text, type: MULTIPLE_CHOICE, FILL_IN_BLANK, MATCHING; quizId).
+
+AnswerOption (text, isCorrect, questionId).
+
+UserProgress (userId, lessonId (status: COMPLETED), quizId (score, quizAttemptId)).
+
+QuizAttempt (userId, quizId, score, startedAt, completedAt).
+
+UserAnswer (quizAttemptId, questionId, selectedAnswerOptionId?, inputText?).
+
+Opgave: Definer tilsvarende TypeScript-typer i packages/core/src/types/quiz.types.ts (eller lignende).
+
+Opgave: Kør Prisma migration.
