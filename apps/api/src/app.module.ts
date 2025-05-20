@@ -1,11 +1,13 @@
 // apps/api/src/app.module.ts
-import { Module } from '@nestjs/common';
+import { Module, MiddlewareConsumer, NestModule } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PersistenceModule } from './persistence/persistence.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
+import { ThrottlerModule } from '@nestjs/throttler';
+import { CsrfMiddleware } from './common/middleware/csrf.middleware';
 import {
   serverSchema,
   ServerEnv,
@@ -50,6 +52,12 @@ import {
         return validatedConfig.data as ServerEnv;
       },
     }),
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60000, // 1 minut
+        limit: 10, // 10 requests per ttl
+      },
+    ]),
     PersistenceModule,
     UsersModule,
     AuthModule,
@@ -57,4 +65,9 @@ import {
   controllers: [AppController],
   providers: [AppService, ConfigService],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    // Temporarily disable CSRF middleware until properly configured
+    // consumer.apply(CsrfMiddleware).forRoutes('*');
+  }
+}

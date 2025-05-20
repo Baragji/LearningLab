@@ -1,4 +1,11 @@
 
+/Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/apps/api/src/app.module.ts
+  10:10  warning  'CsrfMiddleware' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  69:13  warning  'consumer' is defined but never used. Allowed unused args must match /^_/u        @typescript-eslint/no-unused-vars
+
+/Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/apps/api/src/auth/dto/login.dto.ts
+  7:3  warning  'Matches' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
 /Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/apps/api/src/auth/strategies/jwt/jwt.ts
   29:13  warning  'passwordHash' is assigned a value but never used. Allowed unused vars must match /^_/u          @typescript-eslint/no-unused-vars
   29:27  warning  'passwordResetToken' is assigned a value but never used. Allowed unused vars must match /^_/u    @typescript-eslint/no-unused-vars
@@ -12,5 +19,5 @@
   43:7  warning  'passwordResetToken' is assigned a value but never used. Allowed unused vars must match /^_/u    @typescript-eslint/no-unused-vars
   44:7  warning  'passwordResetExpires' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
 
-✖ 7 problems (0 errors, 7 warnings)
+✖ 10 problems (0 errors, 10 warnings)
 

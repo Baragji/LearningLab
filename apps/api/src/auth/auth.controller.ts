@@ -13,10 +13,12 @@ import {
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { LoginThrottlerGuard } from './guards/login-throttler.guard';
 import { User as CoreUser } from '@repo/core'; // Importer CoreUser fra @repo/core
 import { LoginDto } from './dto/login.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { RefreshTokenDto } from './dto/refresh-token.dto';
 
 // Definer en type for request objektet, der indeholder brugeren efter autentificering
 interface AuthenticatedRequest extends globalThis.Request {
@@ -28,14 +30,14 @@ interface AuthenticatedRequest extends globalThis.Request {
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  @UseGuards(LocalAuthGuard)
+  @UseGuards(LoginThrottlerGuard, LocalAuthGuard)
   @Post('login')
   @HttpCode(HttpStatus.OK)
   async login(
     @Request() req: AuthenticatedRequest,
     // loginDto er her for Swagger og klarhed, validering sker i LocalStrategy/AuthService
     @Body() _loginDto: LoginDto, // Prefix with underscore to indicate it's intentionally unused
-  ): Promise<{ access_token: string }> {
+  ): Promise<{ access_token: string; refresh_token: string }> {
     // req.user er sat af LocalStrategy (via AuthService.validateUser), som nu returnerer CoreUser formatet
     return this.authService.login(req.user);
   }
@@ -51,6 +53,7 @@ export class AuthController {
     return req.user;
   }
 
+  @UseGuards(LoginThrottlerGuard)
   @Post('forgot-password')
   @HttpCode(HttpStatus.OK)
   async forgotPassword(
@@ -59,11 +62,20 @@ export class AuthController {
     return this.authService.forgotPassword(forgotPasswordDto.email);
   }
 
+  @UseGuards(LoginThrottlerGuard)
   @Post('reset-password')
   @HttpCode(HttpStatus.OK)
   async resetPassword(
     @Body(new ValidationPipe()) resetPasswordDto: ResetPasswordDto,
   ): Promise<{ message: string }> {
     return this.authService.resetPassword(resetPasswordDto);
+  }
+
+  @Post('refresh')
+  @HttpCode(HttpStatus.OK)
+  async refreshToken(
+    @Body(new ValidationPipe()) refreshTokenDto: RefreshTokenDto,
+  ): Promise<{ access_token: string }> {
+    return this.authService.refreshToken(refreshTokenDto.refresh_token);
   }
 }
