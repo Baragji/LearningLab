@@ -26,6 +26,9 @@ const CourseDetail: React.FC = () => {
           { id: 102, title: 'Opsætning af udviklingsmiljø', duration: '15 min' },
           { id: 103, title: 'Din første React-komponent', duration: '20 min' },
         ],
+        quizzes: [
+          { id: 1, title: 'React Grundbegreber Quiz', duration: '15 min' }
+        ]
       },
       {
         id: 2,
@@ -35,6 +38,9 @@ const CourseDetail: React.FC = () => {
           { id: 202, title: 'Funktionelle komponenter vs. klassekomponenter', duration: '20 min' },
           { id: 203, title: 'Props og PropTypes', duration: '25 min' },
         ],
+        quizzes: [
+          { id: 2, title: 'Komponenter og Props Quiz', duration: '15 min' }
+        ]
       },
       {
         id: 3,
@@ -44,6 +50,9 @@ const CourseDetail: React.FC = () => {
           { id: 302, title: 'useState hook', duration: '20 min' },
           { id: 303, title: 'useEffect hook', duration: '25 min' },
         ],
+        quizzes: [
+          { id: 3, title: 'State og Lifecycle Quiz', duration: '15 min' }
+        ]
       },
       {
         id: 4,
@@ -53,6 +62,9 @@ const CourseDetail: React.FC = () => {
           { id: 402, title: 'Forms og controlled components', duration: '20 min' },
           { id: 403, title: 'Lifting state up', duration: '25 min' },
         ],
+        quizzes: [
+          { id: 4, title: 'Events og Forms Quiz', duration: '15 min' }
+        ]
       },
     ],
   };
@@ -124,10 +136,16 @@ const CourseDetail: React.FC = () => {
                 <div key={module.id} className="border border-gray-200 dark:border-gray-700 rounded-md overflow-hidden">
                   <div className="bg-gray-50 dark:bg-gray-750 px-4 py-3 flex justify-between items-center">
                     <h3 className="font-medium text-gray-800 dark:text-white">{module.title}</h3>
-                    <span className="text-sm text-gray-500 dark:text-gray-400">{module.lessons.length} lektioner</span>
+                    <div className="flex items-center space-x-4">
+                      <span className="text-sm text-gray-500 dark:text-gray-400">{module.lessons.length} lektioner</span>
+                      {module.quizzes && module.quizzes.length > 0 && (
+                        <span className="text-sm text-gray-500 dark:text-gray-400">{module.quizzes.length} quiz(zer)</span>
+                      )}
+                    </div>
                   </div>
                   
                   <div className="divide-y divide-gray-200 dark:divide-gray-700">
+                    {/* Lessons */}
                     {module.lessons.map((lesson) => (
                       <Link 
                         href={`/lessons/${lesson.id}`} 
@@ -142,6 +160,28 @@ const CourseDetail: React.FC = () => {
                           <span className="text-gray-700 dark:text-gray-200">{lesson.title}</span>
                         </div>
                         <span className="text-sm text-gray-500 dark:text-gray-400">{lesson.duration}</span>
+                      </Link>
+                    ))}
+                    
+                    {/* Quizzes */}
+                    {module.quizzes && module.quizzes.map((quiz) => (
+                      <Link 
+                        href={`/courses/${slug}/quizzes/${quiz.id}`} 
+                        key={`quiz-${quiz.id}`}
+                        className="flex justify-between items-center px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-750 bg-blue-50 dark:bg-blue-900/10"
+                      >
+                        <div className="flex items-center">
+                          <svg className="h-5 w-5 mr-3 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                          </svg>
+                          <span className="text-gray-700 dark:text-gray-200 font-medium">{quiz.title}</span>
+                        </div>
+                        <div className="flex items-center">
+                          <span className="text-sm text-gray-500 dark:text-gray-400 mr-2">{quiz.duration}</span>
+                          <svg className="h-4 w-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          </svg>
+                        </div>
                       </Link>
                     ))}
                   </div>
