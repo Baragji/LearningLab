@@ -39,9 +39,9 @@ export class UsersService {
     user: PrismaGeneratedUserType,
   ): Omit<CoreUser, 'passwordHash'> {
     const {
-      _passwordHash,
-      _passwordResetToken,
-      _passwordResetExpires,
+      passwordHash,
+      passwordResetToken,
+      passwordResetExpires,
       ...result
     } = user;
     return {
