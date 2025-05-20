@@ -1,13 +1,15 @@
-import { Button } from "ui";
+import { useEffect } from 'react';
+import { useRouter } from 'next/router';
 import { useHelloQuery } from "../src/store/services/api";
 
-export default function Web() {
+export default function Home() {
+  const router = useRouter();
   const { data } = useHelloQuery();
+  
+  useEffect(() => {
+    // Redirect to dashboard
+    router.push('/dashboard');
+  }, [router]);
 
-  return (
-    <div>
-      <h1>{data?.message}</h1>
-      <Button />
-    </div>
-  );
+  return null; // No need to render anything as we're redirecting
 }

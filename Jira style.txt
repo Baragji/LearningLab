@@ -1,0 +1,107 @@
+# Jira‑style Roadmap Board
+
+---
+
+## 🌐 Legend
+
+| **Status**  | Meaning        |
+| ----------- | -------------- |
+| **TODO**    | Ikke startet   |
+| **WIP**     | I gang         |
+| **BLOCKED** | Afventer andet |
+| **DONE**    | Færdig         |
+
+Story Points følger en grov T‑shirt‑estimatskala (1, 2, 3, 5, 8, 13).
+
+---
+
+## 🧩 EPICS & Stories
+
+### **E0 – Fundament** (Target: 3 dev‑dage)
+
+| Key  | Summary                           | Type  | SP | Status | Acceptance Criteria                                                   |
+| ---- | --------------------------------- | ----- | -- | ------ | --------------------------------------------------------------------- |
+| E0‑1 | Monorepo opsat med yarn + Turbo   | Story | 3  | DONE   | `yarn dev` starter både **apps/frontend** og **apps/backend** med HMR |
+| E0‑2 | CI/CD skeleton på GitHub Actions  | Story | 2  | DONE   | Workflow install → lint → test → build på push → badge grøn           |
+| E0‑3 | Core shared packages (ui, config) | Story | 3  | DONE   | `import { Button } from '@repo/ui'` virker i frontend                 |
+
+---
+
+### **E1 – MVP‑UI** (Target: 5 dev‑dage)
+
+| Key  | Summary                      | Type  | SP | Status | Acceptance Criteria                                                     |
+| ---- | ---------------------------- | ----- | -- | ------ | ----------------------------------------------------------------------- |
+| E1‑1 | Layout & App‑shell           | Story | 5  | WIP    | Header m. logo, user‑menu; sidebar collapsible; dark‑mode toggle        |
+| E1‑2 | AuthContext + ProtectedRoute | Story | 3  | TODO   | Uautoriseret redirect → `/login`; efter login redirect → lastRoute      |
+| E1‑3 | Dashboard page               | Story | 5  | TODO   | Grid af kurser (`/courses` API) + placeholder statistik                 |
+| E1‑4 | Kursusflow V1                | Story | 8  | TODO   | `courses/[slug]` → modul‑liste; `lessons/[id]` viser TEXT‑contentBlocks |
+
+---
+
+### **E2 – Quiz Core** (Target: 5 dev‑dage)
+
+| Key  | Summary                      | Type  | SP | Status | Acceptance Criteria                              |
+| ---- | ---------------------------- | ----- | -- | ------ | ------------------------------------------------ |
+| E2‑1 | Quiz UI V1                   | Story | 8  | TODO   | En‑ad‑gangen spørgsmål; Submit giver score‑toast |
+| E2‑2 | Resultatside & fremdrift     | Story | 5  | TODO   | Radial progress + liste over forkerte svar       |
+| E2‑3 | UserProgress API‑integration | Story | 3  | TODO   | PATCH `/user-progress` efter quiz                |
+
+---
+
+### **E3 – Admin + CLI** (Target: 5 dev‑dage)
+
+| Key  | Summary                     | Type  | SP | Status | Acceptance Criteria                                          |
+| ---- | --------------------------- | ----- | -- | ------ | ------------------------------------------------------------ |
+| E3‑1 | Seed‑script med demo‑pensum | Story | 3  | TODO   | `yarn seed` opretter 2 fagområder, 3 kurser, 10 quizzer      |
+| E3‑2 | Admin Panel V0 (CRUD)       | Story | 8  | TODO   | Create/edit/delete course, module, lesson, quiz              |
+| E3‑3 | create‑solid‑wow CLI        | Story | 5  | TODO   | `npx create-solid-wow` kloner repo, kører install, seed, dev |
+
+---
+
+### **E4 – UX Polish & Gamification** (Target: 10 dev‑dage)
+
+| Key  | Summary                 | Type  | SP | Status | Acceptance Criteria                              |
+| ---- | ----------------------- | ----- | -- | ------ | ------------------------------------------------ |
+| E4‑1 | Theming & Dark‑mode     | Story | 3  | TODO   | Skift tema uden refresh, gemmes i localStorage   |
+| E4‑2 | Skeleton loading states | Story | 2  | TODO   | `<Skeleton />` vises >300 ms API‑latency         |
+| E4‑3 | XP‑system & badges      | Story | 8  | TODO   | XP points pr. quiz; websocket push; badge dialog |
+| E4‑4 | Command Palette         | Story | 3  | TODO   | `⌘K` åbner søge‑palette (kbar)                   |
+
+---
+
+### **E5 – AI & Adaptiv læring** (Target: 10 dev‑dage)
+
+| Key  | Summary                        | Type  | SP | Status | Acceptance Criteria                             |
+| ---- | ------------------------------ | ----- | -- | ------ | ----------------------------------------------- |
+| E5‑1 | AI‑genereret spørgsmål fra PDF | Story | 8  | TODO   | Upload PDF → 5 MC‑spørgsmål i DB efter <60 s    |
+| E5‑2 | Adaptiv quiz efter fejlrate    | Story | 5  | TODO   | Hvis score <70 % → ny quiz med svære spørgsmål  |
+| E5‑3 | Chat‑kompagnon (LLM)           | Story | 8  | TODO   | `/chat` endpoint; UI chat‑widget på lesson‑side |
+
+---
+
+### **E6 – "Wow"‑pakke** (Kan drysses løbende)
+
+| Key  | Summary           | Type  | SP | Status | Acceptance Criteria                        |
+| ---- | ----------------- | ----- | -- | ------ | ------------------------------------------ |
+| E6‑1 | SCORM/xAPI player | Story | 13 | TODO   | Indlæs SCORM zip; track completion         |
+| E6‑2 | Offline‑first PWA | Story | 8  | TODO   | Quiz kan tages offline; sync ved reconnect |
+| E6‑3 | Voice commands    | Story | 5  | TODO   | "Next question" via Web Speech API         |
+
+---
+
+## 📅 Sprint‑proposal
+
+| Sprint       | Scope                                           | SP‑sum |
+| ------------ | ----------------------------------------------- | ------ |
+| 🔭 Sprint 0  | E0‑1, E0‑2, E0‑3                                | 8      |
+| 🚀 Sprint 1  | E1‑1 → E1‑3                                     | 13     |
+| ✨ Sprint 2   | E1‑4, E2‑1                                      | 16     |
+| 📊 Sprint 3  | E2‑2, E2‑3, E3‑1                                | 11     |
+| 🛠️ Sprint 4 | E3‑2, E3‑3                                      | 13     |
+| 🎨 Sprint 5  | E4‑1 → E4‑4                                     | 16     |
+| 🤖 Sprint 6  | E5‑1 → E5‑3                                     | 21     |
+| 🏆 Sprint 7  | E6‑1 → E6‑3 (strøges/omprioriteres efter behov) | 26     |
+
+---
+
+*Opdater status og story points efter hver daily / QA‑cyklus.*
