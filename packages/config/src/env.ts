@@ -85,6 +85,7 @@ export const clientEnv = (): Readonly<ClientEnv> => {
 try {
   serverEnv();
   // console.log('✅ Server-miljøvariabler valideret og indlæst.');
-} catch (e) {
+} catch (error) {
+  console.error('❌ Fejl ved validering af server-miljøvariabler:', error);
   process.exit(1);
 }

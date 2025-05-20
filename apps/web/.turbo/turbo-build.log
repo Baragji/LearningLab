@@ -1,11 +1,6 @@
 - info Loaded env from /Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/apps/web/.env.local
 - info Linting and checking validity of types...
 - info Creating an optimized production build...
-
-warn - Your `content` configuration includes a pattern which looks like it's accidentally matching all of `node_modules` and can cause serious performance issues.
-warn - Pattern: `../../packages/ui/**/*.ts`
-warn - See our documentation for recommendations:
-warn - https://tailwindcss.com/docs/content-configuration#pattern-recommendations
 - info Compiled successfully
 - info Collecting page data...
 - info Generating static pages (0/8)
@@ -24,12 +19,12 @@ Route (pages)                              Size     First Load JS
 ├ ○ /profile                               1.3 kB          104 kB
 ├ ○ /reset-password                        1.87 kB         105 kB
 └ ○ /signup                                1.81 kB         105 kB
-+ First Load JS shared by all              105 kB
++ First Load JS shared by all              106 kB
   ├ chunks/framework-900934921c83a903.js   45.2 kB
   ├ chunks/main-8bfef811589a75fb.js        28.5 kB
   ├ chunks/pages/_app-dceabc9a930ebf35.js  28.2 kB
   ├ chunks/webpack-ee7e63bc15b31913.js     818 B
-  └ css/93e4590fbbd1bab8.css               2.69 kB
+  └ css/aff5a94070134045.css               3.05 kB
 
 ○  (Static)  automatically rendered as static HTML (uses no initial props)
 
