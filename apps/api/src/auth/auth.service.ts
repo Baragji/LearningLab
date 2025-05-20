@@ -1,8 +1,5 @@
 // File: apps/api/src/auth/auth.service.ts
-import {
-  Injectable,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
@@ -19,6 +16,8 @@ export class AuthService {
   private readonly saltRounds: number;
   private readonly jwtSecret: string;
   private readonly jwtExpiresIn: string;
+  private readonly jwtRefreshSecret: string;
+  private readonly jwtRefreshExpiresIn: string;
 
   constructor(
     private readonly usersService: UsersService,
@@ -27,16 +26,33 @@ export class AuthService {
     private readonly configService: ConfigService,
   ) {
     // Hent SALT_ROUNDS fra config, med en default værdi hvis den ikke er sat eller er ugyldig
-    const saltFromEnv = this.configService.get<string | number>('SALT_ROUNDS', 10); // Default 10
-    this.saltRounds = typeof saltFromEnv === 'string' ? parseInt(saltFromEnv, 10) : saltFromEnv;
+    const saltFromEnv = this.configService.get<string | number>(
+      'SALT_ROUNDS',
+      10,
+    ); // Default 10
+    this.saltRounds =
+      typeof saltFromEnv === 'string' ? parseInt(saltFromEnv, 10) : saltFromEnv;
     if (isNaN(this.saltRounds)) {
-        console.warn(`SALT_ROUNDS var ugyldig, falder tilbage til 10. Værdi: ${saltFromEnv}`);
-        this.saltRounds = 10;
+      console.warn(
+        `SALT_ROUNDS var ugyldig, falder tilbage til 10. Værdi: ${saltFromEnv}`,
+      );
+      this.saltRounds = 10;
     }
 
-    // Hent JWT_SECRET og JWT_EXPIRES_IN. Disse forventes at være sat korrekt via ConfigModule.
+    // Hent JWT konfiguration. Disse forventes at være sat korrekt via ConfigModule.
     this.jwtSecret = this.configService.get<string>('JWT_SECRET');
-    this.jwtExpiresIn = this.configService.get<string>('JWT_EXPIRES_IN', '3600s'); // Default 1 time
+    this.jwtExpiresIn = this.configService.get<string>(
+      'JWT_EXPIRES_IN',
+      '900s',
+    ); // Default 15 minutter
+    this.jwtRefreshSecret = this.configService.get<string>(
+      'JWT_REFRESH_SECRET',
+      this.jwtSecret + '_refresh',
+    );
+    this.jwtRefreshExpiresIn = this.configService.get<string>(
+      'JWT_REFRESH_EXPIRES_IN',
+      '7d',
+    ); // Default 7 dage
   }
 
   // Mapper en Prisma User til en CoreUser (uden passwordHash)
@@ -67,17 +83,57 @@ export class AuthService {
     return null;
   }
 
-  // Genererer et JWT access token for en valideret bruger
+  // Genererer JWT access og refresh tokens for en valideret bruger
   async login(
     user: Omit<CoreUser, 'passwordHash'>, // Forventer allerede CoreUser format
-  ): Promise<{ access_token: string }> {
+  ): Promise<{ access_token: string; refresh_token: string }> {
     const payload: JwtPayload = { email: user.email, sub: user.id };
+
+    // Generer access token med kort levetid
+    const access_token = this.jwtService.sign(payload, {
+      secret: this.jwtSecret,
+      expiresIn: this.jwtExpiresIn,
+    });
+
+    // Generer refresh token med længere levetid
+    const refresh_token = this.jwtService.sign(payload, {
+      secret: this.jwtRefreshSecret,
+      expiresIn: this.jwtRefreshExpiresIn,
+    });
+
     return {
-      access_token: this.jwtService.sign(payload, {
-        secret: this.jwtSecret,
-        expiresIn: this.jwtExpiresIn,
-      }),
+      access_token,
+      refresh_token,
     };
+  }
+
+  // Forny access token ved brug af et gyldigt refresh token
+  async refreshToken(refresh_token: string): Promise<{ access_token: string }> {
+    try {
+      // Verificer refresh token
+      const payload = this.jwtService.verify(refresh_token, {
+        secret: this.jwtRefreshSecret,
+      }) as JwtPayload;
+
+      // Hent bruger for at sikre, at den stadig eksisterer
+      const user = await this.usersService.findOneById(payload.sub);
+      if (!user) {
+        throw new Error('Bruger ikke fundet');
+      }
+
+      // Generer nyt access token
+      const access_token = this.jwtService.sign(
+        { email: payload.email, sub: payload.sub },
+        {
+          secret: this.jwtSecret,
+          expiresIn: this.jwtExpiresIn,
+        },
+      );
+
+      return { access_token };
+    } catch (error) {
+      throw new BadRequestException('Ugyldigt eller udløbet refresh token');
+    }
   }
 
   /**
@@ -110,7 +166,7 @@ export class AuthService {
         },
       });
     } catch (error) {
-      console.error("Fejl ved opdatering af password reset token i DB:", error);
+      console.error('Fejl ved opdatering af password reset token i DB:', error);
       // Selvom der er en intern fejl, returner stadig generisk besked for sikkerhed.
       // Logning er vigtig her for at kunne debugge.
       return {
@@ -118,13 +174,11 @@ export class AuthService {
           'Der opstod et problem med at behandle din anmodning. Prøv igen senere.',
       };
     }
-    
 
     // TODO: Implementer afsendelse af email med nulstillingslinket.
     // Eksempel: sendEmail(user.email, `Nulstil dit password: ${frontendUrl}/reset-password?token=${resetToken}`);
     // Log token for udviklingsformål indtil email er implementeret:
     console.log(`Password reset token for ${user.email}: ${resetToken}`);
-
 
     return {
       message:
@@ -156,34 +210,39 @@ export class AuthService {
       !user.passwordResetExpires ||
       user.passwordResetExpires < new Date() // Tjek om tokenet er udløbet
     ) {
-      throw new BadRequestException('Ugyldigt eller udløbet reset-token. Prøv at anmode om et nyt link.');
+      throw new BadRequestException(
+        'Ugyldigt eller udløbet reset-token. Prøv at anmode om et nyt link.',
+      );
     }
 
     // Hash det nye password
     let hashedPassword;
     try {
-        hashedPassword = await bcrypt.hash(newPassword, this.saltRounds);
+      hashedPassword = await bcrypt.hash(newPassword, this.saltRounds);
     } catch (error) {
-        console.error("Fejl under hashing af nyt password ved reset:", error);
-        throw new BadRequestException("Der opstod en fejl ved behandling af dit nye password.");
+      console.error('Fejl under hashing af nyt password ved reset:', error);
+      throw new BadRequestException(
+        'Der opstod en fejl ved behandling af dit nye password.',
+      );
     }
-    
 
     // Opdater brugerens password og fjern reset-tokenet
     try {
-        await this.prisma.user.update({
-            where: { id: user.id },
-            data: {
-              passwordHash: hashedPassword,
-              passwordResetToken: null, // Nulstil tokenet, så det ikke kan bruges igen
-              passwordResetExpires: null, // Nulstil udløbsdato
-            },
-          });
+      await this.prisma.user.update({
+        where: { id: user.id },
+        data: {
+          passwordHash: hashedPassword,
+          passwordResetToken: null, // Nulstil tokenet, så det ikke kan bruges igen
+          passwordResetExpires: null, // Nulstil udløbsdato
+        },
+      });
     } catch (dbError) {
-        console.error("Fejl ved opdatering af password i DB efter reset:", dbError);
-        throw new BadRequestException("Der opstod en databasefejl. Prøv igen.");
+      console.error(
+        'Fejl ved opdatering af password i DB efter reset:',
+        dbError,
+      );
+      throw new BadRequestException('Der opstod en databasefejl. Prøv igen.');
     }
-    
 
     return { message: 'Din adgangskode er blevet nulstillet med succes.' };
   }

@@ -15,13 +15,15 @@ interface User {
 // Definer typen for værdierne i vores AuthContext
 interface AuthContextType {
   user: User | null; // Den aktuelle bruger eller null, hvis ikke logget ind
-  token: string | null; // JWT token
+  token: string | null; // JWT access token
+  refreshToken: string | null; // JWT refresh token
   isLoading: boolean; // Til at vise loading state under auth operationer
   login: (email: string, password: string) => Promise<void>; // Funktion til at logge ind
   logout: () => void; // Funktion til at logge ud
   signup: (name: string | undefined, email: string, password: string) => Promise<void>; // Funktion til at oprette en ny bruger
   forgotPassword: (email: string) => Promise<string>; // Funktion til at anmode om nulstilling af adgangskode
   resetPassword: (token: string, newPassword: string, confirmPassword: string) => Promise<string>; // Funktion til at nulstille adgangskode
+  refreshAccessToken: () => Promise<boolean>; // Funktion til at forny access token
 }
 
 // Opret AuthContext med en default værdi (typisk undefined eller null)
@@ -36,7 +38,9 @@ interface AuthProviderProps {
 export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
+  const [refreshToken, setRefreshToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true); // Start med loading true for at tjekke initial auth state
+  const [tokenExpiresAt, setTokenExpiresAt] = useState<number | null>(null);
   const router = useRouter();
 
   // Funktion til at hente brugerprofil baseret på et token
@@ -74,19 +78,123 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   };
   
-  // useEffect til at tjekke for token i localStorage ved app-start (kun én gang)
+  // Funktion til at dekode JWT token og få udløbstidspunkt
+  const getTokenExpiration = (token: string): number => {
+    try {
+      // Simpel JWT dekodning uden bibliotek
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = decodeURIComponent(
+        atob(base64)
+          .split('')
+          .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+          .join('')
+      );
+      const payload = JSON.parse(jsonPayload);
+      return payload.exp * 1000; // Konverter til millisekunder
+    } catch (error) {
+      console.error('Fejl ved dekodning af token:', error);
+      return Date.now() + 15 * 60 * 1000; // Default 15 minutter fra nu
+    }
+  };
+
+  // Funktion til at forny access token ved brug af refresh token
+  const refreshAccessToken = async () => {
+    if (!refreshToken) return false;
+    
+    try {
+      setIsLoading(true);
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL || '/api';
+      const response = await fetch(`${baseUrl}/auth/refresh`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ refresh_token: refreshToken }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Kunne ikke forny token');
+      }
+
+      const data = await response.json();
+      const newAccessToken = data.access_token;
+      
+      // Gem nyt access token
+      localStorage.setItem('accessToken', newAccessToken);
+      setToken(newAccessToken);
+      
+      // Opdater udløbstidspunkt
+      const newExpiresAt = getTokenExpiration(newAccessToken);
+      setTokenExpiresAt(newExpiresAt);
+      
+      setIsLoading(false);
+      return true;
+    } catch (error) {
+      console.error('Fejl ved fornyelse af token:', error);
+      // Ved fejl, log brugeren ud
+      logout();
+      setIsLoading(false);
+      return false;
+    }
+  };
+
+  // useEffect til at tjekke for tokens i localStorage ved app-start
   useEffect(() => {
     console.log('AuthContext: Initialiserer auth state...');
     const storedToken = localStorage.getItem('accessToken');
+    const storedRefreshToken = localStorage.getItem('refreshToken');
+    
     if (storedToken) {
       console.log('AuthContext: Token fundet i localStorage, forsøger at hente profil.');
-      fetchUserProfile(storedToken);
+      
+      // Sæt tokens og udløbstidspunkt
+      setToken(storedToken);
+      setRefreshToken(storedRefreshToken);
+      
+      // Beregn udløbstidspunkt
+      const expiresAt = getTokenExpiration(storedToken);
+      setTokenExpiresAt(expiresAt);
+      
+      // Hvis token er udløbet og vi har et refresh token, forny det
+      if (Date.now() >= expiresAt && storedRefreshToken) {
+        console.log('AuthContext: Token er udløbet, forsøger at forny med refresh token.');
+        refreshAccessToken().then(success => {
+          if (success) {
+            fetchUserProfile(token!);
+          }
+        });
+      } else {
+        // Ellers brug det eksisterende token
+        fetchUserProfile(storedToken);
+      }
     } else {
       console.log('AuthContext: Intet token fundet i localStorage.');
       setIsLoading(false); // Ingen token, så vi er ikke i gang med at loade bruger
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Tomt dependency array sikrer, at dette kun kører ved mount
+  
+  // useEffect til at håndtere automatisk fornyelse af token før det udløber
+  useEffect(() => {
+    if (!token || !tokenExpiresAt) return;
+    
+    // Beregn tid til udløb i millisekunder
+    const timeUntilExpiry = tokenExpiresAt - Date.now();
+    
+    // Hvis token udløber om mindre end 5 minutter, forny det
+    if (timeUntilExpiry < 5 * 60 * 1000) {
+      refreshAccessToken();
+      return;
+    }
+    
+    // Ellers planlæg fornyelse 5 minutter før udløb
+    const refreshTimeout = setTimeout(() => {
+      console.log('AuthContext: Planlægger fornyelse af token 5 minutter før udløb.');
+      refreshAccessToken();
+    }, timeUntilExpiry - 5 * 60 * 1000);
+    
+    return () => clearTimeout(refreshTimeout);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token, tokenExpiresAt]);
 
   const login = async (email: string, password: string) => {
     setIsLoading(true);
@@ -110,15 +218,30 @@ export function AuthProvider({ children }: AuthProviderProps) {
         throw new Error(errorMessage);
       }
 
-      const data: { access_token: string } = await response.json();
+      const data: { access_token: string; refresh_token: string } = await response.json();
+      
+      // Gem tokens i localStorage
       localStorage.setItem('accessToken', data.access_token);
-      console.log('AuthContext: Token gemt efter login.');
+      localStorage.setItem('refreshToken', data.refresh_token);
+      
+      // Opdater state
+      setToken(data.access_token);
+      setRefreshToken(data.refresh_token);
+      
+      // Beregn udløbstidspunkt
+      const expiresAt = getTokenExpiration(data.access_token);
+      setTokenExpiresAt(expiresAt);
+      
+      console.log('AuthContext: Tokens gemt efter login.');
       await fetchUserProfile(data.access_token); // Hent og sæt brugerprofil efter login
       router.push('/profile'); // Omdiriger til profil efter succesfuldt login
     } catch (error: any) {
       console.error('AuthContext: Login fejl:', error);
       localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
       setToken(null);
+      setRefreshToken(null);
+      setTokenExpiresAt(null);
       setUser(null);
       setIsLoading(false);
       throw error; // Kast fejlen videre, så LoginScreen kan fange den og vise den
@@ -129,7 +252,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const logout = () => {
     console.log('AuthContext: Logger ud...');
     localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
     setToken(null);
+    setRefreshToken(null);
+    setTokenExpiresAt(null);
     setUser(null);
     router.push('/login'); // Omdiriger til login-siden efter logout
   };
@@ -283,12 +409,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const value = {
     user,
     token,
+    refreshToken,
     isLoading,
     login,
     logout,
     signup,
     forgotPassword,
     resetPassword,
+    refreshAccessToken,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
