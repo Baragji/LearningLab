@@ -3,28 +3,32 @@
 - info Creating an optimized production build...
 - info Compiled successfully
 - info Collecting page data...
-- info Generating static pages (0/8)
-- info Generating static pages (2/8)
-- info Generating static pages (4/8)
-- info Generating static pages (6/8)
-- info Generating static pages (8/8)
+- info Generating static pages (0/12)
+- info Generating static pages (3/12)
+- info Generating static pages (6/12)
+- info Generating static pages (9/12)
+- info Generating static pages (12/12)
 - info Finalizing page optimization...
 
 Route (pages)                              Size     First Load JS
-┌ ○ /                                      360 B           104 kB
-├   /_app                                  0 B             104 kB
-├ ○ /404                                   180 B           104 kB
-├ ○ /forgot-password                       1.63 kB         105 kB
-├ ○ /login                                 1.48 kB         105 kB
-├ ○ /profile                               1.3 kB          105 kB
-├ ○ /reset-password                        1.73 kB         105 kB
-└ ○ /signup                                1.66 kB         105 kB
-+ First Load JS shared by all              107 kB
+┌ ○ /                                      309 B           110 kB
+├   /_app                                  0 B             110 kB
+├ ○ /404                                   180 B           110 kB
+├ ○ /courses                               1.54 kB         111 kB
+├ ○ /courses/[slug]                        1.8 kB          111 kB
+├ ○ /dashboard                             981 B           111 kB
+├ ○ /forgot-password                       1.63 kB         111 kB
+├ ○ /lessons/[id]                          2.21 kB         112 kB
+├ ○ /login                                 1.48 kB         111 kB
+├ ○ /profile                               1.3 kB          111 kB
+├ ○ /reset-password                        1.73 kB         111 kB
+└ ○ /signup                                1.66 kB         111 kB
++ First Load JS shared by all              114 kB
   ├ chunks/framework-900934921c83a903.js   45.2 kB
   ├ chunks/main-8bfef811589a75fb.js        28.5 kB
-  ├ chunks/pages/_app-e7dc36ba4d2db1b4.js  29.2 kB
+  ├ chunks/pages/_app-d6f9b09eef9a396a.js  35.1 kB
   ├ chunks/webpack-ee7e63bc15b31913.js     818 B
-  └ css/aff5a94070134045.css               3.05 kB
+  └ css/17b23cf0fd1f29ce.css               4.76 kB
 
 ○  (Static)  automatically rendered as static HTML (uses no initial props)
 

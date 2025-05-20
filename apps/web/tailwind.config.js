@@ -31,6 +31,9 @@ module.exports = {
           800: '#002966',
           900: '#001433',
         },
+        gray: {
+          750: '#2d3748', // Adding the custom gray-750 color
+        },
       },
     },
   },
