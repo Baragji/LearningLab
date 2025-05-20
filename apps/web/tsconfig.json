@@ -1,5 +1,17 @@
 {
-  "extends": "tsconfig/nextjs.json",
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "jest.setup.js"],
-  "exclude": ["node_modules"]
+  "extends": "../../packages/tsconfig/nextjs.json",
+  "compilerOptions": {
+    "baseUrl": ".", // Eller "./src" for at bruge paths-aliaset nedenfor
+    "rootDir": "src", // Antager at din kildekode er i en 'src' mappe
+    // "paths": { // Valgfrit: Hvis baseUrl er "./src"
+    //   "@/*": ["*"]
+    // }
+  },
+  "include": ["next-env.d.ts", "src"],
+  "exclude": ["node_modules"],
+  "references": [
+    { "path": "../../packages/ui" },
+    { "path": "../../packages/core" },
+    { "path": "../../packages/config" }
+  ]
 }

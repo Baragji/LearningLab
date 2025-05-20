@@ -1,5 +1,7 @@
 // apps/web/src/screens/auth/login/login.test.tsx
 import { render } from "@testing-library/react";
+import { Provider } from 'react-redux';
+import store from '../../../store';
 import { LoginScreen } from "./login";
 import { AuthProvider } from '../../../context/AuthContext'; // Sørg for korrekt importsti
 
@@ -8,10 +10,12 @@ import { AuthProvider } from '../../../context/AuthContext'; // Sørg for korrek
 // Hvis du *ikke* har en jest.setup.js eller foretrækker at gøre det her:
 // jest.mock('next/router', () => require('next-router-mock'));
 
-test("render login component", () => {
+test('vis login-form', () => {
   render(
-    <AuthProvider>
-      <LoginScreen />
-    </AuthProvider>
+    <Provider store={store}>
+      <AuthProvider>
+        <LoginScreen />
+      </AuthProvider>
+    </Provider>
   );
 });
