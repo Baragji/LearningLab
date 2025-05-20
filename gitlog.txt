@@ -1,0 +1,342 @@
+2025-05-20T19:40:12.6707439Z Current runner version: '2.324.0'
+2025-05-20T19:40:12.6731172Z ##[group]Runner Image Provisioner
+2025-05-20T19:40:12.6732047Z Hosted Compute Agent
+2025-05-20T19:40:12.6732815Z Version: 20250508.323
+2025-05-20T19:40:12.6733381Z Commit: 81b259f29879f73b4213d199e42d8c3465dae986
+2025-05-20T19:40:12.6734076Z Build Date: 2025-05-08T19:40:08Z
+2025-05-20T19:40:12.6734617Z ##[endgroup]
+2025-05-20T19:40:12.6735267Z ##[group]Operating System
+2025-05-20T19:40:12.6735799Z Ubuntu
+2025-05-20T19:40:12.6736257Z 24.04.2
+2025-05-20T19:40:12.6736751Z LTS
+2025-05-20T19:40:12.6737203Z ##[endgroup]
+2025-05-20T19:40:12.6737664Z ##[group]Runner Image
+2025-05-20T19:40:12.6738256Z Image: ubuntu-24.04
+2025-05-20T19:40:12.6738752Z Version: 20250511.1.0
+2025-05-20T19:40:12.6739729Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20250511.1/images/ubuntu/Ubuntu2404-Readme.md
+2025-05-20T19:40:12.6741275Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20250511.1
+2025-05-20T19:40:12.6742452Z ##[endgroup]
+2025-05-20T19:40:12.6743695Z ##[group]GITHUB_TOKEN Permissions
+2025-05-20T19:40:12.6745783Z Contents: read
+2025-05-20T19:40:12.6746414Z Metadata: read
+2025-05-20T19:40:12.6746974Z Packages: read
+2025-05-20T19:40:12.6747468Z ##[endgroup]
+2025-05-20T19:40:12.6749548Z Secret source: Actions
+2025-05-20T19:40:12.6750533Z Prepare workflow directory
+2025-05-20T19:40:12.7085647Z Prepare all required actions
+2025-05-20T19:40:12.7124913Z Getting action download info
+2025-05-20T19:40:13.0133534Z ##[group]Download immutable action package 'actions/checkout@v4'
+2025-05-20T19:40:13.0134523Z Version: 4.2.2
+2025-05-20T19:40:13.0135610Z Digest: sha256:ccb2698953eaebd21c7bf6268a94f9c26518a7e38e27e0b83c1fe1ad049819b1
+2025-05-20T19:40:13.0136766Z Source commit SHA: 11bd71901bbe5b1630ceea73d27597364c9af683
+2025-05-20T19:40:13.0137440Z ##[endgroup]
+2025-05-20T19:40:13.0767867Z ##[group]Download immutable action package 'actions/setup-node@v4'
+2025-05-20T19:40:13.0768648Z Version: 4.4.0
+2025-05-20T19:40:13.0769563Z Digest: sha256:9427cefe82346e992fb5b949e3569b39d537ae41aa3086483b14eceebfc16bc1
+2025-05-20T19:40:13.0770548Z Source commit SHA: 49933ea5288caeca8642d1e84afbd3f7d6820020
+2025-05-20T19:40:13.0771200Z ##[endgroup]
+2025-05-20T19:40:13.2442463Z Complete job name: Build and Test
+2025-05-20T19:40:13.3125979Z ##[group]Run actions/checkout@v4
+2025-05-20T19:40:13.3126808Z with:
+2025-05-20T19:40:13.3127181Z   fetch-depth: 0
+2025-05-20T19:40:13.3127597Z   repository: Baragji/LearningLab
+2025-05-20T19:40:13.3128234Z   token: ***
+2025-05-20T19:40:13.3128597Z   ssh-strict: true
+2025-05-20T19:40:13.3128978Z   ssh-user: git
+2025-05-20T19:40:13.3129369Z   persist-credentials: true
+2025-05-20T19:40:13.3129809Z   clean: true
+2025-05-20T19:40:13.3130193Z   sparse-checkout-cone-mode: true
+2025-05-20T19:40:13.3130661Z   fetch-tags: false
+2025-05-20T19:40:13.3131049Z   show-progress: true
+2025-05-20T19:40:13.3131444Z   lfs: false
+2025-05-20T19:40:13.3131796Z   submodules: false
+2025-05-20T19:40:13.3132354Z   set-safe-directory: true
+2025-05-20T19:40:13.3133058Z ##[endgroup]
+2025-05-20T19:40:13.4200950Z Syncing repository: Baragji/LearningLab
+2025-05-20T19:40:13.4202902Z ##[group]Getting Git version info
+2025-05-20T19:40:13.4203632Z Working directory is '/home/runner/work/LearningLab/LearningLab'
+2025-05-20T19:40:13.4204630Z [command]/usr/bin/git version
+2025-05-20T19:40:13.4237819Z git version 2.49.0
+2025-05-20T19:40:13.4263831Z ##[endgroup]
+2025-05-20T19:40:13.4286116Z Temporarily overriding HOME='/home/runner/work/_temp/d5da9f85-2e29-4356-99a6-ae1e749f8574' before making global git config changes
+2025-05-20T19:40:13.4288532Z Adding repository directory to the temporary git global config as a safe directory
+2025-05-20T19:40:13.4292987Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/LearningLab/LearningLab
+2025-05-20T19:40:13.4326329Z Deleting the contents of '/home/runner/work/LearningLab/LearningLab'
+2025-05-20T19:40:13.4330594Z ##[group]Initializing the repository
+2025-05-20T19:40:13.4335853Z [command]/usr/bin/git init /home/runner/work/LearningLab/LearningLab
+2025-05-20T19:40:13.4392739Z hint: Using 'master' as the name for the initial branch. This default branch name
+2025-05-20T19:40:13.4394414Z hint: is subject to change. To configure the initial branch name to use in all
+2025-05-20T19:40:13.4395873Z hint: of your new repositories, which will suppress this warning, call:
+2025-05-20T19:40:13.4396940Z hint:
+2025-05-20T19:40:13.4397435Z hint: 	git config --global init.defaultBranch <name>
+2025-05-20T19:40:13.4398000Z hint:
+2025-05-20T19:40:13.4398528Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2025-05-20T19:40:13.4399378Z hint: 'development'. The just-created branch can be renamed via this command:
+2025-05-20T19:40:13.4400043Z hint:
+2025-05-20T19:40:13.4400417Z hint: 	git branch -m <name>
+2025-05-20T19:40:13.4401517Z Initialized empty Git repository in /home/runner/work/LearningLab/LearningLab/.git/
+2025-05-20T19:40:13.4407078Z [command]/usr/bin/git remote add origin https://github.com/Baragji/LearningLab
+2025-05-20T19:40:13.4440394Z ##[endgroup]
+2025-05-20T19:40:13.4441544Z ##[group]Disabling automatic garbage collection
+2025-05-20T19:40:13.4445527Z [command]/usr/bin/git config --local gc.auto 0
+2025-05-20T19:40:13.4475292Z ##[endgroup]
+2025-05-20T19:40:13.4476496Z ##[group]Setting up auth
+2025-05-20T19:40:13.4483449Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2025-05-20T19:40:13.4514273Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2025-05-20T19:40:13.4762408Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2025-05-20T19:40:13.4791854Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2025-05-20T19:40:13.5004652Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2025-05-20T19:40:13.5037653Z ##[endgroup]
+2025-05-20T19:40:13.5038862Z ##[group]Fetching the repository
+2025-05-20T19:40:13.5057210Z [command]/usr/bin/git -c protocol.version=2 fetch --prune --no-recurse-submodules origin +refs/heads/*:refs/remotes/origin/* +refs/tags/*:refs/tags/*
+2025-05-20T19:40:15.1515415Z From https://github.com/Baragji/LearningLab
+2025-05-20T19:40:15.1517339Z  * [new branch]      MainOld2               -> origin/MainOld2
+2025-05-20T19:40:15.1518855Z  * [new branch]      UltBlue0.1             -> origin/UltBlue0.1
+2025-05-20T19:40:15.1521396Z  * [new branch]      main                   -> origin/main
+2025-05-20T19:40:15.1523063Z  * [new tag]         v1.0.0-initial-working -> v1.0.0-initial-working
+2025-05-20T19:40:15.1558717Z [command]/usr/bin/git branch --list --remote origin/main
+2025-05-20T19:40:15.1581880Z   origin/main
+2025-05-20T19:40:15.1591920Z [command]/usr/bin/git rev-parse refs/remotes/origin/main
+2025-05-20T19:40:15.1611925Z 4a73a0aa9b273430415c8fc6a1fbc18d12645437
+2025-05-20T19:40:15.1619029Z ##[endgroup]
+2025-05-20T19:40:15.1620408Z ##[group]Determining the checkout info
+2025-05-20T19:40:15.1621819Z ##[endgroup]
+2025-05-20T19:40:15.1625060Z [command]/usr/bin/git sparse-checkout disable
+2025-05-20T19:40:15.1663302Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2025-05-20T19:40:15.1689620Z ##[group]Checking out the ref
+2025-05-20T19:40:15.1694062Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+2025-05-20T19:40:15.2004873Z Switched to a new branch 'main'
+2025-05-20T19:40:15.2007094Z branch 'main' set up to track 'origin/main'.
+2025-05-20T19:40:15.2017208Z ##[endgroup]
+2025-05-20T19:40:15.2049695Z [command]/usr/bin/git log -1 --format=%H
+2025-05-20T19:40:15.2071105Z 4a73a0aa9b273430415c8fc6a1fbc18d12645437
+2025-05-20T19:40:15.2307285Z ##[group]Run actions/setup-node@v4
+2025-05-20T19:40:15.2308111Z with:
+2025-05-20T19:40:15.2308485Z   node-version: 22
+2025-05-20T19:40:15.2308899Z   cache: yarn
+2025-05-20T19:40:15.2309291Z   always-auth: false
+2025-05-20T19:40:15.2309735Z   check-latest: false
+2025-05-20T19:40:15.2310454Z   token: ***
+2025-05-20T19:40:15.2310870Z ##[endgroup]
+2025-05-20T19:40:15.4013858Z Found in cache @ /opt/hostedtoolcache/node/22.15.0/x64
+2025-05-20T19:40:15.4020390Z ##[group]Environment details
+2025-05-20T19:40:17.7895725Z node: v22.15.0
+2025-05-20T19:40:17.7896467Z npm: 10.9.2
+2025-05-20T19:40:17.7896883Z yarn: 4.9.1
+2025-05-20T19:40:17.7898201Z ##[endgroup]
+2025-05-20T19:40:17.7920635Z [command]/usr/local/bin/yarn --version
+2025-05-20T19:40:18.1054517Z 4.9.1
+2025-05-20T19:40:18.1225269Z [command]/usr/local/bin/yarn config get cacheFolder
+2025-05-20T19:40:18.4487794Z /home/runner/.yarn/berry/cache
+2025-05-20T19:40:18.4791954Z [command]/usr/local/bin/yarn config get enableGlobalCache
+2025-05-20T19:40:18.8041179Z [33mtrue[39m
+2025-05-20T19:40:18.9370456Z yarn cache is not found
+2025-05-20T19:40:18.9483192Z ##[group]Run corepack enable
+2025-05-20T19:40:18.9483522Z [36;1mcorepack enable[0m
+2025-05-20T19:40:18.9632650Z shell: /usr/bin/bash -e {0}
+2025-05-20T19:40:18.9632938Z ##[endgroup]
+2025-05-20T19:40:19.1868363Z ##[group]Run yarn install --immutable
+2025-05-20T19:40:19.1868713Z [36;1myarn install --immutable[0m
+2025-05-20T19:40:19.1922528Z shell: /usr/bin/bash -e {0}
+2025-05-20T19:40:19.1922779Z ##[endgroup]
+2025-05-20T19:40:19.2490291Z ! Corepack is about to download https://repo.yarnpkg.com/4.9.1/packages/yarnpkg-cli/bin/yarn.js
+2025-05-20T19:40:20.1461677Z [94m➤[39m YN0000: · Yarn 4.9.1
+2025-05-20T19:40:20.1647781Z [94m➤[39m [90mYN0000[39m: ┌ Resolution step
+2025-05-20T19:40:20.1648659Z ##[group]Resolution step
+2025-05-20T19:40:20.4492095Z ##[endgroup]
+2025-05-20T19:40:20.4493837Z [94m➤[39m [90mYN0000[39m: └ Completed in 0s 284ms
+2025-05-20T19:40:20.4977939Z [94m➤[39m [90mYN0000[39m: ┌ Fetch step
+2025-05-20T19:40:20.4978840Z ##[group]Fetch step
+2025-05-20T19:40:27.3558707Z [94m➤[39m YN0013: │ [38;5;220m1088[39m packages were added to the project ([38;5;160m+ 594.72 MiB[39m).
+2025-05-20T19:40:27.3561072Z ##[endgroup]
+2025-05-20T19:40:27.3563390Z [94m➤[39m [90mYN0000[39m: └ Completed in 6s 858ms
+2025-05-20T19:40:27.3988093Z [94m➤[39m [90mYN0000[39m: ┌ Link step
+2025-05-20T19:40:27.3990508Z ##[group]Link step
+2025-05-20T19:40:33.6087191Z [94m➤[39m YN0007: │ [38;5;173mturbo[39m[38;5;111m@[39m[38;5;111mnpm:1.10.12[39m must be built because it never has been before or the last one failed
+2025-05-20T19:40:33.6096925Z [94m➤[39m YN0007: │ [38;5;166m@nestjs/[39m[38;5;173mcore[39m[38;5;111m@[39m[38;5;111mnpm:10.4.17 [62573][39m must be built because it never has been before or the last one failed
+2025-05-20T19:40:33.6099250Z [94m➤[39m YN0007: │ [38;5;166m@prisma/[39m[38;5;173mengines[39m[38;5;111m@[39m[38;5;111mnpm:5.22.0[39m must be built because it never has been before or the last one failed
+2025-05-20T19:40:33.6101453Z [94m➤[39m YN0007: │ [38;5;166m@swc/[39m[38;5;173mcore[39m[38;5;111m@[39m[38;5;111mnpm:1.11.24 [62573][39m must be built because it never has been before or the last one failed
+2025-05-20T19:40:33.6103913Z [94m➤[39m YN0007: │ [38;5;166m@scarf/[39m[38;5;173mscarf[39m[38;5;111m@[39m[38;5;111mnpm:1.4.0[39m must be built because it never has been before or the last one failed
+2025-05-20T19:40:33.6106150Z [94m➤[39m YN0007: │ [38;5;173munrs-resolver[39m[38;5;111m@[39m[38;5;111mnpm:1.7.2[39m must be built because it never has been before or the last one failed
+2025-05-20T19:40:36.5600467Z [94m➤[39m YN0007: │ [38;5;173mprisma[39m[38;5;111m@[39m[38;5;111mnpm:5.22.0[39m must be built because it never has been before or the last one failed
+2025-05-20T19:40:36.6305167Z [94m➤[39m YN0007: │ [38;5;166m@prisma/[39m[38;5;173mclient[39m[38;5;111m@[39m[38;5;111mnpm:5.22.0 [62573][39m must be built because it never has been before or the last one failed
+2025-05-20T19:40:37.0692732Z [94m➤[39m [90mYN0000[39m: │ [38;5;166m@prisma/[39m[38;5;173mclient[39m[38;5;111m@[39m[38;5;111mnpm:5.22.0 [62573][39m [32mSTDOUT[39m Prisma schema loaded from prisma/schema.prisma
+2025-05-20T19:40:37.3130391Z [94m➤[39m [90mYN0000[39m: │ [38;5;166m@prisma/[39m[38;5;173mclient[39m[38;5;111m@[39m[38;5;111mnpm:5.22.0 [62573][39m [32mSTDOUT[39m 
+2025-05-20T19:40:37.3132924Z [94m➤[39m [90mYN0000[39m: │ [38;5;166m@prisma/[39m[38;5;173mclient[39m[38;5;111m@[39m[38;5;111mnpm:5.22.0 [62573][39m [32mSTDOUT[39m ✔ Generated Prisma Client (v5.22.0) to ./node_modules/@prisma/client in 43ms
+2025-05-20T19:40:37.3134900Z [94m➤[39m [90mYN0000[39m: │ [38;5;166m@prisma/[39m[38;5;173mclient[39m[38;5;111m@[39m[38;5;111mnpm:5.22.0 [62573][39m [32mSTDOUT[39m 
+2025-05-20T19:40:37.3137225Z [94m➤[39m [90mYN0000[39m: │ [38;5;166m@prisma/[39m[38;5;173mclient[39m[38;5;111m@[39m[38;5;111mnpm:5.22.0 [62573][39m [32mSTDOUT[39m Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+2025-05-20T19:40:37.3139253Z [94m➤[39m [90mYN0000[39m: │ [38;5;166m@prisma/[39m[38;5;173mclient[39m[38;5;111m@[39m[38;5;111mnpm:5.22.0 [62573][39m [32mSTDOUT[39m 
+2025-05-20T19:40:37.3141137Z [94m➤[39m [90mYN0000[39m: │ [38;5;166m@prisma/[39m[38;5;173mclient[39m[38;5;111m@[39m[38;5;111mnpm:5.22.0 [62573][39m [32mSTDOUT[39m Tip: Curious about the SQL queries Prisma ORM generates? Optimize helps you enhance your visibility: https://pris.ly/tip-2-optimize
+2025-05-20T19:40:37.3142740Z [94m➤[39m [90mYN0000[39m: │ [38;5;166m@prisma/[39m[38;5;173mclient[39m[38;5;111m@[39m[38;5;111mnpm:5.22.0 [62573][39m [32mSTDOUT[39m 
+2025-05-20T19:40:37.5140033Z ##[endgroup]
+2025-05-20T19:40:37.5142609Z [94m➤[39m [90mYN0000[39m: └ Completed in 10s 115ms
+2025-05-20T19:40:37.5954551Z [94m➤[39m YN0000: · Done in 17s 450ms
+2025-05-20T19:40:37.8188762Z ##[group]Run yarn turbo run test:ci build
+2025-05-20T19:40:37.8189089Z [36;1myarn turbo run test:ci build[0m
+2025-05-20T19:40:37.8242714Z shell: /usr/bin/bash -e {0}
+2025-05-20T19:40:37.8242945Z ##[endgroup]
+2025-05-20T19:40:38.9063621Z • Packages in scope: @repo/config, @repo/core, api, tsconfig, ui, web
+2025-05-20T19:40:38.9064571Z • Running test:ci, build in 6 packages
+2025-05-20T19:40:38.9065151Z • Remote caching disabled
+2025-05-20T19:40:43.0980757Z ##[group]@repo/core:build
+2025-05-20T19:40:43.0981411Z cache miss, executing 743459ae7f55abc9
+2025-05-20T19:40:43.0984904Z ##[endgroup]
+2025-05-20T19:40:43.1323397Z ##[group]web:test:ci
+2025-05-20T19:40:43.1325025Z cache bypass, force executing 15b56a1536a870aa
+2025-05-20T19:40:43.1325504Z   console.error
+2025-05-20T19:40:43.1326007Z     FEJL: NEXT_PUBLIC_API_URL er ikke sat. API-kald vil fejle.
+2025-05-20T19:40:43.1326368Z 
+2025-05-20T19:40:43.1326743Z     [0m [90m  7 |[39m
+2025-05-20T19:40:43.1327349Z      [90m  8 |[39m [36mif[39m ([33m![39mbaseUrl) {
+2025-05-20T19:40:43.1328558Z     [31m[1m>[22m[39m[90m  9 |[39m   console[33m.[39merror([32m"FEJL: NEXT_PUBLIC_API_URL er ikke sat. API-kald vil fejle."[39m)[33m;[39m
+2025-05-20T19:40:43.1329598Z      [90m    |[39m           [31m[1m^[22m[39m
+2025-05-20T19:40:43.1330465Z      [90m 10 |[39m   [90m// Du kan vælge at kaste en fejl her eller have en fallback,[39m
+2025-05-20T19:40:43.1331425Z      [90m 11 |[39m   [90m// men det er bedst at sikre, at den altid er sat.[39m
+2025-05-20T19:40:43.1332105Z      [90m 12 |[39m }[0m
+2025-05-20T19:40:43.1332727Z 
+2025-05-20T19:40:43.1333040Z       at Object.error (src/store/services/api.ts:9:11)
+2025-05-20T19:40:43.1333688Z       at Object.<anonymous> (src/store/index.ts:27:14)
+2025-05-20T19:40:43.1334489Z       at Object.<anonymous> (src/screens/auth/login/login.test.tsx:9:55)
+2025-05-20T19:40:43.1334931Z 
+2025-05-20T19:40:43.1335079Z   console.warn
+2025-05-20T19:40:43.1335976Z     Warning: `fetch` is not available. Please supply a custom `fetchFn` property to use `fetchBaseQuery` on SSR environments.
+2025-05-20T19:40:43.1336717Z 
+2025-05-20T19:40:43.1337704Z     [0m [90m 14 |[39m [36mexport[39m [36mconst[39m api [33m=[39m createApi({
+2025-05-20T19:40:43.1338634Z      [90m 15 |[39m   reducerPath[33m:[39m [32m"baseApi"[39m[33m,[39m
+2025-05-20T19:40:43.1339571Z     [31m[1m>[22m[39m[90m 16 |[39m   baseQuery[33m:[39m fetchBaseQuery({
+2025-05-20T19:40:43.1340403Z      [90m    |[39m                            [31m[1m^[22m[39m
+2025-05-20T19:40:43.1341150Z      [90m 17 |[39m     [90m// Brug den hentede baseUrl.[39m
+2025-05-20T19:40:43.1343014Z      [90m 18 |[39m     [90m// Hvis baseUrl er undefined (ikke sat), vil kald relativt til nuværende host:port (f.eks. localhost:3003/hello)[39m
+2025-05-20T19:40:43.1344453Z      [90m 19 |[39m     [90m// hvilket er forkert, da API'et kører på localhost:5002.[39m[0m
+2025-05-20T19:40:43.1344982Z 
+2025-05-20T19:40:43.1345521Z       at fetchBaseQuery (../../node_modules/@reduxjs/toolkit/src/query/fetchBaseQuery.ts:211:13)
+2025-05-20T19:40:43.1346416Z       at Object.<anonymous> (src/store/services/api.ts:16:28)
+2025-05-20T19:40:43.1347088Z       at Object.<anonymous> (src/store/index.ts:27:14)
+2025-05-20T19:40:43.1347806Z       at Object.<anonymous> (src/screens/auth/login/login.test.tsx:9:55)
+2025-05-20T19:40:43.1348244Z 
+2025-05-20T19:40:43.1348392Z   console.log
+2025-05-20T19:40:43.1348799Z     AuthContext: Initialiserer auth state...
+2025-05-20T19:40:43.1349129Z 
+2025-05-20T19:40:43.1349392Z       at log (src/context/AuthContext.tsx:76:13)
+2025-05-20T19:40:43.1349716Z 
+2025-05-20T19:40:43.1349854Z   console.log
+2025-05-20T19:40:43.1350283Z     AuthContext: Intet token fundet i localStorage.
+2025-05-20T19:40:43.1350644Z 
+2025-05-20T19:40:43.1350882Z       at log (src/context/AuthContext.tsx:82:15)
+2025-05-20T19:40:43.1351208Z 
+2025-05-20T19:40:43.1351501Z PASS src/screens/auth/login/login.test.tsx
+2025-05-20T19:40:43.1352796Z   ✓ vis login-form (69 ms)
+2025-05-20T19:40:43.1353108Z 
+2025-05-20T19:40:43.1353359Z Test Suites: 1 passed, 1 total
+2025-05-20T19:40:43.1353839Z Tests:       1 passed, 1 total
+2025-05-20T19:40:43.1354274Z Snapshots:   0 total
+2025-05-20T19:40:43.1354644Z Time:        1.795 s
+2025-05-20T19:40:43.1355001Z Ran all test suites.
+2025-05-20T19:40:43.1355592Z ##[endgroup]
+2025-05-20T19:40:43.5506762Z ##[group]@repo/config:build
+2025-05-20T19:40:43.5507815Z cache miss, executing b925dd28ad25be8f
+2025-05-20T19:40:43.5509390Z ##[endgroup]
+2025-05-20T19:40:45.2352039Z ##[group]api:build
+2025-05-20T19:40:45.2352660Z cache miss, executing fc1be8a1baee7a0a
+2025-05-20T19:40:45.2353070Z ##[endgroup]
+2025-05-20T19:40:45.2408777Z ##[group]api:test:ci
+2025-05-20T19:40:45.2409271Z cache bypass, force executing 7ea216c341740865
+2025-05-20T19:40:45.2409866Z Prisma schema loaded from prisma/schema.prisma
+2025-05-20T19:40:45.2410199Z 
+2025-05-20T19:40:45.2410989Z ✔ Generated Prisma Client (v5.22.0) to ./../../node_modules/@prisma/client in 122ms
+2025-05-20T19:40:45.2411584Z 
+2025-05-20T19:40:45.2413586Z Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+2025-05-20T19:40:45.2414113Z 
+2025-05-20T19:40:45.2436903Z ##[error]api#test:ci: command (/home/runner/work/LearningLab/LearningLab/apps/api) yarn run test:ci exited (1)
+2025-05-20T19:40:45.2444803Z Tip: Need your database queries to be 1000x faster? Accelerate offers you that and more: https://pris.ly/tip-2-accelerate
+2025-05-20T19:40:45.2445245Z 
+2025-05-20T19:40:45.2445580Z ┌─────────────────────────────────────────────────────────┐
+2025-05-20T19:40:45.2446029Z │  Update available 5.22.0 -> 6.8.2                       │
+2025-05-20T19:40:45.2446422Z │                                                         │
+2025-05-20T19:40:45.2446827Z │  This is a major update - please follow the guide at    │
+2025-05-20T19:40:45.2447307Z │  https://pris.ly/d/major-version-upgrade                │
+2025-05-20T19:40:45.2447725Z │                                                         │
+2025-05-20T19:40:45.2448117Z │  Run the following to update                            │
+2025-05-20T19:40:45.2448532Z │    yarn add --dev prisma@latest                         │
+2025-05-20T19:40:45.2449221Z │    yarn add @prisma/client@latest                       │
+2025-05-20T19:40:45.2449634Z └─────────────────────────────────────────────────────────┘
+2025-05-20T19:40:45.2449958Z FAIL src/users/users.service.spec.ts
+2025-05-20T19:40:45.2450254Z   ● Test suite failed to run
+2025-05-20T19:40:45.2450396Z 
+2025-05-20T19:40:45.2450605Z     Cannot find module '@repo/core' from 'users/users.service.spec.ts'
+2025-05-20T19:40:45.2450859Z 
+2025-05-20T19:40:45.2451107Z     [0m [90m 16 |[39m } [36mfrom[39m [32m'@nestjs/common'[39m[33m;[39m
+2025-05-20T19:40:45.2451736Z      [90m 17 |[39m [36mimport[39m { [33mCreateUserDto[39m } [36mfrom[39m [32m'./dto/create-user.dto'[39m[33m;[39m
+2025-05-20T19:40:45.2453050Z     [31m[1m>[22m[39m[90m 18 |[39m [36mimport[39m { [33mRole[39m [36mas[39m [33mCoreRole[39m } [36mfrom[39m [32m'@repo/core'[39m[33m;[39m
+2025-05-20T19:40:45.2453770Z      [90m    |[39m [31m[1m^[22m[39m
+2025-05-20T19:40:45.2454105Z      [90m 19 |[39m [36mimport[39m {
+2025-05-20T19:40:45.2454428Z      [90m 20 |[39m   [33mPrisma[39m[33m,[39m
+2025-05-20T19:40:45.2454924Z      [90m 21 |[39m   [33mUser[39m [36mas[39m [33mPrismaGeneratedUserType[39m[33m,[39m[0m
+2025-05-20T19:40:45.2455201Z 
+2025-05-20T19:40:45.2455510Z       at Resolver._throwModNotFoundError (../../../node_modules/jest-resolve/build/resolver.js:427:11)
+2025-05-20T19:40:45.2456030Z       at Object.<anonymous> (users/users.service.spec.ts:18:1)
+2025-05-20T19:40:45.2456251Z 
+2025-05-20T19:40:45.2456391Z FAIL src/users/users.controller.spec.ts
+2025-05-20T19:40:45.2456683Z   ● Test suite failed to run
+2025-05-20T19:40:45.2456823Z 
+2025-05-20T19:40:45.2457028Z     Cannot find module '@repo/core' from 'users/dto/create-user.dto.ts'
+2025-05-20T19:40:45.2457273Z 
+2025-05-20T19:40:45.2457538Z     Require stack:
+2025-05-20T19:40:45.2457776Z       users/dto/create-user.dto.ts
+2025-05-20T19:40:45.2458028Z       users/users.controller.ts
+2025-05-20T19:40:45.2458289Z       users/users.controller.spec.ts
+2025-05-20T19:40:45.2458448Z 
+2025-05-20T19:40:45.2458644Z     [0m [90m  8 |[39m   [33mIsOptional[39m[33m,[39m
+2025-05-20T19:40:45.2459056Z      [90m  9 |[39m } [36mfrom[39m [32m'class-validator'[39m[33m;[39m
+2025-05-20T19:40:45.2459800Z     [31m[1m>[22m[39m[90m 10 |[39m [36mimport[39m { [33mRole[39m } [36mfrom[39m [32m'@repo/core'[39m[33m;[39m [90m// Importer Role enum fra @repo/core[39m
+2025-05-20T19:40:45.2460344Z      [90m    |[39m [31m[1m^[22m[39m
+2025-05-20T19:40:45.2460590Z      [90m 11 |[39m
+2025-05-20T19:40:45.2460948Z      [90m 12 |[39m [36mexport[39m [36mclass[39m [33mCreateUserDto[39m {
+2025-05-20T19:40:45.2461657Z      [90m 13 |[39m   [33m@[39m[33mIsEmail[39m({}[33m,[39m { message[33m:[39m [32m'Email skal være en gyldig email-adresse.'[39m })[0m
+2025-05-20T19:40:45.2462024Z 
+2025-05-20T19:40:45.2462515Z       at Resolver._throwModNotFoundError (../../../node_modules/jest-resolve/build/resolver.js:427:11)
+2025-05-20T19:40:45.2463025Z       at Object.<anonymous> (users/dto/create-user.dto.ts:10:1)
+2025-05-20T19:40:45.2463403Z       at Object.<anonymous> (users/users.controller.ts:12:1)
+2025-05-20T19:40:45.2463787Z       at Object.<anonymous> (users/users.controller.spec.ts:3:1)
+2025-05-20T19:40:45.2464006Z 
+2025-05-20T19:40:45.2464185Z PASS src/persistence/prisma/prisma.service.spec.ts
+2025-05-20T19:40:45.2464514Z PASS src/app.controller.spec.ts
+2025-05-20T19:40:45.2464661Z 
+2025-05-20T19:40:45.2464799Z Test Suites: 2 failed, 2 passed, 4 total
+2025-05-20T19:40:45.2465096Z Tests:       3 passed, 3 total
+2025-05-20T19:40:45.2465396Z Snapshots:   0 total
+2025-05-20T19:40:45.2465593Z Time:        1.87 s
+2025-05-20T19:40:45.2465786Z Ran all test suites.
+2025-05-20T19:40:45.2466403Z [ERROR] command finished with error: command (/home/runner/work/LearningLab/LearningLab/apps/api) yarn run test:ci exited (1)
+2025-05-20T19:40:45.2467052Z ##[endgroup]
+2025-05-20T19:40:45.2467341Z ##[group]web:build
+2025-05-20T19:40:45.2467737Z cache miss, executing d9fa926adcfeaaed
+2025-05-20T19:40:45.2468418Z - warn No build cache found. Please configure build caching for faster rebuilds. Read more: https://nextjs.org/docs/messages/no-cache
+2025-05-20T19:40:45.2469145Z Attention: Next.js now collects completely anonymous telemetry regarding usage.
+2025-05-20T19:40:45.2469694Z This information is used to shape Next.js' roadmap and prioritize features.
+2025-05-20T19:40:45.2470424Z You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+2025-05-20T19:40:45.2470968Z https://nextjs.org/telemetry
+2025-05-20T19:40:45.2471169Z 
+2025-05-20T19:40:45.2471343Z - info Linting and checking validity of types...
+2025-05-20T19:40:45.2471733Z ##[endgroup]
+2025-05-20T19:40:45.2471832Z 
+2025-05-20T19:40:45.2471954Z  Tasks:    3 successful, 6 total
+2025-05-20T19:40:45.2472558Z Cached:    0 cached, 6 total
+2025-05-20T19:40:45.2472900Z   Time:    6.435s 
+2025-05-20T19:40:45.2473119Z Failed:    api#test:ci
+2025-05-20T19:40:45.2473248Z 
+2025-05-20T19:40:45.2473439Z  ERROR  run failed: command  exited (1)
+2025-05-20T19:40:45.2689164Z ##[error]Process completed with exit code 1.
+2025-05-20T19:40:45.2780379Z Post job cleanup.
+2025-05-20T19:40:45.3713005Z [command]/usr/bin/git version
+2025-05-20T19:40:45.3750359Z git version 2.49.0
+2025-05-20T19:40:45.3791892Z Temporarily overriding HOME='/home/runner/work/_temp/9fe20d05-f20b-4e71-85a0-603954bf7f52' before making global git config changes
+2025-05-20T19:40:45.3793412Z Adding repository directory to the temporary git global config as a safe directory
+2025-05-20T19:40:45.3797472Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/LearningLab/LearningLab
+2025-05-20T19:40:45.3832508Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2025-05-20T19:40:45.3864362Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2025-05-20T19:40:45.4093410Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2025-05-20T19:40:45.4113356Z http.https://github.com/.extraheader
+2025-05-20T19:40:45.4125849Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2025-05-20T19:40:45.4155473Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2025-05-20T19:40:45.4481584Z Cleaning up orphan processes
