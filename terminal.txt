@@ -1,0 +1,28 @@
+direnv: loading ~/Dokumenter/Kodefiler/Projekt m. Ejaz template/LearningLab/LearningLab/.envrc                     
+direnv: export +DATABASE_URL +JWT_EXPIRES_IN +JWT_SECRET +NEXT_PUBLIC_API_URL ~PATH
+Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % corepack enable && yarn install --immutable
+➤ YN0000: · Yarn 4.9.1
+➤ YN0000: ┌ Resolution step
+➤ YN0000: └ Completed in 0s 206ms
+➤ YN0000: ┌ Post-resolution validation
+➤ YN0002: │ api@workspace:apps/api doesn't provide express (p7c4aa), requested by swagger-ui-express.
+➤ YN0000: └ Completed
+➤ YN0000: ┌ Fetch step
+➤ YN0013: │ 723 packages were added to the project (+ 501.1 MiB).
+➤ YN0000: └ Completed in 6s 501ms
+➤ YN0000: ┌ Link step
+➤ YN0000: └ Completed in 0s 274ms
+➤ YN0000: · Failed with errors in 7s 156ms
+Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % 
+
+
+
+
+
+
+
+
+
+
+
+

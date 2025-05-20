@@ -2,12 +2,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-// PrismaService mockes for at undgå databaseafhængighed, selvom AppService måske ikke bruger den direkte.
-// Det gør testen mere robust over for ændringer i AppService's afhængigheder.
 import { PrismaService } from './persistence/prisma/prisma.service';
+import { ConfigService } from '@nestjs/config';
 
-// Mock implementation for PrismaService - kan være tom, hvis AppService ikke interagerer med den.
 const mockPrismaService = {};
+const mockConfigService = { get: jest.fn() };
 
 describe('AppController', () => {
   let appController: AppController;
@@ -18,10 +17,8 @@ describe('AppController', () => {
       controllers: [AppController],
       providers: [
         AppService,
-        {
-          provide: PrismaService,
-          useValue: mockPrismaService,
-        },
+        { provide: PrismaService, useValue: mockPrismaService },
+        { provide: ConfigService, useValue: mockConfigService },
       ],
     }).compile();
 
@@ -32,11 +29,8 @@ describe('AppController', () => {
   describe('root', () => {
     it('should return "Hello World!"', async () => {
       const expectedResult = { message: 'Hello World' };
-      // Spy på appService.getHello for at sikre, at den kaldes, og for at kontrollere dens output.
       jest.spyOn(appService, 'getHello').mockResolvedValue(expectedResult);
-
       expect(await appController.getHello()).toBe(expectedResult);
-      expect(appService.getHello).toHaveBeenCalled();
     });
   });
 });

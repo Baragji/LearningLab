@@ -4,27 +4,37 @@ import {
   ConflictException,
   InternalServerErrorException,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../persistence/prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcryptjs';
-// ÆNDRET IMPORT: Importer hele Prisma namespace og tilgå typer derfra
-import { Prisma } from '@prisma/client'; // Importer Prisma namespace
+import { Prisma, User as PrismaGeneratedUserType, Role as PrismaGeneratedRoleType } from '@prisma/client';
 import { User as CoreUser, Role as CoreRole } from '@repo/core';
-
-// Definer dine Prisma-typer baseret på Prisma namespace
-type PrismaUserType = Prisma.User;
-type PrismaRoleType = Prisma.Role;
+import { ServerEnv } from '@repo/config';
 
 @Injectable()
 export class UsersService {
-  constructor(private prisma: PrismaService) {}
+  private readonly saltRounds: number;
 
-  private mapToCoreUser(user: PrismaUserType): Omit<CoreUser, 'passwordHash'> {
+  constructor(
+    private prisma: PrismaService,
+    private configService: ConfigService<ServerEnv, true>,
+  ) {
+    const saltFromEnv = this.configService.get('SALT_ROUNDS', { infer: true });
+    if (typeof saltFromEnv !== 'number') {
+        console.warn(`SALT_ROUNDS var ikke et tal i ConfigService, falder tilbage til 10. Værdi: ${saltFromEnv}`);
+        this.saltRounds = 10;
+    } else {
+        this.saltRounds = saltFromEnv;
+    }
+  }
+
+  private mapToCoreUser(user: PrismaGeneratedUserType): Omit<CoreUser, 'passwordHash'> {
     const { passwordHash, passwordResetToken, passwordResetExpires, ...result } = user;
     return {
       ...result,
       name: result.name ?? undefined,
-      role: user.role as CoreRole, // Antager at PrismaRoleType og CoreRole er kompatible
+      role: user.role as CoreRole,
       createdAt: new Date(user.createdAt),
       updatedAt: new Date(user.updatedAt),
     };
@@ -45,10 +55,9 @@ export class UsersService {
       );
     }
 
-    const saltRounds = 10;
     let hashedPassword;
     try {
-      hashedPassword = await bcrypt.hash(password, saltRounds);
+      hashedPassword = await bcrypt.hash(password, this.saltRounds);
     } catch (error) {
       console.error('Fejl under hashing af password:', error);
       throw new InternalServerErrorException(
@@ -62,15 +71,13 @@ export class UsersService {
           email,
           passwordHash: hashedPassword,
           name: name || null,
-          role: (role as unknown as PrismaRoleType) || ('USER' as PrismaRoleType),
+          role: (role as unknown as PrismaGeneratedRoleType) || ('USER' as PrismaGeneratedRoleType),
         },
       });
       return this.mapToCoreUser(prismaUser);
     } catch (error) {
       if (
-        error &&
-        typeof error === 'object' &&
-        'code' in error &&
+        error instanceof Prisma.PrismaClientKnownRequestError &&
         error.code === 'P2002'
       ) {
         throw new ConflictException(
@@ -84,13 +91,13 @@ export class UsersService {
     }
   }
 
-  async findOneByEmail(email: string): Promise<PrismaUserType | null> {
+  async findOneByEmail(email: string): Promise<PrismaGeneratedUserType | null> {
     return this.prisma.user.findUnique({
       where: { email },
     });
   }
 
-  async findOneById(id: number): Promise<PrismaUserType | null> {
+  async findOneById(id: number): Promise<PrismaGeneratedUserType | null> {
     return this.prisma.user.findUnique({
       where: { id },
     });
