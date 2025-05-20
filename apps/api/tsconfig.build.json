@@ -1,5 +1,26 @@
 {
-  "extends": "./tsconfig.json",
+  "extends": "../../packages/tsconfig/nestjs.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "baseUrl": "./",
+    "skipLibCheck": true,
+    "declaration": true,
+    "removeComments": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "sourceMap": true,
+    "incremental": true,
+    "paths": {
+      "@repo/core": ["../../packages/core/src"],
+      "@repo/core/*": ["../../packages/core/src/*"],
+      "@repo/config": ["../../packages/config/src"],
+      "@repo/config/*": ["../../packages/config/src/*"]
+    }
+  },
+  "include": [
+    "src/**/*"
+  ],
   "exclude": [
     "node_modules",
     "../../node_modules",
