@@ -31,10 +31,10 @@ Story Points følger en grov T‑shirt‑estimatskala (1, 2, 3, 5, 8, 13).
 
 | Key  | Summary                      | Type  | SP | Status | Acceptance Criteria                                                     |
 | ---- | ---------------------------- | ----- | -- | ------ | ----------------------------------------------------------------------- |
-| E1‑1 | Layout & App‑shell           | Story | 5  | WIP    | Header m. logo, user‑menu; sidebar collapsible; dark‑mode toggle        |
-| E1‑2 | AuthContext + ProtectedRoute | Story | 3  | TODO   | Uautoriseret redirect → `/login`; efter login redirect → lastRoute      |
-| E1‑3 | Dashboard page               | Story | 5  | TODO   | Grid af kurser (`/courses` API) + placeholder statistik                 |
-| E1‑4 | Kursusflow V1                | Story | 8  | TODO   | `courses/[slug]` → modul‑liste; `lessons/[id]` viser TEXT‑contentBlocks |
+| E1‑1 | Layout & App‑shell           | Story | 5  | DONE   | Header m. logo, user‑menu; sidebar collapsible; dark‑mode toggle        |
+| E1‑2 | AuthContext + ProtectedRoute | Story | 3  | DONE   | Uautoriseret redirect → `/login`; efter login redirect → lastRoute      |
+| E1‑3 | Dashboard page               | Story | 5  | DONE   | Grid af kurser (`/courses` API) + placeholder statistik                 |
+| E1‑4 | Kursusflow V1                | Story | 8  | DONE   | `courses/[slug]` → modul‑liste; `lessons/[id]` viser TEXT‑contentBlocks |
 
 ---
 
@@ -42,7 +42,7 @@ Story Points følger en grov T‑shirt‑estimatskala (1, 2, 3, 5, 8, 13).
 
 | Key  | Summary                      | Type  | SP | Status | Acceptance Criteria                              |
 | ---- | ---------------------------- | ----- | -- | ------ | ------------------------------------------------ |
-| E2‑1 | Quiz UI V1                   | Story | 8  | TODO   | En‑ad‑gangen spørgsmål; Submit giver score‑toast |
+| E2‑1 | Quiz UI V1                   | Story | 8  | WIP    | En‑ad‑gangen spørgsmål; Submit giver score‑toast |
 | E2‑2 | Resultatside & fremdrift     | Story | 5  | TODO   | Radial progress + liste over forkerte svar       |
 | E2‑3 | UserProgress API‑integration | Story | 3  | TODO   | PATCH `/user-progress` efter quiz                |
 

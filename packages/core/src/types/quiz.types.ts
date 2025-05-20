@@ -29,6 +29,9 @@ export interface Quiz {
   description: string;
   lessonId?: number | null;
   moduleId?: number | null;
+  passingScore?: number;
+  questions?: Question[];
+  answerOptions?: Record<number, AnswerOption[]>;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -42,6 +45,7 @@ export interface Question {
   type: QuestionType;
   quizId: number;
   quiz?: Quiz;
+  explanation?: string;
   createdAt: Date;
   updatedAt: Date;
 }
