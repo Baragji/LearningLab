@@ -28,7 +28,7 @@ interface AuthContextType {
 
 // Opret AuthContext med en default værdi (typisk undefined eller null)
 // Vi bruger 'undefined' for at kunne tjekke, om provideren er brugt korrekt.
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 // Definer props for AuthProvider
 interface AuthProviderProps {
