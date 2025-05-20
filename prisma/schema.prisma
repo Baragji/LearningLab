@@ -1,0 +1,29 @@
+// apps/api/prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
+  passwordHash String
+  name         String?
+  role         Role     @default(USER)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Nye felter til password reset
+  passwordResetToken   String?   @unique // Gør tokenet unikt for at kunne slå det op
+  passwordResetExpires DateTime?
+}
+
+enum Role {
+  USER
+  ADMIN
+}
