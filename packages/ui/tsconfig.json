@@ -1,5 +1,13 @@
 {
-  "extends": "tsconfig/react-library.json",
-  "include": ["."],
+  "extends": "../tsconfig/react-library.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "src", // Antager at din kildekode er i en 'src' mappe
+    "lib": ["dom", "dom.iterable", "ESNext"], // Overskriver lib fra react-library.json for at inkludere DOM
+    "composite": true, // God praksis for pakker der refereres til
+    "declaration": true, // God praksis for pakker der refereres til
+    "declarationMap": true // God praksis for pakker der refereres til
+  },
+  "include": ["src"], // Antager at din kildekode er i en 'src' mappe
   "exclude": ["dist", "build", "node_modules"]
 }
