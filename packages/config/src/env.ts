@@ -3,91 +3,88 @@ import { z } from 'zod';
 
 /**
  * Definerer skemaet for server-side miljøvariabler.
- * Brug .server() for at sikre, at disse ikke utilsigtet inkluderes i client-side bundles.
  */
-const serverSchema = z.object({
+export const serverSchema = z.object({
   DATABASE_URL: z.string().url({ message: "DATABASE_URL skal være en gyldig URL." }),
   JWT_SECRET: z.string().min(32, { message: "JWT_SECRET skal være mindst 32 tegn lang." }),
-  JWT_EXPIRES_IN: z.string().default('1h'), // Default værdi hvis ikke sat
-  // NODE_ENV: z.enum(['development', 'production', 'test']).default('development'), // Eksempel
+  JWT_EXPIRES_IN: z.string().default('1h'),
+  SALT_ROUNDS: z.preprocess(
+    (val) => (typeof val === 'string' ? parseInt(val, 10) : typeof val === 'number' ? val : undefined),
+    z.number({ invalid_type_error: "SALT_ROUNDS skal være et tal."}).int().positive({ message: "SALT_ROUNDS skal være et positivt heltal."})
+  ).default(10),
+  // NODE_ENV: z.enum(['development', 'production', 'test']).default('development'), // Valgfri
 });
+export type ServerEnv = z.infer<typeof serverSchema>;
 
 /**
  * Definerer skemaet for client-side (public) miljøvariabler.
- * Disse skal prefixxes med NEXT_PUBLIC_ for Next.js applikationer.
  */
-const clientSchema = z.object({
+export const clientSchema = z.object({
   NEXT_PUBLIC_APP_NAME: z.string().default('Læringsplatform'),
+  NEXT_PUBLIC_API_URL: z.string().url({ message: "NEXT_PUBLIC_API_URL skal være en gyldig URL."}).default('http://localhost:5002/api'),
   NEXT_PUBLIC_WS_URL: z.string().url({ message: "NEXT_PUBLIC_WS_URL skal være en gyldig URL." }).default('http://localhost:3001'),
-  // Tilføj andre NEXT_PUBLIC_ variabler her efter behov
 });
+export type ClientEnv = z.infer<typeof clientSchema>;
 
-/**
- * Miljøvariabler, der er tilgængelige for både server og client.
- * Dette er typisk ikke anbefalet for følsomme variabler.
- * For Next.js, er det bedre at adskille dem klart.
- * Hvis en variabel skal bruges på både server og client (og ikke er følsom),
- * kan den defineres her eller i clientSchema (hvis public) og serverSchema (hvis server).
- */
-// const sharedSchema = z.object({
-//   // F.eks. en feature flag der kan læses af begge
-// });
+let memoizedServerEnv: ServerEnv;
+let memoizedClientEnv: ClientEnv;
 
+function parseServerEnv(): ServerEnv {
+  const source = {
+    DATABASE_URL: process.env.DATABASE_URL,
+    JWT_SECRET: process.env.JWT_SECRET,
+    JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN,
+    SALT_ROUNDS: process.env.SALT_ROUNDS,
+    // NODE_ENV: process.env.NODE_ENV,
+  };
+  const parsed = serverSchema.safeParse(source);
 
-/**
- * Validerer og parser server-side miljøvariabler.
- * Kaster en fejl ved build/runtime hvis validering fejler.
- */
-const parsedServerEnv = serverSchema.safeParse({
-  DATABASE_URL: process.env.DATABASE_URL,
-  JWT_SECRET: process.env.JWT_SECRET,
-  JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN,
-  // NODE_ENV: process.env.NODE_ENV,
-});
-
-if (!parsedServerEnv.success) {
-  console.error(
-    '❌ Ugyldige server-side miljøvariabler:',
-    parsedServerEnv.error.flatten().fieldErrors,
-  );
-  // I et produktionsmiljø bør applikationen ikke starte med ugyldige env vars.
-  // I udvikling kan man overveje at kaste fejlen for at stoppe processen.
-  throw new Error('Ugyldige server-side miljøvariabler. Tjek .env filen og konsollen.');
+  if (!parsed.success) {
+    console.error(
+      '❌ Ugyldige server-side miljøvariabler:',
+      parsed.error.flatten().fieldErrors,
+    );
+    throw new Error('Ugyldige server-side miljøvariabler. Tjek .env filen og konsollen.');
+  }
+  return parsed.data;
 }
-export const serverEnv = parsedServerEnv.data;
 
+function parseClientEnv(): ClientEnv {
+   const source = {
+    NEXT_PUBLIC_APP_NAME: process.env.NEXT_PUBLIC_APP_NAME,
+    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
+    NEXT_PUBLIC_WS_URL: process.env.NEXT_PUBLIC_WS_URL,
+  };
+  const parsed = clientSchema.safeParse(source);
 
-/**
- * Validerer og parser client-side miljøvariabler.
- * For Next.js hentes disse typisk direkte via process.env.NEXT_PUBLIC_XXX i client-koden,
- * men at have et skema her hjælper med central definition og type-sikkerhed.
- * For at gøre disse typer globalt tilgængelige i Next.js client-side kode uden import,
- * kan man udvide NodeJS.ProcessEnv interfacet (se Next.js dokumentation).
- */
-const parsedClientEnv = clientSchema.safeParse({
-  NEXT_PUBLIC_APP_NAME: process.env.NEXT_PUBLIC_APP_NAME,
-  NEXT_PUBLIC_WS_URL: process.env.NEXT_PUBLIC_WS_URL,
-});
-
-if (!parsedClientEnv.success) {
-  console.error(
-    '❌ Ugyldige client-side miljøvariabler:',
-    parsedClientEnv.error.flatten().fieldErrors,
-  );
-  // Overvej at kaste en fejl her også, især under build-processen.
-  throw new Error('Ugyldige client-side miljøvariabler. Tjek .env filen og konsollen.');
+  if (!parsed.success) {
+    console.error(
+      '❌ Ugyldige client-side miljøvariabler:',
+      parsed.error.flatten().fieldErrors,
+    );
+    throw new Error('Ugyldige client-side miljøvariabler. Tjek .env filen og konsollen.');
+  }
+  return parsed.data;
 }
-export const clientEnv = parsedClientEnv.data;
 
-/**
- * Samlet objekt for alle miljøvariabler (kan være nyttigt i nogle sammenhænge,
- * men adskillelsen af serverEnv og clientEnv er ofte mere sikker og klar).
- */
-export const env = {
-  ...serverEnv,
-  ...clientEnv,
-  // ...parsedSharedEnv.data, // Hvis sharedSchema bruges
+export const serverEnv = (): Readonly<ServerEnv> => {
+  if (!memoizedServerEnv) {
+    memoizedServerEnv = parseServerEnv();
+  }
+  return memoizedServerEnv;
 };
 
-console.log('✅ Miljøvariabler valideret og indlæst.');
+export const clientEnv = (): Readonly<ClientEnv> => {
+  if(!memoizedClientEnv) {
+    memoizedClientEnv = parseClientEnv();
+  }
+  return memoizedClientEnv;
+}
 
+// Initialiser og valider server-miljøvariabler ved modul-load.
+try {
+  serverEnv();
+  // console.log('✅ Server-miljøvariabler valideret og indlæst.');
+} catch (e) {
+  process.exit(1);
+}

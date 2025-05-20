@@ -1,15 +1,12 @@
 {
   "extends": "tsconfig/base.json",
   "compilerOptions": {
-    "composite": true, // <--- TILFØJET
-    "declaration": true, // Sikrer .d.ts filer genereres, vigtigt for project references
-    "declarationMap": true, // Sikrer source maps for .d.ts filer
+    "composite": true,
+    "declaration": true,
+    "declarationMap": true,
     "outDir": "dist",
-    "rootDir": "src", // Specificerer roden af input-filerne
-    "baseUrl": "./src",
-    "paths": {
-      "@/*": ["*"]
-    }
+    "rootDir": "src",
+    "baseUrl": "./src"
   },
   "include": ["src"],
   "exclude": ["node_modules", "dist"]
