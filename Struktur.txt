@@ -122,6 +122,9 @@ LearningLab
 │     ├─ pages
 │     │  ├─ _app.tsx
 │     │  ├─ courses
+│     │  │  ├─ [slug]
+│     │  │  │  └─ quizzes
+│     │  │  │     └─ [id].tsx
 │     │  │  ├─ [slug].tsx
 │     │  │  └─ index.tsx
 │     │  ├─ dashboard.tsx
@@ -137,9 +140,16 @@ LearningLab
 │     ├─ src
 │     │  ├─ common
 │     │  ├─ components
-│     │  │  └─ auth
+│     │  │  ├─ auth
+│     │  │  └─ quiz
+│     │  │     ├─ QuizContainer.tsx
+│     │  │     ├─ QuizNavigation.tsx
+│     │  │     ├─ QuizProgress.tsx
+│     │  │     ├─ QuizQuestion.tsx
+│     │  │     └─ ScoreToast.tsx
 │     │  ├─ context
 │     │  │  ├─ AuthContext.tsx
+│     │  │  ├─ QuizContext.tsx
 │     │  │  ├─ ThemeContext.tsx
 │     │  │  └─ useAuth.ts
 │     │  ├─ screens

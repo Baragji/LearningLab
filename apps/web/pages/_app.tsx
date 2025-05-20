@@ -4,6 +4,7 @@ import { Provider as ReduxProvider } from "react-redux";
 import store from "../src/store";
 import { AuthProvider } from '../src/context/AuthContext';
 import { ThemeProvider } from '../src/context/ThemeContext';
+import { ProgressProvider } from '../src/context/ProgressContext';
 import Layout from '../src/components/layout/Layout';
 import "../src/styles/global.css";
 import { useRouter } from 'next/router';
@@ -19,13 +20,15 @@ function MyApp({ Component, pageProps }: AppProps) {
     <ReduxProvider store={store}>
       <ThemeProvider>
         <AuthProvider>
-          {shouldUseLayout ? (
-            <Layout>
+          <ProgressProvider>
+            {shouldUseLayout ? (
+              <Layout>
+                <Component {...pageProps} />
+              </Layout>
+            ) : (
               <Component {...pageProps} />
-            </Layout>
-          ) : (
-            <Component {...pageProps} />
-          )}
+            )}
+          </ProgressProvider>
         </AuthProvider>
       </ThemeProvider>
     </ReduxProvider>

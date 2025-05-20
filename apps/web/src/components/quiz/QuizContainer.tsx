@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { useRouter } from 'next/router';
 import { Quiz, Question, AnswerOption } from '@repo/core/src/types/quiz.types';
 import { useQuiz } from '../../context/QuizContext';
 import QuizQuestion from './QuizQuestion';
@@ -19,6 +20,7 @@ const QuizContainer: React.FC<QuizContainerProps> = ({
   answerOptions,
   onComplete
 }) => {
+  const router = useRouter();
   const { 
     setQuiz, 
     currentQuestion, 
@@ -36,12 +38,22 @@ const QuizContainer: React.FC<QuizContainerProps> = ({
     });
   }, [quiz, questions, answerOptions, setQuiz]);
   
-  // Call onComplete when quiz is submitted
+  // Call onComplete when quiz is submitted and navigate to results page
   useEffect(() => {
-    if (isSubmitted && score !== null && onComplete) {
-      onComplete(score);
+    if (isSubmitted && score !== null) {
+      if (onComplete) {
+        onComplete(score);
+      }
+      
+      // Navigate to results page after a short delay to allow the score toast to be seen
+      const timer = setTimeout(() => {
+        const { slug, id } = router.query;
+        router.push(`/courses/${slug}/quizzes/${id}/results`);
+      }, 2000);
+      
+      return () => clearTimeout(timer);
     }
-  }, [isSubmitted, score, onComplete]);
+  }, [isSubmitted, score, onComplete, router]);
   
   if (!currentQuestion) {
     return (

@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import Link from 'next/link';
 import { QuizProvider } from '../../../../src/context/QuizContext';
 import QuizContainer from '../../../../src/components/quiz/QuizContainer';
 import { Quiz, Question, AnswerOption, QuestionType } from '@repo/core/src/types/quiz.types';
+import useQuizProgress from '../../../../src/hooks/useQuizProgress';
 
 // Mock data for development - will be replaced with API call
 const getMockQuizData = (id: string): { 
@@ -112,12 +113,50 @@ const getMockQuizData = (id: string): {
 const QuizPage: React.FC = () => {
   const router = useRouter();
   const { slug, id } = router.query;
+  const [isUpdatingProgress, setIsUpdatingProgress] = useState(false);
+  const [progressError, setProgressError] = useState<string | null>(null);
+  
+  // Initialize quiz progress hook
+  const quizIdNumber = id ? parseInt(id as string) : 0;
+  const { updateProgress, isUpdating } = useQuizProgress({ quizId: quizIdNumber });
   
   // Handle quiz completion
-  const handleQuizComplete = (score: number) => {
+  const handleQuizComplete = async (score: number) => {
     console.log(`Quiz completed with score: ${score}%`);
-    // In a real app, you would save the result to the API
-    // and potentially redirect to a results page
+    
+    if (!id) return;
+    
+    try {
+      setIsUpdatingProgress(true);
+      setProgressError(null);
+      
+      // Get quiz data to access questions and answer options
+      const { quiz, questions, answerOptions } = getMockQuizData(id as string);
+      
+      // In a real app, you would get the user's answers from the QuizContext
+      // For now, we'll create mock answers based on the score
+      const correctCount = Math.round((score / 100) * questions.length);
+      const mockAnswers = questions.map((question, index) => {
+        const options = answerOptions[question.id];
+        const correctOption = options.find(opt => opt.isCorrect);
+        const selectedOption = index < correctCount ? correctOption : options.find(opt => !opt.isCorrect);
+        
+        return {
+          questionId: question.id,
+          selectedOptionId: selectedOption?.id || 0,
+          isCorrect: index < correctCount,
+        };
+      });
+      
+      // Update progress in the API
+      await updateProgress(score, mockAnswers);
+      
+    } catch (error) {
+      console.error('Failed to update quiz progress:', error);
+      setProgressError('Failed to save your progress. Your results will still be shown.');
+    } finally {
+      setIsUpdatingProgress(false);
+    }
   };
   
   // Show loading state while router is not ready
@@ -130,8 +169,8 @@ const QuizPage: React.FC = () => {
   }
   
   // Get quiz data
-  const quizId = id as string;
-  const { quiz, questions, answerOptions } = getMockQuizData(quizId);
+  const quizIdString = id as string;
+  const { quiz, questions, answerOptions } = getMockQuizData(quizIdString);
   
   return (
     <>
@@ -152,6 +191,21 @@ const QuizPage: React.FC = () => {
           <span className="mx-2">/</span>
           <span className="text-gray-700 dark:text-gray-200">Quiz</span>
         </nav>
+        
+        {/* Progress error message */}
+        {progressError && (
+          <div className="mb-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md">
+            <p className="text-red-700 dark:text-red-300">{progressError}</p>
+          </div>
+        )}
+        
+        {/* Loading indicator for API calls */}
+        {isUpdatingProgress && (
+          <div className="mb-4 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-md flex items-center">
+            <div className="animate-spin mr-3 h-4 w-4 border-2 border-blue-500 rounded-full border-t-transparent"></div>
+            <p className="text-blue-700 dark:text-blue-300">Gemmer dine resultater...</p>
+          </div>
+        )}
         
         <QuizProvider>
           <QuizContainer

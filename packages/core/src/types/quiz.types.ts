@@ -157,3 +157,26 @@ export interface SubmitAnswerInput {
 export interface CompleteQuizAttemptInput {
   quizAttemptId: number;
 }
+
+/**
+ * Represents a quiz result with detailed information
+ */
+export interface QuizResult {
+  id: number;
+  userId: number;
+  quizId: number;
+  quiz?: Quiz;
+  score: number;
+  passed: boolean;
+  answers: Array<{
+    questionId: number;
+    question?: Question;
+    selectedOptionId: number;
+    selectedOption?: AnswerOption;
+    isCorrect: boolean;
+  }>;
+  startedAt: Date;
+  completedAt: Date;
+  createdAt: Date;
+  updatedAt: Date;
+}
