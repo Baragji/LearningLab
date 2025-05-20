@@ -51,7 +51,6 @@ async function bootstrap() {
   // Swagger UI er nu på /api/docs på grund af global prefix
   SwaggerModule.setup('docs', app, document);
 
-
   const PORT = process.env.PORT || 5002;
 
   await app.listen(PORT);

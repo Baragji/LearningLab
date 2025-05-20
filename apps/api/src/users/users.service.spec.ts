@@ -10,10 +10,17 @@ jest.mock('bcryptjs', () => ({
 import { Test, TestingModule } from '@nestjs/testing';
 import { UsersService } from './users.service';
 import { PrismaService } from '../persistence/prisma/prisma.service';
-import { ConflictException, InternalServerErrorException } from '@nestjs/common';
+import {
+  ConflictException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { Role as CoreRole } from '@repo/core';
-import { Prisma, User as PrismaGeneratedUserType, Role as PrismaGeneratedRoleType } from '@prisma/client';
+import {
+  Prisma,
+  User as PrismaGeneratedUserType,
+  Role as PrismaGeneratedRoleType,
+} from '@prisma/client';
 import { ConfigService } from '@nestjs/config';
 import { ServerEnv } from '@repo/config';
 
@@ -99,45 +106,66 @@ describe('UsersService', () => {
 
       const result = await service.create(createUserDto);
 
-      expect(mockConfigService.get).toHaveBeenCalledWith('SALT_ROUNDS', { infer: true });
+      expect(mockConfigService.get).toHaveBeenCalledWith('SALT_ROUNDS', {
+        infer: true,
+      });
       expect(bcrypt.hash).toHaveBeenCalledWith(createUserDto.password, 10);
-      expect(mockPrismaService.user.create).toHaveBeenCalledWith(expect.objectContaining({
-        data: expect.objectContaining({
-          email: createUserDto.email,
-          passwordHash: 'hashedpassword',
+      expect(mockPrismaService.user.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            email: createUserDto.email,
+            passwordHash: 'hashedpassword',
+          }),
         }),
-      }));
+      );
       expect(result.email).toEqual(mockPrismaUserResult.email);
     });
 
     it('should throw ConflictException if email already exists', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue(mockPrismaUserResult);
-      await expect(service.create(createUserDto)).rejects.toThrow(ConflictException);
+      await expect(service.create(createUserDto)).rejects.toThrow(
+        ConflictException,
+      );
     });
 
     it('should throw InternalServerErrorException on hashing error', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue(null);
-      (bcrypt.hash as jest.Mock).mockRejectedValue(new Error("Hashing failed"));
-      await expect(service.create(createUserDto)).rejects.toThrow(InternalServerErrorException);
-      expect(console.error).toHaveBeenCalledWith('Fejl under hashing af password:', expect.any(Error));
+      (bcrypt.hash as jest.Mock).mockRejectedValue(new Error('Hashing failed'));
+      await expect(service.create(createUserDto)).rejects.toThrow(
+        InternalServerErrorException,
+      );
+      expect(console.error).toHaveBeenCalledWith(
+        'Fejl under hashing af password:',
+        expect.any(Error),
+      );
     });
 
     it('should throw ConflictException on Prisma P2002 error during create', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue(null);
       (bcrypt.hash as jest.Mock).mockResolvedValue('hashedpassword');
       const prismaError = new Prisma.PrismaClientKnownRequestError(
-        'Unique constraint failed', { code: 'P2002', clientVersion: 'test', meta: { target: ['email'] } }
+        'Unique constraint failed',
+        { code: 'P2002', clientVersion: 'test', meta: { target: ['email'] } },
       );
       mockPrismaService.user.create.mockRejectedValue(prismaError);
-      await expect(service.create(createUserDto)).rejects.toThrow(ConflictException);
+      await expect(service.create(createUserDto)).rejects.toThrow(
+        ConflictException,
+      );
     });
 
     it('should throw InternalServerErrorException on other Prisma errors during create', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue(null);
       (bcrypt.hash as jest.Mock).mockResolvedValue('hashedpassword');
-      mockPrismaService.user.create.mockRejectedValue(new Error("Some other DB error"));
-      await expect(service.create(createUserDto)).rejects.toThrow(InternalServerErrorException);
-      expect(console.error).toHaveBeenCalledWith('Databasefejl under brugeroprettelse:', expect.any(Error));
+      mockPrismaService.user.create.mockRejectedValue(
+        new Error('Some other DB error'),
+      );
+      await expect(service.create(createUserDto)).rejects.toThrow(
+        InternalServerErrorException,
+      );
+      expect(console.error).toHaveBeenCalledWith(
+        'Databasefejl under brugeroprettelse:',
+        expect.any(Error),
+      );
     });
   });
 

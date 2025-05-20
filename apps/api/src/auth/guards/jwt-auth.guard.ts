@@ -28,9 +28,9 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
   handleRequest<TUser = any>(
     err: any,
     user: any,
-    info: any,
-    context: ExecutionContext,
-    status?: any,
+    _info: any, // Prefix with underscore to indicate it's intentionally unused
+    _context: ExecutionContext, // Prefix with underscore to indicate it's intentionally unused
+    _status?: any, // Prefix with underscore to indicate it's intentionally unused
   ): TUser {
     // Du kan smide en exception her baseret på 'info' eller 'err' argumenterne
     if (err || !user) {

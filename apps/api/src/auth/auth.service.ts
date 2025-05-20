@@ -1,9 +1,9 @@
 // File: apps/api/src/auth/auth.service.ts
 import {
   Injectable,
-  UnauthorizedException,
+  // UnauthorizedException, // Commented out unused import
   BadRequestException,
-  InternalServerErrorException,
+  // InternalServerErrorException, // Commented out unused import
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { UsersService } from '../users/users.service';
@@ -28,13 +28,24 @@ export class AuthService {
     private readonly prisma: PrismaService,
     private readonly configService: ConfigService,
   ) {
-    this.saltRounds = Number(this.configService.get<string>('SALT_ROUNDS', '10'));
+    this.saltRounds = Number(
+      this.configService.get<string>('SALT_ROUNDS', '10'),
+    );
     this.jwtSecret = this.configService.get<string>('JWT_SECRET');
-    this.jwtExpiresIn = this.configService.get<string>('JWT_EXPIRES_IN', '3600s');
+    this.jwtExpiresIn = this.configService.get<string>(
+      'JWT_EXPIRES_IN',
+      '3600s',
+    );
   }
 
   private mapToCoreUser(user: PrismaUser): Omit<CoreUser, 'passwordHash'> {
-    const { passwordHash, passwordResetToken, passwordResetExpires, ...rest } = user;
+    // Destructure and ignore sensitive fields with underscore prefix
+    const {
+      passwordHash: _passwordHash,
+      passwordResetToken: _passwordResetToken,
+      passwordResetExpires: _passwordResetExpires,
+      ...rest
+    } = user;
     return {
       ...rest,
       role: user.role as CoreRole,
@@ -48,7 +59,7 @@ export class AuthService {
     password: string,
   ): Promise<Omit<CoreUser, 'passwordHash'> | null> {
     const user = await this.usersService.findOneByEmail(email);
-    if (user && await bcrypt.compare(password, user.passwordHash)) {
+    if (user && (await bcrypt.compare(password, user.passwordHash))) {
       return this.mapToCoreUser(user);
     }
     return null;
@@ -95,16 +106,20 @@ export class AuthService {
     };
   }
 
-  async resetPassword(
-    dto: ResetPasswordDto,
-  ): Promise<{ message: string }> {
+  async resetPassword(dto: ResetPasswordDto): Promise<{ message: string }> {
     const { token, newPassword, confirmPassword } = dto;
     if (newPassword !== confirmPassword) {
       throw new BadRequestException('De nye adgangskoder matcher ikke.');
     }
 
-    const user = await this.prisma.user.findUnique({ where: { passwordResetToken: token } });
-    if (!user || !user.passwordResetExpires || user.passwordResetExpires < new Date()) {
+    const user = await this.prisma.user.findUnique({
+      where: { passwordResetToken: token },
+    });
+    if (
+      !user ||
+      !user.passwordResetExpires ||
+      user.passwordResetExpires < new Date()
+    ) {
       throw new BadRequestException('Ugyldigt eller udløbet reset-token.');
     }
 
