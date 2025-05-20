@@ -1,80 +1,85 @@
 # .github/workflows/ci.yml
-# Komplet CI/CD pipeline til at bygge, teste og deploye både API og Web.
-
 name: CI/CD Pipeline
 
 on:
   push:
     branches:
-      - main # Kør kun deploy-jobs på push til main-branchen
+      - main
   pull_request:
     branches:
-      - main # Kør build-and-test jobbet på pull requests til main-branchen
+      - main
 
 jobs:
   build-and-test:
     name: Build and Test
     runs-on: ubuntu-latest
+    env: # Definer miljøvariabler her, så de er tilgængelige for alle steps i jobbet
+      NEXT_PUBLIC_API_URL: http://localhost:5002/api # Bruges af web tests/build
+      DATABASE_URL: ${{ secrets.DATABASE_URL_CI }} # Bruges af api tests/prisma (bør være en test-database)
+      JWT_SECRET: ${{ secrets.JWT_SECRET_CI }}         # Bruges af api tests
+      JWT_EXPIRES_IN: "15m"                           # Bruges af api tests
+      SALT_ROUNDS: "10"                               # Bruges af api tests
+      # Tilføj andre nødvendige miljøvariabler for dine tests her
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Nødvendig for Turborepo remote caching, hvis du bruger det
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22 # Matcher projektets Node version (fra .node-version og package.json engines)
-          cache: 'yarn' # Aktiver caching for Yarn
+          node-version: 22 # Matcher .node-version
+          cache: 'yarn'
 
       - name: Enable Corepack
-        # Sikrer at den korrekte Yarn version (defineret i package.json -> packageManager) bruges
         run: corepack enable
 
       - name: Install dependencies
-        # Installerer alle afhængigheder for monorepoet baseret på yarn.lock
-        # --immutable sikrer, at yarn.lock ikke ændres og er hurtigere for CI
         run: yarn install --immutable
 
-      - name: Run tests and build
-        # Dette kommando vil bruge Turborepo til at køre 'test:ci' og 'build' scripts
-        # for alle workspaces (apps/api, apps/web, packages/*)
-        # som defineret i deres respektive package.json filer og turbo.json.
-        # Sørg for, at dine 'test:ci' og 'build' scripts er korrekt defineret i hver package.json.
-        run: yarn turbo run test:ci build # <<< ÆNDRET HER
+      - name: Build all packages and apps
+        # Kør build for alle workspaces. Dette sikrer, at alle 'dist' mapper er oprettet.
+        run: yarn turbo run build
+
+      # Valgfrit: List indholdet af dist-mapper for debugging, hvis problemer fortsætter
+      # - name: List @repo/core build output
+      #   run: ls -la packages/core/dist || echo "packages/core/dist not found or empty"
+      # - name: List @repo/config build output
+      #   run: ls -la packages/config/dist || echo "packages/config/dist not found or empty"
+
+      - name: Run all tests
+        # Kør test:ci for alle workspaces.
+        # Miljøvariabler defineret på job-niveau vil være tilgængelige her.
+        run: yarn turbo run test:ci
 
   deploy-render-api:
     name: Deploy API to Render
-    needs: build-and-test # Kør kun hvis build-and-test er succesfuld
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main' # Kør kun på direkte push til main
+    needs: build-and-test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - name: Trigger Render Deploy
-        # Sender en POST request til din Render Deploy Hook URL for at starte et nyt deploy af API-servicen.
-        # Sørg for at RENDER_DEPLOY_HOOK_URL er sat som en secret i dit GitHub repository.
-        run: curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+        run: curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK_URL_API }} # Sørg for at navnet på secret er korrekt
 
   deploy-vercel-web:
     name: Deploy Web to Vercel
-    needs: build-and-test # Kør kun hvis build-and-test er succesfuld
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main' # Kør kun på direkte push til main
+    needs: build-and-test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     env:
-      # Disse secrets skal være sat i dit GitHub repository.
-      # VERCEL_TOKEN: Et Vercel access token.
-      # VERCEL_PROJECT_ID: ID'et for dit 'web' projekt på Vercel.
-      # VERCEL_ORG_ID: ID'et for din organisation eller personlige konto på Vercel.
       VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_WEB }} # Sørg for at navnet på secret er korrekt
       VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      # Vercel build vil selv bruge NEXT_PUBLIC_API_URL fra Vercel's egne environment settings.
+      # Hvis du har brug for at overskrive dem specifikt for Vercel build-steppet her, kan du gøre det.
+      # NEXT_PUBLIC_API_URL: ${{ secrets.PROD_NEXT_PUBLIC_API_URL }} # Eksempel
     steps:
       - name: Checkout code
-        # Nødvendig for Vercel CLI for at have projektets kontekst.
         uses: actions/checkout@v4
 
       - name: Setup Node.js
-        # Selvom koden er bygget i 'build-and-test' jobbet,
-        # skal Vercel CLI bruge Node til at køre.
         uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -84,12 +89,10 @@ jobs:
         run: corepack enable
 
       - name: Install dependencies
-        # Vercel CLI kan have brug for adgang til projektets dependencies.
-        # Dette sikrer, at alt er sat op korrekt i CI-miljøet for Vercel CLI.
         run: yarn install --immutable
 
       - name: Deploy to Vercel Production
-        # Vercel CLI vil automatisk bruge VERCEL_TOKEN, VERCEL_PROJECT_ID, og VERCEL_ORG_ID fra environment variables.
-        # Den bygger og deployer automatisk baseret på Vercel projektets 'Root Directory' indstilling (apps/web).
-        # '--prod' flaget sikrer, at det er et produktionsdeploy.
-        run: npx vercel --prod
+        # For Vercel, er det ofte bedst at lade Vercel håndtere build-processen.
+        # Vercel CLI vil typisk bygge appen baseret på dens konfiguration.
+        # Sørg for at din `apps/web` er konfigureret som root directory i Vercel projekt-settings.
+        run: npx vercel --prod --cwd ./apps/web # Tilføj --cwd for at specificere working directory for Vercel
