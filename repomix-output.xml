@@ -158,6 +158,7 @@ packages/
     src/
       env.ts
       index.ts
+    .eslintrc.js
     eslint-preset.js
     nginx.conf
     package.json
@@ -170,6 +171,7 @@ packages/
       types/
         user.types.ts
       index.ts
+    .eslintrc.js
     package.json
     tsconfig.json
     tsconfig.tsbuildinfo
@@ -210,6 +212,24 @@ turbo.json
 
 <files>
 This section contains the contents of the repository's files.
+
+<file path="packages/core/.eslintrc.js">
+module.exports = {
+  extends: ["eslint:recommended", "plugin:@typescript-eslint/recommended"],
+  parser: "@typescript-eslint/parser",
+  plugins: ["@typescript-eslint"],
+  root: true,
+  env: {
+    node: true,
+    es6: true,
+  },
+  parserOptions: {
+    ecmaVersion: 2020,
+    sourceType: "module",
+  },
+  ignorePatterns: ["dist", "node_modules", "*.config.js"],
+};
+</file>
 
 <file path=".repomix/bundles.json">
 {
@@ -536,12 +556,17 @@ module.exports = {
     node: true,
     jest: true,
   },
-  ignorePatterns: ['.eslintrc.js'],
+  ignorePatterns: ['.eslintrc.js', 'test/**/*.ts', 'dist'],
   rules: {
     '@typescript-eslint/interface-name-prefix': 'off',
     '@typescript-eslint/explicit-function-return-type': 'off',
     '@typescript-eslint/explicit-module-boundary-types': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
+    '@typescript-eslint/no-unused-vars': ['warn', { 
+      'argsIgnorePattern': '^_',
+      'varsIgnorePattern': '^_',
+      'caughtErrorsIgnorePattern': '^_'
+    }],
   },
 };
 </file>
@@ -1422,6 +1447,24 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/deploym
 export * from './env';
 </file>
 
+<file path="packages/config/.eslintrc.js">
+module.exports = {
+  extends: ["eslint:recommended", "plugin:@typescript-eslint/recommended"],
+  parser: "@typescript-eslint/parser",
+  plugins: ["@typescript-eslint"],
+  root: true,
+  env: {
+    node: true,
+    es6: true,
+  },
+  parserOptions: {
+    ecmaVersion: 2020,
+    sourceType: "module",
+  },
+  ignorePatterns: ["dist", "node_modules", "*.config.js"],
+};
+</file>
+
 <file path="packages/config/eslint-preset.js">
 module.exports = {
   extends: ["next", "prettier"],
@@ -1443,20 +1486,6 @@ module.exports = {
     tailwindcss: {},
     autoprefixer: {},
   },
-};
-</file>
-
-<file path="packages/config/tailwind.config.js">
-module.exports = {
-  content: [
-    "../../packages/ui/**/*.{js,ts,jsx,tsx}",
-    "./pages/**/*.{js,ts,jsx,tsx}",
-    "./components/**/*.{js,ts,jsx,tsx}",
-  ],
-  theme: {
-    extend: {},
-  },
-  plugins: [],
 };
 </file>
 
@@ -2192,9 +2221,9 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
   handleRequest<TUser = any>(
     err: any,
     user: any,
-    info: any,
-    context: ExecutionContext,
-    status?: any,
+    _info: any, // Prefix with underscore to indicate it's intentionally unused
+    _context: ExecutionContext, // Prefix with underscore to indicate it's intentionally unused
+    _status?: any, // Prefix with underscore to indicate it's intentionally unused
   ): TUser {
     // Du kan smide en exception her baseret på 'info' eller 'err' argumenterne
     if (err || !user) {
@@ -2257,10 +2286,10 @@ describe('UsersController', () => {
         },
       ],
     })
-    // Det er ikke nødvendigt at tilføje ValidationPipe globalt her for unit tests,
-    // medmindre du specifikt vil teste dens integration på controller-niveau.
-    // For at teste DTO validering, sker det typisk i E2E tests eller ved at kalde pipen manuelt.
-    .compile();
+      // Det er ikke nødvendigt at tilføje ValidationPipe globalt her for unit tests,
+      // medmindre du specifikt vil teste dens integration på controller-niveau.
+      // For at teste DTO validering, sker det typisk i E2E tests eller ved at kalde pipen manuelt.
+      .compile();
 
     controller = module.get<UsersController>(UsersController);
     service = module.get(UsersService);
@@ -2301,9 +2330,13 @@ describe('UsersController', () => {
     });
 
     it('should propagate ConflictException if UsersService.create throws it', async () => {
-      service.create.mockRejectedValue(new ConflictException('Email already exists'));
+      service.create.mockRejectedValue(
+        new ConflictException('Email already exists'),
+      );
 
-      await expect(controller.signUp(createUserDto)).rejects.toThrow(ConflictException);
+      await expect(controller.signUp(createUserDto)).rejects.toThrow(
+        ConflictException,
+      );
       expect(service.create).toHaveBeenCalledWith(createUserDto);
     });
 
@@ -2556,10 +2589,6 @@ module.exports = createJestConfig(customJestConfig);
 module.exports = require("@repo/config/postcss.config.js");
 </file>
 
-<file path="apps/web/tailwind.config.js">
-module.exports = require("@repo/config/tailwind.config.js");
-</file>
-
 <file path="apps/web/tsconfig.json">
 {
   "extends": "../../packages/tsconfig/nextjs.json",
@@ -2580,97 +2609,22 @@ module.exports = require("@repo/config/tailwind.config.js");
 }
 </file>
 
-<file path="packages/config/src/env.ts">
-// packages/config/src/env.ts
-import { z } from 'zod';
-
-/**
- * Definerer skemaet for server-side miljøvariabler.
- */
-export const serverSchema = z.object({
-  DATABASE_URL: z.string().url({ message: "DATABASE_URL skal være en gyldig URL." }),
-  JWT_SECRET: z.string().min(32, { message: "JWT_SECRET skal være mindst 32 tegn lang." }),
-  JWT_EXPIRES_IN: z.string().default('1h'),
-  SALT_ROUNDS: z.preprocess(
-    (val) => (typeof val === 'string' ? parseInt(val, 10) : typeof val === 'number' ? val : undefined),
-    z.number({ invalid_type_error: "SALT_ROUNDS skal være et tal."}).int().positive({ message: "SALT_ROUNDS skal være et positivt heltal."})
-  ).default(10),
-  // NODE_ENV: z.enum(['development', 'production', 'test']).default('development'), // Valgfri
-});
-export type ServerEnv = z.infer<typeof serverSchema>;
-
-/**
- * Definerer skemaet for client-side (public) miljøvariabler.
- */
-export const clientSchema = z.object({
-  NEXT_PUBLIC_APP_NAME: z.string().default('Læringsplatform'),
-  NEXT_PUBLIC_API_URL: z.string().url({ message: "NEXT_PUBLIC_API_URL skal være en gyldig URL."}).default('http://localhost:5002/api'),
-  NEXT_PUBLIC_WS_URL: z.string().url({ message: "NEXT_PUBLIC_WS_URL skal være en gyldig URL." }).default('http://localhost:3001'),
-});
-export type ClientEnv = z.infer<typeof clientSchema>;
-
-let memoizedServerEnv: ServerEnv;
-let memoizedClientEnv: ClientEnv;
-
-function parseServerEnv(): ServerEnv {
-  const source = {
-    DATABASE_URL: process.env.DATABASE_URL,
-    JWT_SECRET: process.env.JWT_SECRET,
-    JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN,
-    SALT_ROUNDS: process.env.SALT_ROUNDS,
-    // NODE_ENV: process.env.NODE_ENV,
-  };
-  const parsed = serverSchema.safeParse(source);
-
-  if (!parsed.success) {
-    console.error(
-      '❌ Ugyldige server-side miljøvariabler:',
-      parsed.error.flatten().fieldErrors,
-    );
-    throw new Error('Ugyldige server-side miljøvariabler. Tjek .env filen og konsollen.');
-  }
-  return parsed.data;
-}
-
-function parseClientEnv(): ClientEnv {
-   const source = {
-    NEXT_PUBLIC_APP_NAME: process.env.NEXT_PUBLIC_APP_NAME,
-    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
-    NEXT_PUBLIC_WS_URL: process.env.NEXT_PUBLIC_WS_URL,
-  };
-  const parsed = clientSchema.safeParse(source);
-
-  if (!parsed.success) {
-    console.error(
-      '❌ Ugyldige client-side miljøvariabler:',
-      parsed.error.flatten().fieldErrors,
-    );
-    throw new Error('Ugyldige client-side miljøvariabler. Tjek .env filen og konsollen.');
-  }
-  return parsed.data;
-}
-
-export const serverEnv = (): Readonly<ServerEnv> => {
-  if (!memoizedServerEnv) {
-    memoizedServerEnv = parseServerEnv();
-  }
-  return memoizedServerEnv;
+<file path="packages/config/tailwind.config.js">
+module.exports = {
+  content: [
+    // Shared UI components - be more specific to avoid node_modules
+    "../../packages/ui/src/**/*.{js,ts,jsx,tsx}",
+    "../../packages/ui/components/**/*.{js,ts,jsx,tsx}",
+    // App-specific files
+    "./src/**/*.{js,ts,jsx,tsx}",
+    "./pages/**/*.{js,ts,jsx,tsx}",
+    "./components/**/*.{js,ts,jsx,tsx}",
+  ],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
 };
-
-export const clientEnv = (): Readonly<ClientEnv> => {
-  if(!memoizedClientEnv) {
-    memoizedClientEnv = parseClientEnv();
-  }
-  return memoizedClientEnv;
-}
-
-// Initialiser og valider server-miljøvariabler ved modul-load.
-try {
-  serverEnv();
-  // console.log('✅ Server-miljøvariabler valideret og indlæst.');
-} catch (e) {
-  process.exit(1);
-}
 </file>
 
 <file path="packages/ui/tsconfig.json">
@@ -2758,108 +2712,109 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
 
 <file path="apps/api/src/auth/auth.controller.ts">
 // apps/api/src/auth/auth.controller.ts
-    import {
-      Controller,
-      Request, // Standard Request type fra @nestjs/common
-      Post,
-      UseGuards,
-      Get,
-      HttpCode,
-      HttpStatus,
-      Body,
-      ValidationPipe,
-    } from '@nestjs/common';
-    import { AuthService } from './auth.service';
-    import { LocalAuthGuard } from './guards/local-auth.guard';
-    import { JwtAuthGuard } from './guards/jwt-auth.guard';
-    import { User as CoreUser } from '@repo/core'; // Importer CoreUser fra @repo/core
-    import { LoginDto } from './dto/login.dto';
-    import { ForgotPasswordDto } from './dto/forgot-password.dto';
-    import { ResetPasswordDto } from './dto/reset-password.dto';
+import {
+  Controller,
+  Request, // Standard Request type fra @nestjs/common
+  Post,
+  UseGuards,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Body,
+  ValidationPipe,
+} from '@nestjs/common';
+import { AuthService } from './auth.service';
+import { LocalAuthGuard } from './guards/local-auth.guard';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { User as CoreUser } from '@repo/core'; // Importer CoreUser fra @repo/core
+import { LoginDto } from './dto/login.dto';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 
-    // Definer en type for request objektet, der indeholder brugeren efter autentificering
-    interface AuthenticatedRequest extends globalThis.Request { // Eller Express.Request hvis du bruger @types/express
-      user: Omit<CoreUser, 'passwordHash'>; // req.user er nu af typen Omit<CoreUser, 'passwordHash'>
-    }
+// Definer en type for request objektet, der indeholder brugeren efter autentificering
+interface AuthenticatedRequest extends globalThis.Request {
+  // Eller Express.Request hvis du bruger @types/express
+  user: Omit<CoreUser, 'passwordHash'>; // req.user er nu af typen Omit<CoreUser, 'passwordHash'>
+}
 
-    @Controller('auth')
-    export class AuthController {
-      constructor(private authService: AuthService) {}
+@Controller('auth')
+export class AuthController {
+  constructor(private authService: AuthService) {}
 
-      @UseGuards(LocalAuthGuard)
-      @Post('login')
-      @HttpCode(HttpStatus.OK)
-      async login(
-        @Request() req: AuthenticatedRequest,
-        // loginDto er her for Swagger og klarhed, validering sker i LocalStrategy/AuthService
-        @Body() loginDto: LoginDto,
-      ): Promise<{ access_token: string }> {
-        // req.user er sat af LocalStrategy (via AuthService.validateUser), som nu returnerer CoreUser formatet
-        return this.authService.login(req.user);
-      }
+  @UseGuards(LocalAuthGuard)
+  @Post('login')
+  @HttpCode(HttpStatus.OK)
+  async login(
+    @Request() req: AuthenticatedRequest,
+    // loginDto er her for Swagger og klarhed, validering sker i LocalStrategy/AuthService
+    @Body() _loginDto: LoginDto, // Prefix with underscore to indicate it's intentionally unused
+  ): Promise<{ access_token: string }> {
+    // req.user er sat af LocalStrategy (via AuthService.validateUser), som nu returnerer CoreUser formatet
+    return this.authService.login(req.user);
+  }
 
-      @UseGuards(JwtAuthGuard)
-      @Get('profile')
-      getProfile(
-        @Request() req: AuthenticatedRequest,
-      ): Omit<CoreUser, 'passwordHash'> {
-        // req.user er sat af JwtStrategy, som nu returnerer Omit<PrismaUser, 'passwordHash'>,
-        // men for konsistens med CoreUser, bør JwtStrategy også mappe til CoreUser hvis der er forskelle.
-        // I dette tilfælde er de ens nok efter fjernelse af passwordHash.
-        return req.user;
-      }
+  @UseGuards(JwtAuthGuard)
+  @Get('profile')
+  getProfile(
+    @Request() req: AuthenticatedRequest,
+  ): Omit<CoreUser, 'passwordHash'> {
+    // req.user er sat af JwtStrategy, som nu returnerer Omit<PrismaUser, 'passwordHash'>,
+    // men for konsistens med CoreUser, bør JwtStrategy også mappe til CoreUser hvis der er forskelle.
+    // I dette tilfælde er de ens nok efter fjernelse af passwordHash.
+    return req.user;
+  }
 
-      @Post('forgot-password')
-      @HttpCode(HttpStatus.OK)
-      async forgotPassword(
-        @Body(new ValidationPipe()) forgotPasswordDto: ForgotPasswordDto,
-      ): Promise<{ message: string }> {
-        return this.authService.forgotPassword(forgotPasswordDto.email);
-      }
+  @Post('forgot-password')
+  @HttpCode(HttpStatus.OK)
+  async forgotPassword(
+    @Body(new ValidationPipe()) forgotPasswordDto: ForgotPasswordDto,
+  ): Promise<{ message: string }> {
+    return this.authService.forgotPassword(forgotPasswordDto.email);
+  }
 
-      @Post('reset-password')
-      @HttpCode(HttpStatus.OK)
-      async resetPassword(
-        @Body(new ValidationPipe()) resetPasswordDto: ResetPasswordDto,
-      ): Promise<{ message:string }> {
-        return this.authService.resetPassword(resetPasswordDto);
-      }
-    }
+  @Post('reset-password')
+  @HttpCode(HttpStatus.OK)
+  async resetPassword(
+    @Body(new ValidationPipe()) resetPasswordDto: ResetPasswordDto,
+  ): Promise<{ message: string }> {
+    return this.authService.resetPassword(resetPasswordDto);
+  }
+}
 </file>
 
 <file path="apps/api/src/users/dto/create-user.dto.ts">
 // apps/api/src/users/dto/create-user.dto.ts
-    import {
-      IsEmail,
-      IsNotEmpty,
-      IsString,
-      MinLength,
-      IsEnum,
-      IsOptional,
-    } from 'class-validator';
-    import { Role } from '@repo/core'; // Importer Role enum fra @repo/core
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsString,
+  MinLength,
+  IsEnum,
+  IsOptional,
+} from 'class-validator';
+import { Role } from '@repo/core'; // Importer Role enum fra @repo/core
 
-    export class CreateUserDto {
-      @IsEmail({}, { message: 'Email skal være en gyldig email-adresse.' })
-      @IsNotEmpty({ message: 'Email må ikke være tom.' })
-      email: string;
+export class CreateUserDto {
+  @IsEmail({}, { message: 'Email skal være en gyldig email-adresse.' })
+  @IsNotEmpty({ message: 'Email må ikke være tom.' })
+  email: string;
 
-      @IsString({ message: 'Password skal være en streng.' })
-      @MinLength(8, { message: 'Password skal være mindst 8 tegn langt.' })
-      @IsNotEmpty({ message: 'Password må ikke være tomt.' })
-      password: string;
+  @IsString({ message: 'Password skal være en streng.' })
+  @MinLength(8, { message: 'Password skal være mindst 8 tegn langt.' })
+  @IsNotEmpty({ message: 'Password må ikke være tomt.' })
+  password: string;
 
-      @IsString({ message: 'Navn skal være en streng.' })
-      @IsOptional()
-      name?: string;
+  @IsString({ message: 'Navn skal være en streng.' })
+  @IsOptional()
+  name?: string;
 
-      // Bruger nu Role enum fra @repo/core
-      @IsEnum(Role, {
-        message: 'Rolle skal være en gyldig værdi (USER eller ADMIN).',
-      })
-      @IsOptional() // Gør rollen valgfri ved oprettelse, så den kan falde tilbage til default i Prisma schema
-      role?: Role;
-    }
+  // Bruger nu Role enum fra @repo/core
+  @IsEnum(Role, {
+    message: 'Rolle skal være en gyldig værdi (USER eller ADMIN).',
+  })
+  @IsOptional() // Gør rollen valgfri ved oprettelse, så den kan falde tilbage til default i Prisma schema
+  role?: Role;
+}
 </file>
 
 <file path="apps/api/src/users/users.controller.ts">
@@ -2913,10 +2868,17 @@ jest.mock('bcryptjs', () => ({
 import { Test, TestingModule } from '@nestjs/testing';
 import { UsersService } from './users.service';
 import { PrismaService } from '../persistence/prisma/prisma.service';
-import { ConflictException, InternalServerErrorException } from '@nestjs/common';
+import {
+  ConflictException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { Role as CoreRole } from '@repo/core';
-import { Prisma, User as PrismaGeneratedUserType, Role as PrismaGeneratedRoleType } from '@prisma/client';
+import {
+  Prisma,
+  User as PrismaGeneratedUserType,
+  Role as PrismaGeneratedRoleType,
+} from '@prisma/client';
 import { ConfigService } from '@nestjs/config';
 import { ServerEnv } from '@repo/config';
 
@@ -3002,45 +2964,66 @@ describe('UsersService', () => {
 
       const result = await service.create(createUserDto);
 
-      expect(mockConfigService.get).toHaveBeenCalledWith('SALT_ROUNDS', { infer: true });
+      expect(mockConfigService.get).toHaveBeenCalledWith('SALT_ROUNDS', {
+        infer: true,
+      });
       expect(bcrypt.hash).toHaveBeenCalledWith(createUserDto.password, 10);
-      expect(mockPrismaService.user.create).toHaveBeenCalledWith(expect.objectContaining({
-        data: expect.objectContaining({
-          email: createUserDto.email,
-          passwordHash: 'hashedpassword',
+      expect(mockPrismaService.user.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            email: createUserDto.email,
+            passwordHash: 'hashedpassword',
+          }),
         }),
-      }));
+      );
       expect(result.email).toEqual(mockPrismaUserResult.email);
     });
 
     it('should throw ConflictException if email already exists', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue(mockPrismaUserResult);
-      await expect(service.create(createUserDto)).rejects.toThrow(ConflictException);
+      await expect(service.create(createUserDto)).rejects.toThrow(
+        ConflictException,
+      );
     });
 
     it('should throw InternalServerErrorException on hashing error', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue(null);
-      (bcrypt.hash as jest.Mock).mockRejectedValue(new Error("Hashing failed"));
-      await expect(service.create(createUserDto)).rejects.toThrow(InternalServerErrorException);
-      expect(console.error).toHaveBeenCalledWith('Fejl under hashing af password:', expect.any(Error));
+      (bcrypt.hash as jest.Mock).mockRejectedValue(new Error('Hashing failed'));
+      await expect(service.create(createUserDto)).rejects.toThrow(
+        InternalServerErrorException,
+      );
+      expect(console.error).toHaveBeenCalledWith(
+        'Fejl under hashing af password:',
+        expect.any(Error),
+      );
     });
 
     it('should throw ConflictException on Prisma P2002 error during create', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue(null);
       (bcrypt.hash as jest.Mock).mockResolvedValue('hashedpassword');
       const prismaError = new Prisma.PrismaClientKnownRequestError(
-        'Unique constraint failed', { code: 'P2002', clientVersion: 'test', meta: { target: ['email'] } }
+        'Unique constraint failed',
+        { code: 'P2002', clientVersion: 'test', meta: { target: ['email'] } },
       );
       mockPrismaService.user.create.mockRejectedValue(prismaError);
-      await expect(service.create(createUserDto)).rejects.toThrow(ConflictException);
+      await expect(service.create(createUserDto)).rejects.toThrow(
+        ConflictException,
+      );
     });
 
     it('should throw InternalServerErrorException on other Prisma errors during create', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue(null);
       (bcrypt.hash as jest.Mock).mockResolvedValue('hashedpassword');
-      mockPrismaService.user.create.mockRejectedValue(new Error("Some other DB error"));
-      await expect(service.create(createUserDto)).rejects.toThrow(InternalServerErrorException);
-      expect(console.error).toHaveBeenCalledWith('Databasefejl under brugeroprettelse:', expect.any(Error));
+      mockPrismaService.user.create.mockRejectedValue(
+        new Error('Some other DB error'),
+      );
+      await expect(service.create(createUserDto)).rejects.toThrow(
+        InternalServerErrorException,
+      );
+      expect(console.error).toHaveBeenCalledWith(
+        'Databasefejl under brugeroprettelse:',
+        expect.any(Error),
+      );
     });
   });
 
@@ -3337,6 +3320,119 @@ jest.mock('next/router', () => require('next-router-mock'));
 // require('next-router-mock').default.push('/');
 </file>
 
+<file path="apps/web/tailwind.config.js">
+const sharedConfig = require("@repo/config/tailwind.config.js");
+
+module.exports = {
+  // Extend the shared config
+  ...sharedConfig,
+  // Override the content paths with more specific ones for this app
+  content: [
+    // Include UI components from packages - be more specific to avoid node_modules
+    "../../packages/ui/src/**/*.{js,ts,jsx,tsx}",
+    "../../packages/ui/components/**/*.{js,ts,jsx,tsx}",
+    // Local app files
+    "./src/**/*.{js,ts,jsx,tsx}",
+    "./pages/**/*.{js,ts,jsx,tsx}",
+    "./components/**/*.{js,ts,jsx,tsx}",
+  ],
+};
+</file>
+
+<file path="packages/config/src/env.ts">
+// packages/config/src/env.ts
+import { z } from 'zod';
+
+/**
+ * Definerer skemaet for server-side miljøvariabler.
+ */
+export const serverSchema = z.object({
+  DATABASE_URL: z.string().url({ message: "DATABASE_URL skal være en gyldig URL." }),
+  JWT_SECRET: z.string().min(32, { message: "JWT_SECRET skal være mindst 32 tegn lang." }),
+  JWT_EXPIRES_IN: z.string().default('1h'),
+  SALT_ROUNDS: z.preprocess(
+    (val) => (typeof val === 'string' ? parseInt(val, 10) : typeof val === 'number' ? val : undefined),
+    z.number({ invalid_type_error: "SALT_ROUNDS skal være et tal."}).int().positive({ message: "SALT_ROUNDS skal være et positivt heltal."})
+  ).default(10),
+  // NODE_ENV: z.enum(['development', 'production', 'test']).default('development'), // Valgfri
+});
+export type ServerEnv = z.infer<typeof serverSchema>;
+
+/**
+ * Definerer skemaet for client-side (public) miljøvariabler.
+ */
+export const clientSchema = z.object({
+  NEXT_PUBLIC_APP_NAME: z.string().default('Læringsplatform'),
+  NEXT_PUBLIC_API_URL: z.string().url({ message: "NEXT_PUBLIC_API_URL skal være en gyldig URL."}).default('http://localhost:5002/api'),
+  NEXT_PUBLIC_WS_URL: z.string().url({ message: "NEXT_PUBLIC_WS_URL skal være en gyldig URL." }).default('http://localhost:3001'),
+});
+export type ClientEnv = z.infer<typeof clientSchema>;
+
+let memoizedServerEnv: ServerEnv;
+let memoizedClientEnv: ClientEnv;
+
+function parseServerEnv(): ServerEnv {
+  const source = {
+    DATABASE_URL: process.env.DATABASE_URL,
+    JWT_SECRET: process.env.JWT_SECRET,
+    JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN,
+    SALT_ROUNDS: process.env.SALT_ROUNDS,
+    // NODE_ENV: process.env.NODE_ENV,
+  };
+  const parsed = serverSchema.safeParse(source);
+
+  if (!parsed.success) {
+    console.error(
+      '❌ Ugyldige server-side miljøvariabler:',
+      parsed.error.flatten().fieldErrors,
+    );
+    throw new Error('Ugyldige server-side miljøvariabler. Tjek .env filen og konsollen.');
+  }
+  return parsed.data;
+}
+
+function parseClientEnv(): ClientEnv {
+   const source = {
+    NEXT_PUBLIC_APP_NAME: process.env.NEXT_PUBLIC_APP_NAME,
+    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
+    NEXT_PUBLIC_WS_URL: process.env.NEXT_PUBLIC_WS_URL,
+  };
+  const parsed = clientSchema.safeParse(source);
+
+  if (!parsed.success) {
+    console.error(
+      '❌ Ugyldige client-side miljøvariabler:',
+      parsed.error.flatten().fieldErrors,
+    );
+    throw new Error('Ugyldige client-side miljøvariabler. Tjek .env filen og konsollen.');
+  }
+  return parsed.data;
+}
+
+export const serverEnv = (): Readonly<ServerEnv> => {
+  if (!memoizedServerEnv) {
+    memoizedServerEnv = parseServerEnv();
+  }
+  return memoizedServerEnv;
+};
+
+export const clientEnv = (): Readonly<ClientEnv> => {
+  if(!memoizedClientEnv) {
+    memoizedClientEnv = parseClientEnv();
+  }
+  return memoizedClientEnv;
+}
+
+// Initialiser og valider server-miljøvariabler ved modul-load.
+try {
+  serverEnv();
+  // console.log('✅ Server-miljøvariabler valideret og indlæst.');
+} catch (error) {
+  console.error('❌ Fejl ved validering af server-miljøvariabler:', error);
+  process.exit(1);
+}
+</file>
+
 <file path="packages/tsconfig/package.json">
 {
   "name": "tsconfig",
@@ -3382,7 +3478,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   private mapToCoreUser(user: PrismaUser): Omit<CoreUser, 'passwordHash'> {
-    const { passwordHash, passwordResetToken, passwordResetExpires, ...rest } = user;
+    const { passwordHash, passwordResetToken, passwordResetExpires, ...rest } =
+      user;
     return {
       ...rest,
       role: user.role as CoreRole,
@@ -3538,6 +3635,8 @@ test('vis login-form', () => {
     "lint": "eslint . --ext .ts,.tsx"
   },
   "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^8.32.1",
+    "@typescript-eslint/parser": "^8.32.1",
     "eslint": "^8.57.1",
     "tsconfig": "workspace:*",
     "typescript": "^5.1.6"
@@ -3622,9 +3721,9 @@ yarnPath: .yarn/releases/yarn-4.9.1.cjs
 // File: apps/api/src/auth/auth.service.ts
 import {
   Injectable,
-  UnauthorizedException,
+  // UnauthorizedException, // Commented out unused import
   BadRequestException,
-  InternalServerErrorException,
+  // InternalServerErrorException, // Commented out unused import
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { UsersService } from '../users/users.service';
@@ -3649,13 +3748,24 @@ export class AuthService {
     private readonly prisma: PrismaService,
     private readonly configService: ConfigService,
   ) {
-    this.saltRounds = Number(this.configService.get<string>('SALT_ROUNDS', '10'));
+    this.saltRounds = Number(
+      this.configService.get<string>('SALT_ROUNDS', '10'),
+    );
     this.jwtSecret = this.configService.get<string>('JWT_SECRET');
-    this.jwtExpiresIn = this.configService.get<string>('JWT_EXPIRES_IN', '3600s');
+    this.jwtExpiresIn = this.configService.get<string>(
+      'JWT_EXPIRES_IN',
+      '3600s',
+    );
   }
 
   private mapToCoreUser(user: PrismaUser): Omit<CoreUser, 'passwordHash'> {
-    const { passwordHash, passwordResetToken, passwordResetExpires, ...rest } = user;
+    // Destructure and ignore sensitive fields with underscore prefix
+    const {
+      passwordHash: _passwordHash,
+      passwordResetToken: _passwordResetToken,
+      passwordResetExpires: _passwordResetExpires,
+      ...rest
+    } = user;
     return {
       ...rest,
       role: user.role as CoreRole,
@@ -3669,7 +3779,7 @@ export class AuthService {
     password: string,
   ): Promise<Omit<CoreUser, 'passwordHash'> | null> {
     const user = await this.usersService.findOneByEmail(email);
-    if (user && await bcrypt.compare(password, user.passwordHash)) {
+    if (user && (await bcrypt.compare(password, user.passwordHash))) {
       return this.mapToCoreUser(user);
     }
     return null;
@@ -3716,16 +3826,20 @@ export class AuthService {
     };
   }
 
-  async resetPassword(
-    dto: ResetPasswordDto,
-  ): Promise<{ message: string }> {
+  async resetPassword(dto: ResetPasswordDto): Promise<{ message: string }> {
     const { token, newPassword, confirmPassword } = dto;
     if (newPassword !== confirmPassword) {
       throw new BadRequestException('De nye adgangskoder matcher ikke.');
     }
 
-    const user = await this.prisma.user.findUnique({ where: { passwordResetToken: token } });
-    if (!user || !user.passwordResetExpires || user.passwordResetExpires < new Date()) {
+    const user = await this.prisma.user.findUnique({
+      where: { passwordResetToken: token },
+    });
+    if (
+      !user ||
+      !user.passwordResetExpires ||
+      user.passwordResetExpires < new Date()
+    ) {
       throw new BadRequestException('Ugyldigt eller udløbet reset-token.');
     }
 
@@ -3755,7 +3869,11 @@ import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../persistence/prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcryptjs';
-import { Prisma, User as PrismaGeneratedUserType, Role as PrismaGeneratedRoleType } from '@prisma/client';
+import {
+  Prisma,
+  User as PrismaGeneratedUserType,
+  Role as PrismaGeneratedRoleType,
+} from '@prisma/client';
 import { User as CoreUser, Role as CoreRole } from '@repo/core';
 import { ServerEnv } from '@repo/config';
 
@@ -3769,15 +3887,24 @@ export class UsersService {
   ) {
     const saltFromEnv = this.configService.get('SALT_ROUNDS', { infer: true });
     if (typeof saltFromEnv !== 'number') {
-        console.warn(`SALT_ROUNDS var ikke et tal i ConfigService, falder tilbage til 10. Værdi: ${saltFromEnv}`);
-        this.saltRounds = 10;
+      console.warn(
+        `SALT_ROUNDS var ikke et tal i ConfigService, falder tilbage til 10. Værdi: ${saltFromEnv}`,
+      );
+      this.saltRounds = 10;
     } else {
-        this.saltRounds = saltFromEnv;
+      this.saltRounds = saltFromEnv;
     }
   }
 
-  private mapToCoreUser(user: PrismaGeneratedUserType): Omit<CoreUser, 'passwordHash'> {
-    const { passwordHash, passwordResetToken, passwordResetExpires, ...result } = user;
+  private mapToCoreUser(
+    user: PrismaGeneratedUserType,
+  ): Omit<CoreUser, 'passwordHash'> {
+    const {
+      passwordHash,
+      passwordResetToken,
+      passwordResetExpires,
+      ...result
+    } = user;
     return {
       ...result,
       name: result.name ?? undefined,
@@ -3818,7 +3945,9 @@ export class UsersService {
           email,
           passwordHash: hashedPassword,
           name: name || null,
-          role: (role as unknown as PrismaGeneratedRoleType) || ('USER' as PrismaGeneratedRoleType),
+          role:
+            (role as unknown as PrismaGeneratedRoleType) ||
+            ('USER' as PrismaGeneratedRoleType),
         },
       });
       return this.mapToCoreUser(prismaUser);
@@ -3850,7 +3979,9 @@ export class UsersService {
     });
   }
 
-  async findOneByEmailForAuth(email: string): Promise<Omit<CoreUser, 'passwordHash'> | null> {
+  async findOneByEmailForAuth(
+    email: string,
+  ): Promise<Omit<CoreUser, 'passwordHash'> | null> {
     const prismaUser = await this.findOneByEmail(email);
     return prismaUser ? this.mapToCoreUser(prismaUser) : null;
   }
@@ -3866,7 +3997,11 @@ import { AppService } from './app.service';
 import { PersistenceModule } from './persistence/persistence.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
-import { serverSchema, ServerEnv, clientEnv as getClientEnv } from '@repo/config';
+import {
+  serverSchema,
+  ServerEnv,
+  clientEnv as getClientEnv,
+} from '@repo/config';
 
 @Module({
   imports: [
@@ -3955,7 +4090,6 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, swaggerConfig);
   // Swagger UI er nu på /api/docs på grund af global prefix
   SwaggerModule.setup('docs', app, document);
-
 
   const PORT = process.env.PORT || 5002;
 
@@ -4427,6 +4561,8 @@ LearningLab
     "zod": "^3.24.4"
   },
   "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^8.32.1",
+    "@typescript-eslint/parser": "^8.32.1",
     "eslint": "^8.57.1",
     "tsconfig": "workspace:*",
     "typescript": "^5.1.6"

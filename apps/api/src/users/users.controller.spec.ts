@@ -4,8 +4,8 @@ import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { Role as CoreRole, User as CoreUser } from '@repo/core';
-import { ConflictException, HttpStatus } from '@nestjs/common';
-import { ValidationPipe } from '@nestjs/common'; // Tilføjet for at teste med ValidationPipe
+import { ConflictException } from '@nestjs/common';
+// HttpStatus and ValidationPipe are imported but not used in this file
 
 // Mock UsersService for at isolere controlleren
 const mockUsersService = {
@@ -29,10 +29,10 @@ describe('UsersController', () => {
         },
       ],
     })
-    // Det er ikke nødvendigt at tilføje ValidationPipe globalt her for unit tests,
-    // medmindre du specifikt vil teste dens integration på controller-niveau.
-    // For at teste DTO validering, sker det typisk i E2E tests eller ved at kalde pipen manuelt.
-    .compile();
+      // Det er ikke nødvendigt at tilføje ValidationPipe globalt her for unit tests,
+      // medmindre du specifikt vil teste dens integration på controller-niveau.
+      // For at teste DTO validering, sker det typisk i E2E tests eller ved at kalde pipen manuelt.
+      .compile();
 
     controller = module.get<UsersController>(UsersController);
     service = module.get(UsersService);
@@ -73,9 +73,13 @@ describe('UsersController', () => {
     });
 
     it('should propagate ConflictException if UsersService.create throws it', async () => {
-      service.create.mockRejectedValue(new ConflictException('Email already exists'));
+      service.create.mockRejectedValue(
+        new ConflictException('Email already exists'),
+      );
 
-      await expect(controller.signUp(createUserDto)).rejects.toThrow(ConflictException);
+      await expect(controller.signUp(createUserDto)).rejects.toThrow(
+        ConflictException,
+      );
       expect(service.create).toHaveBeenCalledWith(createUserDto);
     });
 

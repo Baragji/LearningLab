@@ -8,7 +8,11 @@ import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../persistence/prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcryptjs';
-import { Prisma, User as PrismaGeneratedUserType, Role as PrismaGeneratedRoleType } from '@prisma/client';
+import {
+  Prisma,
+  User as PrismaGeneratedUserType,
+  Role as PrismaGeneratedRoleType,
+} from '@prisma/client';
 import { User as CoreUser, Role as CoreRole } from '@repo/core';
 import { ServerEnv } from '@repo/config';
 
@@ -22,15 +26,24 @@ export class UsersService {
   ) {
     const saltFromEnv = this.configService.get('SALT_ROUNDS', { infer: true });
     if (typeof saltFromEnv !== 'number') {
-        console.warn(`SALT_ROUNDS var ikke et tal i ConfigService, falder tilbage til 10. Værdi: ${saltFromEnv}`);
-        this.saltRounds = 10;
+      console.warn(
+        `SALT_ROUNDS var ikke et tal i ConfigService, falder tilbage til 10. Værdi: ${saltFromEnv}`,
+      );
+      this.saltRounds = 10;
     } else {
-        this.saltRounds = saltFromEnv;
+      this.saltRounds = saltFromEnv;
     }
   }
 
-  private mapToCoreUser(user: PrismaGeneratedUserType): Omit<CoreUser, 'passwordHash'> {
-    const { passwordHash, passwordResetToken, passwordResetExpires, ...result } = user;
+  private mapToCoreUser(
+    user: PrismaGeneratedUserType,
+  ): Omit<CoreUser, 'passwordHash'> {
+    const {
+      _passwordHash,
+      _passwordResetToken,
+      _passwordResetExpires,
+      ...result
+    } = user;
     return {
       ...result,
       name: result.name ?? undefined,
@@ -71,7 +84,9 @@ export class UsersService {
           email,
           passwordHash: hashedPassword,
           name: name || null,
-          role: (role as unknown as PrismaGeneratedRoleType) || ('USER' as PrismaGeneratedRoleType),
+          role:
+            (role as unknown as PrismaGeneratedRoleType) ||
+            ('USER' as PrismaGeneratedRoleType),
         },
       });
       return this.mapToCoreUser(prismaUser);
@@ -103,7 +118,9 @@ export class UsersService {
     });
   }
 
-  async findOneByEmailForAuth(email: string): Promise<Omit<CoreUser, 'passwordHash'> | null> {
+  async findOneByEmailForAuth(
+    email: string,
+  ): Promise<Omit<CoreUser, 'passwordHash'> | null> {
     const prismaUser = await this.findOneByEmail(email);
     return prismaUser ? this.mapToCoreUser(prismaUser) : null;
   }

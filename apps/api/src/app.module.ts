@@ -6,7 +6,11 @@ import { AppService } from './app.service';
 import { PersistenceModule } from './persistence/persistence.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
-import { serverSchema, ServerEnv, clientEnv as getClientEnv } from '@repo/config';
+import {
+  serverSchema,
+  ServerEnv,
+  clientEnv as getClientEnv,
+} from '@repo/config';
 
 @Module({
   imports: [
