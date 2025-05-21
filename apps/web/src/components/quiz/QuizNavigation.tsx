@@ -1,90 +1,108 @@
 import React from 'react';
-import { useQuiz } from '../../context/QuizContext';
+import { 
+  Box, 
+  Button, 
+  IconButton, 
+  Tooltip, 
+  useTheme 
+} from '@mui/material';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import CheckIcon from '@mui/icons-material/Check';
 
-const QuizNavigation: React.FC = () => {
-  const { 
-    goToNextQuestion, 
-    goToPreviousQuestion, 
-    isFirstQuestion, 
-    isLastQuestion,
-    currentQuestionIndex,
-    totalQuestions,
-    hasAnsweredCurrentQuestion,
-    submitQuiz,
-    isSubmitted
-  } = useQuiz();
+interface QuizNavigationProps {
+  currentQuestionIndex: number;
+  totalQuestions: number;
+  userAnswers: Record<number, number | string>;
+  onPrevious: () => void;
+  onNext: () => void;
+  onJumpToQuestion: (index: number) => void;
+  isSubmitting: boolean;
+}
 
-  const handlePrevious = () => {
-    console.log('Previous button clicked');
-    if (!isFirstQuestion) {
-      goToPreviousQuestion();
-    }
-  };
-  
-  const handleNext = () => {
-    console.log('Next button clicked');
-    // Allow navigation even if the question hasn't been answered
-    // This makes the UI more flexible
-    if (!isLastQuestion) {
-      goToNextQuestion();
-    }
-  };
-  
-  const handleSubmit = () => {
-    console.log('Submit button clicked');
-    if (!isSubmitted) {
-      submitQuiz();
-    }
-  };
-  
+const QuizNavigation: React.FC<QuizNavigationProps> = ({
+  currentQuestionIndex,
+  totalQuestions,
+  userAnswers,
+  onPrevious,
+  onNext,
+  onJumpToQuestion,
+  isSubmitting
+}) => {
+  const theme = useTheme();
+  const isFirstQuestion = currentQuestionIndex === 0;
+  const isLastQuestion = currentQuestionIndex === totalQuestions - 1;
+  const allQuestionsAnswered = Object.keys(userAnswers).length === totalQuestions;
+
   return (
-    <div className="flex justify-between items-center mt-6">
-      <button
-        onClick={handlePrevious}
-        disabled={isFirstQuestion}
-        className={`px-4 py-2 rounded-md flex items-center ${
-          isFirstQuestion
-            ? 'bg-gray-200 text-gray-500 cursor-not-allowed dark:bg-gray-700 dark:text-gray-400'
-            : 'bg-white text-gray-700 hover:bg-gray-50 hover:shadow active:shadow-inner active:translate-y-0.5 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-750'
-        } border border-gray-300 dark:border-gray-600 shadow-sm transition-all duration-150`}
+    <Box sx={{ mt: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <Button
+        startIcon={<ArrowBackIcon />}
+        onClick={onPrevious}
+        disabled={isFirstQuestion || isSubmitting}
+        variant="outlined"
       >
-        <svg className="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-        </svg>
-        Forrige
-      </button>
-      
-      <div className="text-sm text-gray-500 dark:text-gray-400">
-        Spørgsmål {currentQuestionIndex + 1} af {totalQuestions}
-      </div>
-      
-      {isLastQuestion ? (
-        <button
-          onClick={handleSubmit}
-          disabled={isSubmitted}
-          className={`px-4 py-2 rounded-md flex items-center ${
-            isSubmitted
-              ? 'bg-gray-200 text-gray-500 cursor-not-allowed dark:bg-gray-700 dark:text-gray-400'
-              : 'bg-blue-600 text-white hover:bg-blue-700 hover:shadow active:shadow-inner active:translate-y-0.5 dark:bg-blue-500 dark:hover:bg-blue-600'
-          } shadow-sm transition-all duration-150`}
-        >
-          Afslut Quiz
-          <svg className="h-5 w-5 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-          </svg>
-        </button>
-      ) : (
-        <button
-          onClick={handleNext}
-          className="px-4 py-2 rounded-md flex items-center bg-blue-600 text-white hover:bg-blue-700 hover:shadow active:shadow-inner active:translate-y-0.5 dark:bg-blue-500 dark:hover:bg-blue-600 shadow-sm transition-all duration-150"
-        >
-          Næste
-          <svg className="h-5 w-5 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-          </svg>
-        </button>
-      )}
-    </div>
+        Previous
+      </Button>
+
+      <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', justifyContent: 'center' }}>
+        {Array.from({ length: totalQuestions }).map((_, index) => {
+          const questionId = index + 1;
+          const isCurrentQuestion = index === currentQuestionIndex;
+          const isAnswered = userAnswers[questionId] !== undefined;
+
+          return (
+            <Tooltip 
+              key={index} 
+              title={isAnswered ? "Answered" : "Not answered yet"}
+              arrow
+            >
+              <IconButton
+                onClick={() => onJumpToQuestion(index)}
+                sx={{
+                  width: 36,
+                  height: 36,
+                  borderRadius: '50%',
+                  ...(isCurrentQuestion && {
+                    bgcolor: theme.palette.primary.main,
+                    color: theme.palette.primary.contrastText,
+                    '&:hover': {
+                      bgcolor: theme.palette.primary.dark,
+                    },
+                  }),
+                  ...(isAnswered && !isCurrentQuestion && {
+                    bgcolor: theme.palette.success.main,
+                    color: theme.palette.success.contrastText,
+                    '&:hover': {
+                      bgcolor: theme.palette.success.dark,
+                    },
+                  }),
+                  ...(!isAnswered && !isCurrentQuestion && {
+                    bgcolor: theme.palette.grey[300],
+                    color: theme.palette.text.primary,
+                    '&:hover': {
+                      bgcolor: theme.palette.grey[400],
+                    },
+                  }),
+                }}
+              >
+                {index + 1}
+              </IconButton>
+            </Tooltip>
+          );
+        })}
+      </Box>
+
+      <Button
+        endIcon={isLastQuestion ? <CheckIcon /> : <ArrowForwardIcon />}
+        onClick={onNext}
+        disabled={isSubmitting}
+        variant={isLastQuestion ? "contained" : "outlined"}
+        color={isLastQuestion ? "success" : "primary"}
+      >
+        {isLastQuestion ? (isSubmitting ? 'Submitting...' : 'Finish Quiz') : 'Next'}
+      </Button>
+    </Box>
   );
 };
 

@@ -116,6 +116,26 @@ const QuizPage: React.FC = () => {
   const { slug, id } = router.query;
   const [isUpdatingProgress, setIsUpdatingProgress] = useState(false);
   const [progressError, setProgressError] = useState<string | null>(null);
+  const [isOffline, setIsOffline] = useState(false);
+  
+  // Check if the user is online or offline
+  React.useEffect(() => {
+    const handleOnline = () => setIsOffline(false);
+    const handleOffline = () => setIsOffline(true);
+    
+    // Set initial state
+    setIsOffline(!navigator.onLine);
+    
+    // Add event listeners
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    
+    // Clean up
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
   
   // Initialize quiz progress hook
   const quizIdNumber = id ? parseInt(id as string) : 0;
@@ -227,7 +247,11 @@ const QuizPage: React.FC = () => {
         )}
         
         {/* Offline notification */}
-        <OfflineQuizNotification className="mb-4" />
+        <OfflineQuizNotification 
+          isOffline={isOffline}
+          className="mb-4" 
+          onRetry={() => window.location.reload()}
+        />
         
         <QuizProvider>
           <QuizContainer

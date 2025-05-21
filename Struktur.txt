@@ -534,3 +534,291 @@ LearningLab
 └─ yarn.lock
 
 ```
+```
+LearningLab
+├─ .node-version
+├─ .repomix
+│  └─ bundles.json
+├─ .yarn
+│  ├─ install-state.gz
+│  └─ releases
+│     └─ yarn-4.9.1.cjs
+├─ .yarnrc.yml
+├─ E1-MVP-UI-Plan.md
+├─ E2.5-Plan.md
+├─ Jira style.txt
+├─ LICENSE
+├─ Planen.txt
+├─ README.md
+├─ Struktur.txt
+├─ api
+│  └─ web.txt
+├─ apps
+│  ├─ api
+│  │  ├─ .eslintrc.js
+│  │  ├─ .prettierrc
+│  │  ├─ .turbo
+│  │  │  └─ turbo-lint.log
+│  │  ├─ nest-cli.json
+│  │  ├─ package.json
+│  │  ├─ prisma
+│  │  │  ├─ migrations
+│  │  │  │  ├─ 20220307034109_initial_migrate
+│  │  │  │  │  └─ migration.sql
+│  │  │  │  ├─ 20250517073440_add_user_auth_fields
+│  │  │  │  │  └─ migration.sql
+│  │  │  │  ├─ 20250517122525_add_password_reset_fields
+│  │  │  │  │  └─ migration.sql
+│  │  │  │  ├─ 20250520211803_add_pensum_and_quiz_models
+│  │  │  │  │  └─ migration.sql
+│  │  │  │  └─ migration_lock.toml
+│  │  │  └─ schema.prisma
+│  │  ├─ src
+│  │  │  ├─ app.controller.spec.ts
+│  │  │  ├─ app.controller.ts
+│  │  │  ├─ app.module.ts
+│  │  │  ├─ app.service.ts
+│  │  │  ├─ auth
+│  │  │  │  ├─ auth.controller.ts
+│  │  │  │  ├─ auth.module.ts
+│  │  │  │  ├─ auth.service.ts
+│  │  │  │  ├─ dto
+│  │  │  │  │  ├─ forgot-password.dto.ts
+│  │  │  │  │  ├─ login.dto.ts
+│  │  │  │  │  ├─ refresh-token.dto.ts
+│  │  │  │  │  └─ reset-password.dto.ts
+│  │  │  │  ├─ guards
+│  │  │  │  │  ├─ jwt-auth.guard.ts
+│  │  │  │  │  ├─ local-auth.guard.ts
+│  │  │  │  │  └─ login-throttler.guard.ts
+│  │  │  │  └─ strategies
+│  │  │  │     ├─ jwt
+│  │  │  │     │  └─ jwt.ts
+│  │  │  │     └─ local
+│  │  │  │        └─ local.ts
+│  │  │  ├─ common
+│  │  │  │  ├─ filters
+│  │  │  │  │  └─ global-exception.filter.ts
+│  │  │  │  └─ middleware
+│  │  │  │     └─ csrf.middleware.ts
+│  │  │  ├─ config
+│  │  │  │  └─ environment-variables.ts
+│  │  │  ├─ controllers
+│  │  │  │  ├─ contentBlock.controller.ts
+│  │  │  │  ├─ course.controller.ts
+│  │  │  │  ├─ lesson.controller.ts
+│  │  │  │  ├─ module.controller.ts
+│  │  │  │  ├─ pensum.controller.ts
+│  │  │  │  ├─ quiz.controller.ts
+│  │  │  │  ├─ quizAttempt.controller.ts
+│  │  │  │  ├─ subjectArea.controller.ts
+│  │  │  │  └─ userProgress.controller.ts
+│  │  │  ├─ dto
+│  │  │  ├─ main.ts
+│  │  │  ├─ middleware
+│  │  │  │  └─ auth.middleware.ts
+│  │  │  ├─ modules
+│  │  │  │  ├─ pensum.module.ts
+│  │  │  │  ├─ quiz.module.ts
+│  │  │  │  └─ userProgress.module.ts
+│  │  │  ├─ persistence
+│  │  │  │  ├─ persistence.module.ts
+│  │  │  │  └─ prisma
+│  │  │  │     ├─ prisma.service.spec.ts
+│  │  │  │     └─ prisma.service.ts
+│  │  │  ├─ services
+│  │  │  │  ├─ pensum.service.ts
+│  │  │  │  ├─ quiz.service.ts
+│  │  │  │  └─ userProgress.service.ts
+│  │  │  ├─ types
+│  │  │  │  └─ express.d.ts
+│  │  │  └─ users
+│  │  │     ├─ dto
+│  │  │     │  └─ create-user.dto.ts
+│  │  │     ├─ users.controller.spec.ts
+│  │  │     ├─ users.controller.ts
+│  │  │     ├─ users.module.ts
+│  │  │     ├─ users.service.spec.ts
+│  │  │     └─ users.service.ts
+│  │  ├─ test
+│  │  │  ├─ app.e2e-spec.ts
+│  │  │  └─ jest-e2e.json
+│  │  ├─ tsconfig.json
+│  │  └─ webpack-hmr.config.js
+│  └─ web
+│     ├─ .eslintrc.js
+│     ├─ .swc
+│     │  └─ plugins
+│     │     └─ v7_macos_aarch64_0.98.5
+│     ├─ .turbo
+│     │  └─ turbo-lint.log
+│     ├─ README.md
+│     ├─ jest.config.js
+│     ├─ jest.setup.js
+│     ├─ next-env.d.ts
+│     ├─ next.config.js
+│     ├─ package.json
+│     ├─ pages
+│     │  ├─ _app.tsx
+│     │  ├─ courses
+│     │  │  ├─ [slug]
+│     │  │  │  └─ quizzes
+│     │  │  │     ├─ [id]
+│     │  │  │     │  └─ results.tsx
+│     │  │  │     └─ [id].tsx
+│     │  │  ├─ [slug].tsx
+│     │  │  └─ index.tsx
+│     │  ├─ dashboard.tsx
+│     │  ├─ forgot-password.tsx
+│     │  ├─ index.tsx
+│     │  ├─ lessons
+│     │  │  └─ [id].tsx
+│     │  ├─ login.tsx
+│     │  ├─ profile.tsx
+│     │  ├─ reset-password.tsx
+│     │  └─ signup.tsx
+│     ├─ postcss.config.js
+│     ├─ src
+│     │  ├─ common
+│     │  ├─ components
+│     │  │  ├─ auth
+│     │  │  ├─ common
+│     │  │  │  └─ OfflineIndicator.tsx
+│     │  │  ├─ content
+│     │  │  │  └─ ContentBlockRenderer.tsx
+│     │  │  └─ quiz
+│     │  │     ├─ IncorrectAnswersList.tsx
+│     │  │     ├─ OfflineQuizNotification.tsx
+│     │  │     ├─ QuizContainer.tsx
+│     │  │     ├─ QuizNavigation.tsx
+│     │  │     ├─ QuizProgress.tsx
+│     │  │     ├─ QuizQuestion.tsx
+│     │  │     ├─ RadialProgress.tsx
+│     │  │     └─ ScoreToast.tsx
+│     │  ├─ context
+│     │  │  ├─ AuthContext.tsx
+│     │  │  ├─ ProgressContext.tsx
+│     │  │  ├─ QuizContext.tsx
+│     │  │  ├─ ThemeContext.tsx
+│     │  │  └─ useAuth.ts
+│     │  ├─ hooks
+│     │  │  ├─ useOfflineStatus.ts
+│     │  │  └─ useQuizProgress.ts
+│     │  ├─ screens
+│     │  │  ├─ admin
+│     │  │  ├─ auth
+│     │  │  │  ├─ forgot-password
+│     │  │  │  │  └─ forgot-password.tsx
+│     │  │  │  ├─ login
+│     │  │  │  │  ├─ login.test.tsx
+│     │  │  │  │  └─ login.tsx
+│     │  │  │  ├─ reset-password
+│     │  │  │  │  └─ reset-password.tsx
+│     │  │  │  └─ signup
+│     │  │  │     └─ signup.tsx
+│     │  │  ├─ common
+│     │  │  │  ├─ CoursePage.tsx
+│     │  │  │  ├─ DashboardPage.tsx
+│     │  │  │  ├─ LessonPage.tsx
+│     │  │  │  ├─ ModulePage.tsx
+│     │  │  │  ├─ QuizPage.tsx
+│     │  │  │  ├─ UserProfilePage.tsx
+│     │  │  │  └─ index.ts
+│     │  │  └─ employee
+│     │  ├─ services
+│     │  │  ├─ apiClient.ts
+│     │  │  └─ userProgressApi.ts
+│     │  ├─ store
+│     │  │  ├─ index.ts
+│     │  │  └─ services
+│     │  │     └─ api.ts
+│     │  ├─ styles
+│     │  │  └─ global.css
+│     │  └─ utils
+│     │     └─ offlineSync.ts
+│     ├─ tailwind.config.js
+│     └─ tsconfig.json
+├─ docker-compose.yml
+├─ forslag.txt
+├─ gitlog.txt
+├─ kommando fejl.txt
+├─ milesten.txt
+├─ package-scripts.js
+├─ package.json
+├─ packages
+│  ├─ config
+│  │  ├─ .eslintrc.js
+│  │  ├─ .turbo
+│  │  │  └─ turbo-lint.log
+│  │  ├─ eslint-preset.js
+│  │  ├─ nginx.conf
+│  │  ├─ package.json
+│  │  ├─ postcss.config.js
+│  │  ├─ src
+│  │  │  ├─ env.d.ts
+│  │  │  ├─ env.d.ts.map
+│  │  │  ├─ env.js
+│  │  │  ├─ env.js.map
+│  │  │  ├─ env.ts
+│  │  │  ├─ index.d.ts
+│  │  │  ├─ index.d.ts.map
+│  │  │  ├─ index.js
+│  │  │  ├─ index.js.map
+│  │  │  └─ index.ts
+│  │  ├─ tailwind.config.js
+│  │  └─ tsconfig.json
+│  ├─ core
+│  │  ├─ .eslintrc.js
+│  │  ├─ .turbo
+│  │  │  └─ turbo-lint.log
+│  │  ├─ package.json
+│  │  ├─ src
+│  │  │  ├─ index.d.ts
+│  │  │  ├─ index.d.ts.map
+│  │  │  ├─ index.js
+│  │  │  ├─ index.js.map
+│  │  │  ├─ index.ts
+│  │  │  └─ types
+│  │  │     ├─ pensum.types.d.ts
+│  │  │     ├─ pensum.types.d.ts.map
+│  │  │     ├─ pensum.types.js
+│  │  │     ├─ pensum.types.js.map
+│  │  │     ├─ pensum.types.ts
+│  │  │     ├─ quiz.types.d.ts
+│  │  │     ├─ quiz.types.d.ts.map
+│  │  │     ├─ quiz.types.js
+│  │  │     ├─ quiz.types.js.map
+│  │  │     ├─ quiz.types.ts
+│  │  │     ├─ user.types.d.ts
+│  │  │     ├─ user.types.d.ts.map
+│  │  │     ├─ user.types.js
+│  │  │     ├─ user.types.js.map
+│  │  │     └─ user.types.ts
+│  │  └─ tsconfig.json
+│  ├─ tsconfig
+│  │  ├─ README.md
+│  │  ├─ base.json
+│  │  ├─ nestjs.json
+│  │  ├─ nextjs.json
+│  │  ├─ package.json
+│  │  └─ react-library.json
+│  └─ ui
+│     ├─ components
+│     │  └─ Button
+│     │     └─ Button.tsx
+│     ├─ index.tsx
+│     ├─ package.json
+│     └─ tsconfig.json
+├─ prisma
+│  ├─ migrations
+│  │  ├─ 20250520183549_new
+│  │  │  └─ migration.sql
+│  │  └─ migration_lock.toml
+│  └─ schema.prisma
+├─ render.yaml
+├─ smil.txt
+├─ tsconfig.json
+├─ turbo.json
+└─ yarn.lock
+
+```
