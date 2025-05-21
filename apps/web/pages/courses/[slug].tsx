@@ -36,17 +36,40 @@ const CourseDetail: React.FC = () => {
   // State to track which modules have their lessons loaded
   const [expandedModules, setExpandedModules] = React.useState<Record<number, boolean>>({});
 
-  // Fetch lessons for each module
+  // Pre-fetch all module IDs that are expanded
+  const expandedModuleIds = Object.entries(expandedModules)
+    .filter(([_, isExpanded]) => isExpanded)
+    .map(([id]) => parseInt(id));
+  
+  // Create an object to store lessons data for each module
+  const lessonsData: Record<number, { data: any[], isLoading: boolean }> = {};
+  
+  // Use a single hook call with an array of module IDs
+  // This is a workaround since we can't use hooks in loops
+  const moduleId1 = expandedModuleIds[0] || 0;
+  const moduleId2 = expandedModuleIds[1] || 0;
+  const moduleId3 = expandedModuleIds[2] || 0;
+  const moduleId4 = expandedModuleIds[3] || 0;
+  
+  const result1 = useGetLessonsByModuleIdQuery(moduleId1, { skip: !moduleId1 });
+  const result2 = useGetLessonsByModuleIdQuery(moduleId2, { skip: !moduleId2 });
+  const result3 = useGetLessonsByModuleIdQuery(moduleId3, { skip: !moduleId3 });
+  const result4 = useGetLessonsByModuleIdQuery(moduleId4, { skip: !moduleId4 });
+  
+  // Populate the lessonsData object
+  if (moduleId1) lessonsData[moduleId1] = { data: result1.data || [], isLoading: result1.isLoading };
+  if (moduleId2) lessonsData[moduleId2] = { data: result2.data || [], isLoading: result2.isLoading };
+  if (moduleId3) lessonsData[moduleId3] = { data: result3.data || [], isLoading: result3.isLoading };
+  if (moduleId4) lessonsData[moduleId4] = { data: result4.data || [], isLoading: result4.isLoading };
+  
+  // Map modules with their lessons
   const moduleWithLessonsQueries = modules.map(module => {
-    const { data: lessons = [], isLoading } = useGetLessonsByModuleIdQuery(
-      module.id, 
-      { skip: !expandedModules[module.id] }
-    );
-
+    const moduleData = lessonsData[module.id] || { data: [], isLoading: false };
+    
     return {
       ...module,
-      lessons: lessons,
-      isLoadingLessons: isLoading
+      lessons: moduleData.data,
+      isLoadingLessons: moduleData.isLoading
     };
   });
 

@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
+import Image from 'next/image';
 import { 
   useGetLessonByIdQuery, 
   useGetContentBlocksByLessonIdQuery,
@@ -25,11 +26,14 @@ const ContentBlockRenderer: React.FC<ContentBlockProps> = ({ type, content }) =>
 
     case 'IMAGE_URL':
       return (
-        <div className="my-4">
-          <img 
+        <div className="my-4 relative w-full h-auto">
+          <Image 
             src={content} 
             alt="Lesson content" 
-            className="max-w-full h-auto rounded-lg"
+            width={800}
+            height={450}
+            className="rounded-lg"
+            style={{ maxWidth: '100%', height: 'auto' }}
           />
         </div>
       );
