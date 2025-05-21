@@ -12,10 +12,10 @@ import {
 const CourseDetail: React.FC = () => {
   const router = useRouter();
   const { slug } = router.query;
-  
+
   // Convert slug to courseId (assuming slug is the course ID)
   const courseId = slug ? parseInt(slug as string) : undefined;
-  
+
   // Fetch course data
   const { 
     data: course, 
@@ -24,7 +24,7 @@ const CourseDetail: React.FC = () => {
   } = useGetCourseByIdQuery(courseId as number, { 
     skip: !courseId 
   });
-  
+
   // Fetch modules for this course
   const { 
     data: modules = [], 
@@ -32,24 +32,24 @@ const CourseDetail: React.FC = () => {
   } = useGetModulesByCourseIdQuery(courseId as number, { 
     skip: !courseId 
   });
-  
+
   // State to track which modules have their lessons loaded
   const [expandedModules, setExpandedModules] = React.useState<Record<number, boolean>>({});
-  
+
   // Fetch lessons for each module
   const moduleWithLessonsQueries = modules.map(module => {
     const { data: lessons = [], isLoading } = useGetLessonsByModuleIdQuery(
       module.id, 
       { skip: !expandedModules[module.id] }
     );
-    
+
     return {
       ...module,
       lessons: lessons,
       isLoadingLessons: isLoading
     };
   });
-  
+
   // Toggle module expansion to load lessons
   const toggleModuleExpansion = (moduleId: number) => {
     setExpandedModules(prev => ({
@@ -97,10 +97,21 @@ const CourseDetail: React.FC = () => {
           <Link href="/courses" className="hover:text-gray-700 dark:hover:text-gray-200">
             Kurser
           </Link>
+          {course.subjectArea && (
+            <>
+              <span className="mx-2">/</span>
+              <Link 
+                href={`/courses?subjectAreaId=${course.subjectArea.id}`} 
+                className="hover:text-gray-700 dark:hover:text-gray-200"
+              >
+                {course.subjectArea.name}
+              </Link>
+            </>
+          )}
           <span className="mx-2">/</span>
           <span className="text-gray-700 dark:text-gray-200">{course.title}</span>
         </nav>
-        
+
         {/* Course header */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden mb-6">
           <div className="h-48 bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center">
@@ -118,7 +129,7 @@ const CourseDetail: React.FC = () => {
                 </Link>
               )}
             </div>
-            
+
             <div className="flex flex-wrap items-center text-sm text-gray-500 dark:text-gray-400 mb-4">
               <div className="flex items-center mr-4">
                 <svg className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -126,14 +137,14 @@ const CourseDetail: React.FC = () => {
                 </svg>
                 <span>{course.level || 'Begynder'}</span>
               </div>
-              
+
               <div className="flex items-center mr-4">
                 <svg className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 <span>{course.estimatedHours ? `${course.estimatedHours} timer` : 'N/A'}</span>
               </div>
-              
+
               <div className="flex items-center">
                 <svg className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
@@ -141,24 +152,24 @@ const CourseDetail: React.FC = () => {
                 <span>{modules.length} moduler</span>
               </div>
             </div>
-            
+
             <p className="text-gray-600 dark:text-gray-300">{course.description}</p>
           </div>
         </div>
-        
+
         {/* Loading modules */}
         {isLoadingModules && (
           <div className="flex justify-center items-center py-12">
             <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
           </div>
         )}
-        
+
         {/* Course modules */}
         {!isLoadingModules && moduleWithLessonsQueries.length > 0 && (
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
             <div className="p-6">
               <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-4">Kursusindhold</h2>
-              
+
               <div className="space-y-4">
                 {moduleWithLessonsQueries.map((module) => (
                   <div key={module.id} className="border border-gray-200 dark:border-gray-700 rounded-md overflow-hidden">
@@ -181,7 +192,7 @@ const CourseDetail: React.FC = () => {
                         </svg>
                       </div>
                     </div>
-                    
+
                     {expandedModules[module.id] && (
                       <div className="divide-y divide-gray-200 dark:divide-gray-700">
                         {/* Loading lessons */}
@@ -190,7 +201,7 @@ const CourseDetail: React.FC = () => {
                             <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-blue-500"></div>
                           </div>
                         )}
-                        
+
                         {/* Lessons */}
                         {!module.isLoadingLessons && module.lessons.map((lesson) => (
                           <Link 
@@ -210,7 +221,7 @@ const CourseDetail: React.FC = () => {
                             </span>
                           </Link>
                         ))}
-                        
+
                         {/* No lessons message */}
                         {!module.isLoadingLessons && module.lessons.length === 0 && (
                           <div className="px-4 py-3 text-gray-500 dark:text-gray-400 text-center">
@@ -225,7 +236,7 @@ const CourseDetail: React.FC = () => {
             </div>
           </div>
         )}
-        
+
         {/* No modules message */}
         {!isLoadingModules && moduleWithLessonsQueries.length === 0 && (
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 text-center">
