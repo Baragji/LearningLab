@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Quiz, Question, AnswerOption, UserAnswer } from '@repo/core/src/types/quiz.types';
 import RadialProgress from '../../../../../src/components/quiz/RadialProgress';
 import IncorrectAnswersList from '../../../../../src/components/quiz/IncorrectAnswersList';
+import OfflineQuizNotification from '../../../../../src/components/quiz/OfflineQuizNotification';
 import { getQuizResults } from '../../../../../src/services/userProgressApi';
 
 // Mock data for development - will be replaced with API call
@@ -279,6 +280,9 @@ const QuizResultPage: React.FC = () => {
           <span className="mx-2">/</span>
           <span className="text-gray-700 dark:text-gray-200">Resultater</span>
         </nav>
+        
+        {/* Offline notification */}
+        <OfflineQuizNotification className="mb-4" />
         
         <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-6">
           <div className="mb-8 text-center">

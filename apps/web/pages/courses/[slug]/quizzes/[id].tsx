@@ -4,6 +4,7 @@ import Head from 'next/head';
 import Link from 'next/link';
 import { QuizProvider } from '../../../../src/context/QuizContext';
 import QuizContainer from '../../../../src/components/quiz/QuizContainer';
+import OfflineQuizNotification from '../../../../src/components/quiz/OfflineQuizNotification';
 import { Quiz, Question, AnswerOption, QuestionType } from '@repo/core/src/types/quiz.types';
 import useQuizProgress from '../../../../src/hooks/useQuizProgress';
 
@@ -206,6 +207,9 @@ const QuizPage: React.FC = () => {
             <p className="text-blue-700 dark:text-blue-300">Gemmer dine resultater...</p>
           </div>
         )}
+        
+        {/* Offline notification */}
+        <OfflineQuizNotification className="mb-4" />
         
         <QuizProvider>
           <QuizContainer

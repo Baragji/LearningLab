@@ -2,6 +2,7 @@
 import React, { useState, ReactNode } from 'react';
 import Header from './Header';
 import Sidebar from './Sidebar';
+import OfflineIndicator from '../common/OfflineIndicator';
 
 interface LayoutProps {
   children: ReactNode;
@@ -37,6 +38,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-4 sm:p-6">
             {children}
           </div>
+          
+          {/* Offline indicator */}
+          <OfflineIndicator />
         </main>
       </div>
     </div>
