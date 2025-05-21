@@ -1,33 +1,60 @@
 import React from 'react';
-import { useQuiz } from '../../context/QuizContext';
+import { Box, LinearProgress, Typography } from '@mui/material';
 
-const QuizProgress: React.FC = () => {
-  const { currentQuestionIndex, totalQuestions, userAnswers } = useQuiz();
-  
+interface QuizProgressProps {
+  currentQuestion: number;
+  totalQuestions: number;
+  answeredQuestions: number;
+}
+
+const QuizProgress: React.FC<QuizProgressProps> = ({
+  currentQuestion,
+  totalQuestions,
+  answeredQuestions
+}) => {
   // Calculate progress percentage
-  const progressPercentage = (currentQuestionIndex / (totalQuestions - 1)) * 100;
-  
-  // Count answered questions
-  const answeredCount = Object.keys(userAnswers).length;
-  
+  const progressPercentage = (currentQuestion / totalQuestions) * 100;
+  const answeredPercentage = (answeredQuestions / totalQuestions) * 100;
+
   return (
-    <div className="mb-6">
-      <div className="flex justify-between items-center mb-2">
-        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-          Spørgsmål {currentQuestionIndex + 1} af {totalQuestions}
-        </span>
-        <span className="text-sm text-gray-500 dark:text-gray-400">
-          {answeredCount} besvaret
-        </span>
-      </div>
+    <Box sx={{ mt: 2, mb: 4 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+        <Typography variant="body2" color="text.secondary">
+          Question {currentQuestion} of {totalQuestions}
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          {answeredQuestions} answered
+        </Typography>
+      </Box>
       
-      <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
-        <div 
-          className="bg-blue-600 dark:bg-blue-500 h-2.5 rounded-full transition-all duration-300 ease-in-out" 
-          style={{ width: `${progressPercentage}%` }}
-        ></div>
-      </div>
-    </div>
+      <LinearProgress 
+        variant="determinate" 
+        value={progressPercentage} 
+        sx={{ 
+          height: 8, 
+          borderRadius: 4,
+          mb: 1,
+          backgroundColor: 'grey.300',
+          '& .MuiLinearProgress-bar': {
+            borderRadius: 4,
+          }
+        }} 
+      />
+      
+      <LinearProgress 
+        variant="determinate" 
+        value={answeredPercentage} 
+        color="success"
+        sx={{ 
+          height: 8, 
+          borderRadius: 4,
+          backgroundColor: 'grey.300',
+          '& .MuiLinearProgress-bar': {
+            borderRadius: 4,
+          }
+        }} 
+      />
+    </Box>
   );
 };
 

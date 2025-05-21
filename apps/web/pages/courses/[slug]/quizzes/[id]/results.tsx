@@ -282,7 +282,7 @@ const QuizResultPage: React.FC = () => {
         </nav>
         
         {/* Offline notification */}
-        <OfflineQuizNotification className="mb-4" />
+        <OfflineQuizNotification className="mb-4" isOffline={false} />
         
         <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-6">
           <div className="mb-8 text-center">

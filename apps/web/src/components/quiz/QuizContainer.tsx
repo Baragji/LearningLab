@@ -1,170 +1,193 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
+import { 
+  Box, 
+  Typography, 
+  Paper, 
+  CircularProgress, 
+  Button, 
+  Snackbar, 
+  Alert 
+} from '@mui/material';
 import { Quiz, Question, AnswerOption } from '@repo/core/src/types/quiz.types';
-import { useQuiz } from '../../context/QuizContext';
 import QuizQuestion from './QuizQuestion';
 import QuizNavigation from './QuizNavigation';
 import QuizProgress from './QuizProgress';
-import ScoreToast from './ScoreToast';
+import OfflineQuizNotification from './OfflineQuizNotification';
 
 interface QuizContainerProps {
   quiz: Quiz;
   questions: Question[];
   answerOptions: Record<number, AnswerOption[]>;
-  onComplete?: (score: number) => void;
+  onComplete?: (score: number, passed: boolean) => void;
+  isOffline?: boolean;
 }
 
 const QuizContainer: React.FC<QuizContainerProps> = ({
   quiz,
   questions,
   answerOptions,
-  onComplete
+  onComplete,
+  isOffline = false
 }) => {
   const router = useRouter();
-  const { 
-    setQuiz, 
-    currentQuestion, 
-    currentQuestionIndex,
-    userAnswers, 
-    isSubmitted,
-    score,
-    selectAnswer
-  } = useQuiz();
   
-  // Initialize quiz when component mounts
-  useEffect(() => {
-    console.log('Initializing quiz data', { quizId: quiz.id, questionsCount: questions.length });
-    // Only initialize if we have questions
-    if (questions.length > 0) {
-      setQuiz({
-        ...quiz,
-        questions,
-        answerOptions
-      });
-    }
-  }, [quiz, questions, answerOptions, setQuiz]);
+  // State
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [userAnswers, setUserAnswers] = useState<Record<number, number>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showResults, setShowResults] = useState(false);
+  const [quizResults, setQuizResults] = useState<{ score: number; passed: boolean } | null>(null);
   
-  useEffect(() => {
-    // For debugging: Log current state
-    console.log('Current state:', { 
-      currentQuestion,
-      userAnswers,
-      isSubmitted,
-      score
-    });
-  }, [currentQuestion, userAnswers, isSubmitted, score]);
+  // Derived state
+  const currentQuestion = questions[currentQuestionIndex];
+  const currentOptions = currentQuestion ? answerOptions[currentQuestion.id] || [] : [];
+  const selectedAnswerId = currentQuestion ? userAnswers[currentQuestion.id] : undefined;
+  const isLastQuestion = currentQuestionIndex === questions.length - 1;
+  const allQuestionsAnswered = Object.keys(userAnswers).length === questions.length;
   
-  // Call onComplete when quiz is submitted and navigate to results page
-  useEffect(() => {
-    if (isSubmitted && score !== null) {
-      if (onComplete) {
-        onComplete(score);
-      }
-      
-      // Navigate to results page after a short delay to allow the score toast to be seen
-      const timer = setTimeout(() => {
-        const { slug, id } = router.query;
-        router.push(`/courses/${slug}/quizzes/${id}/results`);
-      }, 2000);
-      
-      return () => clearTimeout(timer);
-    }
-  }, [isSubmitted, score, onComplete, router]);
-  
-  // Force re-initialization if we have questions but no current question
-  useEffect(() => {
-    if (!currentQuestion && questions.length > 0) {
-      console.log('Forcing re-initialization of quiz data');
-      setQuiz({
-        ...quiz,
-        questions,
-        answerOptions
-      });
-    }
-  }, [currentQuestion, questions, quiz, answerOptions, setQuiz]);
-
-  // Show loading state if no current question
-  if (!currentQuestion) {
-    console.log('Current question is null, showing loading state', {
-      quizLoaded: !!quiz,
-      questionsCount: questions.length
-    });
+  // Handle answer selection
+  const handleAnswerSelect = (answerId: number) => {
+    if (!currentQuestion) return;
     
-    // If we have questions but no current question, try to show the first question
-    if (questions.length > 0) {
-      const firstQuestion = questions[0];
-      const firstQuestionOptions = answerOptions[firstQuestion.id] || [];
-      
-      return (
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-          <h3 className="text-xl font-semibold text-gray-800 dark:text-white mb-4">
-            {firstQuestion.text}
-          </h3>
-          
-          <div className="space-y-3">
-            {firstQuestionOptions.map((option) => (
-              <div
-                key={option.id}
-                className="flex items-center p-4 border rounded-md cursor-pointer transition-colors border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-750 hover:shadow-md"
-                onClick={() => selectAnswer(firstQuestion.id, option.id)}
-              >
-                <div className="flex-1">
-                  <p className="text-gray-700 dark:text-gray-200">{option.text}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      );
+    setUserAnswers(prev => ({
+      ...prev,
+      [currentQuestion.id]: answerId
+    }));
+  };
+  
+  // Handle navigation
+  const handleNext = () => {
+    if (isLastQuestion) {
+      handleQuizComplete();
+    } else {
+      setCurrentQuestionIndex(prev => prev + 1);
     }
+  };
+  
+  const handlePrevious = () => {
+    setCurrentQuestionIndex(prev => Math.max(0, prev - 1));
+  };
+  
+  const handleJumpToQuestion = (index: number) => {
+    setCurrentQuestionIndex(index);
+  };
+  
+  // Handle quiz completion
+  const handleQuizComplete = () => {
+    setIsSubmitting(true);
     
-    // If we have no questions, show loading state
+    // Calculate score (simplified for demo)
+    const totalQuestions = questions.length;
+    const correctAnswers = Object.entries(userAnswers).filter(([questionId, answerId]) => {
+      const questionOptions = answerOptions[Number(questionId)] || [];
+      const selectedOption = questionOptions.find(option => option.id === answerId);
+      return selectedOption?.isCorrect;
+    }).length;
+    
+    const score = Math.round((correctAnswers / totalQuestions) * 100);
+    const passed = score >= (quiz.passingScore || 70); // Default passing score is 70%
+    
+    // Set results
+    setQuizResults({ score, passed });
+    setShowResults(true);
+    setIsSubmitting(false);
+    
+    // Call onComplete callback
+    if (onComplete) {
+      onComplete(score, passed);
+    }
+  };
+  
+  // Handle closing results
+  const handleCloseResults = () => {
+    setShowResults(false);
+    router.back(); // Go back to previous page
+  };
+  
+  // Loading state
+  if (!currentQuestion || questions.length === 0) {
     return (
-      <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-6">
-        <div className="text-center py-8">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mx-auto mb-4"></div>
-          <h3 className="text-lg font-medium text-gray-900 dark:text-white">Indlæser quiz...</h3>
-          <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-            Hvis quizzen ikke indlæses, prøv at genindlæse siden.
-          </p>
-          <button 
-            onClick={() => window.location.reload()}
-            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-          >
-            Genindlæs siden
-          </button>
-        </div>
-      </div>
+      <Paper elevation={2} sx={{ p: 4, textAlign: 'center' }}>
+        <CircularProgress sx={{ mb: 2 }} />
+        <Typography variant="h6" gutterBottom>
+          Loading quiz...
+        </Typography>
+        <Typography variant="body2" color="text.secondary" paragraph>
+          If the quiz doesn&apos;t load, try refreshing the page.
+        </Typography>
+        <Button 
+          variant="contained" 
+          onClick={() => window.location.reload()}
+          sx={{ mt: 2 }}
+        >
+          Refresh Page
+        </Button>
+      </Paper>
     );
   }
   
-  const currentOptions = answerOptions[currentQuestion.id] || [];
-  const selectedOptionId = userAnswers[currentQuestion.id];
-  
   return (
-    <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-6">
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-          {quiz.title}
-        </h2>
-        <p className="text-gray-600 dark:text-gray-300">
-          {quiz.description}
-        </p>
-      </div>
+    <Paper elevation={2} sx={{ p: 4 }}>
+      {isOffline && (
+        <OfflineQuizNotification 
+          isOffline={isOffline}
+          onRetry={() => window.location.reload()}
+        />
+      )}
       
-      <QuizProgress />
+      <Typography variant="h4" component="h1" gutterBottom>
+        {quiz.title}
+      </Typography>
       
-      <QuizQuestion
-        question={currentQuestion}
-        options={currentOptions}
-        selectedOptionId={selectedOptionId}
-        isSubmitted={isSubmitted}
+      <Typography variant="body1" color="text.secondary" paragraph>
+        {quiz.description}
+      </Typography>
+      
+      {/* Quiz Progress */}
+      <QuizProgress 
+        currentQuestion={currentQuestionIndex + 1} 
+        totalQuestions={questions.length} 
+        answeredQuestions={Object.keys(userAnswers).length}
       />
       
-      <QuizNavigation />
+      {/* Current Question */}
+      <QuizQuestion
+        question={currentQuestion}
+        answerOptions={currentOptions}
+        selectedAnswerId={selectedAnswerId}
+        onAnswerSelect={handleAnswerSelect}
+      />
       
-      {isSubmitted && <ScoreToast />}
-    </div>
+      {/* Navigation */}
+      <QuizNavigation
+        currentQuestionIndex={currentQuestionIndex}
+        totalQuestions={questions.length}
+        userAnswers={userAnswers}
+        onPrevious={handlePrevious}
+        onNext={handleNext}
+        onJumpToQuestion={handleJumpToQuestion}
+        isSubmitting={isSubmitting}
+      />
+      
+      {/* Results Snackbar */}
+      <Snackbar
+        open={showResults}
+        autoHideDuration={6000}
+        onClose={handleCloseResults}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert 
+          onClose={handleCloseResults} 
+          severity={quizResults?.passed ? "success" : "warning"}
+          sx={{ width: '100%' }}
+        >
+          {quizResults?.passed 
+            ? `Congratulations! You scored ${quizResults.score}%` 
+            : `You scored ${quizResults?.score}%. Try again to improve your score.`}
+        </Alert>
+      </Snackbar>
+    </Paper>
   );
 };
 
