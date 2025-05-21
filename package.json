@@ -14,7 +14,8 @@
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "prisma:migrate": "cd apps/api && npx prisma migrate dev",
     "prisma:generate": "cd apps/api && npx prisma generate",
-    "prisma:studio": "cd apps/api && npx prisma studio"
+    "prisma:studio": "cd apps/api && npx prisma studio",
+    "seed": "cd apps/api && yarn seed"
   },
   "devDependencies": {
     "@nestjs/common": "^11.1.1",
