@@ -27,7 +27,8 @@ const QuizContainer: React.FC<QuizContainerProps> = ({
     currentQuestionIndex,
     userAnswers, 
     isSubmitted,
-    score
+    score,
+    selectAnswer
   } = useQuiz();
   
   // Initialize quiz when component mounts
@@ -41,7 +42,7 @@ const QuizContainer: React.FC<QuizContainerProps> = ({
         answerOptions
       });
     }
-  }, []);
+  }, [quiz, questions, answerOptions, setQuiz]);
   
   useEffect(() => {
     // For debugging: Log current state
@@ -80,7 +81,7 @@ const QuizContainer: React.FC<QuizContainerProps> = ({
         answerOptions
       });
     }
-  }, [currentQuestion, questions]);
+  }, [currentQuestion, questions, quiz, answerOptions, setQuiz]);
 
   // Show loading state if no current question
   if (!currentQuestion) {
