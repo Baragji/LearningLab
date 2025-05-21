@@ -24,6 +24,7 @@ const QuizContainer: React.FC<QuizContainerProps> = ({
   const { 
     setQuiz, 
     currentQuestion, 
+    currentQuestionIndex,
     userAnswers, 
     isSubmitted,
     score
@@ -31,12 +32,26 @@ const QuizContainer: React.FC<QuizContainerProps> = ({
   
   // Initialize quiz when component mounts
   useEffect(() => {
-    setQuiz({
-      ...quiz,
-      questions,
-      answerOptions
+    console.log('Initializing quiz data', { quizId: quiz.id, questionsCount: questions.length });
+    // Only initialize if we have questions
+    if (questions.length > 0) {
+      setQuiz({
+        ...quiz,
+        questions,
+        answerOptions
+      });
+    }
+  }, []);
+  
+  useEffect(() => {
+    // For debugging: Log current state
+    console.log('Current state:', { 
+      currentQuestion,
+      userAnswers,
+      isSubmitted,
+      score
     });
-  }, [quiz, questions, answerOptions, setQuiz]);
+  }, [currentQuestion, userAnswers, isSubmitted, score]);
   
   // Call onComplete when quiz is submitted and navigate to results page
   useEffect(() => {
@@ -55,10 +70,69 @@ const QuizContainer: React.FC<QuizContainerProps> = ({
     }
   }, [isSubmitted, score, onComplete, router]);
   
+  // Force re-initialization if we have questions but no current question
+  useEffect(() => {
+    if (!currentQuestion && questions.length > 0) {
+      console.log('Forcing re-initialization of quiz data');
+      setQuiz({
+        ...quiz,
+        questions,
+        answerOptions
+      });
+    }
+  }, [currentQuestion, questions]);
+
+  // Show loading state if no current question
   if (!currentQuestion) {
+    console.log('Current question is null, showing loading state', {
+      quizLoaded: !!quiz,
+      questionsCount: questions.length
+    });
+    
+    // If we have questions but no current question, try to show the first question
+    if (questions.length > 0) {
+      const firstQuestion = questions[0];
+      const firstQuestionOptions = answerOptions[firstQuestion.id] || [];
+      
+      return (
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+          <h3 className="text-xl font-semibold text-gray-800 dark:text-white mb-4">
+            {firstQuestion.text}
+          </h3>
+          
+          <div className="space-y-3">
+            {firstQuestionOptions.map((option) => (
+              <div
+                key={option.id}
+                className="flex items-center p-4 border rounded-md cursor-pointer transition-colors border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-750 hover:shadow-md"
+                onClick={() => selectAnswer(firstQuestion.id, option.id)}
+              >
+                <div className="flex-1">
+                  <p className="text-gray-700 dark:text-gray-200">{option.text}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+    
+    // If we have no questions, show loading state
     return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-6">
+        <div className="text-center py-8">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mx-auto mb-4"></div>
+          <h3 className="text-lg font-medium text-gray-900 dark:text-white">Indlæser quiz...</h3>
+          <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+            Hvis quizzen ikke indlæses, prøv at genindlæse siden.
+          </p>
+          <button 
+            onClick={() => window.location.reload()}
+            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+          >
+            Genindlæs siden
+          </button>
+        </div>
       </div>
     );
   }

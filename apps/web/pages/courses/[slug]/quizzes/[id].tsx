@@ -164,7 +164,25 @@ const QuizPage: React.FC = () => {
   if (!router.isReady) {
     return (
       <div className="flex justify-center items-center h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mx-auto mb-4"></div>
+          <p className="text-gray-600 dark:text-gray-300">Indlæser quiz...</p>
+        </div>
+      </div>
+    );
+  }
+  
+  // Check if id is valid
+  if (!id) {
+    return (
+      <div className="max-w-4xl mx-auto px-4 py-8">
+        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-6 text-center">
+          <h2 className="text-xl font-semibold text-red-800 dark:text-red-300 mb-2">Quiz ikke fundet</h2>
+          <p className="text-red-700 dark:text-red-200 mb-4">Den anmodede quiz kunne ikke findes.</p>
+          <Link href={`/courses/${slug}`} className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+            Tilbage til kurset
+          </Link>
+        </div>
       </div>
     );
   }
