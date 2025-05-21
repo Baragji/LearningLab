@@ -1,5 +1,5 @@
 // apps/web/src/screens/common/ModulePage.tsx
-import React from 'react';
+import React, { useCallback } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { 
   Box, 
@@ -80,11 +80,11 @@ const ModulePage: React.FC = () => {
     return [...lessons].sort((a, b) => a.order - b.order);
   }, [lessons]);
   
-  // Check if a lesson is completed
-  const isLessonCompleted = (lessonId: number) => {
+  // Check if a lesson is completed - wrapped in useCallback to avoid dependency issues
+  const isLessonCompleted = useCallback((lessonId: number) => {
     if (!userProgress) return false;
     return userProgress.completedLessons.includes(lessonId);
-  };
+  }, [userProgress]);
   
   // Calculate module progress
   const moduleProgress = React.useMemo(() => {
