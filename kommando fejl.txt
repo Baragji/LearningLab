@@ -1,321 +1,72 @@
-1. direnv: loading ~/Dokumenter/Kodefiler/Projekt m. Ejaz template/LearningLab/LearningLab/.envrc
+direnv: loading ~/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/.envrc
 direnv: export +DATABASE_URL +JWT_EXPIRES_IN +JWT_SECRET +NEXT_PUBLIC_API_URL ~PATH
-Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % nps prepare
-
-nps is executing `prepare` : nps prepare.web prepare.api
-nps is executing `prepare.web` : yarn
-➤ YN0000: · Yarn 4.9.1
-➤ YN0000: ┌ Resolution step
-➤ YN0000: └ Completed in 0s 246ms
-➤ YN0000: ┌ Fetch step
-➤ YN0000: └ Completed in 0s 632ms
-➤ YN0000: ┌ Link step
-➤ YN0000: └ Completed in 0s 275ms
-➤ YN0000: · Done in 1s 212ms
-nps is executing `prepare.api` : nps prisma.migrate.dev
-nps is executing `prisma.migrate.dev` : cd /Users/Yousef_1/Dokumenter/Kodefiler/Projekt m. Ejaz template/LearningLab/LearningLab/apps/api && npx prisma migrate dev
-/bin/sh: line 0: cd: /Users/Yousef_1/Dokumenter/Kodefiler/Projekt: No such file or directory
-The script called "prisma.migrate.dev" which runs "cd /Users/Yousef_1/Dokumenter/Kodefiler/Projekt m. Ejaz template/LearningLab/LearningLab/apps/api && npx prisma migrate dev" failed with exit code 1 https://github.com/sezna/nps/blob/master/other/ERRORS_AND_WARNINGS.md#failed-with-exit-code
-The script called "prepare.api" which runs "nps prisma.migrate.dev" failed with exit code 1 https://github.com/sezna/nps/blob/master/other/ERRORS_AND_WARNINGS.md#failed-with-exit-code
-The script called "prepare" which runs "nps prepare.web prepare.api" failed with exit code 1 https://github.com/sezna/nps/blob/master/other/ERRORS_AND_WARNINGS.md#failed-with-exit-code
-Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % nps dev
-
-nps is executing `dev` : npx turbo run dev
+Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % yarn dev
 • Packages in scope: @repo/config, @repo/core, api, tsconfig, ui, web
 • Running dev in 6 packages
 • Remote caching disabled
-api:dev: cache bypass, force executing 3934ca971137b08f
-web:dev: cache bypass, force executing 245466cf67251b3a
-web:dev: - ready started server on 0.0.0.0:3000, url: http://localhost:3000
-web:dev: - info Loaded env from /Users/Yousef_1/Dokumenter/Kodefiler/Projekt m. Ejaz template/LearningLab/LearningLab/apps/web/.env.local
+web:dev: cache bypass, force executing 7c42a3e4ebdd0cca
+api:dev: cache bypass, force executing 9acd900021352771
+web:dev: - warn Port 3000 is in use, trying 3001 instead.
+web:dev: - warn Port 3001 is in use, trying 3002 instead.
+web:dev: - warn Port 3002 is in use, trying 3003 instead.
+web:dev: - warn Port 3003 is in use, trying 3004 instead.
+web:dev: - warn Port 3004 is in use, trying 3005 instead.
+web:dev: - warn Port 3005 is in use, trying 3006 instead.
+web:dev: - warn Port 3006 is in use, trying 3007 instead.
+web:dev: - warn Port 3007 is in use, trying 3008 instead.
+web:dev: - ready started server on 0.0.0.0:3008, url: http://localhost:3008
+web:dev: - info Loaded env from /Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/apps/web/.env.local
 api:dev: Environment variables loaded from .env
 api:dev: Prisma schema loaded from prisma/schema.prisma
 api:dev: 
-api:dev: ✔ Generated Prisma Client (v5.22.0) to ./../../node_modules/@prisma/client in 46ms
+api:dev: ✔ Generated Prisma Client (v5.22.0) to ./../../node_modules/@prisma/client in 193ms
 api:dev: 
 api:dev: Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
 api:dev: 
-api:dev: Tip: Curious about the SQL queries Prisma ORM generates? Optimize helps you enhance your visibility: https://pris.ly/tip-2-optimize
+api:dev: Tip: Easily identify and fix slow SQL queries in your app. Optimize helps you enhance your visibility: https://pris.ly/--optimize
 api:dev: 
 web:dev: - info automatically enabled Fast Refresh for 1 custom loader
-web:dev: - event compiled client and server successfully in 145 ms (18 modules)
+web:dev: - event compiled client and server successfully in 253 ms (18 modules)
+web:dev: - wait compiling...
+web:dev: - event compiled client and server successfully in 175 ms (18 modules)
 api:dev: 
 api:dev:  Info  Webpack is building your sources...
 api:dev: 
-web:dev: - wait compiling...
-web:dev: - event compiled client and server successfully in 177 ms (18 modules)
-api:dev: ERROR in ./src/auth/auth.service.ts:39:41
-api:dev: TS2769: No overload matches this call.
-api:dev:   Overload 1 of 4, '(propertyPath: never, options: ConfigGetOptions): string', gave the following error.
-api:dev:     Argument of type '"JWT_SECRET"' is not assignable to parameter of type 'never'.
-api:dev:   Overload 2 of 4, '(propertyPath: string | number | symbol, defaultValue: string): string', gave the following error.
-api:dev:     Argument of type '{ infer: boolean; }' is not assignable to parameter of type 'string'.
-api:dev:     37 |         this.saltRounds = saltFromEnv;
-api:dev:     38 |     }
-api:dev:   > 39 |     this.jwtSecret = this.configService.get('JWT_SECRET', { infer: true });
-api:dev:        |                                         ^^^
-api:dev:     40 |     this.jwtExpiresIn = this.configService.get('JWT_EXPIRES_IN', { infer: true });
-api:dev:     41 |   }
-api:dev:     42 |
+api:dev: ERROR in ./src/types/express.d.ts
+api:dev: Module build failed (from ../../node_modules/ts-loader/index.js):
+api:dev: Error: Debug Failure. Output generation failed
+api:dev:     at transpileWorker (/Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/node_modules/typescript/lib/typescript.js:144727:43)
+api:dev:     at Object.transpileModule (/Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/node_modules/typescript/lib/typescript.js:144582:10)
+api:dev:     at getTranspilationEmit (/Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/node_modules/ts-loader/dist/index.js:418:74)
+api:dev:     at successLoader (/Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/node_modules/ts-loader/dist/index.js:38:11)
+api:dev:     at Object.loader (/Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/node_modules/ts-loader/dist/index.js:23:5)
+api:dev:  @ ./src/types/index.ts 17:13-35
+api:dev:  @ ./src/controllers/userProgress.controller.ts 21:16-35
+api:dev:  @ ./src/modules/userProgress.module.ts 11:34-83
+api:dev:  @ ./src/app.module.ts 19:30-70
+api:dev:  @ ./src/main.ts 8:21-44
 api:dev: 
-api:dev: ERROR in ./src/auth/auth.service.ts:40:44
-api:dev: TS2769: No overload matches this call.
-api:dev:   Overload 1 of 4, '(propertyPath: never, options: ConfigGetOptions): string', gave the following error.
-api:dev:     Argument of type '"JWT_EXPIRES_IN"' is not assignable to parameter of type 'never'.
-api:dev:   Overload 2 of 4, '(propertyPath: string | number | symbol, defaultValue: string): string', gave the following error.
-api:dev:     Argument of type '{ infer: boolean; }' is not assignable to parameter of type 'string'.
-api:dev:     38 |     }
-api:dev:     39 |     this.jwtSecret = this.configService.get('JWT_SECRET', { infer: true });
-api:dev:   > 40 |     this.jwtExpiresIn = this.configService.get('JWT_EXPIRES_IN', { infer: true });
-api:dev:        |                                            ^^^
-api:dev:     41 |   }
-api:dev:     42 |
-api:dev:     43 |   private mapToCoreUserFromPrisma(user: PrismaGeneratedUserType): Omit<CoreUser, 'passwordHash'> {
+api:dev: webpack 5.97.1 compiled with 1 error in 5074 ms
+api:dev: /Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/apps/api/dist/main.js:17620
+api:dev: /******/                       throw e;
+api:dev:                                ^
 api:dev: 
-api:dev: ERROR in ./src/config/environment-variables.ts:1:22
-api:dev: TS2307: Cannot find module 'joi' or its corresponding type declarations.
-api:dev:   > 1 | import * as Joi from 'joi';
-api:dev:       |                      ^^^^^
-api:dev:     2 |
-api:dev:     3 | export interface EnvironmentVariables {
-api:dev:     4 |   DATABASE_URL: string;
+api:dev: Error: Module build failed (from ../../node_modules/ts-loader/index.js):
+api:dev: Error: Debug Failure. Output generation failed
+api:dev:     at transpileWorker (/Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/node_modules/typescript/lib/typescript.js:144727:43)
+api:dev:     at Object.transpileModule (/Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/node_modules/typescript/lib/typescript.js:144582:10)
+api:dev:     at getTranspilationEmit (/Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/node_modules/ts-loader/dist/index.js:418:74)
+api:dev:     at successLoader (/Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/node_modules/ts-loader/dist/index.js:38:11)
+api:dev:     at Object.loader (/Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/node_modules/ts-loader/dist/index.js:23:5)
+api:dev:     at Object.__decorate (/Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/apps/api/dist/main.js:13596:7)
+api:dev:     at __webpack_require__ (/Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/apps/api/dist/main.js:17617:33)
+api:dev:     at fn (/Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/apps/api/dist/main.js:17723:21)
+api:dev:     at Object.<anonymous> (/Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/apps/api/dist/main.js:13589:14)
+api:dev:     at __webpack_require__ (/Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/apps/api/dist/main.js:17617:33)
+api:dev:     at fn (/Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/apps/api/dist/main.js:17723:21)
+api:dev:     at Object.<anonymous> (/Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/apps/api/dist/main.js:13396:17)
+api:dev:     at __webpack_require__ (/Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/apps/api/dist/main.js:17617:33)
+api:dev:     at fn (/Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/apps/api/dist/main.js:17723:21)
+api:dev:     at Object.<anonymous> (/Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/apps/api/dist/main.js:13353:35)
 api:dev: 
-api:dev: webpack 5.97.1 compiled with 3 errors in 3059 ms
-api:dev: [Nest] 45285  - 05/20/2025, 7:18:15 PM     LOG [NestFactory] Starting Nest application...
-api:dev: [Nest] 45285  - 05/20/2025, 7:18:15 PM     LOG [InstanceLoader] PersistenceModule dependencies initialized +387ms
-api:dev: [Nest] 45285  - 05/20/2025, 7:18:15 PM     LOG [InstanceLoader] PassportModule dependencies initialized +0ms
-api:dev: [Nest] 45285  - 05/20/2025, 7:18:15 PM     LOG [InstanceLoader] ConfigHostModule dependencies initialized +5ms
-api:dev: [Nest] 45285  - 05/20/2025, 7:18:15 PM     LOG [InstanceLoader] JwtModule dependencies initialized +0ms
-api:dev: [Nest] 45285  - 05/20/2025, 7:18:15 PM     LOG [InstanceLoader] ConfigModule dependencies initialized +1ms
-api:dev: [Nest] 45285  - 05/20/2025, 7:18:15 PM     LOG [InstanceLoader] ConfigModule dependencies initialized +0ms
-api:dev: [Nest] 45285  - 05/20/2025, 7:18:15 PM     LOG [InstanceLoader] AppModule dependencies initialized +1ms
-api:dev: [Nest] 45285  - 05/20/2025, 7:18:15 PM   ERROR [ExceptionHandler] JwtStrategy requires a secret or key
-api:dev: TypeError: JwtStrategy requires a secret or key
-api:dev:     at new JwtStrategy (/Users/Yousef_1/Dokumenter/Kodefiler/Projekt m. Ejaz template/LearningLab/LearningLab/node_modules/passport-jwt/lib/strategy.js:45:15)
-api:dev:     at new StrategyWithMixin (/Users/Yousef_1/Dokumenter/Kodefiler/Projekt m. Ejaz template/LearningLab/LearningLab/apps/api/dist/main.js:12396:13)
-api:dev:     at new JwtStrategy (/Users/Yousef_1/Dokumenter/Kodefiler/Projekt m. Ejaz template/LearningLab/LearningLab/apps/api/dist/main.js:12633:9)
-api:dev:     at Injector.instantiateClass (/Users/Yousef_1/Dokumenter/Kodefiler/Projekt m. Ejaz template/LearningLab/LearningLab/apps/api/dist/main.js:3555:19)
-api:dev:     at callback (/Users/Yousef_1/Dokumenter/Kodefiler/Projekt m. Ejaz template/LearningLab/LearningLab/apps/api/dist/main.js:3247:45)
-api:dev:     at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
-api:dev:     at async Injector.resolveConstructorParams (/Users/Yousef_1/Dokumenter/Kodefiler/Projekt m. Ejaz template/LearningLab/LearningLab/apps/api/dist/main.js:3327:24)
-api:dev:     at async Injector.loadInstance (/Users/Yousef_1/Dokumenter/Kodefiler/Projekt m. Ejaz template/LearningLab/LearningLab/apps/api/dist/main.js:3252:13)
-api:dev:     at async Injector.loadProvider (/Users/Yousef_1/Dokumenter/Kodefiler/Projekt m. Ejaz template/LearningLab/LearningLab/apps/api/dist/main.js:3280:9)
-api:dev:     at async /Users/Yousef_1/Dokumenter/Kodefiler/Projekt m. Ejaz template/LearningLab/LearningLab/apps/api/dist/main.js:8771:13
-
-
-2. direnv: loading ~/Dokumenter/Kodefiler/Projekt m. Ejaz template/LearningLab/LearningLab/.envrc
-direnv: export +DATABASE_URL +JWT_EXPIRES_IN +JWT_SECRET +NEXT_PUBLIC_API_URL ~PATH
-Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % npx tsc --build --force
-
-error TS5083: Cannot read file '/Users/Yousef_1/Dokumenter/Kodefiler/Projekt m. Ejaz template/LearningLab/LearningLab/tsconfig.json'.
-
-
-Found 1 error.
-
-Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % 
-
-3. 
-nps build
-direnv: loading ~/Dokumenter/Kodefiler/Projekt m. Ejaz template/LearningLab/LearningLab/.envrc
-direnv: export +DATABASE_URL +JWT_EXPIRES_IN +JWT_SECRET +NEXT_PUBLIC_API_URL ~PATH
-Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % nps build
-
-nps is executing `build` : npx turbo run build
-• Packages in scope: @repo/config, @repo/core, api, tsconfig, ui, web
-• Running build in 6 packages
-• Remote caching disabled
-@repo/core:build: cache miss, executing 53ca0db70895d2e2
-@repo/config:build: cache hit, replaying logs a15f47f6011a3a03
-web:build: cache miss, executing 16fa9b71a528c371
-api:build: cache miss, executing 21817944745a79e7
-web:build: - info Loaded env from /Users/Yousef_1/Dokumenter/Kodefiler/Projekt m. Ejaz template/LearningLab/LearningLab/apps/web/.env.local
-web:build: - info Linting and checking validity of types...
-web:build: - error ESLint: Cannot read config file: /Users/Yousef_1/Dokumenter/Kodefiler/Projekt m. Ejaz template/LearningLab/LearningLab/apps/web/.eslintrc.js Error: Cannot find module 'config/eslint-preset' Require stack: - /Users/Yousef_1/Dokumenter/Kodefiler/Projekt m. Ejaz template/LearningLab/LearningLab/apps/web/.eslintrc.js - /Users/Yousef_1/Dokumenter/Kodefiler/Projekt m. Ejaz template/LearningLab/LearningLab/node_modules/@eslint/eslintrc/dist/eslintrc.cjs - /Users/Yousef_1/Dokumenter/Kodefiler/Projekt m. Ejaz template/LearningLab/LearningLab/apps/web/node_modules/eslint/lib/cli-engine/cli-engine.js - /Users/Yousef_1/Dokumenter/Kodefiler/Projekt m. Ejaz template/LearningLab/LearningLab/apps/web/node_modules/eslint/lib/eslint/eslint.js - /Users/Yousef_1/Dokumenter/Kodefiler/Projekt m. Ejaz template/LearningLab/LearningLab/apps/web/node_modules/eslint/lib/eslint/index.js - /Users/Yousef_1/Dokumenter/Kodefiler/Projekt m. Ejaz template/LearningLab/LearningLab/apps/web/node_modules/eslint/lib/api.js - /Users/Yousef_1/Dokumenter/Kodefiler/Projekt m. Ejaz template/LearningLab/LearningLab/node_modules/next/dist/lib/eslint/runLintCheck.js - /Users/Yousef_1/Dokumenter/Kodefiler/Projekt m. Ejaz template/LearningLab/LearningLab/node_modules/next/dist/compiled/jest-worker/processChild.js
-api:build: src/auth/auth.service.ts:39:41 - error TS2769: No overload matches this call.
-api:build:   Overload 1 of 4, '(propertyPath: never, options: ConfigGetOptions): string', gave the following error.
-api:build:     Argument of type '"JWT_SECRET"' is not assignable to parameter of type 'never'.
-api:build:   Overload 2 of 4, '(propertyPath: string | number | symbol, defaultValue: string): string', gave the following error.
-api:build:     Argument of type '{ infer: boolean; }' is not assignable to parameter of type 'string'.
-api:build: 
-api:build: 39     this.jwtSecret = this.configService.get('JWT_SECRET', { infer: true });
-api:build:                                            ~~~
-api:build: 
-api:build: src/auth/auth.service.ts:40:44 - error TS2769: No overload matches this call.
-api:build:   Overload 1 of 4, '(propertyPath: never, options: ConfigGetOptions): string', gave the following error.
-api:build:     Argument of type '"JWT_EXPIRES_IN"' is not assignable to parameter of type 'never'.
-api:build:   Overload 2 of 4, '(propertyPath: string | number | symbol, defaultValue: string): string', gave the following error.
-api:build:     Argument of type '{ infer: boolean; }' is not assignable to parameter of type 'string'.
-api:build: 
-api:build: 40     this.jwtExpiresIn = this.configService.get('JWT_EXPIRES_IN', { infer: true });
-api:build:                                               ~~~
-api:build: 
-api:build: src/config/environment-variables.ts:1:22 - error TS2307: Cannot find module 'joi' or its corresponding type declarations.
-api:build: 
-api:build: 1 import * as Joi from 'joi';
-api:build:                        ~~~~~
-api:build: 
-api:build: Found 3 error(s).
-api:build: 
-api:build: ERROR: command finished with error: command (/Users/Yousef_1/Dokumenter/Kodefiler/Projekt m. Ejaz template/LearningLab/LearningLab/apps/api) yarn run build exited (1)
-api#build: command (/Users/Yousef_1/Dokumenter/Kodefiler/Projekt m. Ejaz template/LearningLab/LearningLab/apps/api) yarn run build exited (1)
-
- Tasks:    2 successful, 4 total
-Cached:    1 cached, 4 total
-  Time:    6.247s 
-Failed:    api#build
-
- ERROR  run failed: command  exited (1)
-The script called "build" which runs "npx turbo run build" failed with exit code 1 https://github.com/sezna/nps/blob/master/other/ERRORS_AND_WARNINGS.md#failed-with-exit-code
-Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % 
-Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % yarn build
-
-• Packages in scope: @repo/config, @repo/core, api, tsconfig, ui, web
-• Running build in 6 packages
-• Remote caching disabled
-@repo/core:build: cache hit (outputs already on disk), replaying logs 53ca0db70895d2e2
-@repo/config:build: cache hit, replaying logs a15f47f6011a3a03
-web:build: cache miss, executing 5bf4f2bc68ce92d2
-api:build: cache miss, executing ae1d82d10d7e1fbb
-web:build: - info Loaded env from /Users/Yousef_1/Dokumenter/Kodefiler/Projekt m. Ejaz template/LearningLab/LearningLab/apps/web/.env.local
-web:build: - info Linting and checking validity of types...
-web:build: - error ESLint: Cannot read config file: /Users/Yousef_1/Dokumenter/Kodefiler/Projekt m. Ejaz template/LearningLab/LearningLab/apps/web/.eslintrc.js Error: Cannot find module 'config/eslint-preset' Require stack: - /Users/Yousef_1/Dokumenter/Kodefiler/Projekt m. Ejaz template/LearningLab/LearningLab/apps/web/.eslintrc.js - /Users/Yousef_1/Dokumenter/Kodefiler/Projekt m. Ejaz template/LearningLab/LearningLab/node_modules/@eslint/eslintrc/dist/eslintrc.cjs - /Users/Yousef_1/Dokumenter/Kodefiler/Projekt m. Ejaz template/LearningLab/LearningLab/apps/web/node_modules/eslint/lib/cli-engine/cli-engine.js - /Users/Yousef_1/Dokumenter/Kodefiler/Projekt m. Ejaz template/LearningLab/LearningLab/apps/web/node_modules/eslint/lib/eslint/eslint.js - /Users/Yousef_1/Dokumenter/Kodefiler/Projekt m. Ejaz template/LearningLab/LearningLab/apps/web/node_modules/eslint/lib/eslint/index.js - /Users/Yousef_1/Dokumenter/Kodefiler/Projekt m. Ejaz template/LearningLab/LearningLab/apps/web/node_modules/eslint/lib/api.js - /Users/Yousef_1/Dokumenter/Kodefiler/Projekt m. Ejaz template/LearningLab/LearningLab/node_modules/next/dist/lib/eslint/runLintCheck.js - /Users/Yousef_1/Dokumenter/Kodefiler/Projekt m. Ejaz template/LearningLab/LearningLab/node_modules/next/dist/compiled/jest-worker/processChild.js
-api:build: src/auth/auth.service.ts:39:41 - error TS2769: No overload matches this call.
-api:build:   Overload 1 of 4, '(propertyPath: never, options: ConfigGetOptions): string', gave the following error.
-api:build:     Argument of type '"JWT_SECRET"' is not assignable to parameter of type 'never'.
-api:build:   Overload 2 of 4, '(propertyPath: string | number | symbol, defaultValue: string): string', gave the following error.
-api:build:     Argument of type '{ infer: boolean; }' is not assignable to parameter of type 'string'.
-api:build: 
-api:build: 39     this.jwtSecret = this.configService.get('JWT_SECRET', { infer: true });
-api:build:                                            ~~~
-api:build: 
-api:build: src/auth/auth.service.ts:40:44 - error TS2769: No overload matches this call.
-api:build:   Overload 1 of 4, '(propertyPath: never, options: ConfigGetOptions): string', gave the following error.
-api:build:     Argument of type '"JWT_EXPIRES_IN"' is not assignable to parameter of type 'never'.
-api:build:   Overload 2 of 4, '(propertyPath: string | number | symbol, defaultValue: string): string', gave the following error.
-api:build:     Argument of type '{ infer: boolean; }' is not assignable to parameter of type 'string'.
-api:build: 
-api:build: 40     this.jwtExpiresIn = this.configService.get('JWT_EXPIRES_IN', { infer: true });
-api:build:                                               ~~~
-api:build: 
-api:build: src/config/environment-variables.ts:1:22 - error TS2307: Cannot find module 'joi' or its corresponding type declarations.
-api:build: 
-api:build: 1 import * as Joi from 'joi';
-api:build:                        ~~~~~
-api:build: 
-api:build: Found 3 error(s).
-api:build: 
-api:build: ERROR: command finished with error: command (/Users/Yousef_1/Dokumenter/Kodefiler/Projekt m. Ejaz template/LearningLab/LearningLab/apps/api) yarn run build exited (1)
-api#build: command (/Users/Yousef_1/Dokumenter/Kodefiler/Projekt m. Ejaz template/LearningLab/LearningLab/apps/api) yarn run build exited (1)
-
- Tasks:    2 successful, 4 total
-Cached:    2 cached, 4 total
-  Time:    4.513s 
-Failed:    api#build
-
- ERROR  run failed: command  exited (1)
-Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % 
-
-4. 
-yarn lint
-direnv: loading ~/Dokumenter/Kodefiler/Projekt m. Ejaz template/LearningLab/LearningLab/.envrc
-direnv: export +DATABASE_URL +JWT_EXPIRES_IN +JWT_SECRET +NEXT_PUBLIC_API_URL ~PATH
-Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % yarn l
-int
-
-• Packages in scope: @repo/config, @repo/core, api, tsconfig, ui, web
-• Running lint in 6 packages
-• Remote caching disabled
-api:lint: cache miss, executing e5e515bb0372b0a5
-@repo/core:lint: cache miss, executing 685113616400396e
-@repo/config:lint: cache miss, executing 6a4cf30679e135a6
-web:lint: cache miss, executing 3fceb7f42a4980a3
-@repo/config:lint: 
-@repo/config:lint: Oops! Something went wrong! :(
-@repo/config:lint: 
-@repo/config:lint: ESLint: 8.57.1
-@repo/config:lint: 
-@repo/config:lint: ESLint couldn't find a configuration file. To set up a configuration file for this project, please run:
-@repo/config:lint: 
-@repo/config:lint:     npm init @eslint/config
-@repo/config:lint: 
-@repo/config:lint: ESLint looked for configuration files in /Users/Yousef_1/Dokumenter/Kodefiler/Projekt m. Ejaz template/LearningLab/LearningLab/packages/config/dist and its ancestors. If it found none, it then looked in your home directory.
-@repo/config:lint: 
-@repo/config:lint: If you think you already have a configuration file or if you need more help, please stop by the ESLint Discord server: https://eslint.org/chat
-@repo/config:lint: 
-@repo/config:lint: ERROR: command finished with error: command (/Users/Yousef_1/Dokumenter/Kodefiler/Projekt m. Ejaz template/LearningLab/LearningLab/packages/config) yarn run lint exited (2)
-@repo/config#lint: command (/Users/Yousef_1/Dokumenter/Kodefiler/Projekt m. Ejaz template/LearningLab/LearningLab/packages/config) yarn run lint exited (2)
-
- Tasks:    0 successful, 4 total
-Cached:    0 cached, 4 total
-  Time:    1.491s 
-Failed:    @repo/config#lint
-
- ERROR  run failed: command  exited (2)
-Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % 
-Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % 
-
-5. 
-direnv: loading ~/Dokumenter/Kodefiler/Projekt m. Ejaz template/LearningLab/LearningLab/.envrc
-direnv: export +DATABASE_URL +JWT_EXPIRES_IN +JWT_SECRET +NEXT_PUBLIC_API_URL ~PATH
-Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % npx tsc --noEmit --build apps/api/tsconfig.json apps/web/tsconfig.json packages/**/*.json
-
-error TS6369: Option '--build' must be the first command line argument.
-Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % cd apps/api
-yarn test:ci
-
-Environment variables loaded from .env
-Prisma schema loaded from prisma/schema.prisma
-
-✔ Generated Prisma Client (v5.22.0) to ./../../node_modules/@prisma/client in 48ms
-
-Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
-
-Help us improve the Prisma ORM for everyone. Share your feedback in a short 2-min survey: https://pris.ly/orm/survey/release-5-22
-
-┌─────────────────────────────────────────────────────────┐
-│  Update available 5.22.0 -> 6.8.2                       │
-│                                                         │
-│  This is a major update - please follow the guide at    │
-│  https://pris.ly/d/major-version-upgrade                │
-│                                                         │
-│  Run the following to update                            │
-│    yarn add --dev prisma@latest                         │
-│    yarn add @prisma/client@latest                       │
-└─────────────────────────────────────────────────────────┘
-Determining test sui
- FAIL  src/persistence/prisma/prisma.service.spec.ts
-  ● PrismaService › should call $connect on module init
-
-    TypeError: service.onModuleInit is not a function
-
-      34 |
-      35 |   it('should call $connect on module init', async () => {
-    > 36 |     await service.onModuleInit(); // Dette kalder this.$connect() internt
-         |                   ^
-      37 |     expect(mockPrismaClientInstance.$connect).toHaveBeenCalledTimes(1);
-      38 |   });
-      39 | });
-
-      at Object.<anonymous> (persistence/prisma/prisma.service.spec.ts:36:19)
-
- PASS  src/users/users.service.spec.ts
- PASS  src/users/users.controller.spec.ts
- PASS  src/app.controller.spec.ts
-
-Test Suites: 1 failed, 3 passed, 4 total
-Tests:       1 failed, 13 passed, 14 total
-Snapshots:   0 total
-Time:        1.128 s, estimated 2 s
-Ran all test suites.
-Yousef@MacBook-Pro-tilhrende-Yousef api % npx prisma generate
-
-Environment variables loaded from .env
-Prisma schema loaded from prisma/schema.prisma
-
-✔ Generated Prisma Client (v5.22.0) to ./../../node_modules/@prisma/client in 44ms
-
-Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
-
-Tip: Want to turn off tips and other hints? https://pris.ly/tip-4-nohints
-
-Yousef@MacBook-Pro-tilhrende-Yousef api % 
+api:dev: Node.js v22.15.1

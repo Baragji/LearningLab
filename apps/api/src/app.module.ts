@@ -7,12 +7,12 @@ import { PersistenceModule } from './persistence/persistence.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { ThrottlerModule } from '@nestjs/throttler';
-import { CsrfMiddleware } from './common/middleware/csrf.middleware';
 import {
   serverSchema,
   ServerEnv,
   clientEnv as getClientEnv,
 } from '@repo/config';
+import { UserProgressModule } from './modules/userProgress.module'; // Korrekt casing her
 
 @Module({
   imports: [
@@ -22,12 +22,17 @@ import {
         const source = { ...configFromEnvFile, ...process.env };
         const validatedConfig = serverSchema.safeParse(source);
 
-        // In CI/CD or build environments, we don't need to validate all environment variables
         if (process.env.CI || process.env.NODE_ENV === 'production') {
           console.log(
-            'Running in CI/CD or production environment, skipping strict env validation',
+            'Running in CI/CD or production environment, using potentially default envs for missing ones.',
           );
-          return source as ServerEnv;
+          const defaults: Partial<ServerEnv> = {
+            DATABASE_URL: source.DATABASE_URL || 'postgresql://dummy:dummy@localhost:5432/dummy',
+            JWT_SECRET: source.JWT_SECRET || 'dummy_secret_for_build_32_chars_long_enough_to_pass',
+            JWT_EXPIRES_IN: source.JWT_EXPIRES_IN || '15m',
+            SALT_ROUNDS: source.SALT_ROUNDS ? parseInt(String(source.SALT_ROUNDS), 10) : 10,
+          };
+          return { ...defaults, ...source } as ServerEnv;
         }
 
         if (!validatedConfig.success) {
@@ -39,35 +44,33 @@ import {
             `Server miljøvariabel-validering fejlede: ${JSON.stringify(validatedConfig.error.format())}`,
           );
         }
-
         try {
-          getClientEnv();
+          getClientEnv(); 
         } catch (clientError) {
-          // In CI/CD or build environments, we don't need to validate client environment variables
-          if (!(process.env.CI || process.env.NODE_ENV === 'production')) {
+           if (!(process.env.CI || process.env.NODE_ENV === 'production')) {
             throw clientError;
           }
         }
-
         return validatedConfig.data as ServerEnv;
       },
     }),
     ThrottlerModule.forRoot([
       {
-        ttl: 60000, // 1 minut
-        limit: 10, // 10 requests per ttl
+        ttl: 60000,
+        limit: 100, // Juster efter behov for produktion
       },
     ]),
     PersistenceModule,
     UsersModule,
     AuthModule,
+    UserProgressModule, // Korrekt casing her
   ],
   controllers: [AppController],
-  providers: [AppService, ConfigService],
+  providers: [AppService],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    // Temporarily disable CSRF middleware until properly configured
+    // CsrfMiddleware kan genaktiveres senere hvis nødvendigt
     // consumer.apply(CsrfMiddleware).forRoutes('*');
   }
 }

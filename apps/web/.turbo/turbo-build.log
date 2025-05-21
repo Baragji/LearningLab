@@ -21,8 +21,8 @@ Route (pages)                                      Size     First Load JS
 ├ ○ /404                                           180 B           132 kB
 ├ ○ /courses                                       1.58 kB         133 kB
 ├ ○ /courses/[slug]                                2.1 kB          134 kB
-├ ○ /courses/[slug]/quizzes/[id]                   25.5 kB         199 kB
-├ ○ /courses/[slug]/quizzes/[id]/results (658 ms)  4.08 kB         177 kB
+├ ○ /courses/[slug]/quizzes/[id] (648 ms)          25.5 kB         199 kB
+├ ○ /courses/[slug]/quizzes/[id]/results (657 ms)  4.08 kB         177 kB
 ├ ○ /dashboard                                     1.16 kB         133 kB
 ├ ○ /forgot-password                               1.63 kB         133 kB
 ├ ○ /lessons/[id]                                  4.43 kB         136 kB

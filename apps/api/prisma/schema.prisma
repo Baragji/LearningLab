@@ -144,6 +144,8 @@ model UserAnswer {
   question               Question      @relation(fields: [questionId], references: [id])
   quizAttempt            QuizAttempt   @relation(fields: [quizAttemptId], references: [id])
   selectedAnswerOption   AnswerOption? @relation(fields: [selectedAnswerOptionId], references: [id])
+  
+  @@unique([quizAttemptId, questionId], name: "userAnswer_quizAttemptId_questionId_unique")
 }
 
 model UserProgress {
@@ -160,6 +162,8 @@ model UserProgress {
   quizAttempt   QuizAttempt?   @relation(fields: [quizAttemptId], references: [id])
   quiz          Quiz?          @relation("QuizProgress", fields: [quizId], references: [id])
   user          User           @relation(fields: [userId], references: [id])
+  
+  @@unique([userId, lessonId, quizId], name: "userId_lessonId_quizId_unique_constraint")
 }
 
 enum Role {

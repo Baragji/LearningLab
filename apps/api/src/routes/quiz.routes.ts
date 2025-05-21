@@ -3,7 +3,8 @@
 import express from 'express';
 import * as quizController from '../controllers/quiz.controller';
 import * as quizAttemptController from '../controllers/quizAttempt.controller';
-import * as userProgressController from '../controllers/userProgress.controller';
+// Fjern import af userProgressController, da disse ruter håndteres af NestJS UserProgressController
+// import * as userProgressController from '../controllers/userProgress.controller';
 import { authenticateJWT, authorizeAdmin } from '../middleware/auth.middleware';
 
 const router = express.Router();
@@ -99,36 +100,6 @@ router.post(
   quizAttemptController.completeQuizAttempt,
 );
 
-// User Progress routes
-router.get(
-  '/progress',
-  authenticateJWT,
-  userProgressController.getUserProgress,
-);
-router.get(
-  '/progress/users/:userId',
-  authenticateJWT,
-  userProgressController.getUserProgressById,
-);
-router.get(
-  '/progress/lessons/:lessonId',
-  authenticateJWT,
-  userProgressController.getLessonProgress,
-);
-router.put(
-  '/progress/lessons/:lessonId',
-  authenticateJWT,
-  userProgressController.updateLessonProgress,
-);
-router.patch(
-  '/progress',
-  authenticateJWT,
-  userProgressController.updateUserProgress,
-);
-router.get(
-  '/progress/courses/:courseId',
-  authenticateJWT,
-  userProgressController.getCourseProgress,
-);
+// User Progress routes er fjernet herfra - de håndteres af UserProgressController i NestJS
 
 export default router;

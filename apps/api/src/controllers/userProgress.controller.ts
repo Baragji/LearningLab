@@ -1,431 +1,267 @@
 // apps/api/src/controllers/userProgress.controller.ts
+import { Controller, Patch, Body, Request, UseGuards, Get, Param, Put, Logger, BadRequestException, InternalServerErrorException, Inject, NotFoundException } from '@nestjs/common';
+import { Prisma, ProgressStatus, UserProgress as PrismaUserProgress } from '@prisma/client';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { AuthenticatedRequest } from '../types'; // Importerer fra types/index.ts
+import { UpdateQuizProgressDto } from '../quiz/dto/update-quiz-progress.dto';
+import { UpdateLessonProgressDto } from '../dto/update-lesson-progress.dto';
+import { PrismaService } from '../persistence/prisma/prisma.service';
 
-import { Request, Response } from 'express';
-import { PrismaClient, ProgressStatus } from '@prisma/client';
-import { User, Role } from '@repo/core';
+@Controller('user-progress')
+@UseGuards(JwtAuthGuard)
+export class UserProgressController {
+  private readonly logger = new Logger(UserProgressController.name);
 
-const prisma = new PrismaClient();
+  constructor(@Inject(PrismaService) private prisma: PrismaService) {}
 
-/**
- * Henter fremskridt for den aktuelle bruger
- */
-export const getUserProgress = async (
-  req: Request,
-  res: Response,
-): Promise<void> => {
-  const userId = (req.user as any)?.id as number;
+  @Patch('/')
+  async handleUpdateUserQuizProgress(
+    @Request() req: AuthenticatedRequest,
+    @Body() body: UpdateQuizProgressDto,
+  ): Promise<PrismaUserProgress> {
+    const userId = req.user.id;
+    const { quizId, score, answers, completedAt } = body;
 
-  if (!userId) {
-    res.status(401).json({ message: 'Ikke autoriseret' });
-    return;
-  }
+    this.logger.log(`Handling PATCH /user-progress for user: ${userId}, quiz: ${quizId}`);
 
-  try {
-    const progress = await prisma.userProgress.findMany({
-      where: { userId },
-      include: {
-        lesson: {
-          include: {
-            module: {
-              include: {
-                course: {
-                  include: {
-                    subjectArea: true,
-                  },
-                },
-              },
-            },
-          },
-        },
-        quiz: true,
-        quizAttempt: true,
-      },
-    });
-
-    res.status(200).json(progress);
-  } catch (error) {
-    console.error(
-      `Fejl ved hentning af fremskridt for bruger ${userId}:`,
-      error,
-    );
-    res
-      .status(500)
-      .json({ message: 'Der opstod en fejl ved hentning af fremskridt' });
-  }
-};
-
-/**
- * Henter fremskridt for en specifik bruger (kun for admin)
- */
-export const getUserProgressById = async (
-  req: Request,
-  res: Response,
-): Promise<void> => {
-  const { userId } = req.params;
-  const currentUserId = (req.user as any)?.id as number;
-  const isAdmin = (req.user as any)?.role === Role.ADMIN;
-
-  if (!currentUserId) {
-    res.status(401).json({ message: 'Ikke autoriseret' });
-    return;
-  }
-
-  // Kun admin kan se andre brugeres fremskridt
-  if (Number(userId) !== currentUserId && !isAdmin) {
-    res.status(403).json({
-      message: 'Du har ikke tilladelse til at se denne brugers fremskridt',
-    });
-    return;
-  }
-
-  try {
-    const progress = await prisma.userProgress.findMany({
-      where: { userId: Number(userId) },
-      include: {
-        lesson: {
-          include: {
-            module: {
-              include: {
-                course: {
-                  include: {
-                    subjectArea: true,
-                  },
-                },
-              },
-            },
-          },
-        },
-        quiz: true,
-        quizAttempt: true,
-      },
-    });
-
-    res.status(200).json(progress);
-  } catch (error) {
-    console.error(
-      `Fejl ved hentning af fremskridt for bruger ${userId}:`,
-      error,
-    );
-    res
-      .status(500)
-      .json({ message: 'Der opstod en fejl ved hentning af fremskridt' });
-  }
-};
-
-/**
- * Henter fremskridt for en specifik lektion
- */
-export const getLessonProgress = async (
-  req: Request,
-  res: Response,
-): Promise<void> => {
-  const { lessonId } = req.params;
-  const userId = (req.user as any)?.id as number;
-
-  if (!userId) {
-    res.status(401).json({ message: 'Ikke autoriseret' });
-    return;
-  }
-
-  try {
-    // Tjek om lektionen eksisterer
-    const lesson = await prisma.lesson.findUnique({
-      where: { id: Number(lessonId) },
-    });
-
-    if (!lesson) {
-      res.status(404).json({ message: 'Lektionen blev ikke fundet' });
-      return;
-    }
-
-    // Hent eller opret fremskridt for lektionen
-    let progress = await prisma.userProgress.findFirst({
-      where: {
-        userId,
-        lessonId: Number(lessonId),
-      },
-    });
-
-    if (!progress) {
-      // Hvis der ikke findes fremskridt, opret det med status NOT_STARTED
-      progress = await prisma.userProgress.create({
-        data: {
-          userId,
-          lessonId: Number(lessonId),
-          status: ProgressStatus.NOT_STARTED,
-        },
-      });
-    }
-
-    res.status(200).json(progress);
-  } catch (error) {
-    console.error(
-      `Fejl ved hentning af fremskridt for lektion ${lessonId}:`,
-      error,
-    );
-    res
-      .status(500)
-      .json({ message: 'Der opstod en fejl ved hentning af fremskridt' });
-  }
-};
-
-/**
- * Opdaterer fremskridt for en specifik lektion
- */
-export const updateLessonProgress = async (
-  req: Request,
-  res: Response,
-): Promise<void> => {
-  const { lessonId } = req.params;
-  const { status } = req.body;
-  const userId = (req.user as any)?.id as number;
-
-  if (!userId) {
-    res.status(401).json({ message: 'Ikke autoriseret' });
-    return;
-  }
-
-  // Valider status
-  if (!Object.values(ProgressStatus).includes(status as ProgressStatus)) {
-    res.status(400).json({ message: 'Ugyldig status' });
-    return;
-  }
-
-  try {
-    // Tjek om lektionen eksisterer
-    const lesson = await prisma.lesson.findUnique({
-      where: { id: Number(lessonId) },
-    });
-
-    if (!lesson) {
-      res.status(404).json({ message: 'Lektionen blev ikke fundet' });
-      return;
-    }
-
-    // Opdater eller opret fremskridt for lektionen
-    const existingProgress = await prisma.userProgress.findFirst({
-      where: {
-        userId,
-        lessonId: Number(lessonId),
-      },
-    });
-
-    let progress;
-    if (existingProgress) {
-      progress = await prisma.userProgress.update({
-        where: { id: existingProgress.id },
-        data: {
-          status: status as ProgressStatus,
-        },
-      });
-    } else {
-      progress = await prisma.userProgress.create({
-        data: {
-          userId,
-          lessonId: Number(lessonId),
-          status: status as ProgressStatus,
-        },
-      });
-    }
-
-    res.status(200).json(progress);
-  } catch (error) {
-    console.error(
-      `Fejl ved opdatering af fremskridt for lektion ${lessonId}:`,
-      error,
-    );
-    res
-      .status(500)
-      .json({ message: 'Der opstod en fejl ved opdatering af fremskridt' });
-  }
-};
-
-/**
- * Opdaterer brugerens fremskridt for en quiz
- */
-export const updateUserProgress = async (
-  req: Request,
-  res: Response,
-): Promise<void> => {
-  const { quizId, score, answers, completedAt } = req.body;
-  const userId = (req.user as any)?.id as number;
-
-  if (!userId) {
-    res.status(401).json({ message: 'Ikke autoriseret' });
-    return;
-  }
-
-  if (!quizId || score === undefined) {
-    res.status(400).json({ message: 'Manglende påkrævede felter' });
-    return;
-  }
-
-  try {
-    // Tjek om quizzen eksisterer
-    const quiz = await prisma.quiz.findUnique({
-      where: { id: Number(quizId) },
-    });
-
-    if (!quiz) {
-      res.status(404).json({ message: 'Quizzen blev ikke fundet' });
-      return;
-    }
-
-    // Find eksisterende fremskridt eller opret nyt
-    const existingProgress = await prisma.userProgress.findFirst({
-      where: {
-        userId,
-        quizId: Number(quizId),
-      },
-    });
-
-    let progress;
-    if (existingProgress) {
-      progress = await prisma.userProgress.update({
-        where: { id: existingProgress.id },
-        data: {
-          status: ProgressStatus.COMPLETED,
-          score: score,
-          updatedAt: new Date(),
-        },
-      });
-    } else {
-      progress = await prisma.userProgress.create({
-        data: {
-          userId,
-          quizId: Number(quizId),
-          status: ProgressStatus.COMPLETED,
-          score: score,
-        },
-      });
-    }
-
-    // Hvis der er svar, gem dem også
-    if (answers && answers.length > 0) {
-      // Opret en quiz-attempt hvis der ikke allerede findes en
-      const quizAttempt = await prisma.quizAttempt.create({
-        data: {
-          userId,
-          quizId: Number(quizId),
-          score: score,
-          completedAt: completedAt ? new Date(completedAt) : new Date(),
-        },
+    try {
+      let attempt = await this.prisma.quizAttempt.findFirst({
+        where: { userId, quizId, completedAt: null },
+        orderBy: { startedAt: 'desc' },
       });
 
-      // Update the UserProgress to link to this QuizAttempt
-      await prisma.userProgress.update({
-        where: { id: progress.id },
-        data: {
-          quizAttemptId: quizAttempt.id,
-        },
-      });
-
-      // Gem svarene
-      for (const answer of answers) {
-        await prisma.userAnswer.create({
+      if (!attempt) {
+        this.logger.warn(`No incomplete quiz attempt for user ${userId}, quiz ${quizId}. Creating new.`);
+        attempt = await this.prisma.quizAttempt.create({
           data: {
-            quizAttemptId: quizAttempt.id,
-            questionId: answer.questionId,
-            selectedAnswerOptionId: answer.selectedOptionId,
-            // isCorrect is not in the schema for UserAnswer
+            userId,
+            quizId,
+            score: 0,
+            startedAt: new Date(),
           },
         });
       }
+
+      if (answers && answers.length > 0) {
+        const answerUpserts = answers.map(answer => {
+          return this.prisma.userAnswer.upsert({
+            where: {
+              // VIGTIGT: Sørg for at dette navn ("userAnswer_quizAttemptId_questionId_unique")
+              // matcher præcist det 'name', du har givet til @@unique constrainten
+              // i din UserAnswer model i apps/api/prisma/schema.prisma
+              userAnswer_quizAttemptId_questionId_unique: {
+                quizAttemptId: attempt.id,
+                questionId: answer.questionId,
+              }
+            },
+            update: {
+              selectedAnswerOptionId: answer.selectedOptionId,
+            },
+            create: {
+              quizAttemptId: attempt.id,
+              questionId: answer.questionId,
+              selectedAnswerOptionId: answer.selectedOptionId,
+            },
+          });
+        });
+        await this.prisma.$transaction(answerUpserts);
+      }
+
+      const finalCompletedAt = completedAt ? new Date(completedAt) : new Date();
+      await this.prisma.quizAttempt.update({
+        where: { id: attempt.id },
+        data: {
+          score: score,
+          completedAt: finalCompletedAt,
+        },
+      });
+      this.logger.log(`QuizAttempt ${attempt.id} updated. Score: ${score}, Completed: ${finalCompletedAt}`);
+
+      const userProgress = await this.prisma.userProgress.upsert({
+        where: {
+           // VIGTIGT: Sørg for at dette navn ("userId_lessonId_quizId_unique_constraint")
+           // matcher præcist det 'name', du har givet til @@unique constrainten
+           // i din UserProgress model i apps/api/prisma/schema.prisma
+           userId_lessonId_quizId_unique_constraint: {
+             userId,
+             quizId,
+             lessonId: null,
+           }
+        },
+        update: {
+          status: ProgressStatus.COMPLETED,
+          score: score,
+          quizAttemptId: attempt.id,
+        },
+        create: {
+          userId,
+          quizId,
+          lessonId: null,
+          status: ProgressStatus.COMPLETED,
+          score: score,
+          quizAttemptId: attempt.id,
+        },
+      });
+      this.logger.log(`UserProgress for quiz ${quizId} updated/created for user ${userId}.`);
+
+      return userProgress;
+    } catch (error) {
+      this.logger.error(`Error in handleUpdateUserQuizProgress for user ${userId}, quiz ${quizId}:`, error);
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        this.logger.error(`Prisma Error Code: ${error.code}`);
+        if (error.code === 'P2002') { // Unique constraint violation
+             this.logger.error('Unique constraint failed. Details:', error.meta);
+        }
+        throw new InternalServerErrorException(`Database error: ${error.code} - ${error.message}`);
+      }
+      throw new InternalServerErrorException('En intern serverfejl opstod under opdatering af quiz fremskridt.');
     }
-
-    res.status(200).json(progress);
-  } catch (error) {
-    console.error(`Fejl ved opdatering af quiz fremskridt:`, error);
-    res
-      .status(500)
-      .json({ message: 'Der opstod en fejl ved opdatering af fremskridt' });
-  }
-};
-
-export const getCourseProgress = async (
-  req: Request,
-  res: Response,
-): Promise<void> => {
-  const { courseId } = req.params;
-  const userId = (req.user as any)?.id as number;
-
-  if (!userId) {
-    res.status(401).json({ message: 'Ikke autoriseret' });
-    return;
   }
 
-  try {
-    // Tjek om kurset eksisterer
-    const course = await prisma.course.findUnique({
-      where: { id: Number(courseId) },
+  @Get('lessons/:lessonId')
+  async getLessonProgress(
+     @Request() req: AuthenticatedRequest,
+     @Param('lessonId') lessonIdParam: string
+  ): Promise<PrismaUserProgress | null> {
+     const userId = req.user.id;
+     const lessonId = parseInt(lessonIdParam, 10);
+     if (isNaN(lessonId)) {
+       throw new BadRequestException('Invalid lesson ID.');
+     }
+     this.logger.log(`Fetching lesson progress for user: ${userId}, lesson: ${lessonId}`);
+     
+     let progress = await this.prisma.userProgress.findFirst({
+        where: { userId, lessonId, quizId: null },
+     });
+
+     if (!progress) {
+        this.logger.warn(`No progress found for user ${userId}, lesson ${lessonId}. Creating a new 'NOT_STARTED' record.`);
+        try {
+            progress = await this.prisma.userProgress.create({
+                data: {
+                    userId,
+                    lessonId,
+                    status: ProgressStatus.NOT_STARTED,
+                    quizId: null
+                }
+            });
+        } catch (error) {
+            this.logger.error(`Failed to create initial progress for lesson ${lessonId}, user ${userId}`, error);
+            throw new InternalServerErrorException('Kunne ikke hente eller oprette lektionsfremskridt.');
+        }
+     }
+     return progress;
+  }
+
+  @Put('lessons/:lessonId')
+  async updateLessonProgress(
+     @Request() req: AuthenticatedRequest,
+     @Param('lessonId') lessonIdParam: string,
+     @Body() body: UpdateLessonProgressDto
+  ): Promise<PrismaUserProgress> {
+     const userId = req.user.id;
+     const lessonId = parseInt(lessonIdParam, 10);
+     if (isNaN(lessonId)) {
+        throw new BadRequestException('Invalid lesson ID.');
+     }
+     const { status } = body;
+     this.logger.log(`Updating lesson progress for user: ${userId}, lesson: ${lessonId} to status: ${status}`);
+     
+     const lessonExists = await this.prisma.lesson.findUnique({ where: { id: lessonId } });
+     if (!lessonExists) {
+       throw new NotFoundException(`Lesson with ID ${lessonId} not found.`);
+     }
+
+     return this.prisma.userProgress.upsert({
+        where: { 
+            userId_lessonId_quizId_unique_constraint: { // Sørg for at constraint-navnet matcher dit schema
+                userId, 
+                lessonId, 
+                quizId: null 
+            } 
+        },
+        update: { status },
+        create: { userId, lessonId, status, quizId: null },
+     });
+  }
+
+  @Get('/')
+  async getAllUserProgress(@Request() req: AuthenticatedRequest): Promise<PrismaUserProgress[]> {
+    const userId = req.user.id;
+    this.logger.log(`Fetching all progress for user: ${userId}`);
+    return this.prisma.userProgress.findMany({
+      where: { userId },
+      include: { 
+        lesson: { select: { id: true, title: true } },
+        quiz: { select: { id: true, title: true } },
+        quizAttempt: { select: { id: true, score: true, completedAt: true } }
+      }
+    });
+  }
+
+  @Get('courses/:courseId')
+  async getCourseProgress(
+    @Request() req: AuthenticatedRequest,
+    @Param('courseId') courseIdParam: string
+  ): Promise<any> {
+    const userId = req.user.id;
+    const courseId = parseInt(courseIdParam, 10);
+    if (isNaN(courseId)) {
+      throw new BadRequestException('Invalid course ID.');
+    }
+    this.logger.log(`Fetching course progress for user: ${userId}, course: ${courseId}`);
+
+    const course = await this.prisma.course.findUnique({
+      where: { id: courseId },
       include: {
         modules: {
           include: {
-            lessons: true,
-            quizzes: true,
+            lessons: { select: { id: true } },
+            quizzes: { select: { id: true } },
           },
         },
       },
     });
 
     if (!course) {
-      res.status(404).json({ message: 'Kurset blev ikke fundet' });
-      return;
+      throw new NotFoundException(`Course with ID ${courseId} not found.`);
     }
 
-    // Hent alle lektioner og quizzer i kurset
     const lessonIds: number[] = [];
     const quizIds: number[] = [];
 
-    course.modules.forEach((module) => {
-      module.lessons.forEach((lesson) => lessonIds.push(lesson.id));
-      module.quizzes.forEach((quiz) => quizIds.push(quiz.id));
+    course.modules.forEach(module => {
+      module.lessons.forEach(lesson => lessonIds.push(lesson.id));
+      module.quizzes.forEach(quiz => quizIds.push(quiz.id));
     });
 
-    // Hent fremskridt for alle lektioner og quizzer i kurset
-    const progress = await prisma.userProgress.findMany({
+    const progressRecords = await this.prisma.userProgress.findMany({
       where: {
         userId,
         OR: [
-          { lessonId: { in: lessonIds.length > 0 ? lessonIds : undefined } },
-          { quizId: { in: quizIds.length > 0 ? quizIds : undefined } },
+          { lessonId: { in: lessonIds.length > 0 ? lessonIds : undefined } }, // Håndter tomme arrays
+          { quizId: { in: quizIds.length > 0 ? quizIds : undefined } },     // Håndter tomme arrays
         ],
       },
     });
 
-    // Beregn samlet fremskridt for kurset
     const totalItems = lessonIds.length + quizIds.length;
-    const completedItems = progress.filter(
-      (p) => p.status === ProgressStatus.COMPLETED,
-    ).length;
-    const inProgressItems = progress.filter(
-      (p) => p.status === ProgressStatus.IN_PROGRESS,
-    ).length;
+    const completedItems = progressRecords.filter(p => p.status === ProgressStatus.COMPLETED).length;
+    
+    const percentageComplete = totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 0;
 
-    const percentageComplete =
-      totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 0;
-
-    res.status(200).json({
-      courseId: Number(courseId),
+    return {
+      courseId: courseId,
       totalItems,
       completedItems,
-      inProgressItems,
       percentageComplete,
       status:
         percentageComplete === 100
           ? ProgressStatus.COMPLETED
-          : percentageComplete > 0
+          : completedItems > 0 || progressRecords.some(p => p.status === ProgressStatus.IN_PROGRESS)
             ? ProgressStatus.IN_PROGRESS
             : ProgressStatus.NOT_STARTED,
-      detailedProgress: progress,
-    });
-  } catch (error) {
-    console.error(
-      `Fejl ved hentning af fremskridt for kursus ${courseId}:`,
-      error,
-    );
-    res
-      .status(500)
-      .json({ message: 'Der opstod en fejl ved hentning af fremskridt' });
+      detailedProgress: progressRecords,
+    };
   }
-};
+}
