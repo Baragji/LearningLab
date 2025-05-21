@@ -10,7 +10,15 @@
     "dev": {
       "cache": false
     },
+    "test": {
+      "dependsOn": ["^build"],
+      "outputs": []
+    },
     "test:ci": {
+      "dependsOn": ["^build"],
+      "cache": false
+    },
+    "test:watch": {
       "cache": false
     }
   }
