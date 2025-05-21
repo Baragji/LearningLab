@@ -24,9 +24,11 @@ const QuizQuestion: React.FC<QuizQuestionProps> = ({
   const showFeedback = isSubmitted || quizSubmitted;
 
   const handleOptionSelect = (optionId: number) => {
-    if (!showFeedback) {
-      selectAnswer(question.id, optionId);
-    }
+    console.log('Option clicked:', optionId);
+    // Always try to select the answer, even if showFeedback is true
+    // This ensures the selection works even if there are timing issues
+    console.log('Selecting answer:', question.id, optionId);
+    selectAnswer(question.id, optionId);
   };
 
   return (
@@ -61,8 +63,16 @@ const QuizQuestion: React.FC<QuizQuestionProps> = ({
           return (
             <div
               key={option.id}
-              className={optionClasses}
+              className={`${optionClasses} hover:shadow-md active:shadow-inner active:translate-y-0.5 transition-all duration-150`}
               onClick={() => handleOptionSelect(option.id)}
+              role="button"
+              tabIndex={0}
+              aria-pressed={isSelected}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  handleOptionSelect(option.id);
+                }
+              }}
             >
               <div className="flex-1">
                 <p className="text-gray-700 dark:text-gray-200">{option.text}</p>

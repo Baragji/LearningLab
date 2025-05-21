@@ -55,13 +55,24 @@ export const QuizProvider: React.FC<QuizProviderProps> = ({ children }) => {
 
   // Set quiz data
   const handleSetQuiz = (quizData: ExtendedQuiz) => {
+    console.log('Setting quiz data in context:', { 
+      quizId: quizData.id, 
+      hasQuestions: !!quizData.questions,
+      questionsCount: quizData.questions?.length || 0
+    });
+    
     setQuiz(quizData);
-    if (quizData.questions) {
+    
+    if (quizData.questions && quizData.questions.length > 0) {
+      console.log('Setting questions:', quizData.questions.length);
       setQuestions(quizData.questions);
     }
+    
     if (quizData.answerOptions) {
+      console.log('Setting answer options');
       setAnswerOptions(quizData.answerOptions);
     }
+    
     // Reset state when loading a new quiz
     setCurrentQuestionIndex(0);
     setUserAnswers({});
