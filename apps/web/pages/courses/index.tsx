@@ -101,7 +101,9 @@ const Courses: React.FC = () => {
           {courses.map((course) => (
             <Link href={`/courses/${course.slug}`} key={course.id}>
               <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden hover:shadow-lg transition-shadow duration-300">
-                <div className="h-40 bg-gray-300 dark:bg-gray-700"></div>
+                <div className="h-40 bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center">
+                  <span className="text-white text-xl font-bold">{course.title}</span>
+                </div>
                 <div className="p-4">
                   <h3 className="text-lg font-semibold text-gray-800 dark:text-white">{course.title}</h3>
                   <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">{course.description}</p>
