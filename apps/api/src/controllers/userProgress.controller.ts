@@ -241,8 +241,107 @@ export const updateLessonProgress = async (
 };
 
 /**
- * Henter fremskridt for et specifikt kursus
+ * Opdaterer brugerens fremskridt for en quiz
  */
+export const updateUserProgress = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  const { quizId, score, answers, completedAt } = req.body;
+  const userId = (req.user as any)?.id as number;
+
+  if (!userId) {
+    res.status(401).json({ message: 'Ikke autoriseret' });
+    return;
+  }
+
+  if (!quizId || score === undefined) {
+    res.status(400).json({ message: 'Manglende påkrævede felter' });
+    return;
+  }
+
+  try {
+    // Tjek om quizzen eksisterer
+    const quiz = await prisma.quiz.findUnique({
+      where: { id: Number(quizId) },
+    });
+
+    if (!quiz) {
+      res.status(404).json({ message: 'Quizzen blev ikke fundet' });
+      return;
+    }
+
+    // Find eksisterende fremskridt eller opret nyt
+    const existingProgress = await prisma.userProgress.findFirst({
+      where: {
+        userId,
+        quizId: Number(quizId),
+      },
+    });
+
+    let progress;
+    if (existingProgress) {
+      progress = await prisma.userProgress.update({
+        where: { id: existingProgress.id },
+        data: {
+          status: ProgressStatus.COMPLETED,
+          score: score,
+          updatedAt: new Date(),
+        },
+      });
+    } else {
+      progress = await prisma.userProgress.create({
+        data: {
+          userId,
+          quizId: Number(quizId),
+          status: ProgressStatus.COMPLETED,
+          score: score,
+        },
+      });
+    }
+
+    // Hvis der er svar, gem dem også
+    if (answers && answers.length > 0) {
+      // Opret en quiz-attempt hvis der ikke allerede findes en
+      const quizAttempt = await prisma.quizAttempt.create({
+        data: {
+          userId,
+          quizId: Number(quizId),
+          score: score,
+          completedAt: completedAt ? new Date(completedAt) : new Date(),
+        },
+      });
+
+      // Update the UserProgress to link to this QuizAttempt
+      await prisma.userProgress.update({
+        where: { id: progress.id },
+        data: {
+          quizAttemptId: quizAttempt.id,
+        },
+      });
+
+      // Gem svarene
+      for (const answer of answers) {
+        await prisma.userAnswer.create({
+          data: {
+            quizAttemptId: quizAttempt.id,
+            questionId: answer.questionId,
+            selectedAnswerOptionId: answer.selectedOptionId,
+            // isCorrect is not in the schema for UserAnswer
+          },
+        });
+      }
+    }
+
+    res.status(200).json(progress);
+  } catch (error) {
+    console.error(`Fejl ved opdatering af quiz fremskridt:`, error);
+    res
+      .status(500)
+      .json({ message: 'Der opstod en fejl ved opdatering af fremskridt' });
+  }
+};
+
 export const getCourseProgress = async (
   req: Request,
   res: Response,

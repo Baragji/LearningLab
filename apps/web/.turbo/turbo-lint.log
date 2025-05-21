@@ -1,13 +1,6 @@
 - info Loaded env from /Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/apps/web/.env.local
 
-./src/components/quiz/QuizContainer.tsx
-117:28  Error: `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`.  react/no-unescaped-entities
-
-./src/screens/common/DashboardPage.tsx
-198:28  Error: `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`.  react/no-unescaped-entities
-300:28  Error: `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`.  react/no-unescaped-entities
-
 ./src/screens/common/ModulePage.tsx
-98:6  Warning: React Hook React.useMemo has a missing dependency: 'isLessonCompleted'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+84:9  Warning: The 'isLessonCompleted' function makes the dependencies of useMemo Hook (at line 98) change on every render. To fix this, wrap the definition of 'isLessonCompleted' in its own useCallback() Hook.  react-hooks/exhaustive-deps
 
 info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/basic-features/eslint#disabling-rules

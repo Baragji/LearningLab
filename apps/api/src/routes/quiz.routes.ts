@@ -120,6 +120,11 @@ router.put(
   authenticateJWT,
   userProgressController.updateLessonProgress,
 );
+router.patch(
+  '/progress',
+  authenticateJWT,
+  userProgressController.updateUserProgress,
+);
 router.get(
   '/progress/courses/:courseId',
   authenticateJWT,
