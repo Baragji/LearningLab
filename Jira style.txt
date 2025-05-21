@@ -50,10 +50,10 @@ Story Points følger en grov T‑shirt‑estimatskala (1, 2, 3, 5, 8, 13).
 E2.5 – Integration & Stabilitet (Target 5 dev dage)
 Key	Summary	Type	SP	Status	Acceptance Criteria
 E2.5 1	Udskift Mock Data med API kald (kursus , modul , lektion , quiz endpoints)	Story	5	TODO	Alle sider bruger fetchers i store/services/* til Nest API – ingen statiske mock data fileciteturn3file0
-E2.5 2	Nye sider: /my courses, /statistics, /settings	Story	3	TODO	Siderne loader + viser data:• /my courses = kurser hvor user has UserProgress• /statistics = aggregeret XP & score pr. quiz• /settings = profil + password reset
-E2.5 3	Quiz flow med backend attempt	Story	5	TODO	GET /quiz/:id + POST /quizAttempts startes on page load; user kan besvare, navigere, submit; score + feedback vises fileciteturn3file11
-E2.5 4	ContentBlock Renderer v2	Story	3	TODO	Lesson side viser:• IMAGE_URL ⇒ responsive <img>• VIDEO_URL ⇒ <iframe>(YouTube/Vimeo) fileciteturn3file2
-E2.5 5	SubjectArea routing & breadcrumbs	Story	3	TODO	GET /subject-areas → filter i Course list; breadcrumbs viser SubjectArea → Course → Module → Lesson fileciteturn3file10
+E2.5 2	Nye sider: /my courses, /statistics, /settings	Story	3	DONE	Siderne loader + viser data:• /my courses = kurser hvor user has UserProgress• /statistics = aggregeret XP & score pr. quiz• /settings = profil + password reset
+E2.5 3	Quiz flow med backend attempt	Story	5	DONE	GET /quiz/:id + POST /quizAttempts startes on page load; user kan besvare, navigere, submit; score + feedback vises fileciteturn3file11
+E2.5 4	ContentBlock Renderer v2	Story	3	DONE	Lesson side viser:• IMAGE_URL ⇒ responsive <img>• VIDEO_URL ⇒ <iframe>(YouTube/Vimeo) fileciteturn3file2
+E2.5 5	SubjectArea routing & breadcrumbs	Story	3	DONE	GET /subject-areas → filter i Course list; breadcrumbs viser SubjectArea → Course → Module → Lesson fileciteturn3file10
 
 ___
 

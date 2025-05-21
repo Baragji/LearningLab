@@ -1,0 +1,102 @@
+Vision
+✅ Kort fortalt: Hvad er meningen med templaten
+Vi bygger en skabelon (template), der gør det muligt at:
+1.	Oprette en færdig platform med én kommando
+→ Inkl. frontend, backend, pakker, design, tema, kurser og quiz
+2.	Bruges igen og igen til andre fag (laborant, jurist, medicin osv.)
+→ Med presets som --preset laborant, --preset medicin
+3.	Gøre dig uafhængig af manuel opsætning
+→ Du skal ikke selv bygge hele systemet fra bunden hver gang
+ 
+🧱 Templaten indeholder:
+•	apps/frontend → Læringsplatform (fx Next.js + React )
+•	apps/backend → API og datahåndtering (NestJS + pgvector (pgvectoer er udgået, så enten uden eller tilsvarende))
+•	packages/ui, packages/utils → Genbrugelige komponenter og funktioner
+•	yarn eller pnpm-workspace.yaml, turbo.json, tsconfig.json osv.
+→ Alt sat op korrekt til monorepo med TurboRepo
+ 
+🔄 Hvad sker der, når det virker?
+•	En kørende platform
+•	Som kan videreudvikles med quiz, AI, tema, bruger-login osv.
+•	Og senere blive til en CLI-generator, så du bare kører:
+•	npx create-solid-wow --preset laborant
+ 
+🧪 Eksempel på næste skridt:
+Fase	Beskrivelse
+Seed-script	Fylder databasen med kurser, spørgsmål, logo, tema
+CLI-generator	Skaber nye platforme via én kommando
+Docker-support	Gør det muligt at hoste hvor som helst
+AI-integration	Tilføjer AI-assistent til quiz og forklaringer
+
+
+Brainstorm
+Funktionsliste til Avanceret Læringsplatform
+Nedenfor er en samlet liste over kernefunktioner og "wow-faktor" elementer, designet til at skabe en førsteklasses læringsplatform.
+1. Kerne Læringsfunktioner & Struktur
+1.	Hierarkisk Pensumstruktur: Indhold organiseret logisk i Kursus -> Fag -> Emne, hvilket giver brugerne et klart overblik.
+2.	Materialetilknytning pr. Emne: Mulighed for at tilknytte relevant undervisningsmateriale (f.eks. PDF, PowerPoint, video) direkte til hvert emne.
+3.	Centralt Spørgsmålsbibliotek: Et system til at gemme og administrere alle AI-genererede og manuelt oprettede spørgsmål, struktureret pr. emne (f.eks. som JSON-filer).
+4.	Standard Quiz-flow: Brugere kan starte quizzer baseret på det valgte emnes spørgsmålsbibliotek.
+5.	Interaktive Simulationer (H5P): Mulighed for at indlejre og afvikle H5P-baserede interaktive opgaver og simulationer direkte i lektionerne.
+6.	Spaced Repetition System: Implementering af et intelligent repetitionsystem (f.eks. baseret på SM-2 algoritmen med "flashcards") for at optimere langtidshukommelse.
+7.	SCORM & xAPI Support:
+o	SCORM-afspiller: Mulighed for at importere og afspille SCORM-pakker.
+o	xAPI Statement Modtagelse: Systemet kan modtage og logge xAPI-statements for detaljeret sporing af læringsaktiviteter.
+8.	LTI Integration (Grundlæggende): Mulighed for basisintegration med andre LTI-kompatible systemer.
+9.	Content Chunking & Progressive Disclosure: Lange indholdssider opdeles i mindre, håndterbare og eventuelt sammenklappelige sektioner for at forbedre læsbarhed og reducere kognitiv belastning.
+2. AI-Drevet Intelligens & Personalisering
+10.	AI-assisteret Spørgsmålsgenerering: Ved upload af materiale (PDF, PPT) kan AI automatisk analysere indholdet og generere relevante quizspørgsmål til spørgsmålsbiblioteket.
+11.	AI-drevet Feedback på Quizzer: Dybdegående og konstruktiv feedback på quizbesvarelser, analyseret og potentielt formuleret af AI.
+12.	Adaptive Quizzer (Remediering): Hvis en bruger klarer sig dårligt, kan AI generere en ny, personaliseret quiz, der fokuserer på brugerens svaghedsområder baseret på tidligere svar.
+13.	AI-Powered Study Companion Chatbot: En integreret chatbot, hvor brugere kan stille spørgsmål om det aktuelle emne, få hints til quizzer eller anmode om yderligere forklaringer fra en AI-assistent.
+14.	"AIExplain" Overlay: Ved forkerte svar i en quiz kan et lille overlay poppe op med en kort, AI-genereret forklaring af det korrekte svar eller koncept.
+15.	Personaliseret Dashboard med AI-Indsigter: Et dashboard, der viser brugeren AI-genererede anbefalinger, f.eks. "Fokuser på [emne] næste gang" eller "Godt klaret med [koncept]!".
+16.	Adaptive Difficulty Visualization: En diskret visuel indikator (f.eks. en lille graf eller farveændring) der viser brugeren, hvordan den adaptive algoritme justerer sværhedsgraden baseret på deres præstation i realtid.
+17.	Adaptive Learning Path Visualization: En interaktiv grafisk repræsentation (f.eks. et "skill tree") af pensum, der viser brugerens fremskridt, ulåste områder, og hvordan emner hænger sammen, tilpasset deres individuelle vej.
+3. Brugergrænseflade (UI) & Brugeroplevelse (UX) - "Wow" & Polish
+18.	Moderne Visuelt Design (f.eks. Glassmorphism):
+o	Sticky Glassmorphism Header: En semi-transparent, fastgjort header for nem navigation, der integreres elegant med indholdet.
+19.	Dynamisk Theming baseret på Emne/Brugerpræference: Mulighed for at platformens primære farver og udseende subtilt ændrer sig baseret på det aktuelle emne, eller at brugeren kan vælge mellem foruddefinerede temaer.
+20.	Skeleton Loaders med Shimmer Effect: Flotte pladsholder-animationer mens indhold indlæses, hvilket forbedrer den opfattede hastighed.
+21.	Flydende Animationer & Mikrointeraktioner (Framer Motion):
+o	Inline Quiz Feedback Slide: Feedback på quizsvar afsløres med en glidende animation.
+o	Animerede Notifikationer: In-app beskeder (f.eks. for badges, XP) vises med elegante animationer.
+o	Progress-baseret Konfetti Animation: En festlig konfetti-effekt ved opnåelse af større milepæle eller quiz-fuldførelse.
+22.	Keyboard Command Palette (Cmd+K / Ctrl+K): En hurtig søge- og kommandofunktion, der lader superbrugere navigere og udføre handlinger effektivt.
+23.	"Focus Mode": En distraktionsfri visningstilstand, der f.eks. dæmper baggrundselementer og skjuler sidebjælker.
+24.	Sonic Feedback for Nøgleaktioner: Diskrete, behagelige lydeffekter ved vigtige interaktioner (f.eks. korrekt svar, oplåsning af badge).
+25.	Haptic Feedback på Mobil: Subtil vibrationsfeedback ved handlinger på mobile enheder for en mere taktil oplevelse.
+26.	Offline-First Quiz Cache: Mulighed for at indlæse og tage quizzer selv med dårlig eller ingen internetforbindelse, med efterfølgende synkronisering af resultater.
+4. Gamification & Engagement
+27.	Erfaringspoint (XP) & Niveauer: Brugere optjener XP for aktiviteter og kan stige i niveau.
+28.	Digitale Badges & Achievements: Optjening af badges for specifikke præstationer, gennemførte kurser, eller mestring af emner.
+29.	Real-time XP & Badge Notifikationer (via WebSockets): Øjeblikkelige, ikke-forstyrrende pop-up notifikationer, når XP eller badges optjenes.
+30.	Adaptive Progress Ring (omkring avatar): En visuel ring omkring brugerens profilbillede, der dynamisk viser deres fremskridt i det aktuelle emne eller kursus.
+31.	Gamified Leaderboards: Ranglister (f.eks. top 5) der viser de mest aktive eller succesfulde brugere, eventuelt med deres optjente badges.
+32.	"XP Tooltip Nudges": Små tooltips, der diskret informerer brugeren om, hvordan de kan optjene yderligere XP for specifikke handlinger.
+5. Social Læring & Samarbejde
+33.	Trådede Diskussioner pr. Emne: Et realtids diskussionsforum (via WebSockets) tilknyttet hvert emne, hvor brugere kan stille spørgsmål, dele viden og hjælpe hinanden.
+34.	Real-time Samarbejde om Quizzer (Valgfrit "Wow"): Mulighed for at brugere (f.eks. i studiegrupper) kan se hinandens (anonymiserede) svar i realtid under en quiz eller deltage i en fælles chat undervejs.
+6. Administrator Værktøjer & Indsigt
+35.	Omfattende Brugeradministration: Oprette, redigere, slette brugere og administrere roller/rettigheder.
+36.	Pensumadministration (CRUD): Fuld kontrol over oprettelse, redigering og sletning af kurser, fag og emner.
+37.	Upload-funktionalitet til AI-behandling: Nem upload af materialer, der skal analyseres af AI til spørgsmålsgenerering.
+38.	Avanceret Analytics Dashboard:
+o	Live-opdaterede grafer og KPI'er for brugeraktivitet, quiz-resultater, emne-popularitet osv. (via WebSockets).
+o	ErrorHotspot Heatmap: En visuel repræsentation der viser administratorer, hvilke dele af pensum eller hvilke spørgsmål brugerne oftest har problemer med.
+39.	Nudge-Service Administration:
+o	Mulighed for at sende målrettede "nudges" (notifikationer, e-mails) til specifikke brugere eller grupper.
+o	Real-time Nudge Efficacy Tracker: Et dashboard hvor administratorer kan se effekten af sendte nudges (leveret, åbnet, resulteret i handling).
+40.	Admin Bulk User Management: Værktøjer til at udføre handlinger på mange brugere samtidigt (f.eks. tilmelde en hel klasse til et kursus).
+41.	Virus-scanning af Alle Uploads: Automatisk sikkerhedstjek af alle filer, der uploades til platformen.
+7. Tilgængelighed & Standarder
+42.	WCAG 2.2 AA Compliance: Stærkt fokus på tilgængelighed gennem:
+o	Korrekt brug af ARIA-attributter.
+o	Tydelige og kontrastrige fokus-tilstande for tastaturnavigation.
+o	Understøttelse af skærmlæsere.
+o	Høj-kontrast tema/tilstand.
+43.	Responsivt Design: Platformen skal fungere fejlfrit og se godt ud på alle enhedsstørrelser (mobil, tablet, desktop).
+44.	Voice Command Integration (Valgfrit "Wow"): Mulighed for at navigere og udføre simple handlinger (f.eks. "start næste quiz") via stemmekommandoer.
+Denne liste er omfattende og ambitiøs. En succesfuld implementering vil kræve omhyggelig planlægning, prioritering og iterativ udvikling.
+
+
