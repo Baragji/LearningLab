@@ -210,7 +210,7 @@ const DashboardPage: React.FC = () => {
                   const progress = userCoursesData?.progress[course.id] || 0;
                   
                   return (
-                    <Grid size={{ xs: 12, sm: 6 }} key={course.id}>
+                    <Grid key={course.id} size={{ xs: 12, sm: 6 }}>
                       <Card 
                         elevation={1}
                         sx={{
