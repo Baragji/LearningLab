@@ -1,6 +1,7 @@
 // apps/web/pages/dashboard.tsx
 import React from 'react';
 import Head from 'next/head';
+import Link from 'next/link';
 
 const Dashboard: React.FC = () => {
   return (
@@ -35,49 +36,61 @@ const Dashboard: React.FC = () => {
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {/* Course Card */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
-            <div className="h-40 bg-gray-300 dark:bg-gray-700"></div>
-            <div className="p-4">
-              <h3 className="text-lg font-semibold text-gray-800 dark:text-white">Introduktion til React</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">Lær grundlæggende React-koncepter og byg din første app</p>
-              <div className="mt-4">
-                <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2.5">
-                  <div className="bg-blue-600 h-2.5 rounded-full" style={{ width: '75%' }}></div>
+          <Link href="/courses/react-fundamentals" className="block">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden hover:shadow-lg transition-shadow duration-300">
+              <div className="h-40 bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center">
+                <span className="text-white text-xl font-bold">React Fundamentals</span>
+              </div>
+              <div className="p-4">
+                <h3 className="text-lg font-semibold text-gray-800 dark:text-white">Introduktion til React</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">Lær grundlæggende React-koncepter og byg din første app</p>
+                <div className="mt-4">
+                  <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2.5">
+                    <div className="bg-blue-600 h-2.5 rounded-full" style={{ width: '75%' }}></div>
+                  </div>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">75% gennemført</p>
                 </div>
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">75% gennemført</p>
               </div>
             </div>
-          </div>
+          </Link>
           
           {/* Course Card */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
-            <div className="h-40 bg-gray-300 dark:bg-gray-700"></div>
-            <div className="p-4">
-              <h3 className="text-lg font-semibold text-gray-800 dark:text-white">TypeScript Fundamentals</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">Bliv fortrolig med TypeScript og statisk typning</p>
-              <div className="mt-4">
-                <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2.5">
-                  <div className="bg-blue-600 h-2.5 rounded-full" style={{ width: '45%' }}></div>
+          <Link href="/courses/typescript-basics" className="block">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden hover:shadow-lg transition-shadow duration-300">
+              <div className="h-40 bg-gradient-to-r from-green-500 to-teal-600 flex items-center justify-center">
+                <span className="text-white text-xl font-bold">TypeScript Basics</span>
+              </div>
+              <div className="p-4">
+                <h3 className="text-lg font-semibold text-gray-800 dark:text-white">TypeScript Fundamentals</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">Bliv fortrolig med TypeScript og statisk typning</p>
+                <div className="mt-4">
+                  <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2.5">
+                    <div className="bg-blue-600 h-2.5 rounded-full" style={{ width: '45%' }}></div>
+                  </div>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">45% gennemført</p>
                 </div>
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">45% gennemført</p>
               </div>
             </div>
-          </div>
+          </Link>
           
           {/* Course Card */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
-            <div className="h-40 bg-gray-300 dark:bg-gray-700"></div>
-            <div className="p-4">
-              <h3 className="text-lg font-semibold text-gray-800 dark:text-white">Next.js Advanced</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">Avancerede teknikker og best practices i Next.js</p>
-              <div className="mt-4">
-                <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2.5">
-                  <div className="bg-blue-600 h-2.5 rounded-full" style={{ width: '20%' }}></div>
+          <Link href="/courses/nextjs-advanced" className="block">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden hover:shadow-lg transition-shadow duration-300">
+              <div className="h-40 bg-gradient-to-r from-indigo-500 to-purple-600 flex items-center justify-center">
+                <span className="text-white text-xl font-bold">Next.js Advanced</span>
+              </div>
+              <div className="p-4">
+                <h3 className="text-lg font-semibold text-gray-800 dark:text-white">Next.js Advanced</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">Avancerede teknikker og best practices i Next.js</p>
+                <div className="mt-4">
+                  <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2.5">
+                    <div className="bg-blue-600 h-2.5 rounded-full" style={{ width: '20%' }}></div>
+                  </div>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">20% gennemført</p>
                 </div>
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">20% gennemført</p>
               </div>
             </div>
-          </div>
+          </Link>
         </div>
       </div>
     </>

@@ -90,13 +90,15 @@ const CourseDetail: React.FC = () => {
         
         {/* Course header */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden mb-6">
-          <div className="h-48 bg-gray-300 dark:bg-gray-700"></div>
+          <div className="h-48 bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center">
+            <h1 className="text-3xl font-bold text-white">{course.title}</h1>
+          </div>
           <div className="p-6">
             <div className="flex flex-wrap items-center justify-between">
               <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">{course.title}</h1>
-              <button className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md shadow">
+              <Link href={`/lessons/${course.modules[0].lessons[0].id}`} className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md shadow inline-block">
                 Start Kursus
-              </button>
+              </Link>
             </div>
             
             <div className="flex flex-wrap items-center text-sm text-gray-500 dark:text-gray-400 mb-4">
