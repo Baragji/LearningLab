@@ -22,6 +22,7 @@
     "seed": "ts-node prisma/seed.ts"
   },
   "dependencies": {
+    "@nestjs/cache-manager": "^3.0.1",
     "@nestjs/common": "^10.4.17",
     "@nestjs/config": "^3.0.0",
     "@nestjs/core": "^10.4.17",
@@ -34,6 +35,7 @@
     "@repo/config": "workspace:*",
     "@repo/core": "workspace:*",
     "bcryptjs": "^2.4.3",
+    "cache-manager": "^6.4.3",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.2",
     "cookie-parser": "^1.4.6",

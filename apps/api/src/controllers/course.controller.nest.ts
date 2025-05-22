@@ -11,6 +11,9 @@ import {
   BadRequestException,
   UseGuards,
   ParseIntPipe,
+  UseInterceptors,
+  Inject,
+  Logger,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -22,11 +25,18 @@ import {
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { PrismaService } from '../persistence/prisma/prisma.service';
 import { CourseDto, CreateCourseDto, UpdateCourseDto } from './dto/course.dto';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 
 @ApiTags('Courses')
 @Controller('courses')
 export class CourseController {
-  constructor(private readonly prisma: PrismaService) {}
+  private readonly logger = new Logger(CourseController.name);
+
+  constructor(
+    private readonly prisma: PrismaService,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
+  ) {}
 
   @ApiOperation({ summary: 'Hent alle kurser' })
   @ApiResponse({
@@ -34,8 +44,10 @@ export class CourseController {
     description: 'Liste af alle kurser',
     type: [CourseDto],
   })
+
   @Get()
   async getAllCourses(): Promise<CourseDto[]> {
+    this.logger.log('Cache miss for all_courses - henter data fra databasen');
     return this.prisma.course.findMany({
       include: {
         subjectArea: true,
@@ -55,10 +67,14 @@ export class CourseController {
     description: 'Liste af kurser for det angivne fagområde',
     type: [CourseDto],
   })
+
   @Get('by-subject/:subjectAreaId')
   async getCoursesBySubjectArea(
     @Param('subjectAreaId', ParseIntPipe) subjectAreaId: number,
   ): Promise<CourseDto[]> {
+    this.logger.log(
+      `Cache miss for courses_by_subject_${subjectAreaId} - henter data fra databasen`,
+    );
     return this.prisma.course.findMany({
       where: { subjectAreaId },
       orderBy: { title: 'asc' },
@@ -73,10 +89,12 @@ export class CourseController {
     type: CourseDto,
   })
   @ApiResponse({ status: 404, description: 'Kurset blev ikke fundet' })
+
   @Get(':id')
   async getCourseById(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<CourseDto> {
+    this.logger.log(`Cache miss for course_${id} - henter data fra databasen`);
     const course = await this.prisma.course.findUnique({
       where: { id },
       include: {
@@ -102,8 +120,12 @@ export class CourseController {
     type: CourseDto,
   })
   @ApiResponse({ status: 404, description: 'Kurset blev ikke fundet' })
+
   @Get('by-slug/:slug')
   async getCourseBySlug(@Param('slug') slug: string): Promise<CourseDto> {
+    this.logger.log(
+      `Cache miss for course_slug_${slug} - henter data fra databasen`,
+    );
     const course = await this.prisma.course.findUnique({
       where: { slug },
       include: {
@@ -160,7 +182,7 @@ export class CourseController {
       );
     }
 
-    return this.prisma.course.create({
+    const newCourse = await this.prisma.course.create({
       data: {
         title,
         description,
@@ -168,6 +190,12 @@ export class CourseController {
         subjectAreaId,
       },
     });
+
+    // Invalider cachen for alle kurser og kurser efter fagområde
+    await this.cacheManager.del('GET_/api/courses');
+    await this.cacheManager.del(`GET_/api/courses/by-subject/${subjectAreaId}`);
+
+    return newCourse;
   }
 
   @ApiOperation({ summary: 'Opdater et eksisterende kursus' })
@@ -227,7 +255,7 @@ export class CourseController {
       }
     }
 
-    return this.prisma.course.update({
+    const updatedCourse = await this.prisma.course.update({
       where: { id },
       data: {
         title: title || existingCourse.title,
@@ -236,6 +264,20 @@ export class CourseController {
         subjectAreaId: subjectAreaId || existingCourse.subjectAreaId,
       },
     });
+
+    // Invalider cachen for det opdaterede kursus og relaterede cacher
+    await this.cacheManager.del(`GET_/api/courses/${id}`);
+    await this.cacheManager.del(`GET_/api/courses/by-slug/${existingCourse.slug}`);
+    if (slug && slug !== existingCourse.slug) {
+      await this.cacheManager.del(`GET_/api/courses/by-slug/${slug}`);
+    }
+    await this.cacheManager.del('GET_/api/courses');
+    await this.cacheManager.del(`GET_/api/courses/by-subject/${existingCourse.subjectAreaId}`);
+    if (subjectAreaId && subjectAreaId !== existingCourse.subjectAreaId) {
+      await this.cacheManager.del(`GET_/api/courses/by-subject/${subjectAreaId}`);
+    }
+
+    return updatedCourse;
   }
 
   @ApiOperation({ summary: 'Slet et kursus' })
@@ -281,6 +323,12 @@ export class CourseController {
     await this.prisma.course.delete({
       where: { id },
     });
+
+    // Invalider cachen for det slettede kursus og relaterede cacher
+    await this.cacheManager.del(`GET_/api/courses/${id}`);
+    await this.cacheManager.del(`GET_/api/courses/by-slug/${existingCourse.slug}`);
+    await this.cacheManager.del('GET_/api/courses');
+    await this.cacheManager.del(`GET_/api/courses/by-subject/${existingCourse.subjectAreaId}`);
 
     return { message: 'Kurset blev slettet' };
   }

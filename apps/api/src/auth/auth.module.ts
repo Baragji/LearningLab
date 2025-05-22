@@ -22,6 +22,10 @@ import { SharedModule } from '../shared/shared.module';
   imports: [
     forwardRef(() => UsersModule), // Brug forwardRef for at undgå cirkulære afhængigheder
     PassportModule.register({ defaultStrategy: 'jwt' }),
+    JwtModule.register({
+      secret: process.env.JWT_SECRET || 'testSecret',
+      signOptions: { expiresIn: '1d' },
+    }),
     SharedModule, // Importér SharedModule i stedet for at konfigurere JwtModule direkte
     ConfigModule, // global via AppModule, but imported here for clarity
     PersistenceModule,
