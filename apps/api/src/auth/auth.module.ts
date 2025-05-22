@@ -11,7 +11,6 @@ import { ConfigModule as NestConfigModule } from '@nestjs/config';
 import { PersistenceModule } from '../persistence/persistence.module';
 import { SharedModule } from '../shared/shared.module';
 
-
 /**
  * AuthModule håndterer autentificering og autorisation i applikationen.
  *

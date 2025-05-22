@@ -24,6 +24,7 @@
     "@reduxjs/toolkit": "^1.9.5",
     "@repo/config": "workspace:*",
     "@repo/core": "workspace:*",
+    "framer-motion": "^12.12.1",
     "next": "13.4.12",
     "react": "18.2.0",
     "react-dom": "18.2.0",

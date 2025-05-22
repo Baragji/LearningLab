@@ -35,6 +35,78 @@
   .prose code {
     @apply font-mono text-sm text-gray-800 dark:text-gray-200;
   }
+  
+  /* Skeleton Loader with Shimmer Effect */
+  .skeleton-shimmer {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .skeleton-shimmer::after {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    transform: translateX(-100%);
+    background-image: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0) 0,
+      rgba(255, 255, 255, 0.2) 20%,
+      rgba(255, 255, 255, 0.5) 60%,
+      rgba(255, 255, 255, 0)
+    );
+    animation: shimmer 2s infinite;
+    content: '';
+  }
+  
+  @keyframes shimmer {
+    100% {
+      transform: translateX(100%);
+    }
+  }
+  
+  /* Dark mode shimmer effect */
+  .dark .skeleton-shimmer::after {
+    background-image: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0) 0,
+      rgba(255, 255, 255, 0.05) 20%,
+      rgba(255, 255, 255, 0.1) 60%,
+      rgba(255, 255, 255, 0)
+    );
+  }
+  
+  /* Notification animations */
+  .animate-notification-enter {
+    animation: notification-enter 0.3s cubic-bezier(0.21, 1.02, 0.73, 1) forwards;
+  }
+  
+  .animate-notification-exit {
+    animation: notification-exit 0.3s cubic-bezier(0.06, 0.71, 0.55, 1) forwards;
+  }
+  
+  @keyframes notification-enter {
+    0% {
+      transform: translateY(16px);
+      opacity: 0;
+    }
+    100% {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+  
+  @keyframes notification-exit {
+    0% {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(-16px);
+      opacity: 0;
+    }
+  }
 }
 
 /* Transitions for theme switching - using @layer to improve purging */
@@ -43,5 +115,11 @@
     transition-property: background-color, border-color, color, fill, stroke;
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     transition-duration: 150ms;
+  }
+  
+  /* Glassmorphism utilities */
+  .glassmorphism {
+    @apply bg-white bg-opacity-70 dark:bg-gray-800 dark:bg-opacity-70 backdrop-blur-md;
+    @apply border-b border-gray-200 dark:border-gray-700 border-opacity-50;
   }
 }
