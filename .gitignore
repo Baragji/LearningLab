@@ -20,3 +20,6 @@ coverage
 # Misc
 .env*
 .DS_Store
+
+# Turbo
+.turbo

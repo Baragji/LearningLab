@@ -3,6 +3,7 @@ import { Module, MiddlewareConsumer, NestModule } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { ErrorTestController } from './controllers/error-test.controller';
 import { PersistenceModule } from './persistence/persistence.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
@@ -18,9 +19,11 @@ import { UserProgressModule } from './controllers/userProgress.module';
 import { SubjectAreasModule } from './controllers/subjectAreas.module';
 import { PensumModule } from './controllers/pensum.module';
 import { SharedModule } from './shared/shared.module';
+import { CommonModule } from './common/common.module';
 import { CacheModule } from '@nestjs/cache-manager';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { SimpleCacheInterceptor } from './common/interceptors/simple-cache.interceptor';
+import errorHandlingConfig from './config/error-handling.config';
 // Midlertidigt deaktiveret pga. problemer med import
 // import {
 //   serverSchema,
@@ -32,6 +35,7 @@ import { SimpleCacheInterceptor } from './common/interceptors/simple-cache.inter
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+      load: [errorHandlingConfig],
     }),
 
     // Registrer CacheModule globalt
@@ -48,6 +52,7 @@ import { SimpleCacheInterceptor } from './common/interceptors/simple-cache.inter
       },
     ]),
     SharedModule, // Tilføj SharedModule for at gøre fælles funktionalitet tilgængelig globalt
+    CommonModule, // Tilføj CommonModule for fejlhåndtering og logging
     PersistenceModule,
     UsersModule,
     AuthModule,
@@ -61,7 +66,7 @@ import { SimpleCacheInterceptor } from './common/interceptors/simple-cache.inter
     SubjectAreasModule,
     PensumModule,
   ],
-  controllers: [AppController],
+  controllers: [AppController, ErrorTestController],
   providers: [
     AppService,
     ConfigService,
