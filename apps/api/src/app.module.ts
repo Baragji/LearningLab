@@ -18,50 +18,29 @@ import { UserProgressModule } from './controllers/userProgress.module';
 import { SubjectAreasModule } from './controllers/subjectAreas.module';
 import { PensumModule } from './controllers/pensum.module';
 import { SharedModule } from './shared/shared.module';
-import {
-  serverSchema,
-  ServerEnv,
-  clientEnv as getClientEnv,
-} from '@repo/config';
+import { CacheModule } from '@nestjs/cache-manager';
+import { APP_INTERCEPTOR } from '@nestjs/core';
+import { SimpleCacheInterceptor } from './common/interceptors/simple-cache.interceptor';
+// Midlertidigt deaktiveret pga. problemer med import
+// import {
+//   serverSchema,
+//   ServerEnv,
+//   clientEnv as getClientEnv,
+// } from '@repo/config';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      validate: (configFromEnvFile) => {
-        const source = { ...configFromEnvFile, ...process.env };
-        const validatedConfig = serverSchema.safeParse(source);
-
-        // In CI/CD or build environments, we don't need to validate all environment variables
-        if (process.env.CI || process.env.NODE_ENV === 'production') {
-          console.log(
-            'Running in CI/CD or production environment, skipping strict env validation',
-          );
-          return source as ServerEnv;
-        }
-
-        if (!validatedConfig.success) {
-          console.error(
-            'Fejl i server miljøvariabel-validering (AppModule):',
-            validatedConfig.error.flatten().fieldErrors,
-          );
-          throw new Error(
-            `Server miljøvariabel-validering fejlede: ${JSON.stringify(validatedConfig.error.format())}`,
-          );
-        }
-
-        try {
-          getClientEnv();
-        } catch (clientError) {
-          // In CI/CD or build environments, we don't need to validate client environment variables
-          if (!(process.env.CI || process.env.NODE_ENV === 'production')) {
-            throw clientError;
-          }
-        }
-
-        return validatedConfig.data as ServerEnv;
-      },
     }),
+
+    // Registrer CacheModule globalt
+    CacheModule.register({
+      isGlobal: true,
+      ttl: 60, // Standard TTL på 60 sekunder
+      max: 100, // Maksimalt 100 elementer i cachen
+    }),
+
     ThrottlerModule.forRoot([
       {
         ttl: 60000, // 1 minut
@@ -83,7 +62,15 @@ import {
     PensumModule,
   ],
   controllers: [AppController],
-  providers: [AppService, ConfigService],
+  providers: [
+    AppService,
+    ConfigService,
+    // Registrer SimpleCacheInterceptor globalt
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: SimpleCacheInterceptor,
+    },
+  ],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

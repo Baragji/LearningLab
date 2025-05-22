@@ -15,26 +15,71 @@ module.exports = {
     "./pages/**/*.{js,ts,jsx,tsx}",
     "./components/**/*.{js,ts,jsx,tsx}",
   ],
+  // Minimal safelist - only include what's absolutely necessary
+  safelist: [
+    // Only include specific classes that are dynamically generated
+    'text-primary-500',
+    'text-primary-600',
+    'bg-primary-500',
+    'bg-primary-600',
+    'dark:text-gray-200',
+    'dark:bg-gray-750'
+  ],
   theme: {
     extend: {
       colors: {
-        // Add custom colors for your theme
+        // Add custom colors for your theme - only include the ones you actually use
         primary: {
-          50: '#e6f0ff',
-          100: '#cce0ff',
-          200: '#99c2ff',
-          300: '#66a3ff',
-          400: '#3385ff',
           500: '#0066ff',
           600: '#0052cc',
-          700: '#003d99',
-          800: '#002966',
-          900: '#001433',
         },
         gray: {
           750: '#2d3748', // Adding the custom gray-750 color
         },
       },
     },
+  },
+  // Optimizations for production
+  future: {
+    hoverOnlyWhenSupported: true, // Reduces CSS by only applying hover styles on devices that support hover
+  },
+  // Disable unused core plugins to reduce bundle size
+  corePlugins: {
+    // Disable plugins that you don't use
+    backdropBlur: false,
+    backdropBrightness: false,
+    backdropContrast: false,
+    backdropGrayscale: false,
+    backdropHueRotate: false,
+    backdropInvert: false,
+    backdropOpacity: false,
+    backdropSaturate: false,
+    backdropSepia: false,
+    rotate: false,
+    skew: false,
+    blur: false,
+    brightness: false,
+    contrast: false,
+    grayscale: false,
+    hueRotate: false,
+    invert: false,
+    saturate: false,
+    sepia: false,
+    transitionDelay: false,
+    animation: false,
+    // Disable additional plugins that might not be used
+    fontVariantNumeric: false,
+    textOpacity: false,
+    backgroundOpacity: false,
+    borderOpacity: false,
+    divideOpacity: false,
+    placeholderOpacity: false,
+    ringOpacity: false,
+    ringOffsetWidth: false,
+    ringOffsetColor: false,
+    boxShadowColor: false,
+    gradientColorStops: false,
+    mixBlendMode: false,
+    backgroundBlendMode: false,
   },
 };
