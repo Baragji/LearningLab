@@ -15,7 +15,7 @@ Please only submit bug reports when using the officially supported version.
 [0m[0m
 [0m[4m/Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/apps/api/src/app.module.ts[24m[0m
 [0m  [2m10:10[22m  [33mwarning[39m  'CsrfMiddleware' is defined but never used. Allowed unused vars must match /^_/u  [2m@typescript-eslint/no-unused-vars[22m[0m
-[0m  [2m81:13[22m  [33mwarning[39m  'consumer' is defined but never used. Allowed unused args must match /^_/u        [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m  [2m87:13[22m  [33mwarning[39m  'consumer' is defined but never used. Allowed unused args must match /^_/u        [2m@typescript-eslint/no-unused-vars[22m[0m
 [0m[0m
 [0m[4m/Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/apps/api/src/auth/strategies/jwt/jwt.ts[24m[0m
 [0m  [2m29:13[22m  [33mwarning[39m  'passwordHash' is assigned a value but never used. Allowed unused vars must match /^_/u          [2m@typescript-eslint/no-unused-vars[22m[0m
@@ -36,11 +36,21 @@ Please only submit bug reports when using the officially supported version.
 [0m  [2m6:3[22m  [33mwarning[39m  'IsNumber' is defined but never used. Allowed unused vars must match /^_/u    [2m@typescript-eslint/no-unused-vars[22m[0m
 [0m  [2m8:3[22m  [33mwarning[39m  'IsPositive' is defined but never used. Allowed unused vars must match /^_/u  [2m@typescript-eslint/no-unused-vars[22m[0m
 [0m[0m
+[0m[4m/Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/apps/api/src/controllers/dto/user-progress/user-progress.dto.ts[24m[0m
+[0m  [2m5:3[22m  [33mwarning[39m  'IsInt' is defined but never used. Allowed unused vars must match /^_/u  [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m[0m
+[0m[4m/Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/apps/api/src/controllers/pensum.controller.nest.ts[24m[0m
+[0m  [2m23:3[22m  [33mwarning[39m  'SubjectDto' is defined but never used. Allowed unused vars must match /^_/u  [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m  [2m24:3[22m  [33mwarning[39m  'TopicDto' is defined but never used. Allowed unused vars must match /^_/u    [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m[0m
 [0m[4m/Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/apps/api/src/controllers/quiz.controller.nest.ts[24m[0m
 [0m  [2m27:10[22m  [33mwarning[39m  'QuestionType' is defined but never used. Allowed unused vars must match /^_/u  [2m@typescript-eslint/no-unused-vars[22m[0m
 [0m[0m
 [0m[4m/Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/apps/api/src/controllers/quizAttempt.controller.ts[24m[0m
 [0m  [2m9:3[22m  [33mwarning[39m  'User' is defined but never used. Allowed unused vars must match /^_/u  [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m[0m
+[0m[4m/Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/apps/api/src/controllers/userProgress.controller.nest.ts[24m[0m
+[0m  [2m26:10[22m  [33mwarning[39m  'Roles' is defined but never used. Allowed unused vars must match /^_/u  [2m@typescript-eslint/no-unused-vars[22m[0m
 [0m[0m
 [0m[4m/Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/apps/api/src/controllers/userProgress.controller.ts[24m[0m
 [0m  [2m5:10[22m  [33mwarning[39m  'User' is defined but never used. Allowed unused vars must match /^_/u  [2m@typescript-eslint/no-unused-vars[22m[0m
@@ -53,5 +63,5 @@ Please only submit bug reports when using the officially supported version.
 [0m  [2m43:7[22m  [33mwarning[39m  'passwordResetToken' is assigned a value but never used. Allowed unused vars must match /^_/u    [2m@typescript-eslint/no-unused-vars[22m[0m
 [0m  [2m44:7[22m  [33mwarning[39m  'passwordResetExpires' is assigned a value but never used. Allowed unused vars must match /^_/u  [2m@typescript-eslint/no-unused-vars[22m[0m
 [0m[0m
-[0m[33m[1m✖ 20 problems (0 errors, 20 warnings)[22m[39m[0m
+[0m[33m[1m✖ 24 problems (0 errors, 24 warnings)[22m[39m[0m
 [0m[33m[1m[22m[39m[0m
