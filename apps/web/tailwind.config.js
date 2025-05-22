@@ -46,7 +46,8 @@ module.exports = {
   // Disable unused core plugins to reduce bundle size
   corePlugins: {
     // Disable plugins that you don't use
-    backdropBlur: false,
+    // Enable backdropBlur for glassmorphism effect
+    backdropBlur: true,
     backdropBrightness: false,
     backdropContrast: false,
     backdropGrayscale: false,
@@ -57,7 +58,7 @@ module.exports = {
     backdropSepia: false,
     rotate: false,
     skew: false,
-    blur: false,
+    blur: true, // Enable blur for potential UI effects
     brightness: false,
     contrast: false,
     grayscale: false,
@@ -66,12 +67,12 @@ module.exports = {
     saturate: false,
     sepia: false,
     transitionDelay: false,
-    animation: false,
+    animation: true, // Enable animation for shimmer effect
     // Disable additional plugins that might not be used
     fontVariantNumeric: false,
     textOpacity: false,
-    backgroundOpacity: false,
-    borderOpacity: false,
+    backgroundOpacity: true, // Enable for glassmorphism
+    borderOpacity: true, // Enable for glassmorphism
     divideOpacity: false,
     placeholderOpacity: false,
     ringOpacity: false,

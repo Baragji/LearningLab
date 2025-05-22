@@ -94,7 +94,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
         const jitter = Math.random() * 100;
         const waitTime = backoffTime + jitter;
 
-        const errorMessage = 
+        const errorMessage =
           error instanceof Error ? error.message : 'Unknown error';
 
         this.logger.warn(
