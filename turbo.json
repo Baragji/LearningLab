@@ -25,6 +25,16 @@
     },
     "test:watch": {
       "cache": false
+    },
+    "test:e2e": {
+      "dependsOn": ["^build"],
+      "cache": false
+    },
+    "test:e2e:ui": {
+      "cache": false
+    },
+    "test:e2e:debug": {
+      "cache": false
     }
   },
   "globalEnv": [],
