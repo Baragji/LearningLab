@@ -7,9 +7,10 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { LocalStrategy } from './strategies/local/local';
 import { JwtStrategy } from './strategies/jwt/jwt';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule as NestConfigModule } from '@nestjs/config';
 import { PersistenceModule } from '../persistence/persistence.module';
 import { SharedModule } from '../shared/shared.module';
+
 
 /**
  * AuthModule håndterer autentificering og autorisation i applikationen.
@@ -24,10 +25,10 @@ import { SharedModule } from '../shared/shared.module';
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.register({
       secret: process.env.JWT_SECRET || 'testSecret',
-      signOptions: { expiresIn: '1d' },
+      signOptions: { expiresIn: process.env.JWT_EXPIRES_IN || '1d' },
     }),
     SharedModule, // Importér SharedModule i stedet for at konfigurere JwtModule direkte
-    ConfigModule, // global via AppModule, but imported here for clarity
+    NestConfigModule, // global via AppModule, but imported here for clarity
     PersistenceModule,
   ],
   controllers: [AuthController],

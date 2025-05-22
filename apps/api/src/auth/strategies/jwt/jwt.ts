@@ -2,10 +2,10 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { UsersService } from '../../../users/users.service';
 import { User as PrismaUser } from '@prisma/client';
 import { User as CoreUser, Role as CoreRole } from '@repo/core';
+import { ConfigService } from '@nestjs/config';
 
 export interface JwtPayload {
   email: string;
@@ -21,7 +21,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: configService.get<string>('JWT_SECRET'),
+      secretOrKey: process.env.JWT_SECRET || 'testSecret',
     });
   }
 

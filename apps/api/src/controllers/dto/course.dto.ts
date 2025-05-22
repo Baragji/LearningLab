@@ -1,14 +1,14 @@
 // apps/api/src/controllers/dto/course.dto.ts
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { 
-  IsNotEmpty, 
-  IsString, 
-  IsNumber, 
-  IsPositive, 
-  IsOptional, 
-  Matches, 
-  MaxLength, 
-  MinLength 
+import {
+  IsNotEmpty,
+  IsString,
+  IsNumber,
+  IsPositive,
+  IsOptional,
+  Matches,
+  MaxLength,
+  MinLength,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
@@ -93,8 +93,9 @@ export class CreateCourseDto {
   })
   @IsString({ message: 'Slug skal være en streng' })
   @IsNotEmpty({ message: 'Slug må ikke være tom' })
-  @Matches(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, { 
-    message: 'Slug må kun indeholde små bogstaver, tal og bindestreger, og må ikke starte eller slutte med en bindestreg' 
+  @Matches(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, {
+    message:
+      'Slug må kun indeholde små bogstaver, tal og bindestreger, og må ikke starte eller slutte med en bindestreg',
   })
   @MinLength(3, { message: 'Slug skal være mindst 3 tegn' })
   @MaxLength(100, { message: 'Slug må højst være 100 tegn' })
@@ -144,8 +145,9 @@ export class UpdateCourseDto {
   @IsOptional()
   @IsString({ message: 'Slug skal være en streng' })
   @IsNotEmpty({ message: 'Slug må ikke være tom hvis angivet' })
-  @Matches(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, { 
-    message: 'Slug må kun indeholde små bogstaver, tal og bindestreger, og må ikke starte eller slutte med en bindestreg' 
+  @Matches(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, {
+    message:
+      'Slug må kun indeholde små bogstaver, tal og bindestreger, og må ikke starte eller slutte med en bindestreg',
   })
   @MinLength(3, { message: 'Slug skal være mindst 3 tegn' })
   @MaxLength(100, { message: 'Slug må højst være 100 tegn' })

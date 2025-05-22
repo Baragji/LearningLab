@@ -3,7 +3,6 @@ import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import { GlobalExceptionFilter } from './common/filters/global-exception.filter';
 import cookieParser from 'cookie-parser';
 
 declare const module: any; // For HMR (Hot Module Replacement)
@@ -13,18 +12,21 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   // Sæt et globalt prefix for alle API-ruter
-  app.setGlobalPrefix('api'); // <--- TILFØJET DENNE LINJE
+  app.setGlobalPrefix('api');
 
   // Konfigurer CORS
+  const corsOrigins = process.env.CORS_ORIGINS
+    ? process.env.CORS_ORIGINS.split(',').map((origin) => origin.trim())
+    : [
+        'http://localhost:3000',
+        'http://localhost:3001',
+        'http://localhost:3002',
+        'http://localhost:3003',
+        'http://localhost:3007',
+      ];
+
   app.enableCors({
-    origin: [
-      'http://localhost:3000', // Standard Next.js port
-      'http://localhost:3001', // Hvis port 3000 er optaget
-      'http://localhost:3002', // Hvis port 3001 er optaget
-      'http://localhost:3003', // Hvis port 3002 er optaget
-      'http://localhost:3007', // Tilføjet for at understøtte din nuværende frontend port
-      // Tilføj andre porte, din Next.js app måtte bruge under udvikling
-    ],
+    origin: corsOrigins,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
   });
@@ -89,9 +91,8 @@ async function bootstrap() {
     },
   });
 
-  // Try to find an available port starting from the default
-  const DEFAULT_PORT = parseInt(process.env.PORT || '5002', 10);
-  const currentPort = DEFAULT_PORT;
+  // Hent port fra miljøvariabel
+  const currentPort = parseInt(process.env.PORT || '5002', 10);
 
   // Function to try listening on a port and increment if it fails
   const tryListen = async (port: number): Promise<number> => {
@@ -119,12 +120,6 @@ async function bootstrap() {
   logger.log(
     `API Dokumentation (internt) er tilgængelig på http://localhost:${PORT}/api/docs`,
   );
-  // Nginx-relaterede logs er mindre relevante nu, da vi kører direkte
-  // logger.log(
-  //   `Hele applikationen (via Nginx) burde være tilgængelig på http://localhost`,
-  // );
-  // logger.log(
-  //   `API'en (via Nginx) burde være tilgængelig på http://localhost/api/`,
-  // );
+  logger.log(`Miljø: ${process.env.NODE_ENV || 'development'}`);
 }
 bootstrap();

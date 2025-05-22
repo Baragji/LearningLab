@@ -1,16 +1,16 @@
 // apps/api/src/controllers/dto/pensum/pensum.dto.ts
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { SubjectAreaDto } from '../subject-area/subject-area.dto';
-import { 
-  IsArray, 
-  IsNotEmpty, 
-  IsNumber, 
-  IsOptional, 
-  IsPositive, 
-  IsString, 
-  MaxLength, 
-  MinLength, 
-  ValidateNested 
+import {
+  IsArray,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsPositive,
+  IsString,
+  MaxLength,
+  MinLength,
+  ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 

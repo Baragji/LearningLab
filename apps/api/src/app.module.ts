@@ -1,6 +1,6 @@
 // apps/api/src/app.module.ts
 import { Module, MiddlewareConsumer, NestModule } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigService as NestConfigService } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ErrorTestController } from './controllers/error-test.controller';
@@ -23,7 +23,8 @@ import { CommonModule } from './common/common.module';
 import { CacheModule } from '@nestjs/cache-manager';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { SimpleCacheInterceptor } from './common/interceptors/simple-cache.interceptor';
-import errorHandlingConfig from './config/error-handling.config';
+import { ConfigModule } from './config/config.module';
+import { ConfigService } from './config/config.service';
 // Midlertidigt deaktiveret pga. problemer med import
 // import {
 //   serverSchema,
@@ -33,12 +34,9 @@ import errorHandlingConfig from './config/error-handling.config';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      isGlobal: true,
-      load: [errorHandlingConfig],
-    }),
+    ConfigModule,
 
-    // Registrer CacheModule globalt
+    // Registrer CacheModule globalt med faste værdier
     CacheModule.register({
       isGlobal: true,
       ttl: 60, // Standard TTL på 60 sekunder
@@ -69,7 +67,7 @@ import errorHandlingConfig from './config/error-handling.config';
   controllers: [AppController, ErrorTestController],
   providers: [
     AppService,
-    ConfigService,
+    NestConfigService,
     // Registrer SimpleCacheInterceptor globalt
     {
       provide: APP_INTERCEPTOR,
