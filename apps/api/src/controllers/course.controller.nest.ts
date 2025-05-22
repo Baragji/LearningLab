@@ -44,7 +44,6 @@ export class CourseController {
     description: 'Liste af alle kurser',
     type: [CourseDto],
   })
-
   @Get()
   async getAllCourses(): Promise<CourseDto[]> {
     this.logger.log('Cache miss for all_courses - henter data fra databasen');
@@ -67,7 +66,6 @@ export class CourseController {
     description: 'Liste af kurser for det angivne fagområde',
     type: [CourseDto],
   })
-
   @Get('by-subject/:subjectAreaId')
   async getCoursesBySubjectArea(
     @Param('subjectAreaId', ParseIntPipe) subjectAreaId: number,
@@ -89,7 +87,6 @@ export class CourseController {
     type: CourseDto,
   })
   @ApiResponse({ status: 404, description: 'Kurset blev ikke fundet' })
-
   @Get(':id')
   async getCourseById(
     @Param('id', ParseIntPipe) id: number,
@@ -120,7 +117,6 @@ export class CourseController {
     type: CourseDto,
   })
   @ApiResponse({ status: 404, description: 'Kurset blev ikke fundet' })
-
   @Get('by-slug/:slug')
   async getCourseBySlug(@Param('slug') slug: string): Promise<CourseDto> {
     this.logger.log(
@@ -267,14 +263,20 @@ export class CourseController {
 
     // Invalider cachen for det opdaterede kursus og relaterede cacher
     await this.cacheManager.del(`GET_/api/courses/${id}`);
-    await this.cacheManager.del(`GET_/api/courses/by-slug/${existingCourse.slug}`);
+    await this.cacheManager.del(
+      `GET_/api/courses/by-slug/${existingCourse.slug}`,
+    );
     if (slug && slug !== existingCourse.slug) {
       await this.cacheManager.del(`GET_/api/courses/by-slug/${slug}`);
     }
     await this.cacheManager.del('GET_/api/courses');
-    await this.cacheManager.del(`GET_/api/courses/by-subject/${existingCourse.subjectAreaId}`);
+    await this.cacheManager.del(
+      `GET_/api/courses/by-subject/${existingCourse.subjectAreaId}`,
+    );
     if (subjectAreaId && subjectAreaId !== existingCourse.subjectAreaId) {
-      await this.cacheManager.del(`GET_/api/courses/by-subject/${subjectAreaId}`);
+      await this.cacheManager.del(
+        `GET_/api/courses/by-subject/${subjectAreaId}`,
+      );
     }
 
     return updatedCourse;
@@ -326,9 +328,13 @@ export class CourseController {
 
     // Invalider cachen for det slettede kursus og relaterede cacher
     await this.cacheManager.del(`GET_/api/courses/${id}`);
-    await this.cacheManager.del(`GET_/api/courses/by-slug/${existingCourse.slug}`);
+    await this.cacheManager.del(
+      `GET_/api/courses/by-slug/${existingCourse.slug}`,
+    );
     await this.cacheManager.del('GET_/api/courses');
-    await this.cacheManager.del(`GET_/api/courses/by-subject/${existingCourse.subjectAreaId}`);
+    await this.cacheManager.del(
+      `GET_/api/courses/by-subject/${existingCourse.subjectAreaId}`,
+    );
 
     return { message: 'Kurset blev slettet' };
   }

@@ -41,8 +41,7 @@ async function bootstrap() {
     }),
   );
 
-  // Global Exception Filter
-  app.useGlobalFilters(new GlobalExceptionFilter());
+  // Global Exception Filter er registreret i app.module.ts via APP_FILTER
 
   // Cookie Parser
   app.use(cookieParser());
