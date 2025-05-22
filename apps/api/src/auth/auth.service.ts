@@ -1,5 +1,10 @@
 // File: apps/api/src/auth/auth.service.ts
-import { Injectable, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  Inject,
+  forwardRef,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
@@ -20,6 +25,7 @@ export class AuthService {
   private readonly jwtRefreshExpiresIn: string;
 
   constructor(
+    @Inject(forwardRef(() => UsersService)) // Brug forwardRef for at undgå cirkulære afhængigheder
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
     private readonly prisma: PrismaService, // Direkte adgang til PrismaService

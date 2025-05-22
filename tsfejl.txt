@@ -1,0 +1,54 @@
+Sammenfatning og anbefalinger
+Baseret på min analyse og de ændringer, vi har foretaget, kan jeg give dig følgende svar på dine specifikke spørgsmål:
+
+A. Installation af @types/jest
+@types/jest var allerede installeret i både root package.json og i apps/api/package.json. I et monorepo-setup som dit er det bedst at have det installeret på begge niveauer:
+
+I root package.json som en dev-dependency (hvilket du allerede havde)
+I de specifikke workspace package.json-filer, der indeholder tests (hvilket du også allerede havde for API-appen)
+Dette sikrer, at typedefinitionerne er tilgængelige både for root-projektet og for de enkelte workspaces.
+
+B. Opdatering af tsconfig.json-filer
+Vi har opdateret følgende tsconfig.json-filer:
+
+apps/api/tsconfig.json: Tilføjet "jest" til "types"-arrayet
+packages/tsconfig/nestjs.json: Tilføjet et "types"-array med "node" og "jest"
+Dette sikrer, at Jest-typerne er tilgængelige i alle NestJS-apps, der udvider nestjs.json-konfigurationen.
+
+C. Andre konfigurationsændringer
+Der var ikke behov for yderligere ændringer i jest.config.js eller lignende filer, da Jest-konfigurationen allerede var korrekt defineret i apps/api/package.json.
+
+D. Verificering af ændringerne
+Vi har verificeret, at ændringerne har løst problemerne ved at:
+
+Køre TypeScript-kompilatoren på API-appen uden fejl
+Køre lint-checks, som kun viste advarsler (ikke relateret til Jest)
+Køre Jest-tests, som alle passerede uden TypeScript-fejl
+Bedste praksis for TypeScript og Jest i et Turborepo-setup
+Her er nogle bedste praksis for at sikre, at TypeScript og Jest spiller godt sammen i et Turborepo-setup:
+
+Installer @types/jest i både root og workspace package.json-filer
+
+Dette sikrer, at typedefinitionerne er tilgængelige overalt
+Tilføj "jest" til "types"-arrayet i relevante tsconfig.json-filer
+
+I root tsconfig.json (hvis det indeholder tests)
+I workspace-specifikke tsconfig.json-filer
+I delte tsconfig.json-filer (som nestjs.json)
+Brug konsistente Jest-konfigurationer på tværs af workspaces
+
+Definer fælles Jest-konfigurationer i delte pakker
+Udvid disse konfigurationer i workspace-specifikke Jest-konfigurationer
+Undgå --skipLibCheck når muligt
+
+Som du nævnte, er det bedre at have en korrekt konfiguration end at bruge --skipLibCheck
+Dette sikrer, at alle typefejl fanges under kompilering
+Håndter lint-advarsler
+
+Overvej at løse de lint-advarsler, der blev vist under lint-checket
+Dette vil forbedre kodekvaliteten og gøre det lettere at identificere reelle problemer
+Konklusion
+Med de ændringer, vi har foretaget, er Jest-relaterede TypeScript-fejl nu løst i dit Turborepo-setup. Du kan nu kompilere og køre tests uden at bruge --skipLibCheck-flaget, hvilket var dit mål.
+
+Der er stadig nogle lint-advarsler relateret til ubrugte variabler og imports, men disse er ikke kritiske for funktionaliteten og kan løses separat, hvis du ønsker det.
+

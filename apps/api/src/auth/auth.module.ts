@@ -1,5 +1,5 @@
 // File: apps/api/src/auth/auth.module.ts
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { UsersModule } from '../users/users.module';
@@ -7,21 +7,22 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { LocalStrategy } from './strategies/local/local';
 import { JwtStrategy } from './strategies/jwt/jwt';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 import { PersistenceModule } from '../persistence/persistence.module';
+import { SharedModule } from '../shared/shared.module';
 
+/**
+ * AuthModule håndterer autentificering og autorisation i applikationen.
+ *
+ * For at undgå cirkulære afhængigheder:
+ * 1. Vi bruger forwardRef() til at importere UsersModule
+ * 2. Vi importerer SharedModule, der indeholder JwtModule-konfiguration
+ */
 @Module({
   imports: [
-    UsersModule,
+    forwardRef(() => UsersModule), // Brug forwardRef for at undgå cirkulære afhængigheder
     PassportModule.register({ defaultStrategy: 'jwt' }),
-    JwtModule.registerAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => ({
-        secret: configService.get<string>('JWT_SECRET'),
-        signOptions: { expiresIn: configService.get<string>('JWT_EXPIRES_IN') },
-      }),
-    }),
+    SharedModule, // Importér SharedModule i stedet for at konfigurere JwtModule direkte
     ConfigModule, // global via AppModule, but imported here for clarity
     PersistenceModule,
   ],

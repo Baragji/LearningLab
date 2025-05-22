@@ -1,0 +1,16 @@
+PASS components/Button/Button.test.tsx
+  Button Component
+    ✓ renders correctly with default props (92 ms)
+    ✓ calls onClick handler when clicked (60 ms)
+    ✓ renders children correctly (9 ms)
+    ✓ applies the correct classes for different variants (25 ms)
+    ✓ applies the correct classes for different sizes (28 ms)
+    ✓ applies disabled styles when disabled (9 ms)
+    ✓ applies additional className when provided (11 ms)
+    ✓ sets the correct button type (18 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       8 passed, 8 total
+Snapshots:   0 total
+Time:        2.562 s
+Ran all test suites.

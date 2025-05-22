@@ -1,0 +1,303 @@
+1. /Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/apps/api/.env
+DATABASE_URL="postgresql://test:test@localhost:5432/learninglab_dev?schema=public"
+JWT_SECRET="DIN_GENEREREDE_MEGET_HEMMELIGE_OG_LANGE_JWT_SECRET_KEY_HER_MINIMUM_32_TEGN"
+JWT_EXPIRES_IN="1d"
+
+2. /Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/.env
+
+# Database connection - use postgres as hostname when running in Docker, localhost for local development
+DATABASE_URL="postgresql://test:test@localhost:5432/learninglab_dev?schema=public"
+# If running the API directly (not in Docker), make sure to start the database with: docker-compose up postgres -d
+
+# JWT configuration
+JWT_SECRET="indsæt_en_lang_og_tilfældig_secret_her_til_jwt_tokens_mindst_32_tegn"
+JWT_EXPIRES_IN="1h"
+
+3. /Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/.envrc
+
+# .envrc (i projektets rod)
+
+# Sørger for at Node.js versionen fra .node-version eller lignende bliver brugt.
+layout node
+
+# Indlæser en .env fil, hvis den findes i samme mappe.
+dotenv
+
+# Database URL til din lokale PostgreSQL instans
+# ERSTAT 'dit_brugernavn', 'dit_password' og 'din_lokale_db_navn' med dine faktiske PostgreSQL-oplysninger.
+# Hvis du ikke har sat et password under PostgreSQL installationen, kan du prøve med kun brugernavn eller standard bruger/pass.
+# For Homebrew er standardbrugernavnet ofte dit macOS brugernavn, og der er intet password som standard.
+# En typisk streng KAN se sådan ud: "postgresql://Yousef_1@localhost:5432/learninglab_dev"
+export DATABASE_URL="postgresql://Yousef_1@localhost:5432/learninglab_dev"
+# URL til dit lokale backend API (NestJS)
+# Porten for NestJS API'en er sat til 5002 i din apps/api/src/main.ts
+export NEXT_PUBLIC_API_URL="http://localhost:5002/api" # Port og /api prefix fra nginx.conf
+export JWT_SECRET="indsæt_en_lang_og_tilfældig_secret_her_til_jwt_tokens_mindst_32_tegn" # VIGTIGT: Skal ændres!
+export JWT_EXPIRES_IN="1h" # Hvor længe et JWT token er gyldigt
+
+4. /Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/packages/config/src/env.js
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.clientEnv = exports.serverEnv = exports.clientSchema = exports.serverSchema = void 0;
+const zod_1 = require("zod");
+exports.serverSchema = zod_1.z.object({
+    DATABASE_URL: zod_1.z.string().url({ message: "DATABASE_URL skal være en gyldig URL." }).optional(),
+    JWT_SECRET: zod_1.z.string().min(32, { message: "JWT_SECRET skal være mindst 32 tegn lang." }).optional(),
+    JWT_EXPIRES_IN: zod_1.z.string().default('1h'),
+    SALT_ROUNDS: zod_1.z.preprocess((val) => (typeof val === 'string' ? parseInt(val, 10) : typeof val === 'number' ? val : undefined), zod_1.z.number({ invalid_type_error: "SALT_ROUNDS skal være et tal." }).int().positive({ message: "SALT_ROUNDS skal være et positivt heltal." })).default(10),
+});
+exports.clientSchema = zod_1.z.object({
+    NEXT_PUBLIC_APP_NAME: zod_1.z.string().default('Læringsplatform'),
+    NEXT_PUBLIC_API_URL: zod_1.z.string().url({ message: "NEXT_PUBLIC_API_URL skal være en gyldig URL." }).default('http://localhost:5002/api'),
+    NEXT_PUBLIC_WS_URL: zod_1.z.string().url({ message: "NEXT_PUBLIC_WS_URL skal være en gyldig URL." }).default('http://localhost:3001').optional(),
+});
+let memoizedServerEnv;
+let memoizedClientEnv;
+function parseServerEnv() {
+    const source = {
+        DATABASE_URL: process.env.DATABASE_URL,
+        JWT_SECRET: process.env.JWT_SECRET,
+        JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN,
+        SALT_ROUNDS: process.env.SALT_ROUNDS,
+    };
+    if (process.env.CI || process.env.NODE_ENV === 'production') {
+        return {
+            DATABASE_URL: source.DATABASE_URL || 'postgresql://dummy:dummy@localhost:5432/dummy',
+            JWT_SECRET: source.JWT_SECRET || 'dummy_secret_key_for_build_environment_only_32chars',
+            JWT_EXPIRES_IN: source.JWT_EXPIRES_IN || '15m',
+            SALT_ROUNDS: source.SALT_ROUNDS ? parseInt(source.SALT_ROUNDS, 10) : 10,
+        };
+    }
+    const parsed = exports.serverSchema.safeParse(source);
+    if (!parsed.success) {
+        console.error('❌ Ugyldige server-side miljøvariabler:', parsed.error.flatten().fieldErrors);
+        throw new Error('Ugyldige server-side miljøvariabler. Tjek .env filen og konsollen.');
+    }
+    return parsed.data;
+}
+function parseClientEnv() {
+    const source = {
+        NEXT_PUBLIC_APP_NAME: process.env.NEXT_PUBLIC_APP_NAME,
+        NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
+        NEXT_PUBLIC_WS_URL: process.env.NEXT_PUBLIC_WS_URL,
+    };
+    const parsed = exports.clientSchema.safeParse(source);
+    if (process.env.CI || process.env.NODE_ENV === 'production') {
+        return exports.clientSchema.parse({
+            NEXT_PUBLIC_APP_NAME: source.NEXT_PUBLIC_APP_NAME || 'Læringsplatform',
+            NEXT_PUBLIC_API_URL: source.NEXT_PUBLIC_API_URL || 'http://localhost:5002/api',
+            NEXT_PUBLIC_WS_URL: source.NEXT_PUBLIC_WS_URL || 'http://localhost:3001',
+        });
+    }
+    if (!parsed.success) {
+        console.error('❌ Ugyldige client-side miljøvariabler:', parsed.error.flatten().fieldErrors);
+        throw new Error('Ugyldige client-side miljøvariabler. Tjek .env filen og konsollen.');
+    }
+    return parsed.data;
+}
+const serverEnv = () => {
+    if (!memoizedServerEnv) {
+        memoizedServerEnv = parseServerEnv();
+    }
+    return memoizedServerEnv;
+};
+exports.serverEnv = serverEnv;
+const clientEnv = () => {
+    if (!memoizedClientEnv) {
+        memoizedClientEnv = parseClientEnv();
+    }
+    return memoizedClientEnv;
+};
+exports.clientEnv = clientEnv;
+try {
+    (0, exports.serverEnv)();
+}
+catch (error) {
+    if (process.env.CI || process.env.NODE_ENV === 'production') {
+        console.warn('⚠️ Kører i CI/CD eller produktionsmiljø, springer over streng miljøvariabel-validering');
+    }
+    else {
+        console.error('❌ Fejl ved validering af server-miljøvariabler:', error);
+        process.exit(1);
+    }
+}
+//# sourceMappingURL=env.js.map
+
+5. /Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/packages/config/src/env.d.ts
+import { z } from 'zod';
+export declare const serverSchema: z.ZodObject<{
+    DATABASE_URL: z.ZodOptional<z.ZodString>;
+    JWT_SECRET: z.ZodOptional<z.ZodString>;
+    JWT_EXPIRES_IN: z.ZodDefault<z.ZodString>;
+    SALT_ROUNDS: z.ZodDefault<z.ZodEffects<z.ZodNumber, number, unknown>>;
+}, "strip", z.ZodTypeAny, {
+    DATABASE_URL?: string;
+    JWT_SECRET?: string;
+    JWT_EXPIRES_IN?: string;
+    SALT_ROUNDS?: number;
+}, {
+    DATABASE_URL?: string;
+    JWT_SECRET?: string;
+    JWT_EXPIRES_IN?: string;
+    SALT_ROUNDS?: unknown;
+}>;
+export type ServerEnv = z.infer<typeof serverSchema>;
+export declare const clientSchema: z.ZodObject<{
+    NEXT_PUBLIC_APP_NAME: z.ZodDefault<z.ZodString>;
+    NEXT_PUBLIC_API_URL: z.ZodDefault<z.ZodString>;
+    NEXT_PUBLIC_WS_URL: z.ZodOptional<z.ZodDefault<z.ZodString>>;
+}, "strip", z.ZodTypeAny, {
+    NEXT_PUBLIC_APP_NAME?: string;
+    NEXT_PUBLIC_API_URL?: string;
+    NEXT_PUBLIC_WS_URL?: string;
+}, {
+    NEXT_PUBLIC_APP_NAME?: string;
+    NEXT_PUBLIC_API_URL?: string;
+    NEXT_PUBLIC_WS_URL?: string;
+}>;
+export type ClientEnv = z.infer<typeof clientSchema>;
+export declare const serverEnv: () => Readonly<ServerEnv>;
+export declare const clientEnv: () => Readonly<ClientEnv>;
+//# sourceMappingURL=env.d.ts.map
+
+7. /Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/packages/config/src/env.d.ts.map
+{"version":3,"file":"env.d.ts","sourceRoot":"","sources":["env.ts"],"names":[],"mappings":"AACA,OAAO,EAAE,CAAC,EAAE,MAAM,KAAK,CAAC;AAKxB,eAAO,MAAM,YAAY;;;;;;;;;;;;;;;EASvB,CAAC;AACH,MAAM,MAAM,SAAS,GAAG,CAAC,CAAC,KAAK,CAAC,OAAO,YAAY,CAAC,CAAC;AAKrD,eAAO,MAAM,YAAY;;;;;;;;;;;;EAIvB,CAAC;AACH,MAAM,MAAM,SAAS,GAAG,CAAC,CAAC,KAAK,CAAC,OAAO,YAAY,CAAC,CAAC;AA+DrD,eAAO,MAAM,SAAS,QAAO,QAAQ,CAAC,SAAS,CAK9C,CAAC;AAEF,eAAO,MAAM,SAAS,QAAO,QAAQ,CAAC,SAAS,CAK9C,CAAA"}
+
+8. /Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/packages/config/src/env.js.map
+
+{"version":3,"file":"env.js","sourceRoot":"","sources":["env.ts"],"names":[],"mappings":"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"}
+
+/Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/apps/web/next-env.d.ts
+
+/// <reference types="next" />
+/// <reference types="next/image-types/global" />
+
+// NOTE: This file should not be edited
+// see https://nextjs.org/docs/basic-features/typescript for more information.
+
+10. /Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/apps/api/src/config/environment-variables.ts
+import * as Joi from 'joi';
+
+export interface EnvironmentVariables {
+  DATABASE_URL: string;
+}
+
+export const validationSchemaForEnv = Joi.object<EnvironmentVariables, true>({
+  DATABASE_URL: Joi.string().required(),
+});
+
+11. /Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/packages/config/src/env.tsimport { z } from 'zod';
+
+/**
+ * Definerer skemaet for server-side miljøvariabler.
+ */
+export const serverSchema = z.object({
+  DATABASE_URL: z.string().url({ message: "DATABASE_URL skal være en gyldig URL." }).optional(),
+  JWT_SECRET: z.string().min(32, { message: "JWT_SECRET skal være mindst 32 tegn lang." }).optional(),
+  JWT_EXPIRES_IN: z.string().default('1h'),
+  SALT_ROUNDS: z.preprocess(
+    (val) => (typeof val === 'string' ? parseInt(val, 10) : typeof val === 'number' ? val : undefined),
+    z.number({ invalid_type_error: "SALT_ROUNDS skal være et tal."}).int().positive({ message: "SALT_ROUNDS skal være et positivt heltal."})
+  ).default(10),
+  // NODE_ENV: z.enum(['development', 'production', 'test']).default('development'), // Valgfri
+});
+export type ServerEnv = z.infer<typeof serverSchema>;
+
+/**
+ * Definerer skemaet for client-side (public) miljøvariabler.
+ */
+export const clientSchema = z.object({
+  NEXT_PUBLIC_APP_NAME: z.string().default('Læringsplatform'),
+  NEXT_PUBLIC_API_URL: z.string().url({ message: "NEXT_PUBLIC_API_URL skal være en gyldig URL."}).default('http://localhost:5002/api'),
+  NEXT_PUBLIC_WS_URL: z.string().url({ message: "NEXT_PUBLIC_WS_URL skal være en gyldig URL." }).default('http://localhost:3001').optional(),
+});
+export type ClientEnv = z.infer<typeof clientSchema>;
+
+let memoizedServerEnv: ServerEnv;
+let memoizedClientEnv: ClientEnv;
+
+function parseServerEnv(): ServerEnv {
+  const source = {
+    DATABASE_URL: process.env.DATABASE_URL,
+    JWT_SECRET: process.env.JWT_SECRET,
+    JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN,
+    SALT_ROUNDS: process.env.SALT_ROUNDS,
+    // NODE_ENV: process.env.NODE_ENV,
+  };
+  
+  // In CI/CD or build environments, we don't need to validate all environment variables
+  if (process.env.CI || process.env.NODE_ENV === 'production') {
+    return {
+      DATABASE_URL: source.DATABASE_URL || 'postgresql://dummy:dummy@localhost:5432/dummy',
+      JWT_SECRET: source.JWT_SECRET || 'dummy_secret_key_for_build_environment_only_32chars',
+      JWT_EXPIRES_IN: source.JWT_EXPIRES_IN || '15m',
+      SALT_ROUNDS: source.SALT_ROUNDS ? parseInt(source.SALT_ROUNDS, 10) : 10,
+    } as ServerEnv;
+  }
+  
+  const parsed = serverSchema.safeParse(source);
+
+  if (!parsed.success) {
+    console.error(
+      '❌ Ugyldige server-side miljøvariabler:',
+      parsed.error.flatten().fieldErrors,
+    );
+    throw new Error('Ugyldige server-side miljøvariabler. Tjek .env filen og konsollen.');
+  }
+  return parsed.data;
+}
+
+function parseClientEnv(): ClientEnv {
+   const source = {
+    NEXT_PUBLIC_APP_NAME: process.env.NEXT_PUBLIC_APP_NAME,
+    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
+    NEXT_PUBLIC_WS_URL: process.env.NEXT_PUBLIC_WS_URL,
+  };
+  const parsed = clientSchema.safeParse(source);
+
+  // In CI/CD or build environments, we don't need to validate all environment variables
+  if (process.env.CI || process.env.NODE_ENV === 'production') {
+    return clientSchema.parse({
+      NEXT_PUBLIC_APP_NAME: source.NEXT_PUBLIC_APP_NAME || 'Læringsplatform',
+      NEXT_PUBLIC_API_URL: source.NEXT_PUBLIC_API_URL || 'http://localhost:5002/api',
+      NEXT_PUBLIC_WS_URL: source.NEXT_PUBLIC_WS_URL || 'http://localhost:3001',
+    });
+  }
+
+  if (!parsed.success) {
+    console.error(
+      '❌ Ugyldige client-side miljøvariabler:',
+      parsed.error.flatten().fieldErrors,
+    );
+    throw new Error('Ugyldige client-side miljøvariabler. Tjek .env filen og konsollen.');
+  }
+  return parsed.data;
+}
+
+export const serverEnv = (): Readonly<ServerEnv> => {
+  if (!memoizedServerEnv) {
+    memoizedServerEnv = parseServerEnv();
+  }
+  return memoizedServerEnv;
+};
+
+export const clientEnv = (): Readonly<ClientEnv> => {
+  if(!memoizedClientEnv) {
+    memoizedClientEnv = parseClientEnv();
+  }
+  return memoizedClientEnv;
+}
+
+// Initialiser og valider server-miljøvariabler ved modul-load.
+try {
+  serverEnv();
+  // console.log('✅ Server-miljøvariabler valideret og indlæst.');
+} catch (error) {
+  // In CI/CD or build environments, we don't need to validate all environment variables
+  if (process.env.CI || process.env.NODE_ENV === 'production') {
+    console.warn('⚠️ Kører i CI/CD eller produktionsmiljø, springer over streng miljøvariabel-validering');
+  } else {
+    console.error('❌ Fejl ved validering af server-miljøvariabler:', error);
+    process.exit(1);
+  }
+}
