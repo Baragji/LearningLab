@@ -138,3 +138,30 @@ If you encounter database connection issues:
 3. For the error "Can't reach database server at `localhost:5432`":
    - If running the API directly (not in Docker), make sure the database is started with `docker-compose up postgres -d`
    - If running in Docker, make sure both services are on the same network
+
+## Database Management
+
+### Database Connection Resilience
+
+The application includes retry mechanisms for database connections to handle transient connection issues. The PrismaService automatically attempts to reconnect to the database with exponential backoff when connection issues occur.
+
+### Database Migration Strategy
+
+For detailed information about our database migration strategy, please refer to the [Migration Strategy Documentation](apps/api/docs/migration-strategy.md).
+
+#### Quick Migration Commands
+
+- **Development Environment**: Create and apply migrations
+  ```bash
+  ./scripts/prisma-commands.sh migrate
+  ```
+
+- **Production Environment**: Apply existing migrations (safe for production)
+  ```bash
+  ./scripts/prisma-commands.sh deploy
+  ```
+
+- **Check Migration Status**:
+  ```bash
+  ./scripts/prisma-commands.sh status
+  ```

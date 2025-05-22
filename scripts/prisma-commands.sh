@@ -1,23 +1,48 @@
 #!/bin/bash
 
-# Set the correct DATABASE_URL
-export DATABASE_URL="postgresql://test:test@localhost:5432/learninglab_dev?schema=public"
+# Set the correct DATABASE_URL if not already set
+if [ -z "$DATABASE_URL" ]; then
+  export DATABASE_URL="postgresql://test:test@localhost:5432/learninglab_dev?schema=public"
+fi
 
 # Run the specified Prisma command
 cd apps/api
 
 case "$1" in
   "migrate")
+    # For development environments - creates migrations and applies them
     npx prisma migrate dev
     ;;
+  "deploy")
+    # For production environments - applies existing migrations without creating new ones
+    npx prisma migrate deploy
+    ;;
+  "reset")
+    # Resets the database and applies all migrations (CAUTION: Deletes all data)
+    npx prisma migrate reset --force
+    ;;
   "generate")
+    # Generates Prisma client
     npx prisma generate
     ;;
   "studio")
+    # Opens Prisma Studio for database visualization
     npx prisma studio
     ;;
+  "status")
+    # Checks migration status
+    npx prisma migrate status
+    ;;
   *)
-    echo "Usage: $0 {migrate|generate|studio}"
+    echo "Usage: $0 {migrate|deploy|reset|generate|studio|status}"
+    echo ""
+    echo "Commands:"
+    echo "  migrate  - Create and apply migrations (for development)"
+    echo "  deploy   - Apply existing migrations (for production)"
+    echo "  reset    - Reset database and apply all migrations (CAUTION: Deletes all data)"
+    echo "  generate - Generate Prisma client"
+    echo "  studio   - Open Prisma Studio"
+    echo "  status   - Check migration status"
     exit 1
     ;;
 esac
