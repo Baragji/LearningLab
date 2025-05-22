@@ -23,3 +23,6 @@ coverage
 
 # Turbo
 .turbo
+
+# Output files
+repomix-output.xml
