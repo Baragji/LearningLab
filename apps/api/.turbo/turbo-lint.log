@@ -1,29 +1,43 @@
 
-/Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/apps/api/src/app.module.ts
-  10:10  warning  'CsrfMiddleware' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
-  69:13  warning  'consumer' is defined but never used. Allowed unused args must match /^_/u        @typescript-eslint/no-unused-vars
+=============
 
-/Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/apps/api/src/auth/dto/login.dto.ts
-  7:3  warning  'Matches' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+WARNING: You are currently running a version of TypeScript which is not officially supported by @typescript-eslint/typescript-estree.
 
-/Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/apps/api/src/auth/strategies/jwt/jwt.ts
-  29:13  warning  'passwordHash' is assigned a value but never used. Allowed unused vars must match /^_/u          @typescript-eslint/no-unused-vars
-  29:27  warning  'passwordResetToken' is assigned a value but never used. Allowed unused vars must match /^_/u    @typescript-eslint/no-unused-vars
-  29:47  warning  'passwordResetExpires' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+You may find that it works just fine, or you may not.
 
-/Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/apps/api/src/controllers/quizAttempt.controller.ts
-  9:3  warning  'User' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+SUPPORTED TYPESCRIPT VERSIONS: >=4.3.5 <5.4.0
 
-/Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/apps/api/src/controllers/userProgress.controller.ts
-  5:10  warning  'User' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+YOUR TYPESCRIPT VERSION: 5.8.3
 
-/Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/apps/api/src/persistence/prisma/prisma.service.spec.ts
-  3:15  warning  'PrismaClient' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+Please only submit bug reports when using the officially supported version.
 
-/Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/apps/api/src/users/users.service.ts
-  42:7  warning  'passwordHash' is assigned a value but never used. Allowed unused vars must match /^_/u          @typescript-eslint/no-unused-vars
-  43:7  warning  'passwordResetToken' is assigned a value but never used. Allowed unused vars must match /^_/u    @typescript-eslint/no-unused-vars
-  44:7  warning  'passwordResetExpires' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
-
-✖ 12 problems (0 errors, 12 warnings)
-
+=============
+[0m[0m
+[0m[4m/Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/apps/api/src/app.module.ts[24m[0m
+[0m  [2m10:10[22m  [33mwarning[39m  'CsrfMiddleware' is defined but never used. Allowed unused vars must match /^_/u  [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m  [2m69:13[22m  [33mwarning[39m  'consumer' is defined but never used. Allowed unused args must match /^_/u        [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m[0m
+[0m[4m/Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/apps/api/src/auth/dto/login.dto.ts[24m[0m
+[0m  [2m7:3[22m  [33mwarning[39m  'Matches' is defined but never used. Allowed unused vars must match /^_/u  [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m[0m
+[0m[4m/Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/apps/api/src/auth/strategies/jwt/jwt.ts[24m[0m
+[0m  [2m29:13[22m  [33mwarning[39m  'passwordHash' is assigned a value but never used. Allowed unused vars must match /^_/u          [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m  [2m29:27[22m  [33mwarning[39m  'passwordResetToken' is assigned a value but never used. Allowed unused vars must match /^_/u    [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m  [2m29:47[22m  [33mwarning[39m  'passwordResetExpires' is assigned a value but never used. Allowed unused vars must match /^_/u  [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m[0m
+[0m[4m/Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/apps/api/src/controllers/quizAttempt.controller.ts[24m[0m
+[0m  [2m9:3[22m  [33mwarning[39m  'User' is defined but never used. Allowed unused vars must match /^_/u  [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m[0m
+[0m[4m/Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/apps/api/src/controllers/userProgress.controller.ts[24m[0m
+[0m  [2m5:10[22m  [33mwarning[39m  'User' is defined but never used. Allowed unused vars must match /^_/u  [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m[0m
+[0m[4m/Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/apps/api/src/persistence/prisma/prisma.service.spec.ts[24m[0m
+[0m  [2m3:15[22m  [33mwarning[39m  'PrismaClient' is defined but never used. Allowed unused vars must match /^_/u  [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m[0m
+[0m[4m/Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/apps/api/src/users/users.service.ts[24m[0m
+[0m  [2m42:7[22m  [33mwarning[39m  'passwordHash' is assigned a value but never used. Allowed unused vars must match /^_/u          [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m  [2m43:7[22m  [33mwarning[39m  'passwordResetToken' is assigned a value but never used. Allowed unused vars must match /^_/u    [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m  [2m44:7[22m  [33mwarning[39m  'passwordResetExpires' is assigned a value but never used. Allowed unused vars must match /^_/u  [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m[0m
+[0m[33m[1m✖ 12 problems (0 errors, 12 warnings)[22m[39m[0m
+[0m[33m[1m[22m[39m[0m

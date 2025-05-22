@@ -31,6 +31,7 @@ services:
         value: 1h
       - key: NODE_ENV
         value: production
+    runtime: docker
 
 databases:
   - name: learning-db

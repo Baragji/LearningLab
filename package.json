@@ -12,9 +12,9 @@
     "dev": "turbo run dev --parallel",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "prisma:migrate": "cd apps/api && npx prisma migrate dev",
-    "prisma:generate": "cd apps/api && npx prisma generate",
-    "prisma:studio": "cd apps/api && npx prisma studio",
+    "prisma:migrate": "./scripts/prisma-commands.sh migrate",
+    "prisma:generate": "./scripts/prisma-commands.sh generate",
+    "prisma:studio": "./scripts/prisma-commands.sh studio",
     "seed": "cd apps/api && yarn seed"
   },
   "devDependencies": {
@@ -25,7 +25,7 @@
     "prettier": "^3.0.0",
     "prisma": "^5.1.0",
     "rxjs": "^7.8.2",
-    "turbo": "1.10.12",
+    "turbo": "^2.3.5",
     "typescript": "^5.8.3"
   },
   "dependencies": {
