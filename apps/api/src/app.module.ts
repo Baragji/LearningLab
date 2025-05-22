@@ -17,6 +17,7 @@ import { QuizAttemptsModule } from './controllers/quizAttempts.module';
 import { UserProgressModule } from './controllers/userProgress.module';
 import { SubjectAreasModule } from './controllers/subjectAreas.module';
 import { PensumModule } from './controllers/pensum.module';
+import { SharedModule } from './shared/shared.module';
 import {
   serverSchema,
   ServerEnv,
@@ -67,6 +68,7 @@ import {
         limit: 10, // 10 requests per ttl
       },
     ]),
+    SharedModule, // Tilføj SharedModule for at gøre fælles funktionalitet tilgængelig globalt
     PersistenceModule,
     UsersModule,
     AuthModule,

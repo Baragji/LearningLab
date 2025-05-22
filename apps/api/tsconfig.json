@@ -5,6 +5,8 @@
     "baseUrl": "./",
     "skipLibCheck": true,
     "composite": true,
+    "target": "ES2020",
+    "useDefineForClassFields": true,
     "paths": {
       "@repo/core": ["../../packages/core/src"],
       "@repo/core/*": ["../../packages/core/src/*"],
@@ -13,8 +15,10 @@
     },
     "typeRoots": [
       "./node_modules/@types",
+      "../../node_modules/@types",
       "./src/types"
-    ]
+    ],
+    "types": ["node", "jest"]
   },
   "include": [
     "src/**/*", 

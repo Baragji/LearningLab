@@ -1,0 +1,35 @@
+{
+  "languages":      ["TypeScript", "JavaScript", "Prisma Schema", "JSON", "YAML", "Markdown", "Shell", "Dockerfile", "CSS"],
+  "packageManagers":["pnpm"],
+  "workspaces":     ["apps/api", "apps/web", "packages/ui", "packages/core-lib", "packages/eslint-config-custom", "packages/tsconfig"],
+  "frameworks":     {
+    "backend":   {"name":"NestJS","version":"^10.3.0"},
+    "frontend":  {"name":"Next.js","version":"^14.1.0"}
+  },
+  "orm":            {"name": "Prisma", "version": "5.22.0"},
+  "database":       "PostgreSQL",
+  "buildTools":     ["Turborepo", "Webpack", "Tailwind CLI", "ts-loader"],
+  "testing":        ["Jest", "Playwright", "Supertest"],
+  "ci_cd":          ["GitHub Actions", "JetBrains Qodana"],
+  "docker":         true,
+  "infraFiles":     ["docker-compose.yml", "apps/api/Dockerfile", "apps/web/Dockerfile", "render.yaml", ".envrc"],
+  "externalAPIs":   ["JWT auth (Passport-JWT)"],
+  "envVars":        ["DATABASE_URL", "JWT_SECRET", "JWT_EXPIRES_IN", "PORT", "NODE_ENV", "NEXT_PUBLIC_APP_NAME", "NEXT_PUBLIC_API_URL", "NEXT_PUBLIC_WS_URL", "POSTGRES_USER", "POSTGRES_PASSWORD", "POSTGRES_DB", "CI"],
+  "notableScripts": {
+    "apps/api":  ["dev", "build", "start:prod", "test", "lint", "prisma:deploy", "prisma:generate", "prisma:studio"],
+    "apps/web":  ["dev", "build", "start", "test", "lint"]
+  },
+  "moduleGraph": {
+    "api":  ["auth", "users", "quiz", "lessons", "progress", "common", "prisma"],
+    "web":  ["components", "app", "lib", "hooks", "contexts", "styles", "utils", "env"]
+  },
+  "codeQualityTools":["ESLint", "Prettier", "Qodana", "@typescript-eslint/parser"],
+  "summary": "This is a full-stack monorepo for the LearningLab project, built with pnpm and Turborepo. The backend is a NestJS application using Prisma ORM with PostgreSQL, and the frontend is a Next.js application. Environment variables are managed via .env files and a dedicated TypeScript module. The project includes Docker support for containerization, GitHub Actions for CI/CD, and JetBrains Qodana for code quality analysis. Testing is done with Jest and Playwright. Key tooling includes ESLint, Prettier, and Tailwind CSS.",
+  "openQuestions": [
+    "The project uses .env files (e.g., apps/api/.env, root .env) and a .envrc file for direnv. Are .env.example template files provided for all services to clearly document all required environment variables for new developers and deployment environments?",
+    "The provided .env file contents show placeholder values for JWT_SECRET. It's crucial to verify that no actual production secrets are inadvertently hardcoded in any configuration files (e.g., docker-compose.yml if it uses production values) or within the codebase. What is the strategy for managing production secrets securely (e.g., Doppler, Vault, CI/CD variables, platform-specific secret stores)?",
+    "Specific version for Turborepo needs to be extracted from the root package.json.",
+    "Exact Tailwind CSS version used in apps/web/package.json needs confirmation.",
+    "Confirmation of Playwright test execution scope and detailed configuration.",
+    "Details of Qodana configuration (e.g., from qodana.yml or specific linters/profiles used in the GitHub Actions workflow)."
+  ]}
