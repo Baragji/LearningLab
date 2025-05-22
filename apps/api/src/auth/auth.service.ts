@@ -76,11 +76,18 @@ export class AuthService {
     email: string,
     password: string,
   ): Promise<Omit<CoreUser, 'passwordHash'> | null> {
-    const user = await this.usersService.findOneByEmail(email); // Henter fuld Prisma User
-    if (user && (await bcrypt.compare(password, user.passwordHash))) {
-      return this.mapToCoreUser(user); // Returnerer CoreUser uden passwordHash
+    try {
+      const user = await this.usersService.findOneByEmail(email); // Henter fuld Prisma User
+      if (user && (await bcrypt.compare(password, user.passwordHash))) {
+        return this.mapToCoreUser(user); // Returnerer CoreUser uden passwordHash
+      }
+      return null;
+    } catch (error) {
+      console.error('Fejl under validering af bruger:', error);
+      throw new BadRequestException(
+        'Der opstod en intern serverfejl ved validering af bruger. Kontroller databaseforbindelsen.',
+      );
     }
-    return null;
   }
 
   // Genererer JWT access og refresh tokens for en valideret bruger

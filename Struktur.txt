@@ -822,3 +822,589 @@ LearningLab
 └─ yarn.lock
 
 ```
+```
+LearningLab
+├─ .idea
+│  ├─ LearningLab.iml
+│  ├─ inspectionProfiles
+│  │  └─ Project_Default.xml
+│  ├─ misc.xml
+│  ├─ modules.xml
+│  ├─ prettier.xml
+│  ├─ vcs.xml
+│  └─ workspace.xml
+├─ .junie
+│  └─ guidelines.md
+├─ .node-version
+├─ .repomix
+│  └─ bundles.json
+├─ .turbo
+│  ├─ cache
+│  │  ├─ 04565c9b948c65dd-meta.json
+│  │  ├─ 04565c9b948c65dd.tar.zst
+│  │  ├─ 0545cdafaf85d032-meta.json
+│  │  ├─ 0545cdafaf85d032.tar.zst
+│  │  ├─ 24c31051f5b2025d-meta.json
+│  │  ├─ 24c31051f5b2025d.tar.zst
+│  │  ├─ 2824fe6b63a05510-meta.json
+│  │  ├─ 2824fe6b63a05510.tar.zst
+│  │  ├─ 28c6eeef32001716-meta.json
+│  │  ├─ 28c6eeef32001716.tar.zst
+│  │  ├─ 29eda3d7fc514afb-meta.json
+│  │  ├─ 29eda3d7fc514afb.tar.zst
+│  │  ├─ 3dc2db1140756903-meta.json
+│  │  ├─ 3dc2db1140756903.tar.zst
+│  │  ├─ 6113dc834bf41c48-meta.json
+│  │  ├─ 6113dc834bf41c48.tar.zst
+│  │  ├─ 63579e453c20dad5-meta.json
+│  │  ├─ 63579e453c20dad5.tar.zst
+│  │  ├─ 6ca7d3213017e63f-meta.json
+│  │  ├─ 6ca7d3213017e63f.tar.zst
+│  │  ├─ 728e96704da22083-meta.json
+│  │  ├─ 728e96704da22083.tar.zst
+│  │  ├─ 7792bbaa94b910fe-meta.json
+│  │  ├─ 7792bbaa94b910fe.tar.zst
+│  │  ├─ 80f2833fa8e69408-meta.json
+│  │  ├─ 80f2833fa8e69408.tar.zst
+│  │  ├─ 939f583ec910530e-meta.json
+│  │  ├─ 939f583ec910530e.tar.zst
+│  │  ├─ 9c786cff88c8701c-meta.json
+│  │  ├─ 9c786cff88c8701c.tar.zst
+│  │  ├─ a62d9e2819040a86-meta.json
+│  │  ├─ a62d9e2819040a86.tar.zst
+│  │  ├─ a69a904e1933affd-meta.json
+│  │  ├─ a69a904e1933affd.tar.zst
+│  │  ├─ c470e5f6d7ff0ee5-meta.json
+│  │  ├─ c470e5f6d7ff0ee5.tar.zst
+│  │  ├─ c97d3adfced0d3f5-meta.json
+│  │  ├─ c97d3adfced0d3f5.tar.zst
+│  │  ├─ e3b9aeb76c6bb72d-meta.json
+│  │  ├─ e3b9aeb76c6bb72d.tar.zst
+│  │  ├─ f7f5f3b0c527e027-meta.json
+│  │  ├─ f7f5f3b0c527e027.tar.zst
+│  │  ├─ faa6e509b31f22f0-meta.json
+│  │  └─ faa6e509b31f22f0.tar.zst
+│  ├─ cookies
+│  │  ├─ 1.cookie
+│  │  ├─ 10.cookie
+│  │  ├─ 11.cookie
+│  │  ├─ 12.cookie
+│  │  ├─ 13.cookie
+│  │  ├─ 14.cookie
+│  │  ├─ 15.cookie
+│  │  ├─ 16.cookie
+│  │  ├─ 17.cookie
+│  │  ├─ 18.cookie
+│  │  ├─ 19.cookie
+│  │  ├─ 2.cookie
+│  │  ├─ 20.cookie
+│  │  ├─ 21.cookie
+│  │  ├─ 22.cookie
+│  │  ├─ 23.cookie
+│  │  ├─ 24.cookie
+│  │  ├─ 25.cookie
+│  │  ├─ 26.cookie
+│  │  ├─ 27.cookie
+│  │  ├─ 28.cookie
+│  │  ├─ 29.cookie
+│  │  ├─ 3.cookie
+│  │  ├─ 30.cookie
+│  │  ├─ 31.cookie
+│  │  ├─ 32.cookie
+│  │  ├─ 33.cookie
+│  │  ├─ 34.cookie
+│  │  ├─ 35.cookie
+│  │  ├─ 36.cookie
+│  │  ├─ 37.cookie
+│  │  ├─ 38.cookie
+│  │  ├─ 39.cookie
+│  │  ├─ 4.cookie
+│  │  ├─ 40.cookie
+│  │  ├─ 41.cookie
+│  │  ├─ 42.cookie
+│  │  ├─ 43.cookie
+│  │  ├─ 44.cookie
+│  │  ├─ 45.cookie
+│  │  ├─ 46.cookie
+│  │  ├─ 47.cookie
+│  │  ├─ 48.cookie
+│  │  ├─ 49.cookie
+│  │  ├─ 5.cookie
+│  │  ├─ 50.cookie
+│  │  ├─ 51.cookie
+│  │  ├─ 52.cookie
+│  │  ├─ 53.cookie
+│  │  ├─ 54.cookie
+│  │  ├─ 55.cookie
+│  │  ├─ 56.cookie
+│  │  ├─ 57.cookie
+│  │  ├─ 58.cookie
+│  │  ├─ 59.cookie
+│  │  ├─ 6.cookie
+│  │  ├─ 60.cookie
+│  │  ├─ 61.cookie
+│  │  ├─ 62.cookie
+│  │  ├─ 63.cookie
+│  │  ├─ 7.cookie
+│  │  ├─ 8.cookie
+│  │  └─ 9.cookie
+│  └─ daemon
+│     └─ 14a61712b072393b-turbo.log.2025-05-22
+├─ .yarn
+│  ├─ install-state.gz
+│  └─ releases
+│     └─ yarn-4.9.1.cjs
+├─ .yarnrc.yml
+├─ .zencoder
+│  ├─ Zencoder-01b94ff9-511e-4946-ab2c-1723ce2b3946.log
+│  ├─ Zencoder-04dc95f2-45a3-4004-999e-03d3f74bb437.log
+│  ├─ Zencoder-0574470c-d83f-4aab-bfaa-1c45a0943f3f.log
+│  ├─ Zencoder-0a0c9d71-9d44-46a5-af01-b78ca486211a.log
+│  ├─ Zencoder-0eee10e1-827d-449f-b0c4-944ba4a25ac6.log
+│  ├─ Zencoder-10187630-d389-4db4-b991-98950e6a6bc0.log
+│  ├─ Zencoder-12441b66-eca8-4570-8a1d-19bc27b251b6.log
+│  ├─ Zencoder-13b70455-a360-4159-bc78-753f312d95c8.log
+│  ├─ Zencoder-15060463-0b05-4bef-a1f0-35b8d7421ed5.log
+│  ├─ Zencoder-15c05d4a-d99c-48d7-b886-ccaf5570719e.log
+│  ├─ Zencoder-17b16074-89ca-4504-b92c-ecd0aabe21a2.log
+│  ├─ Zencoder-1be813c0-87b6-4c22-a0bb-f434bb5ac059.log
+│  ├─ Zencoder-20ab5967-0826-4cd3-a1cb-42d9419eb6d4.log
+│  ├─ Zencoder-2231d8e1-401e-4d3e-a914-679921135958.log
+│  ├─ Zencoder-2290419d-78ea-4322-8e0f-50c772c8e1a9.log
+│  ├─ Zencoder-25fd6629-d5c7-4077-9c91-4ea39c3bf426.log
+│  ├─ Zencoder-260020f9-779c-4842-ab6f-9fe4725362ad.log
+│  ├─ Zencoder-295d9fa9-0946-42fa-8b3c-f30d220300f0.log
+│  ├─ Zencoder-2bb4ab5d-df06-44af-a8ca-b196b2312847.log
+│  ├─ Zencoder-2c739331-19d4-480f-86e0-5efed93aaa64.log
+│  ├─ Zencoder-2edf60c2-7c1a-4517-9cf1-042726bb02ad.log
+│  ├─ Zencoder-33f5053a-a91a-44dd-bd7b-8e68ff8cf348.log
+│  ├─ Zencoder-345c4e69-742a-4d11-b7a1-f5466c32d258.log
+│  ├─ Zencoder-35923738-d081-4306-9873-e41c18114a9b.log
+│  ├─ Zencoder-359ad959-2d72-4de9-bea8-beec742c029a.log
+│  ├─ Zencoder-3931e46d-e3e0-4232-9a76-9fd673b38e77.log
+│  ├─ Zencoder-3b7e051d-234c-494d-8b15-6d82d1dab82c.log
+│  ├─ Zencoder-3d7355ce-0837-4279-8ee0-a28603b40861.log
+│  ├─ Zencoder-3e9ae940-31a8-44d9-a466-bc11c0070958.log
+│  ├─ Zencoder-3f7dda3f-ec47-4f99-8e30-990224bbac5c.log
+│  ├─ Zencoder-3f8db46f-1194-4e42-a298-8310d247717b.log
+│  ├─ Zencoder-41e80818-e475-4301-bce1-da2b0f18ed6f.log
+│  ├─ Zencoder-42470d3d-19ab-4d1a-806c-0a243ece9232.log
+│  ├─ Zencoder-43d13d61-6a51-40c1-9b61-1a1c9f8a3227.log
+│  ├─ Zencoder-48044a98-0346-4fb9-81a4-a70f6634df02.log
+│  ├─ Zencoder-49ccf87f-7261-4783-b9e6-b5083c1698a1.log
+│  ├─ Zencoder-4aa12b83-afbd-4bf1-bc35-d4e5798db3f9.log
+│  ├─ Zencoder-4aad9f5e-257a-44b6-890c-f7d481476de4.log
+│  ├─ Zencoder-4e71ed78-f7ad-41fc-a677-1715b9fcc41b.log
+│  ├─ Zencoder-4f855afb-9dfd-481e-a014-da270e46cf37.log
+│  ├─ Zencoder-503ea503-fcdc-474b-8bd6-bdc24e170817.log
+│  ├─ Zencoder-54cec10f-c5c7-404d-ac96-c783fd869f68.log
+│  ├─ Zencoder-579a0b64-d350-499a-a8fb-c38bb8216e04.log
+│  ├─ Zencoder-5832a2e3-1a81-4c28-864b-b7c56be81ce4.log
+│  ├─ Zencoder-5833c0c6-86a4-4d29-919f-054ebb84097b.log
+│  ├─ Zencoder-590f9916-5971-42c8-9497-654136440b93.log
+│  ├─ Zencoder-5bf3eec5-3267-45fd-bcfe-d7b2acbc20f9.log
+│  ├─ Zencoder-5cb83741-516b-4783-8880-3aae28e593eb.log
+│  ├─ Zencoder-5e85be1c-1c12-4772-97a6-121e52325f81.log
+│  ├─ Zencoder-5f900bd3-9cf5-4468-b16d-c096ab9916de.log
+│  ├─ Zencoder-5ff48cef-76fc-429e-aa25-c63ea624228d.log
+│  ├─ Zencoder-63ec966f-c5b7-4e86-b637-3c9d09b6da43.log
+│  ├─ Zencoder-66fdd3e3-56b2-4d31-bbd4-c8d6676ae100.log
+│  ├─ Zencoder-680f1a08-d0d1-412f-84b8-6c4d4367a74e.log
+│  ├─ Zencoder-6bfcb558-298f-44a2-955a-49e826ec12be.log
+│  ├─ Zencoder-6d10dcbf-2590-4fb3-8207-d4adb9b1efc4.log
+│  ├─ Zencoder-6d252f28-1695-40b1-9f68-cf2365ad5e09.log
+│  ├─ Zencoder-6df7fd78-1bfe-4307-a290-981d413701d8.log
+│  ├─ Zencoder-6eb1e313-ec27-4d46-abee-bfcac9d26879.log
+│  ├─ Zencoder-72e72cb8-938a-4fa6-9474-ddb48a3d4aeb.log
+│  ├─ Zencoder-7524a146-2a89-4b9e-b2f6-c51951f1b4f2.log
+│  ├─ Zencoder-7ec5c278-3a66-4bd6-b3ca-753eb5a05bde.log
+│  ├─ Zencoder-7f34aac2-1dc0-4a8a-a7b4-a3d6e7b238ee.log
+│  ├─ Zencoder-81514ad0-8e99-467a-9fac-9e695273fe3a.log
+│  ├─ Zencoder-857a48bc-8e4c-4147-a83c-40968790529e.log
+│  ├─ Zencoder-874ed5e2-2591-4e05-bd54-31d9b6b63499.log
+│  ├─ Zencoder-8a2dabc6-d760-4bf4-8040-fdcc434bd3fb.log
+│  ├─ Zencoder-8a384db5-1dfa-49b1-ba1b-7c00594c0659.log
+│  ├─ Zencoder-8a3ac872-2a09-4e23-a75a-f0ff7061abca.log
+│  ├─ Zencoder-8b479ebc-a915-413d-b9fa-125d59d5e4d4.log
+│  ├─ Zencoder-8c585b5a-3c8a-4009-a550-a389ed5ca207.log
+│  ├─ Zencoder-8eeb6c36-9e6e-4e25-8d43-3a126ad7b697.log
+│  ├─ Zencoder-9309a052-af18-4741-ae9f-a47d74a3d2a9.log
+│  ├─ Zencoder-944f7bbf-52fc-4b46-8213-b4b7fe9f92db.log
+│  ├─ Zencoder-970f86ab-b124-467b-8e37-b7f5a545721c.log
+│  ├─ Zencoder-9c505209-89ac-47a0-acec-688917e23f59.log
+│  ├─ Zencoder-9cc9f831-cc77-4453-888e-cebb3918a628.log
+│  ├─ Zencoder-9e4b0ffa-6526-43b5-9fb6-255728c9bf26.log
+│  ├─ Zencoder-a3d13256-afb5-4634-a49e-426e8a3f65f8.log
+│  ├─ Zencoder-a941a142-69c5-4e0f-b093-b6638a1ba844.log
+│  ├─ Zencoder-aadc012a-f26c-4665-a7e9-e95e8e114ab3.log
+│  ├─ Zencoder-afcbd259-de59-45e1-8142-aa4e0fab51be.log
+│  ├─ Zencoder-b40840fb-56e6-4686-8894-42bf002cd7d6.log
+│  ├─ Zencoder-b4552ff9-7680-4b37-bec8-caab8fe3cf37.log
+│  ├─ Zencoder-bc7f02a7-589a-4534-800f-c800c38383bd.log
+│  ├─ Zencoder-be1ecaa7-4fe7-4362-b0af-de6f11afec80.log
+│  ├─ Zencoder-befbc7c3-37ca-41fd-bff6-b95ca38f7120.log
+│  ├─ Zencoder-c05a9010-1508-43fd-b9ee-c157b7f843cc.log
+│  ├─ Zencoder-c125b4fd-944e-4873-8269-bc47c55fd3ec.log
+│  ├─ Zencoder-c7263154-c3a2-44c0-b76f-44f27c45901d.log
+│  ├─ Zencoder-c7c7ae4d-6631-4daa-a26c-506d7ce535cb.log
+│  ├─ Zencoder-c7e85ebc-df0d-41c0-9cb7-8d028612f2ed.log
+│  ├─ Zencoder-c8e9cd49-e33d-4b24-918c-21a1a44894f2.log
+│  ├─ Zencoder-cb3c3b8d-fe3b-4d19-abc9-bdbe96ec600e.log
+│  ├─ Zencoder-ce2edef3-8c89-47ae-abe4-d456a36d8bc9.log
+│  ├─ Zencoder-d1ca8b19-1156-496d-8caf-a21a68b21513.log
+│  ├─ Zencoder-d260ec3e-cc24-4791-bbee-b8998865fcb3.log
+│  ├─ Zencoder-d2f160d0-e786-4dc7-ad75-c9b29b811744.log
+│  ├─ Zencoder-d7911546-8f17-4f04-b382-0439fb28e295.log
+│  ├─ Zencoder-d8c8a33e-c640-4bab-beed-a7f44d2c5e73.log
+│  ├─ Zencoder-d9889f9e-b74c-4bb6-8893-4ff3fae21ab4.log
+│  ├─ Zencoder-da7db18b-6063-4159-a819-0a987f899ef5.log
+│  ├─ Zencoder-e1ade214-3ce7-4eaf-b874-487947eb61c2.log
+│  ├─ Zencoder-e2e7b2ca-62c1-4c4a-93c6-43ad12194ba4.log
+│  ├─ Zencoder-e8161c08-4362-4a30-80fe-949a4aa03c5c.log
+│  ├─ Zencoder-e851366b-6112-402d-bb8e-785678985afd.log
+│  ├─ Zencoder-e9b37404-0986-419d-a2bb-22e7c00460bf.log
+│  ├─ Zencoder-ee3c5f91-bea5-40f6-ae20-df40a73af013.log
+│  ├─ Zencoder-f0f230c4-dad6-408b-999d-4bb473ee119a.log
+│  ├─ Zencoder-f1d18438-f22c-49db-a753-81c480879554.log
+│  ├─ Zencoder-f267f01f-0d7e-4d93-a719-a9d1da75497f.log
+│  ├─ Zencoder-f32a1c1f-751d-4008-8363-e49fd714f35b.log
+│  ├─ Zencoder-f6f9b2bf-faaa-4e11-974e-3fb4e1a33e38.log
+│  ├─ Zencoder-f8d86325-79de-4a16-876f-e9e9e11d5aff.log
+│  ├─ Zencoder-fe390d6a-8b8d-4ad5-88e8-f621d47d82bd.log
+│  ├─ Zencoder-ff038e69-228a-467a-a212-3ca8630123d8.log
+│  └─ backups
+│     └─ apps
+│        └─ api
+│           └─ src
+│              └─ config
+│                 └─ node-version.spec.ts.backup
+├─ Dockerfile.api
+├─ E1-MVP-UI-Plan.md
+├─ E2.5-Plan.md
+├─ Jira style.txt
+├─ LICENSE
+├─ Planen.txt
+├─ README.md
+├─ Seedpensum.txt
+├─ Struktur.txt
+├─ Vision&brainstom.txt
+├─ api
+│  └─ web.txt
+├─ apps
+│  ├─ api
+│  │  ├─ .eslintrc.js
+│  │  ├─ .prettierrc
+│  │  ├─ .turbo
+│  │  │  ├─ turbo-lint.log
+│  │  │  └─ turbo-test.log
+│  │  ├─ nest-cli.json
+│  │  ├─ package.json
+│  │  ├─ prisma
+│  │  │  ├─ migrations
+│  │  │  │  ├─ 20220307034109_initial_migrate
+│  │  │  │  │  └─ migration.sql
+│  │  │  │  ├─ 20250517073440_add_user_auth_fields
+│  │  │  │  │  └─ migration.sql
+│  │  │  │  ├─ 20250517122525_add_password_reset_fields
+│  │  │  │  │  └─ migration.sql
+│  │  │  │  ├─ 20250520211803_add_pensum_and_quiz_models
+│  │  │  │  │  └─ migration.sql
+│  │  │  │  └─ migration_lock.toml
+│  │  │  ├─ schema.prisma
+│  │  │  └─ seed.ts
+│  │  ├─ src
+│  │  │  ├─ app.controller.spec.ts
+│  │  │  ├─ app.controller.ts
+│  │  │  ├─ app.module.ts
+│  │  │  ├─ app.service.ts
+│  │  │  ├─ auth
+│  │  │  │  ├─ auth.controller.ts
+│  │  │  │  ├─ auth.module.ts
+│  │  │  │  ├─ auth.service.ts
+│  │  │  │  ├─ dto
+│  │  │  │  │  ├─ forgot-password.dto.ts
+│  │  │  │  │  ├─ login.dto.ts
+│  │  │  │  │  ├─ refresh-token.dto.ts
+│  │  │  │  │  └─ reset-password.dto.ts
+│  │  │  │  ├─ guards
+│  │  │  │  │  ├─ jwt-auth.guard.ts
+│  │  │  │  │  ├─ local-auth.guard.ts
+│  │  │  │  │  └─ login-throttler.guard.ts
+│  │  │  │  └─ strategies
+│  │  │  │     ├─ jwt
+│  │  │  │     │  └─ jwt.ts
+│  │  │  │     └─ local
+│  │  │  │        └─ local.ts
+│  │  │  ├─ common
+│  │  │  │  ├─ filters
+│  │  │  │  │  └─ global-exception.filter.ts
+│  │  │  │  └─ middleware
+│  │  │  │     └─ csrf.middleware.ts
+│  │  │  ├─ config
+│  │  │  │  ├─ environment-variables.ts
+│  │  │  │  └─ node-version.spec.ts
+│  │  │  ├─ controllers
+│  │  │  │  ├─ contentBlock.controller.ts
+│  │  │  │  ├─ course.controller.ts
+│  │  │  │  ├─ lesson.controller.ts
+│  │  │  │  ├─ module.controller.ts
+│  │  │  │  ├─ pensum.controller.ts
+│  │  │  │  ├─ quiz.controller.ts
+│  │  │  │  ├─ quizAttempt.controller.ts
+│  │  │  │  ├─ subjectArea.controller.ts
+│  │  │  │  └─ userProgress.controller.ts
+│  │  │  ├─ dto
+│  │  │  │  └─ update-lesson-progress.dto.ts
+│  │  │  ├─ main.ts
+│  │  │  ├─ middleware
+│  │  │  │  └─ auth.middleware.ts
+│  │  │  ├─ modules
+│  │  │  │  ├─ pensum.module.ts
+│  │  │  │  ├─ quiz.module.ts
+│  │  │  │  └─ userProgress.module.ts
+│  │  │  ├─ persistence
+│  │  │  │  ├─ persistence.module.ts
+│  │  │  │  └─ prisma
+│  │  │  │     ├─ prisma.service.spec.ts
+│  │  │  │     └─ prisma.service.ts
+│  │  │  ├─ quiz
+│  │  │  │  └─ dto
+│  │  │  │     └─ update-quiz-progress.dto.ts
+│  │  │  ├─ services
+│  │  │  │  ├─ pensum.service.ts
+│  │  │  │  ├─ quiz.service.ts
+│  │  │  │  └─ userProgress.service.ts
+│  │  │  ├─ types
+│  │  │  │  └─ express.d.ts
+│  │  │  └─ users
+│  │  │     ├─ dto
+│  │  │     │  └─ create-user.dto.ts
+│  │  │     ├─ users.controller.spec.ts
+│  │  │     ├─ users.controller.ts
+│  │  │     ├─ users.module.ts
+│  │  │     ├─ users.service.spec.ts
+│  │  │     └─ users.service.ts
+│  │  ├─ test
+│  │  │  ├─ app.e2e-spec.ts
+│  │  │  ├─ config
+│  │  │  │  └─ node-version.spec.ts
+│  │  │  └─ jest-e2e.json
+│  │  ├─ tsconfig.json
+│  │  └─ webpack-hmr.config.js
+│  └─ web
+│     ├─ .eslintrc.js
+│     ├─ .swc
+│     │  └─ plugins
+│     │     └─ v7_macos_aarch64_0.98.5
+│     ├─ .turbo
+│     │  ├─ turbo-lint.log
+│     │  └─ turbo-test.log
+│     ├─ README.md
+│     ├─ jest.config.js
+│     ├─ jest.setup.js
+│     ├─ next-env.d.ts
+│     ├─ next.config.js
+│     ├─ package.json
+│     ├─ pages
+│     │  ├─ _app.tsx
+│     │  ├─ admin
+│     │  │  ├─ courses
+│     │  │  │  ├─ create.tsx
+│     │  │  │  ├─ edit
+│     │  │  │  │  └─ [id].tsx
+│     │  │  │  └─ index.tsx
+│     │  │  ├─ index.tsx
+│     │  │  └─ modules
+│     │  │     ├─ create.tsx
+│     │  │     ├─ edit
+│     │  │     │  └─ [id].tsx
+│     │  │     └─ index.tsx
+│     │  ├─ courses
+│     │  │  ├─ [slug]
+│     │  │  │  └─ quizzes
+│     │  │  │     ├─ [id]
+│     │  │  │     │  └─ results.tsx
+│     │  │  │     └─ [id].tsx
+│     │  │  ├─ [slug].tsx
+│     │  │  └─ index.tsx
+│     │  ├─ dashboard.tsx
+│     │  ├─ forgot-password.tsx
+│     │  ├─ index.tsx
+│     │  ├─ lessons
+│     │  │  └─ [id].tsx
+│     │  ├─ login.tsx
+│     │  ├─ my-courses.tsx
+│     │  ├─ profile.tsx
+│     │  ├─ quiz
+│     │  │  └─ [id].tsx
+│     │  ├─ reset-password.tsx
+│     │  ├─ settings.tsx
+│     │  ├─ signup.tsx
+│     │  └─ statistics.tsx
+│     ├─ postcss.config.js
+│     ├─ src
+│     │  ├─ common
+│     │  ├─ components
+│     │  │  ├─ auth
+│     │  │  ├─ common
+│     │  │  │  └─ OfflineIndicator.tsx
+│     │  │  ├─ content
+│     │  │  │  └─ ContentBlockRenderer.tsx
+│     │  │  └─ quiz
+│     │  │     ├─ IncorrectAnswersList.tsx
+│     │  │     ├─ OfflineQuizNotification.tsx
+│     │  │     ├─ QuizContainer.tsx
+│     │  │     ├─ QuizNavigation.tsx
+│     │  │     ├─ QuizProgress.tsx
+│     │  │     ├─ QuizQuestion.tsx
+│     │  │     ├─ RadialProgress.tsx
+│     │  │     └─ ScoreToast.tsx
+│     │  ├─ context
+│     │  │  ├─ AuthContext.tsx
+│     │  │  ├─ ProgressContext.tsx
+│     │  │  ├─ QuizContext.tsx
+│     │  │  ├─ ThemeContext.tsx
+│     │  │  └─ useAuth.ts
+│     │  ├─ hooks
+│     │  │  ├─ useOfflineStatus.ts
+│     │  │  └─ useQuizProgress.ts
+│     │  ├─ screens
+│     │  │  ├─ admin
+│     │  │  ├─ auth
+│     │  │  │  ├─ forgot-password
+│     │  │  │  │  └─ forgot-password.tsx
+│     │  │  │  ├─ login
+│     │  │  │  │  ├─ login.test.tsx
+│     │  │  │  │  └─ login.tsx
+│     │  │  │  ├─ reset-password
+│     │  │  │  │  └─ reset-password.tsx
+│     │  │  │  └─ signup
+│     │  │  │     └─ signup.tsx
+│     │  │  ├─ common
+│     │  │  │  ├─ CoursePage.tsx
+│     │  │  │  ├─ DashboardPage.tsx
+│     │  │  │  ├─ LessonPage.tsx
+│     │  │  │  ├─ ModulePage.tsx
+│     │  │  │  ├─ QuizPage.tsx
+│     │  │  │  ├─ UserProfilePage.tsx
+│     │  │  │  └─ index.ts
+│     │  │  └─ employee
+│     │  ├─ services
+│     │  │  ├─ apiClient.ts
+│     │  │  └─ userProgressApi.ts
+│     │  ├─ store
+│     │  │  ├─ index.ts
+│     │  │  └─ services
+│     │  │     └─ api.ts
+│     │  ├─ styles
+│     │  │  └─ global.css
+│     │  └─ utils
+│     │     └─ offlineSync.ts
+│     ├─ tailwind.config.js
+│     └─ tsconfig.json
+├─ code-review-issues.md
+├─ docker-compose.yml
+├─ milesten.txt
+├─ package-scripts.js
+├─ package.json
+├─ packages
+│  ├─ config
+│  │  ├─ .eslintrc.js
+│  │  ├─ .turbo
+│  │  │  └─ turbo-lint.log
+│  │  ├─ eslint-preset.js
+│  │  ├─ nginx.conf
+│  │  ├─ package.json
+│  │  ├─ postcss.config.js
+│  │  ├─ src
+│  │  │  ├─ env.d.ts
+│  │  │  ├─ env.d.ts.map
+│  │  │  ├─ env.js
+│  │  │  ├─ env.js.map
+│  │  │  ├─ env.ts
+│  │  │  ├─ index.d.ts
+│  │  │  ├─ index.d.ts.map
+│  │  │  ├─ index.js
+│  │  │  ├─ index.js.map
+│  │  │  └─ index.ts
+│  │  ├─ tailwind.config.js
+│  │  └─ tsconfig.json
+│  ├─ core
+│  │  ├─ .eslintrc.js
+│  │  ├─ .turbo
+│  │  │  ├─ turbo-lint.log
+│  │  │  └─ turbo-test.log
+│  │  ├─ jest.config.js
+│  │  ├─ package.json
+│  │  ├─ src
+│  │  │  ├─ index.d.ts
+│  │  │  ├─ index.d.ts.map
+│  │  │  ├─ index.js
+│  │  │  ├─ index.js.map
+│  │  │  ├─ index.ts
+│  │  │  ├─ types
+│  │  │  │  ├─ pensum.types.d.ts
+│  │  │  │  ├─ pensum.types.d.ts.map
+│  │  │  │  ├─ pensum.types.js
+│  │  │  │  ├─ pensum.types.js.map
+│  │  │  │  ├─ pensum.types.ts
+│  │  │  │  ├─ quiz.types.d.ts
+│  │  │  │  ├─ quiz.types.d.ts.map
+│  │  │  │  ├─ quiz.types.js
+│  │  │  │  ├─ quiz.types.js.map
+│  │  │  │  ├─ quiz.types.ts
+│  │  │  │  ├─ user.types.d.ts
+│  │  │  │  ├─ user.types.d.ts.map
+│  │  │  │  ├─ user.types.js
+│  │  │  │  ├─ user.types.js.map
+│  │  │  │  ├─ user.types.test.ts
+│  │  │  │  └─ user.types.ts
+│  │  │  └─ utils
+│  │  │     ├─ validation.test.ts
+│  │  │     └─ validation.ts
+│  │  └─ tsconfig.json
+│  ├─ create-solid-wow
+│  │  ├─ .eslintrc.js
+│  │  ├─ .turbo
+│  │  │  └─ turbo-lint.log
+│  │  ├─ package.json
+│  │  ├─ src
+│  │  │  └─ index.ts
+│  │  └─ tsconfig.json
+│  ├─ tsconfig
+│  │  ├─ README.md
+│  │  ├─ base.json
+│  │  ├─ nestjs.json
+│  │  ├─ nextjs.json
+│  │  ├─ package.json
+│  │  └─ react-library.json
+│  └─ ui
+│     ├─ .eslintrc.js
+│     ├─ .turbo
+│     │  ├─ turbo-lint.log
+│     │  └─ turbo-test.log
+│     ├─ components
+│     │  └─ Button
+│     │     ├─ Button.test.tsx
+│     │     └─ Button.tsx
+│     ├─ index.tsx
+│     ├─ jest.config.js
+│     ├─ jest.setup.js
+│     ├─ package.json
+│     └─ tsconfig.json
+├─ prisma
+│  ├─ migrations
+│  │  ├─ 20250520183549_new
+│  │  │  └─ migration.sql
+│  │  └─ migration_lock.toml
+│  └─ schema.prisma
+├─ qodana.sarif.json
+├─ qodana.yaml
+├─ render.yaml
+├─ scripts
+│  └─ prisma-commands.sh
+├─ tsconfig.json
+├─ turbo.json
+└─ yarn.lock
+
+```

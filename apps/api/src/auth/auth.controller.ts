@@ -10,6 +10,13 @@ import {
   Body,
   ValidationPipe,
 } from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+  ApiBody,
+} from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
@@ -26,10 +33,32 @@ interface AuthenticatedRequest extends globalThis.Request {
   user: Omit<CoreUser, 'passwordHash'>; // req.user er nu af typen Omit<CoreUser, 'passwordHash'>
 }
 
+@ApiTags('Authentication')
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
+  @ApiOperation({ summary: 'Log ind med email og password' })
+  @ApiBody({ type: LoginDto })
+  @ApiResponse({
+    status: 200,
+    description: 'Bruger logget ind succesfuldt',
+    schema: {
+      type: 'object',
+      properties: {
+        access_token: { type: 'string' },
+        refresh_token: { type: 'string' },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Uautoriseret - Ugyldige loginoplysninger',
+  })
+  @ApiResponse({
+    status: 429,
+    description: 'For mange forsøg - Prøv igen senere',
+  })
   @UseGuards(LoginThrottlerGuard, LocalAuthGuard)
   @Post('login')
   @HttpCode(HttpStatus.OK)
@@ -42,6 +71,16 @@ export class AuthController {
     return this.authService.login(req.user);
   }
 
+  @ApiOperation({ summary: 'Hent brugerens profil' })
+  @ApiResponse({
+    status: 200,
+    description: 'Brugerens profildata',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Uautoriseret - Ugyldig eller udløbet token',
+  })
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Get('profile')
   getProfile(
@@ -53,6 +92,22 @@ export class AuthController {
     return req.user;
   }
 
+  @ApiOperation({ summary: 'Anmod om nulstilling af password' })
+  @ApiBody({ type: ForgotPasswordDto })
+  @ApiResponse({
+    status: 200,
+    description: 'Anmodning om nulstilling af password modtaget',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string' },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 429,
+    description: 'For mange forsøg - Prøv igen senere',
+  })
   @UseGuards(LoginThrottlerGuard)
   @Post('forgot-password')
   @HttpCode(HttpStatus.OK)
@@ -62,6 +117,23 @@ export class AuthController {
     return this.authService.forgotPassword(forgotPasswordDto.email);
   }
 
+  @ApiOperation({ summary: 'Nulstil password med token' })
+  @ApiBody({ type: ResetPasswordDto })
+  @ApiResponse({
+    status: 200,
+    description: 'Password nulstillet succesfuldt',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string' },
+      },
+    },
+  })
+  @ApiResponse({ status: 400, description: 'Ugyldig eller udløbet token' })
+  @ApiResponse({
+    status: 429,
+    description: 'For mange forsøg - Prøv igen senere',
+  })
   @UseGuards(LoginThrottlerGuard)
   @Post('reset-password')
   @HttpCode(HttpStatus.OK)
@@ -71,6 +143,22 @@ export class AuthController {
     return this.authService.resetPassword(resetPasswordDto);
   }
 
+  @ApiOperation({ summary: 'Forny adgangstoken med refresh token' })
+  @ApiBody({ type: RefreshTokenDto })
+  @ApiResponse({
+    status: 200,
+    description: 'Nyt adgangstoken genereret',
+    schema: {
+      type: 'object',
+      properties: {
+        access_token: { type: 'string' },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Ugyldig eller udløbet refresh token',
+  })
   @Post('refresh')
   @HttpCode(HttpStatus.OK)
   async refreshToken(

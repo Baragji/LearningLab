@@ -100,6 +100,7 @@ router.post(
 );
 
 // User Progress routes
+// Original routes with '/progress' prefix
 router.get(
   '/progress',
   authenticateJWT,
@@ -127,6 +128,38 @@ router.patch(
 );
 router.get(
   '/progress/courses/:courseId',
+  authenticateJWT,
+  userProgressController.getCourseProgress,
+);
+
+// Alias routes with '/user-progress' prefix for backward compatibility
+router.get(
+  '/user-progress',
+  authenticateJWT,
+  userProgressController.getUserProgress,
+);
+router.get(
+  '/user-progress/users/:userId',
+  authenticateJWT,
+  userProgressController.getUserProgressById,
+);
+router.get(
+  '/user-progress/lessons/:lessonId',
+  authenticateJWT,
+  userProgressController.getLessonProgress,
+);
+router.put(
+  '/user-progress/lessons/:lessonId',
+  authenticateJWT,
+  userProgressController.updateLessonProgress,
+);
+router.patch(
+  '/user-progress',
+  authenticateJWT,
+  userProgressController.updateUserProgress,
+);
+router.get(
+  '/user-progress/courses/:courseId',
   authenticateJWT,
   userProgressController.getCourseProgress,
 );

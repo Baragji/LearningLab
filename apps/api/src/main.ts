@@ -56,13 +56,39 @@ async function bootstrap() {
     .setTitle('Læringsplatform API')
     .setDescription('API Dokumentation for den avancerede læringsplatform')
     .setVersion('1.0')
-    .addBearerAuth()
+    .addBearerAuth({
+      type: 'http',
+      scheme: 'bearer',
+      bearerFormat: 'JWT',
+      name: 'JWT',
+      description: 'Enter JWT token',
+      in: 'header',
+    })
+    .addTag('App', 'Generelle applikationsendpoints')
+    .addTag('Authentication', 'Endpoints relateret til brugerautentifikation')
+    .addTag('Users', 'Endpoints relateret til brugerhåndtering')
+    .addTag('Courses', 'Endpoints relateret til kurser')
+    .addTag('Modules', 'Endpoints relateret til kursusmoduler')
+    .addTag('Lessons', 'Endpoints relateret til lektioner')
+    .addTag('Content', 'Endpoints relateret til indholdsblokke')
+    .addTag('Quizzes', 'Endpoints relateret til quizzer og spørgsmål')
+    .addTag('Progress', 'Endpoints relateret til brugerfremskridt')
     .build();
 
   const document = SwaggerModule.createDocument(app, swaggerConfig);
+
   // Swagger UI er nu på /api/docs på grund af global prefix
   // Vi bruger 'api/docs' for at undgå konflikter med global prefix
-  SwaggerModule.setup('api/docs', app, document);
+  SwaggerModule.setup('api/docs', app, document, {
+    swaggerOptions: {
+      persistAuthorization: true,
+      docExpansion: 'none',
+      filter: true,
+      showExtensions: true,
+      tagsSorter: 'alpha',
+      operationsSorter: 'alpha',
+    },
+  });
 
   // Try to find an available port starting from the default
   const DEFAULT_PORT = parseInt(process.env.PORT || '5002', 10);
