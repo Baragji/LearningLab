@@ -14,6 +14,9 @@ import { LessonsModule } from './controllers/lessons.module';
 import { ContentBlocksModule } from './controllers/contentBlocks.module';
 import { QuizzesModule } from './controllers/quizzes.module';
 import { QuizAttemptsModule } from './controllers/quizAttempts.module';
+import { UserProgressModule } from './controllers/userProgress.module';
+import { SubjectAreasModule } from './controllers/subjectAreas.module';
+import { PensumModule } from './controllers/pensum.module';
 import {
   serverSchema,
   ServerEnv,
@@ -73,6 +76,9 @@ import {
     ContentBlocksModule,
     QuizzesModule,
     QuizAttemptsModule,
+    UserProgressModule,
+    SubjectAreasModule,
+    PensumModule,
   ],
   controllers: [AppController],
   providers: [AppService, ConfigService],

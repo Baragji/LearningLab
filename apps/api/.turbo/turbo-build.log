@@ -1,2 +1,33 @@
 
-
+[96msrc/controllers/quizAttempts.module.ts[0m:[93m4[0m:[93m30[0m - [91merror[0m[90m TS2307: [0mCannot find module '../persistence/prisma/prisma.module' or its corresponding type declarations.
+
+[7m4[0m import { PrismaModule } from '../persistence/prisma/prisma.module';
+[7m [0m [91m                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/controllers/subjectArea.controller.nest.ts[0m:[93m27[0m:[93m28[0m - [91merror[0m[90m TS2307: [0mCannot find module '../auth/guards/roles.guard' or its corresponding type declarations.
+
+[7m27[0m import { RolesGuard } from '../auth/guards/roles.guard';
+[7m  [0m [91m                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/controllers/subjectArea.controller.nest.ts[0m:[93m28[0m:[93m23[0m - [91merror[0m[90m TS2307: [0mCannot find module '../auth/decorators/roles.decorator' or its corresponding type declarations.
+
+[7m28[0m import { Roles } from '../auth/decorators/roles.decorator';
+[7m  [0m [91m                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/controllers/userProgress.controller.nest.ts[0m:[93m25[0m:[93m28[0m - [91merror[0m[90m TS2307: [0mCannot find module '../auth/guards/roles.guard' or its corresponding type declarations.
+
+[7m25[0m import { RolesGuard } from '../auth/guards/roles.guard';
+[7m  [0m [91m                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/controllers/userProgress.controller.nest.ts[0m:[93m26[0m:[93m23[0m - [91merror[0m[90m TS2307: [0mCannot find module '../auth/decorators/roles.decorator' or its corresponding type declarations.
+
+[7m26[0m import { Roles } from '../auth/decorators/roles.decorator';
+[7m  [0m [91m                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+Found 5 errors in 3 files.
+
+Errors  Files
+     1  src/controllers/quizAttempts.module.ts[90m:4[0m
+     2  src/controllers/subjectArea.controller.nest.ts[90m:27[0m
+     2  src/controllers/userProgress.controller.nest.ts[90m:25[0m
