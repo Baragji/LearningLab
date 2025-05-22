@@ -23,7 +23,11 @@ export class ErrorTestController {
    */
   @Get('http-exception/:statusCode')
   @ApiOperation({ summary: 'Test af HttpException med specifik statuskode' })
-  @ApiParam({ name: 'statusCode', description: 'HTTP statuskode', example: 400 })
+  @ApiParam({
+    name: 'statusCode',
+    description: 'HTTP statuskode',
+    example: 400,
+  })
   @ApiResponse({ status: 400, description: 'Bad Request' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiResponse({ status: 404, description: 'Not Found' })
@@ -53,7 +57,9 @@ export class ErrorTestController {
   @ApiOperation({ summary: 'Test af UnauthorizedException' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   testUnauthorizedException() {
-    throw new UnauthorizedException('Du er ikke autoriseret til at tilgå denne ressource');
+    throw new UnauthorizedException(
+      'Du er ikke autoriseret til at tilgå denne ressource',
+    );
   }
 
   /**
