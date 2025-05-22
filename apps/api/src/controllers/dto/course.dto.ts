@@ -1,5 +1,16 @@
 // apps/api/src/controllers/dto/course.dto.ts
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { 
+  IsNotEmpty, 
+  IsString, 
+  IsNumber, 
+  IsPositive, 
+  IsOptional, 
+  Matches, 
+  MaxLength, 
+  MinLength 
+} from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class CourseDto {
   @ApiProperty({
@@ -58,6 +69,10 @@ export class CreateCourseDto {
     type: String,
     example: 'Introduktion til NestJS',
   })
+  @IsString({ message: 'Titel skal være en streng' })
+  @IsNotEmpty({ message: 'Titel må ikke være tom' })
+  @MinLength(3, { message: 'Titel skal være mindst 3 tegn' })
+  @MaxLength(100, { message: 'Titel må højst være 100 tegn' })
   title: string;
 
   @ApiProperty({
@@ -65,6 +80,10 @@ export class CreateCourseDto {
     type: String,
     example: 'Lær grundlæggende NestJS-koncepter og -mønstre',
   })
+  @IsString({ message: 'Beskrivelse skal være en streng' })
+  @IsNotEmpty({ message: 'Beskrivelse må ikke være tom' })
+  @MinLength(10, { message: 'Beskrivelse skal være mindst 10 tegn' })
+  @MaxLength(2000, { message: 'Beskrivelse må højst være 2000 tegn' })
   description: string;
 
   @ApiProperty({
@@ -72,6 +91,13 @@ export class CreateCourseDto {
     type: String,
     example: 'intro-til-nestjs',
   })
+  @IsString({ message: 'Slug skal være en streng' })
+  @IsNotEmpty({ message: 'Slug må ikke være tom' })
+  @Matches(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, { 
+    message: 'Slug må kun indeholde små bogstaver, tal og bindestreger, og må ikke starte eller slutte med en bindestreg' 
+  })
+  @MinLength(3, { message: 'Slug skal være mindst 3 tegn' })
+  @MaxLength(100, { message: 'Slug må højst være 100 tegn' })
   slug: string;
 
   @ApiProperty({
@@ -79,6 +105,9 @@ export class CreateCourseDto {
     type: Number,
     example: 1,
   })
+  @IsNumber({}, { message: 'Fagområde-ID skal være et tal' })
+  @IsPositive({ message: 'Fagområde-ID skal være et positivt tal' })
+  @Type(() => Number)
   subjectAreaId: number;
 }
 
@@ -88,6 +117,11 @@ export class UpdateCourseDto {
     type: String,
     example: 'Introduktion til NestJS',
   })
+  @IsOptional()
+  @IsString({ message: 'Titel skal være en streng' })
+  @IsNotEmpty({ message: 'Titel må ikke være tom hvis angivet' })
+  @MinLength(3, { message: 'Titel skal være mindst 3 tegn' })
+  @MaxLength(100, { message: 'Titel må højst være 100 tegn' })
   title?: string;
 
   @ApiPropertyOptional({
@@ -95,6 +129,11 @@ export class UpdateCourseDto {
     type: String,
     example: 'Lær grundlæggende NestJS-koncepter og -mønstre',
   })
+  @IsOptional()
+  @IsString({ message: 'Beskrivelse skal være en streng' })
+  @IsNotEmpty({ message: 'Beskrivelse må ikke være tom hvis angivet' })
+  @MinLength(10, { message: 'Beskrivelse skal være mindst 10 tegn' })
+  @MaxLength(2000, { message: 'Beskrivelse må højst være 2000 tegn' })
   description?: string;
 
   @ApiPropertyOptional({
@@ -102,6 +141,14 @@ export class UpdateCourseDto {
     type: String,
     example: 'intro-til-nestjs',
   })
+  @IsOptional()
+  @IsString({ message: 'Slug skal være en streng' })
+  @IsNotEmpty({ message: 'Slug må ikke være tom hvis angivet' })
+  @Matches(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, { 
+    message: 'Slug må kun indeholde små bogstaver, tal og bindestreger, og må ikke starte eller slutte med en bindestreg' 
+  })
+  @MinLength(3, { message: 'Slug skal være mindst 3 tegn' })
+  @MaxLength(100, { message: 'Slug må højst være 100 tegn' })
   slug?: string;
 
   @ApiPropertyOptional({
@@ -109,5 +156,9 @@ export class UpdateCourseDto {
     type: Number,
     example: 1,
   })
+  @IsOptional()
+  @IsNumber({}, { message: 'Fagområde-ID skal være et tal' })
+  @IsPositive({ message: 'Fagområde-ID skal være et positivt tal' })
+  @Type(() => Number)
   subjectAreaId?: number;
 }
