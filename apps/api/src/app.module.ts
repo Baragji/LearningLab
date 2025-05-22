@@ -9,6 +9,11 @@ import { AuthModule } from './auth/auth.module';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { CsrfMiddleware } from './common/middleware/csrf.middleware';
 import { CoursesModule } from './controllers/courses.module';
+import { ModulesModule } from './controllers/modules.module';
+import { LessonsModule } from './controllers/lessons.module';
+import { ContentBlocksModule } from './controllers/contentBlocks.module';
+import { QuizzesModule } from './controllers/quizzes.module';
+import { QuizAttemptsModule } from './controllers/quizAttempts.module';
 import {
   serverSchema,
   ServerEnv,
@@ -63,6 +68,11 @@ import {
     UsersModule,
     AuthModule,
     CoursesModule,
+    ModulesModule,
+    LessonsModule,
+    ContentBlocksModule,
+    QuizzesModule,
+    QuizAttemptsModule,
   ],
   controllers: [AppController],
   providers: [AppService, ConfigService],
