@@ -1,5 +1,3 @@
-// apps/api/prisma/schema.prisma
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -10,126 +8,127 @@ datasource db {
 }
 
 model User {
-  id           Int      @id @default(autoincrement())
-  email        String   @unique
-  passwordHash String
-  name         String?
-  role         Role     @default(USER)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  deletedAt    DateTime?
-
-  // Nye felter til password reset
-  passwordResetToken   String?   @unique // Gør tokenet unikt for at kunne slå det op
+  id                   Int       @id @default(autoincrement())
+  email                String    @unique
+  passwordHash         String
+  name                 String?
+  role                 Role      @default(STUDENT)
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+  passwordResetToken   String?   @unique
   passwordResetExpires DateTime?
+  createdBy            Int?
+  deletedAt            DateTime?
+  updatedBy            Int?
+  xp                   Int       @default(0)
 
-  // Relations for createdBy and updatedBy
-  createdByUser   User?   @relation("CreatedByUser", fields: [createdBy], references: [id])
-  createdBy       Int?
-  updatedByUser   User?   @relation("UpdatedByUser", fields: [updatedBy], references: [id])
-  updatedBy       Int?
+  // User profile fields
+  profileImage String?
+  bio          String?
+  socialLinks  Json?
+  settings     Json?
 
-  // Self-relations
-  createdUsers    User[]  @relation("CreatedByUser")
-  updatedUsers    User[]  @relation("UpdatedByUser")
-
-  // Relations for created and updated entities
-  createdSubjectAreas   SubjectArea[]  @relation("SubjectAreaCreatedByUser")
-  updatedSubjectAreas   SubjectArea[]  @relation("SubjectAreaUpdatedByUser")
-  createdCourses        Course[]       @relation("CourseCreatedByUser")
-  updatedCourses        Course[]       @relation("CourseUpdatedByUser")
-  createdModules        Module[]       @relation("ModuleCreatedByUser")
-  updatedModules        Module[]       @relation("ModuleUpdatedByUser")
-  createdLessons        Lesson[]       @relation("LessonCreatedByUser")
-  updatedLessons        Lesson[]       @relation("LessonUpdatedByUser")
-  createdContentBlocks  ContentBlock[] @relation("ContentBlockCreatedByUser")
-  updatedContentBlocks  ContentBlock[] @relation("ContentBlockUpdatedByUser")
-}
-
-enum Role {
-  USER
-  ADMIN
+  createdContentBlocks ContentBlock[] @relation("ContentBlockCreatedByUser")
+  updatedContentBlocks ContentBlock[] @relation("ContentBlockUpdatedByUser")
+  createdCourses       Course[]       @relation("CourseCreatedByUser")
+  updatedCourses       Course[]       @relation("CourseUpdatedByUser")
+  createdLessons       Lesson[]       @relation("LessonCreatedByUser")
+  updatedLessons       Lesson[]       @relation("LessonUpdatedByUser")
+  createdModules       Module[]       @relation("ModuleCreatedByUser")
+  updatedModules       Module[]       @relation("ModuleUpdatedByUser")
+  createdSubjectAreas  SubjectArea[]  @relation("SubjectAreaCreatedByUser")
+  updatedSubjectAreas  SubjectArea[]  @relation("SubjectAreaUpdatedByUser")
+  createdByUser        User?          @relation("CreatedByUser", fields: [createdBy], references: [id])
+  createdUsers         User[]         @relation("CreatedByUser")
+  updatedByUser        User?          @relation("UpdatedByUser", fields: [updatedBy], references: [id])
+  updatedUsers         User[]         @relation("UpdatedByUser")
 }
 
 model SubjectArea {
-  id          Int      @id @default(autoincrement())
-  name        String
-  slug        String   @unique
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  deletedAt   DateTime?
-
-  // Relations
-  courses     Course[]
-
-  // Relations for createdBy and updatedBy
-  createdByUser   User?   @relation("SubjectAreaCreatedByUser", fields: [createdBy], references: [id])
-  createdBy       Int?
-  updatedByUser   User?   @relation("SubjectAreaUpdatedByUser", fields: [updatedBy], references: [id])
-  updatedBy       Int?
+  id            Int       @id @default(autoincrement())
+  name          String
+  slug          String    @unique
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  deletedAt     DateTime?
+  createdBy     Int?
+  updatedBy     Int?
+  courses       Course[]
+  createdByUser User?     @relation("SubjectAreaCreatedByUser", fields: [createdBy], references: [id])
+  updatedByUser User?     @relation("SubjectAreaUpdatedByUser", fields: [updatedBy], references: [id])
 }
 
 model Course {
-  id            Int      @id @default(autoincrement())
+  id            Int         @id @default(autoincrement())
   title         String
   description   String
-  slug          String   @unique
+  slug          String      @unique
   subjectAreaId Int
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
   deletedAt     DateTime?
-
-  // Relations
+  createdBy     Int?
+  updatedBy     Int?
+  createdByUser User?       @relation("CourseCreatedByUser", fields: [createdBy], references: [id])
   subjectArea   SubjectArea @relation(fields: [subjectAreaId], references: [id])
+  updatedByUser User?       @relation("CourseUpdatedByUser", fields: [updatedBy], references: [id])
   modules       Module[]
-
-  // Relations for createdBy and updatedBy
-  createdByUser   User?   @relation("CourseCreatedByUser", fields: [createdBy], references: [id])
-  createdBy       Int?
-  updatedByUser   User?   @relation("CourseUpdatedByUser", fields: [updatedBy], references: [id])
-  updatedBy       Int?
 }
 
 model Module {
-  id          Int      @id @default(autoincrement())
-  title       String
-  description String
-  order       Int
-  courseId    Int
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  deletedAt   DateTime?
-
-  // Relations
-  course      Course    @relation(fields: [courseId], references: [id])
-  lessons     Lesson[]
-
-  // Relations for createdBy and updatedBy
-  createdByUser   User?   @relation("ModuleCreatedByUser", fields: [createdBy], references: [id])
-  createdBy       Int?
-  updatedByUser   User?   @relation("ModuleUpdatedByUser", fields: [updatedBy], references: [id])
-  updatedBy       Int?
+  id            Int       @id @default(autoincrement())
+  title         String
+  description   String
+  order         Int
+  courseId      Int
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  deletedAt     DateTime?
+  createdBy     Int?
+  updatedBy     Int?
+  lessons       Lesson[]
+  course        Course    @relation(fields: [courseId], references: [id])
+  createdByUser User?     @relation("ModuleCreatedByUser", fields: [createdBy], references: [id])
+  updatedByUser User?     @relation("ModuleUpdatedByUser", fields: [updatedBy], references: [id])
 }
 
 model Lesson {
-  id          Int      @id @default(autoincrement())
-  title       String
-  description String
-  order       Int
-  moduleId    Int
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  deletedAt   DateTime?
+  id            Int            @id @default(autoincrement())
+  title         String
+  description   String
+  order         Int
+  moduleId      Int
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  deletedAt     DateTime?
+  createdBy     Int?
+  updatedBy     Int?
+  contentBlocks ContentBlock[]
+  createdByUser User?          @relation("LessonCreatedByUser", fields: [createdBy], references: [id])
+  module        Module         @relation(fields: [moduleId], references: [id])
+  updatedByUser User?          @relation("LessonUpdatedByUser", fields: [updatedBy], references: [id])
+}
 
-  // Relations
-  module         Module         @relation(fields: [moduleId], references: [id])
-  contentBlocks  ContentBlock[]
+model ContentBlock {
+  id            Int              @id @default(autoincrement())
+  type          ContentBlockType
+  content       String
+  order         Int
+  lessonId      Int
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+  deletedAt     DateTime?
+  createdBy     Int?
+  updatedBy     Int?
+  createdByUser User?            @relation("ContentBlockCreatedByUser", fields: [createdBy], references: [id])
+  lesson        Lesson           @relation(fields: [lessonId], references: [id])
+  updatedByUser User?            @relation("ContentBlockUpdatedByUser", fields: [updatedBy], references: [id])
+}
 
-  // Relations for createdBy and updatedBy
-  createdByUser   User?   @relation("LessonCreatedByUser", fields: [createdBy], references: [id])
-  createdBy       Int?
-  updatedByUser   User?   @relation("LessonUpdatedByUser", fields: [updatedBy], references: [id])
-  updatedBy       Int?
+enum Role {
+  STUDENT
+  TEACHER
+  ADMIN
 }
 
 enum ContentBlockType {
@@ -137,24 +136,4 @@ enum ContentBlockType {
   IMAGE_URL
   VIDEO_URL
   QUIZ_REF
-}
-
-model ContentBlock {
-  id        Int              @id @default(autoincrement())
-  type      ContentBlockType
-  content   String
-  order     Int
-  lessonId  Int
-  createdAt DateTime         @default(now())
-  updatedAt DateTime         @updatedAt
-  deletedAt DateTime?
-
-  // Relations
-  lesson    Lesson           @relation(fields: [lessonId], references: [id])
-
-  // Relations for createdBy and updatedBy
-  createdByUser   User?   @relation("ContentBlockCreatedByUser", fields: [createdBy], references: [id])
-  createdBy       Int?
-  updatedByUser   User?   @relation("ContentBlockUpdatedByUser", fields: [updatedBy], references: [id])
-  updatedBy       Int?
 }

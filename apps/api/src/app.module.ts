@@ -41,13 +41,10 @@ import { JwtService } from '@nestjs/jwt';
     ConfigModule,
 
     // Registrer CacheModule globalt med faste værdier og memory store
-    CacheModule.registerAsync({
+    CacheModule.register({
       isGlobal: true,
-      useFactory: () => ({
-        ttl: 60, // Standard TTL på 60 sekunder
-        max: 100, // Maksimalt 100 elementer i cachen
-        store: 'memory', // Brug memory store eksplicit
-      }),
+      ttl: 60, // Standard TTL på 60 sekunder
+      max: 100, // Maksimalt 100 elementer i cachen
     }),
 
     ThrottlerModule.forRoot([
