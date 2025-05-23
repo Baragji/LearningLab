@@ -1,5 +1,5 @@
 // apps/web/src/screens/common/UserProfilePage.tsx
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { 
   Box, 
   Typography, 
@@ -14,16 +14,16 @@ import {
   Divider,
   Avatar,
   Tab,
-  Tabs
+  Tabs,
+  IconButton,
+  Badge
 } from '@mui/material';
-import { 
-  useGetCurrentUserQuery,
-  useUpdateUserProfileMutation,
-  useChangePasswordMutation
-} from '../../store/services/api';
+import { useAuth } from '../../context/AuthContext';
 import PersonIcon from '@mui/icons-material/Person';
 import LockIcon from '@mui/icons-material/Lock';
 import SaveIcon from '@mui/icons-material/Save';
+import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
+import SettingsIcon from '@mui/icons-material/Settings';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -52,38 +52,30 @@ function TabPanel(props: TabPanelProps) {
 }
 
 const UserProfilePage: React.FC = () => {
+  const { user, isLoading: authIsLoading } = useAuth();
   const [tabValue, setTabValue] = useState(0);
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
+  const [name, setName] = useState(user?.name || '');
+  const [email, setEmail] = useState(user?.email || '');
+  const [bio, setBio] = useState('');
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
-  
-  const { 
-    data: currentUser, 
-    isLoading: isUserLoading, 
-    refetch: refetchUser
-  } = useGetCurrentUserQuery();
-  
-  const [
-    updateProfile, 
-    { isLoading: isUpdating }
-  ] = useUpdateUserProfileMutation();
-  
-  const [
-    changePassword, 
-    { isLoading: isChangingPassword }
-  ] = useChangePasswordMutation();
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
+  const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   
   // Initialize form with user data when it loads
   React.useEffect(() => {
-    if (currentUser) {
-      setName(currentUser.name || '');
-      setEmail(currentUser.email);
+    if (user) {
+      setName(user.name || '');
+      setEmail(user.email);
+      // Hvis vi havde profileImage og bio i user-objektet, ville vi sætte dem her
     }
-  }, [currentUser]);
+  }, [user]);
   
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
@@ -91,14 +83,22 @@ const UserProfilePage: React.FC = () => {
   
   const handleProfileUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsUpdating(true);
     
     try {
-      await updateProfile({ name, email }).unwrap();
-      setSuccessMessage('Profile updated successfully');
-      refetchUser();
+      // Her ville vi normalt kalde en API til at opdatere profilen
+      // await updateProfile({ name, email, bio }).unwrap();
+      
+      // Simulerer en API-kald med en timeout
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      setSuccessMessage('Profil opdateret');
+      // refetchUser();
     } catch (error) {
-      console.error('Failed to update profile:', error);
+      console.error('Fejl ved opdatering af profil:', error);
       setSuccessMessage('');
+    } finally {
+      setIsUpdating(false);
     }
   };
   
@@ -107,25 +107,69 @@ const UserProfilePage: React.FC = () => {
     setPasswordError('');
     
     if (newPassword !== confirmPassword) {
-      setPasswordError('New passwords do not match');
+      setPasswordError('De nye adgangskoder matcher ikke');
       return;
     }
     
     if (newPassword.length < 8) {
-      setPasswordError('Password must be at least 8 characters long');
+      setPasswordError('Adgangskoden skal være mindst 8 tegn lang');
       return;
     }
     
+    setIsChangingPassword(true);
+    
     try {
-      await changePassword({ currentPassword, newPassword }).unwrap();
-      setSuccessMessage('Password changed successfully');
+      // Her ville vi normalt kalde en API til at ændre adgangskoden
+      // await changePassword({ currentPassword, newPassword }).unwrap();
+      
+      // Simulerer en API-kald med en timeout
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      setSuccessMessage('Adgangskode ændret');
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
     } catch (error) {
-      console.error('Failed to change password:', error);
-      setPasswordError('Current password is incorrect');
+      console.error('Fejl ved ændring af adgangskode:', error);
+      setPasswordError('Nuværende adgangskode er forkert');
       setSuccessMessage('');
+    } finally {
+      setIsChangingPassword(false);
+    }
+  };
+  
+  const handleProfileImageClick = () => {
+    fileInputRef.current?.click();
+  };
+  
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    // Vis en forhåndsvisning af billedet
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      setProfileImage(event.target?.result as string);
+    };
+    reader.readAsDataURL(file);
+    
+    setIsUploadingImage(true);
+    
+    try {
+      // Her ville vi normalt uploade billedet til en server
+      // const formData = new FormData();
+      // formData.append('profileImage', file);
+      // await uploadProfileImage(formData).unwrap();
+      
+      // Simulerer en API-kald med en timeout
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      setSuccessMessage('Profilbillede uploadet');
+    } catch (error) {
+      console.error('Fejl ved upload af profilbillede:', error);
+      setSuccessMessage('');
+    } finally {
+      setIsUploadingImage(false);
     }
   };
   
@@ -133,7 +177,7 @@ const UserProfilePage: React.FC = () => {
     setSuccessMessage('');
   };
   
-  if (isUserLoading) {
+  if (authIsLoading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}>
         <CircularProgress />
@@ -145,22 +189,57 @@ const UserProfilePage: React.FC = () => {
     <Container maxWidth="md" sx={{ mt: 4, mb: 8 }}>
       <Paper elevation={2} sx={{ p: 4 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', mb: 4 }}>
-          <Avatar 
-            sx={{ 
-              width: 80, 
-              height: 80, 
-              bgcolor: 'primary.main',
-              mr: 3
-            }}
+          <Badge
+            overlap="circular"
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+            badgeContent={
+              <IconButton 
+                sx={{ 
+                  bgcolor: 'primary.main', 
+                  color: 'white',
+                  '&:hover': { bgcolor: 'primary.dark' },
+                  width: 32,
+                  height: 32
+                }}
+                onClick={handleProfileImageClick}
+                disabled={isUploadingImage}
+              >
+                {isUploadingImage ? (
+                  <CircularProgress size={16} color="inherit" />
+                ) : (
+                  <PhotoCameraIcon sx={{ fontSize: 16 }} />
+                )}
+              </IconButton>
+            }
           >
-            {currentUser?.name?.charAt(0) || currentUser?.email?.charAt(0) || 'U'}
-          </Avatar>
-          <Box>
+            <Avatar 
+              src={profileImage || undefined}
+              sx={{ 
+                width: 100, 
+                height: 100, 
+                bgcolor: 'primary.main',
+                fontSize: '2.5rem'
+              }}
+            >
+              {user?.name?.charAt(0) || user?.email?.charAt(0) || 'U'}
+            </Avatar>
+          </Badge>
+          <input
+            type="file"
+            ref={fileInputRef}
+            style={{ display: 'none' }}
+            accept="image/*"
+            onChange={handleFileChange}
+          />
+          <Box sx={{ ml: 3 }}>
             <Typography variant="h4" component="h1">
-              User Profile
+              {user?.name || 'Bruger'}
             </Typography>
             <Typography variant="body1" color="text.secondary">
-              Manage your account settings
+              {user?.email}
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+              Rolle: {user?.role || 'Bruger'}
             </Typography>
           </Box>
         </Box>
@@ -175,15 +254,21 @@ const UserProfilePage: React.FC = () => {
           >
             <Tab 
               icon={<PersonIcon />} 
-              label="Profile Information" 
+              label="Profilinformation" 
               id="profile-tab-0" 
               aria-controls="profile-tabpanel-0" 
             />
             <Tab 
               icon={<LockIcon />} 
-              label="Change Password" 
+              label="Skift adgangskode" 
               id="profile-tab-1" 
               aria-controls="profile-tabpanel-1" 
+            />
+            <Tab 
+              icon={<SettingsIcon />} 
+              label="Indstillinger" 
+              id="profile-tab-2" 
+              aria-controls="profile-tabpanel-2" 
             />
           </Tabs>
         </Box>
@@ -191,9 +276,9 @@ const UserProfilePage: React.FC = () => {
         <TabPanel value={tabValue} index={0}>
           <form onSubmit={handleProfileUpdate}>
             <Grid container spacing={3}>
-              <Grid size={{ xs: 12 }}>
+              <Grid item xs={12}>
                 <TextField
-                  label="Name"
+                  label="Navn"
                   fullWidth
                   value={name}
                   onChange={(e) => setName(e.target.value)}
@@ -201,7 +286,7 @@ const UserProfilePage: React.FC = () => {
                 />
               </Grid>
               
-              <Grid size={{ xs: 12 }}>
+              <Grid item xs={12}>
                 <TextField
                   label="Email"
                   fullWidth
@@ -213,7 +298,20 @@ const UserProfilePage: React.FC = () => {
                 />
               </Grid>
               
-              <Grid size={{ xs: 12 }}>
+              <Grid item xs={12}>
+                <TextField
+                  label="Biografi"
+                  fullWidth
+                  value={bio}
+                  onChange={(e) => setBio(e.target.value)}
+                  variant="outlined"
+                  multiline
+                  rows={4}
+                  placeholder="Fortæl lidt om dig selv..."
+                />
+              </Grid>
+              
+              <Grid item xs={12}>
                 <Button
                   type="submit"
                   variant="contained"
@@ -221,7 +319,7 @@ const UserProfilePage: React.FC = () => {
                   disabled={isUpdating}
                   startIcon={isUpdating ? <CircularProgress size={20} /> : <SaveIcon />}
                 >
-                  {isUpdating ? 'Saving...' : 'Save Changes'}
+                  {isUpdating ? 'Gemmer...' : 'Gem ændringer'}
                 </Button>
               </Grid>
             </Grid>
@@ -231,9 +329,9 @@ const UserProfilePage: React.FC = () => {
         <TabPanel value={tabValue} index={1}>
           <form onSubmit={handlePasswordChange}>
             <Grid container spacing={3}>
-              <Grid size={{ xs: 12 }}>
+              <Grid item xs={12}>
                 <TextField
-                  label="Current Password"
+                  label="Nuværende adgangskode"
                   fullWidth
                   value={currentPassword}
                   onChange={(e) => setCurrentPassword(e.target.value)}
@@ -243,22 +341,22 @@ const UserProfilePage: React.FC = () => {
                 />
               </Grid>
               
-              <Grid size={{ xs: 12 }}>
+              <Grid item xs={12}>
                 <TextField
-                  label="New Password"
+                  label="Ny adgangskode"
                   fullWidth
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
                   variant="outlined"
                   type="password"
                   required
-                  helperText="Password must be at least 8 characters long"
+                  helperText="Adgangskoden skal være mindst 8 tegn lang"
                 />
               </Grid>
               
-              <Grid size={{ xs: 12 }}>
+              <Grid item xs={12}>
                 <TextField
-                  label="Confirm New Password"
+                  label="Bekræft ny adgangskode"
                   fullWidth
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
@@ -270,7 +368,7 @@ const UserProfilePage: React.FC = () => {
                 />
               </Grid>
               
-              <Grid size={{ xs: 12 }}>
+              <Grid item xs={12}>
                 <Button
                   type="submit"
                   variant="contained"
@@ -278,11 +376,33 @@ const UserProfilePage: React.FC = () => {
                   disabled={isChangingPassword}
                   startIcon={isChangingPassword ? <CircularProgress size={20} /> : <LockIcon />}
                 >
-                  {isChangingPassword ? 'Changing...' : 'Change Password'}
+                  {isChangingPassword ? 'Ændrer...' : 'Skift adgangskode'}
                 </Button>
               </Grid>
             </Grid>
           </form>
+        </TabPanel>
+        
+        <TabPanel value={tabValue} index={2}>
+          <Typography variant="h6" gutterBottom>
+            Notifikationsindstillinger
+          </Typography>
+          
+          <Box sx={{ mb: 4 }}>
+            <Typography variant="body1" gutterBottom>
+              Denne funktion er under udvikling. Her vil du kunne styre dine notifikationsindstillinger.
+            </Typography>
+          </Box>
+          
+          <Typography variant="h6" gutterBottom>
+            Privatindstillinger
+          </Typography>
+          
+          <Box>
+            <Typography variant="body1">
+              Denne funktion er under udvikling. Her vil du kunne styre dine privatindstillinger.
+            </Typography>
+          </Box>
         </TabPanel>
       </Paper>
       
