@@ -37,6 +37,41 @@ export class SubjectAreaDto {
   })
   slug: string;
 
+  @ApiPropertyOptional({
+    description: 'Beskrivelse af fagområdet',
+    type: String,
+    example: 'Lær at programmere i forskellige sprog og teknologier',
+  })
+  description?: string;
+
+  @ApiPropertyOptional({
+    description: 'Tags for fagområdet',
+    type: [String],
+    example: ['programmering', 'kode', 'udvikling'],
+  })
+  tags?: string[];
+
+  @ApiPropertyOptional({
+    description: 'Kategorier for fagområdet',
+    type: [String],
+    example: ['teknologi', 'it', 'software'],
+  })
+  categories?: string[];
+
+  @ApiPropertyOptional({
+    description: 'URL til fagområdets billede',
+    type: String,
+    example: 'https://example.com/images/programming.jpg',
+  })
+  image?: string;
+
+  @ApiPropertyOptional({
+    description: 'URL til fagområdets banner',
+    type: String,
+    example: 'https://example.com/images/programming-banner.jpg',
+  })
+  banner?: string;
+
   @ApiProperty({
     description: 'Dato for oprettelse af fagområdet',
     type: Date,
@@ -85,6 +120,30 @@ export class SubjectAreaDto {
           example: 'Lær grundlæggende TypeScript',
         },
         slug: { type: 'string', example: 'intro-til-typescript' },
+        tags: {
+          type: 'array',
+          items: { type: 'string' },
+          example: ['typescript', 'javascript', 'programmering'],
+        },
+        difficulty: {
+          type: 'string',
+          enum: ['BEGINNER', 'INTERMEDIATE', 'ADVANCED'],
+          example: 'BEGINNER',
+        },
+        estimatedHours: { type: 'number', example: 10 },
+        status: {
+          type: 'string',
+          enum: ['DRAFT', 'PUBLISHED', 'ARCHIVED'],
+          example: 'PUBLISHED',
+        },
+        image: {
+          type: 'string',
+          example: 'https://example.com/images/typescript.jpg',
+        },
+        banner: {
+          type: 'string',
+          example: 'https://example.com/images/typescript-banner.jpg',
+        },
       },
     },
   })
@@ -114,6 +173,52 @@ export class CreateSubjectAreaDto {
     message: 'Slug må kun indeholde små bogstaver, tal og bindestreger',
   })
   slug: string;
+
+  @ApiPropertyOptional({
+    description: 'Beskrivelse af fagområdet',
+    type: String,
+    example: 'Lær at programmere i forskellige sprog og teknologier',
+  })
+  @IsOptional()
+  @IsString({ message: 'Beskrivelse skal være en tekststreng' })
+  @MaxLength(1000, { message: 'Beskrivelse må højst være 1000 tegn' })
+  description?: string;
+
+  @ApiPropertyOptional({
+    description: 'Tags for fagområdet',
+    type: [String],
+    example: ['programmering', 'kode', 'udvikling'],
+  })
+  @IsOptional()
+  @IsString({ each: true, message: 'Hvert tag skal være en tekststreng' })
+  tags?: string[];
+
+  @ApiPropertyOptional({
+    description: 'Kategorier for fagområdet',
+    type: [String],
+    example: ['teknologi', 'it', 'software'],
+  })
+  @IsOptional()
+  @IsString({ each: true, message: 'Hver kategori skal være en tekststreng' })
+  categories?: string[];
+
+  @ApiPropertyOptional({
+    description: 'URL til fagområdets billede',
+    type: String,
+    example: 'https://example.com/images/programming.jpg',
+  })
+  @IsOptional()
+  @IsString({ message: 'Billede-URL skal være en tekststreng' })
+  image?: string;
+
+  @ApiPropertyOptional({
+    description: 'URL til fagområdets banner',
+    type: String,
+    example: 'https://example.com/images/programming-banner.jpg',
+  })
+  @IsOptional()
+  @IsString({ message: 'Banner-URL skal være en tekststreng' })
+  banner?: string;
 }
 
 export class UpdateSubjectAreaDto {
@@ -139,6 +244,52 @@ export class UpdateSubjectAreaDto {
     message: 'Slug må kun indeholde små bogstaver, tal og bindestreger',
   })
   slug?: string;
+
+  @ApiPropertyOptional({
+    description: 'Beskrivelse af fagområdet',
+    type: String,
+    example: 'Lær at programmere i forskellige sprog og teknologier',
+  })
+  @IsOptional()
+  @IsString({ message: 'Beskrivelse skal være en tekststreng' })
+  @MaxLength(1000, { message: 'Beskrivelse må højst være 1000 tegn' })
+  description?: string;
+
+  @ApiPropertyOptional({
+    description: 'Tags for fagområdet',
+    type: [String],
+    example: ['programmering', 'kode', 'udvikling'],
+  })
+  @IsOptional()
+  @IsString({ each: true, message: 'Hvert tag skal være en tekststreng' })
+  tags?: string[];
+
+  @ApiPropertyOptional({
+    description: 'Kategorier for fagområdet',
+    type: [String],
+    example: ['teknologi', 'it', 'software'],
+  })
+  @IsOptional()
+  @IsString({ each: true, message: 'Hver kategori skal være en tekststreng' })
+  categories?: string[];
+
+  @ApiPropertyOptional({
+    description: 'URL til fagområdets billede',
+    type: String,
+    example: 'https://example.com/images/programming.jpg',
+  })
+  @IsOptional()
+  @IsString({ message: 'Billede-URL skal være en tekststreng' })
+  image?: string;
+
+  @ApiPropertyOptional({
+    description: 'URL til fagområdets banner',
+    type: String,
+    example: 'https://example.com/images/programming-banner.jpg',
+  })
+  @IsOptional()
+  @IsString({ message: 'Banner-URL skal være en tekststreng' })
+  banner?: string;
 }
 
 export class SubjectAreaResponseDto {
@@ -267,4 +418,57 @@ export class FilterQueryDto {
   @IsOptional()
   @IsBoolean()
   includeCourses?: boolean = false;
+
+  @ApiPropertyOptional({
+    description: 'Filtrér efter tags (kommasepareret liste)',
+    type: String,
+    example: 'programmering,kode,udvikling',
+  })
+  @IsOptional()
+  @IsString()
+  tags?: string;
+
+  @ApiPropertyOptional({
+    description: 'Filtrér efter kategorier (kommasepareret liste)',
+    type: String,
+    example: 'teknologi,it,software',
+  })
+  @IsOptional()
+  @IsString()
+  categories?: string;
+
+  @ApiPropertyOptional({
+    description: 'Filtrér efter sværhedsgrad',
+    enum: ['BEGINNER', 'INTERMEDIATE', 'ADVANCED'],
+  })
+  @IsOptional()
+  @IsEnum(['BEGINNER', 'INTERMEDIATE', 'ADVANCED'])
+  difficulty?: 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED';
+
+  @ApiPropertyOptional({
+    description: 'Filtrér efter kursusstatus',
+    enum: ['DRAFT', 'PUBLISHED', 'ARCHIVED'],
+  })
+  @IsOptional()
+  @IsEnum(['DRAFT', 'PUBLISHED', 'ARCHIVED'])
+  status?: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
+
+  @ApiPropertyOptional({
+    description: 'Søgeterm for fuld-tekst søgning',
+    type: String,
+    example: 'programmering',
+  })
+  @IsOptional()
+  @IsString()
+  term?: string;
+
+  @ApiPropertyOptional({
+    description:
+      'Filtrér efter indholdstyper (kommasepareret liste: course, module, lesson)',
+    type: String,
+    example: 'course,module',
+  })
+  @IsOptional()
+  @IsString()
+  contentTypes?: string;
 }

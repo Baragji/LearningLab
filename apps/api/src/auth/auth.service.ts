@@ -67,6 +67,8 @@ export class AuthService {
       passwordHash: _passwordHash, // Ignorer passwordHash
       passwordResetToken: _passwordResetToken, // Ignorer passwordResetToken
       passwordResetExpires: _passwordResetExpires, // Ignorer passwordResetExpires
+      socialLinks,
+      settings,
       ...rest // Resten af brugerens felter
     } = user;
     return {
@@ -74,6 +76,8 @@ export class AuthService {
       role: user.role as CoreRole, // Sikrer korrekt enum type
       createdAt: new Date(user.createdAt), // Konverter til Date objekt
       updatedAt: new Date(user.updatedAt), // Konverter til Date objekt
+      socialLinks: socialLinks as Record<string, string> | null,
+      settings: settings as Record<string, unknown> | null,
     };
   }
 

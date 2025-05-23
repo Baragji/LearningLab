@@ -13,10 +13,10 @@ export class UserIdentificationMiddleware implements NestMiddleware {
 
   use(req: Request, res: Response, next: NextFunction) {
     const authHeader = req.headers.authorization;
-    
+
     if (authHeader && authHeader.startsWith('Bearer ')) {
       const token = authHeader.substring(7); // Fjern 'Bearer ' fra header
-      
+
       try {
         const decoded = this.jwtService.verify(token);
         // Tilføj bruger-ID til request-objektet, så det er tilgængeligt i controllere
@@ -26,7 +26,7 @@ export class UserIdentificationMiddleware implements NestMiddleware {
         // Bruger-ID vil ikke være tilgængeligt, men det er OK for nogle endpoints
       }
     }
-    
+
     next();
   }
 }

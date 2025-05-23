@@ -31,7 +31,7 @@ import {
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
-import { Role } from '@prisma/client';
+import { Role } from '@repo/core';
 import {
   SubjectAreaDto,
   CreateSubjectAreaDto,
@@ -52,19 +52,54 @@ interface RequestWithUser extends Request {
 export class SubjectAreaController {
   constructor(private readonly subjectAreaService: SubjectAreaService) {}
 
-  @ApiOperation({ summary: 'Hent alle fagområder med paginering, sortering og filtrering' })
-  @ApiQuery({ name: 'page', description: 'Sidenummer', type: Number, required: false })
-  @ApiQuery({ name: 'limit', description: 'Antal resultater per side', type: Number, required: false })
-  @ApiQuery({ name: 'sort', description: 'Felt der skal sorteres efter', type: String, required: false })
-  @ApiQuery({ name: 'order', description: 'Sorteringsretning (asc/desc)', enum: ['asc', 'desc'], required: false })
-  @ApiQuery({ name: 'filter', description: 'JSON-streng med filtreringsparametre', type: String, required: false })
-  @ApiQuery({ name: 'includeCourses', description: 'Inkluder kurser i resultatet', type: Boolean, required: false })
+  @ApiOperation({
+    summary: 'Hent alle fagområder med paginering, sortering og filtrering',
+  })
+  @ApiQuery({
+    name: 'page',
+    description: 'Sidenummer',
+    type: Number,
+    required: false,
+  })
+  @ApiQuery({
+    name: 'limit',
+    description: 'Antal resultater per side',
+    type: Number,
+    required: false,
+  })
+  @ApiQuery({
+    name: 'sort',
+    description: 'Felt der skal sorteres efter',
+    type: String,
+    required: false,
+  })
+  @ApiQuery({
+    name: 'order',
+    description: 'Sorteringsretning (asc/desc)',
+    enum: ['asc', 'desc'],
+    required: false,
+  })
+  @ApiQuery({
+    name: 'filter',
+    description: 'JSON-streng med filtreringsparametre',
+    type: String,
+    required: false,
+  })
+  @ApiQuery({
+    name: 'includeCourses',
+    description: 'Inkluder kurser i resultatet',
+    type: Boolean,
+    required: false,
+  })
   @ApiResponse({
     status: 200,
     description: 'Pagineret liste af fagområder',
     type: PaginatedSubjectAreaResponseDto,
   })
-  @ApiResponse({ status: 400, description: 'Ugyldig anmodning - Fejl i filtreringsparametre' })
+  @ApiResponse({
+    status: 400,
+    description: 'Ugyldig anmodning - Fejl i filtreringsparametre',
+  })
   @ApiResponse({ status: 500, description: 'Serverfejl' })
   @Get()
   async getAllSubjectAreas(
@@ -73,12 +108,13 @@ export class SubjectAreaController {
     @Query('sort', new DefaultValuePipe('createdAt')) sort: string,
     @Query('order', new DefaultValuePipe('desc')) order: 'asc' | 'desc',
     @Query('filter') filterString?: string,
-    @Query('includeCourses', new DefaultValuePipe(false), ParseBoolPipe) includeCourses?: boolean,
+    @Query('includeCourses', new DefaultValuePipe(false), ParseBoolPipe)
+    includeCourses?: boolean,
   ): Promise<PaginatedResult<SubjectAreaDto>> {
     try {
       // Parse filter hvis det er angivet
       const filter = filterString ? JSON.parse(filterString) : {};
-      
+
       // Opret include-objekt baseret på includeCourses
       const include = { courses: includeCourses };
 
@@ -92,7 +128,9 @@ export class SubjectAreaController {
       });
     } catch (error) {
       if (error instanceof SyntaxError) {
-        throw new BadRequestException('Ugyldigt filter-format. Skal være gyldig JSON.');
+        throw new BadRequestException(
+          'Ugyldigt filter-format. Skal være gyldig JSON.',
+        );
       }
       console.error('Fejl ved hentning af fagområder:', error);
       throw new BadRequestException(
@@ -102,10 +140,49 @@ export class SubjectAreaController {
   }
 
   @ApiOperation({ summary: 'Søg efter fagområder' })
-  @ApiQuery({ name: 'term', description: 'Søgeterm', type: String, required: true })
-  @ApiQuery({ name: 'page', description: 'Sidenummer', type: Number, required: false })
-  @ApiQuery({ name: 'limit', description: 'Antal resultater per side', type: Number, required: false })
-  @ApiQuery({ name: 'includeCourses', description: 'Inkluder kurser i resultatet', type: Boolean, required: false })
+  @ApiQuery({
+    name: 'term',
+    description: 'Søgeterm',
+    type: String,
+    required: true,
+  })
+  @ApiQuery({
+    name: 'page',
+    description: 'Sidenummer',
+    type: Number,
+    required: false,
+  })
+  @ApiQuery({
+    name: 'limit',
+    description: 'Antal resultater per side',
+    type: Number,
+    required: false,
+  })
+  @ApiQuery({
+    name: 'includeCourses',
+    description: 'Inkluder kurser i resultatet',
+    type: Boolean,
+    required: false,
+  })
+  @ApiQuery({
+    name: 'tags',
+    description: 'Filtrér efter tags (kommasepareret liste)',
+    type: String,
+    required: false,
+  })
+  @ApiQuery({
+    name: 'categories',
+    description: 'Filtrér efter kategorier (kommasepareret liste)',
+    type: String,
+    required: false,
+  })
+  @ApiQuery({
+    name: 'difficulty',
+    description:
+      'Filtrér efter sværhedsgrad (BEGINNER, INTERMEDIATE, ADVANCED)',
+    enum: ['BEGINNER', 'INTERMEDIATE', 'ADVANCED'],
+    required: false,
+  })
   @ApiResponse({
     status: 200,
     description: 'Pagineret liste af fagområder der matcher søgningen',
@@ -118,7 +195,11 @@ export class SubjectAreaController {
     @Query('term') searchTerm: string,
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
-    @Query('includeCourses', new DefaultValuePipe(false), ParseBoolPipe) includeCourses?: boolean,
+    @Query('includeCourses', new DefaultValuePipe(false), ParseBoolPipe)
+    includeCourses?: boolean,
+    @Query('tags') tags?: string,
+    @Query('categories') categories?: string,
+    @Query('difficulty') difficulty?: 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED',
   ): Promise<PaginatedResult<SubjectAreaDto>> {
     try {
       if (!searchTerm || searchTerm.trim() === '') {
@@ -128,10 +209,28 @@ export class SubjectAreaController {
       // Opret include-objekt baseret på includeCourses
       const include = { courses: includeCourses };
 
+      // Opret filter-objekt baseret på tags, kategorier og sværhedsgrad
+      const filters: Record<string, any> = {};
+
+      if (tags) {
+        filters.tags = tags.split(',').map((tag) => tag.trim());
+      }
+
+      if (categories) {
+        filters.categories = categories
+          .split(',')
+          .map((category) => category.trim());
+      }
+
+      if (difficulty) {
+        filters.difficulty = difficulty;
+      }
+
       return await this.subjectAreaService.searchSubjectAreas(searchTerm, {
         page,
         limit,
         include,
+        filters,
       });
     } catch (error) {
       if (error instanceof BadRequestException) {
@@ -144,9 +243,128 @@ export class SubjectAreaController {
     }
   }
 
+  @ApiOperation({
+    summary: 'Fuld-tekst søgning på tværs af kurser, moduler og lektioner',
+  })
+  @ApiQuery({
+    name: 'term',
+    description: 'Søgeterm',
+    type: String,
+    required: true,
+  })
+  @ApiQuery({
+    name: 'page',
+    description: 'Sidenummer',
+    type: Number,
+    required: false,
+  })
+  @ApiQuery({
+    name: 'limit',
+    description: 'Antal resultater per side',
+    type: Number,
+    required: false,
+  })
+  @ApiQuery({
+    name: 'tags',
+    description: 'Filtrér efter tags (kommasepareret liste)',
+    type: String,
+    required: false,
+  })
+  @ApiQuery({
+    name: 'categories',
+    description: 'Filtrér efter kategorier (kommasepareret liste)',
+    type: String,
+    required: false,
+  })
+  @ApiQuery({
+    name: 'difficulty',
+    description:
+      'Filtrér efter sværhedsgrad (BEGINNER, INTERMEDIATE, ADVANCED)',
+    enum: ['BEGINNER', 'INTERMEDIATE', 'ADVANCED'],
+    required: false,
+  })
+  @ApiQuery({
+    name: 'contentTypes',
+    description:
+      'Filtrér efter indholdstyper (kommasepareret liste: course, module, lesson)',
+    type: String,
+    required: false,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Pagineret liste af søgeresultater på tværs af indholdstyper',
+    type: Object,
+  })
+  @ApiResponse({ status: 400, description: 'Ugyldig anmodning' })
+  @ApiResponse({ status: 500, description: 'Serverfejl' })
+  @Get('full-text-search')
+  async fullTextSearch(
+    @Query('term') searchTerm: string,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
+    @Query('tags') tags?: string,
+    @Query('categories') categories?: string,
+    @Query('difficulty') difficulty?: 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED',
+    @Query('contentTypes') contentTypes?: string,
+  ): Promise<any> {
+    try {
+      if (!searchTerm || searchTerm.trim() === '') {
+        throw new BadRequestException('Søgeterm er påkrævet');
+      }
+
+      // Opret filter-objekt baseret på tags, kategorier og sværhedsgrad
+      const filters: Record<string, any> = {};
+
+      if (tags) {
+        filters.tags = tags.split(',').map((tag) => tag.trim());
+      }
+
+      if (categories) {
+        filters.categories = categories
+          .split(',')
+          .map((category) => category.trim());
+      }
+
+      if (difficulty) {
+        filters.difficulty = difficulty;
+      }
+
+      // Bestem hvilke indholdstyper der skal søges i
+      let searchContentTypes: string[] = ['course', 'module', 'lesson'];
+      if (contentTypes) {
+        const requestedTypes = contentTypes
+          .split(',')
+          .map((type) => type.trim().toLowerCase());
+        searchContentTypes = searchContentTypes.filter((type) =>
+          requestedTypes.includes(type),
+        );
+      }
+
+      return await this.subjectAreaService.fullTextSearch(searchTerm, {
+        page,
+        limit,
+        filters,
+        contentTypes: searchContentTypes,
+      });
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+      console.error('Fejl ved fuld-tekst søgning:', error);
+      throw new BadRequestException(
+        'Der opstod en fejl ved fuld-tekst søgning',
+      );
+    }
+  }
+
   @ApiOperation({ summary: 'Hent et specifikt fagområde ud fra ID' })
   @ApiParam({ name: 'id', description: 'Fagområde ID', type: Number })
-  @ApiQuery({ name: 'includeCourses', description: 'Inkluder kurser i resultatet', type: Boolean, required: false })
+  @ApiQuery({
+    name: 'includeCourses',
+    description: 'Inkluder kurser i resultatet',
+    type: Boolean,
+    required: false,
+  })
   @ApiResponse({
     status: 200,
     description: 'Det angivne fagområde',
@@ -157,12 +375,13 @@ export class SubjectAreaController {
   @Get(':id')
   async getSubjectAreaById(
     @Param('id', ParseIntPipe) id: number,
-    @Query('includeCourses', new DefaultValuePipe(false), ParseBoolPipe) includeCourses?: boolean,
+    @Query('includeCourses', new DefaultValuePipe(false), ParseBoolPipe)
+    includeCourses?: boolean,
   ): Promise<SubjectAreaDto> {
     try {
       // Opret include-objekt baseret på includeCourses
       const include = { courses: includeCourses };
-      
+
       return await this.subjectAreaService.findById(id, include);
     } catch (error) {
       if (error instanceof NotFoundException) {
@@ -177,7 +396,12 @@ export class SubjectAreaController {
 
   @ApiOperation({ summary: 'Hent et specifikt fagområde ud fra slug' })
   @ApiParam({ name: 'slug', description: 'Fagområde slug', type: String })
-  @ApiQuery({ name: 'includeCourses', description: 'Inkluder kurser i resultatet', type: Boolean, required: false })
+  @ApiQuery({
+    name: 'includeCourses',
+    description: 'Inkluder kurser i resultatet',
+    type: Boolean,
+    required: false,
+  })
   @ApiResponse({
     status: 200,
     description: 'Det angivne fagområde',
@@ -188,10 +412,14 @@ export class SubjectAreaController {
   @Get('slug/:slug')
   async getSubjectAreaBySlug(
     @Param('slug') slug: string,
-    @Query('includeCourses', new DefaultValuePipe(false), ParseBoolPipe) includeCourses?: boolean,
+    @Query('includeCourses', new DefaultValuePipe(false), ParseBoolPipe)
+    includeCourses?: boolean,
   ): Promise<SubjectAreaDto> {
     try {
-      const subjectArea = await this.subjectAreaService.findBySlug(slug, includeCourses);
+      const subjectArea = await this.subjectAreaService.findBySlug(
+        slug,
+        includeCourses,
+      );
 
       if (!subjectArea) {
         throw new NotFoundException('Fagområdet blev ikke fundet');

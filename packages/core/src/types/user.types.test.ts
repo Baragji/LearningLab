@@ -4,14 +4,16 @@ import { Role, User } from './user.types';
 describe('User Types', () => {
   describe('Role Enum', () => {
     it('should have the correct values', () => {
-      expect(Role.USER).toBe('USER');
+      expect(Role.STUDENT).toBe('STUDENT');
+      expect(Role.TEACHER).toBe('TEACHER');
       expect(Role.ADMIN).toBe('ADMIN');
     });
 
-    it('should have exactly two roles', () => {
+    it('should have exactly three roles', () => {
       const roleValues = Object.values(Role);
-      expect(roleValues).toHaveLength(2);
-      expect(roleValues).toContain('USER');
+      expect(roleValues).toHaveLength(3);
+      expect(roleValues).toContain('STUDENT');
+      expect(roleValues).toContain('TEACHER');
       expect(roleValues).toContain('ADMIN');
     });
   });
@@ -24,7 +26,7 @@ describe('User Types', () => {
         id: 1,
         email: 'test@example.com',
         name: 'Test User',
-        role: Role.USER,
+        role: Role.STUDENT,
         createdAt: now,
         updatedAt: now,
       };
@@ -33,7 +35,7 @@ describe('User Types', () => {
       expect(user.id).toBe(1);
       expect(user.email).toBe('test@example.com');
       expect(user.name).toBe('Test User');
-      expect(user.role).toBe(Role.USER);
+      expect(user.role).toBe(Role.STUDENT);
       expect(user.createdAt).toBe(now);
       expect(user.updatedAt).toBe(now);
     });
@@ -45,7 +47,7 @@ describe('User Types', () => {
         id: 1,
         email: 'test@example.com',
         name: null,
-        role: Role.USER,
+        role: Role.STUDENT,
         createdAt: now,
         updatedAt: now,
       };
@@ -60,7 +62,7 @@ describe('User Types', () => {
       const user: User = {
         id: 1,
         email: 'test@example.com',
-        role: Role.USER,
+        role: Role.STUDENT,
         createdAt: now,
         updatedAt: now,
       };

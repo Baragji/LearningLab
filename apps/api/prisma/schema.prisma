@@ -13,11 +13,18 @@ model User {
   name                 String?
   createdAt            DateTime       @default(now())
   passwordHash         String
-  role                 Role           @default(USER)
+  role                 Role           @default(STUDENT)
   updatedAt            DateTime       @updatedAt
   deletedAt            DateTime?
   passwordResetExpires DateTime?
   passwordResetToken   String?        @unique
+  
+  // Nye felter til brugerprofildata
+  profileImage         String?
+  bio                  String?
+  socialLinks          Json?          // Gemmer sociale links som JSON (f.eks. {twitter: "url", linkedin: "url"})
+  settings             Json?          // Brugerindstillinger som JSON (f.eks. {notifications: true, privacy: {...}})
+  
   quizAttempts         QuizAttempt[]
   progress             UserProgress[]
 
@@ -51,13 +58,18 @@ model User {
 }
 
 model SubjectArea {
-  id        Int      @id @default(autoincrement())
-  name      String
-  slug      String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  deletedAt DateTime?
-  courses   Course[]
+  id          Int      @id @default(autoincrement())
+  name        String
+  slug        String   @unique
+  description String?
+  tags        String[] @default([])
+  categories  String[] @default([])
+  image       String?
+  banner      String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  deletedAt   DateTime?
+  courses     Course[]
 
   // Relations for createdBy and updatedBy
   createdByUser   User?   @relation("SubjectAreaCreatedByUser", fields: [createdBy], references: [id])
@@ -72,6 +84,12 @@ model Course {
   description   String
   slug          String      @unique
   subjectAreaId Int
+  tags          String[]    @default([])
+  difficulty    Difficulty  @default(BEGINNER)
+  estimatedHours Int?
+  status        CourseStatus @default(DRAFT)
+  image         String?
+  banner        String?
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
   deletedAt     DateTime?
@@ -251,7 +269,8 @@ model UserProgress {
 }
 
 enum Role {
-  USER
+  STUDENT
+  TEACHER
   ADMIN
 }
 
@@ -272,4 +291,16 @@ enum ProgressStatus {
   NOT_STARTED
   IN_PROGRESS
   COMPLETED
+}
+
+enum Difficulty {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+enum CourseStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
 }
