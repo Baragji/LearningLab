@@ -17,13 +17,144 @@ model User {
   role         Role     @default(USER)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+  deletedAt    DateTime?
 
   // Nye felter til password reset
   passwordResetToken   String?   @unique // Gør tokenet unikt for at kunne slå det op
   passwordResetExpires DateTime?
+
+  // Relations for createdBy and updatedBy
+  createdByUser   User?   @relation("CreatedByUser", fields: [createdBy], references: [id])
+  createdBy       Int?
+  updatedByUser   User?   @relation("UpdatedByUser", fields: [updatedBy], references: [id])
+  updatedBy       Int?
+
+  // Self-relations
+  createdUsers    User[]  @relation("CreatedByUser")
+  updatedUsers    User[]  @relation("UpdatedByUser")
+
+  // Relations for created and updated entities
+  createdSubjectAreas   SubjectArea[]  @relation("SubjectAreaCreatedByUser")
+  updatedSubjectAreas   SubjectArea[]  @relation("SubjectAreaUpdatedByUser")
+  createdCourses        Course[]       @relation("CourseCreatedByUser")
+  updatedCourses        Course[]       @relation("CourseUpdatedByUser")
+  createdModules        Module[]       @relation("ModuleCreatedByUser")
+  updatedModules        Module[]       @relation("ModuleUpdatedByUser")
+  createdLessons        Lesson[]       @relation("LessonCreatedByUser")
+  updatedLessons        Lesson[]       @relation("LessonUpdatedByUser")
+  createdContentBlocks  ContentBlock[] @relation("ContentBlockCreatedByUser")
+  updatedContentBlocks  ContentBlock[] @relation("ContentBlockUpdatedByUser")
 }
 
 enum Role {
   USER
   ADMIN
+}
+
+model SubjectArea {
+  id          Int      @id @default(autoincrement())
+  name        String
+  slug        String   @unique
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  deletedAt   DateTime?
+
+  // Relations
+  courses     Course[]
+
+  // Relations for createdBy and updatedBy
+  createdByUser   User?   @relation("SubjectAreaCreatedByUser", fields: [createdBy], references: [id])
+  createdBy       Int?
+  updatedByUser   User?   @relation("SubjectAreaUpdatedByUser", fields: [updatedBy], references: [id])
+  updatedBy       Int?
+}
+
+model Course {
+  id            Int      @id @default(autoincrement())
+  title         String
+  description   String
+  slug          String   @unique
+  subjectAreaId Int
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  deletedAt     DateTime?
+
+  // Relations
+  subjectArea   SubjectArea @relation(fields: [subjectAreaId], references: [id])
+  modules       Module[]
+
+  // Relations for createdBy and updatedBy
+  createdByUser   User?   @relation("CourseCreatedByUser", fields: [createdBy], references: [id])
+  createdBy       Int?
+  updatedByUser   User?   @relation("CourseUpdatedByUser", fields: [updatedBy], references: [id])
+  updatedBy       Int?
+}
+
+model Module {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String
+  order       Int
+  courseId    Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  deletedAt   DateTime?
+
+  // Relations
+  course      Course    @relation(fields: [courseId], references: [id])
+  lessons     Lesson[]
+
+  // Relations for createdBy and updatedBy
+  createdByUser   User?   @relation("ModuleCreatedByUser", fields: [createdBy], references: [id])
+  createdBy       Int?
+  updatedByUser   User?   @relation("ModuleUpdatedByUser", fields: [updatedBy], references: [id])
+  updatedBy       Int?
+}
+
+model Lesson {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String
+  order       Int
+  moduleId    Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  deletedAt   DateTime?
+
+  // Relations
+  module         Module         @relation(fields: [moduleId], references: [id])
+  contentBlocks  ContentBlock[]
+
+  // Relations for createdBy and updatedBy
+  createdByUser   User?   @relation("LessonCreatedByUser", fields: [createdBy], references: [id])
+  createdBy       Int?
+  updatedByUser   User?   @relation("LessonUpdatedByUser", fields: [updatedBy], references: [id])
+  updatedBy       Int?
+}
+
+enum ContentBlockType {
+  TEXT
+  IMAGE_URL
+  VIDEO_URL
+  QUIZ_REF
+}
+
+model ContentBlock {
+  id        Int              @id @default(autoincrement())
+  type      ContentBlockType
+  content   String
+  order     Int
+  lessonId  Int
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+  deletedAt DateTime?
+
+  // Relations
+  lesson    Lesson           @relation(fields: [lessonId], references: [id])
+
+  // Relations for createdBy and updatedBy
+  createdByUser   User?   @relation("ContentBlockCreatedByUser", fields: [createdBy], references: [id])
+  createdBy       Int?
+  updatedByUser   User?   @relation("ContentBlockUpdatedByUser", fields: [updatedBy], references: [id])
+  updatedBy       Int?
 }
