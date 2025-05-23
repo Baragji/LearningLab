@@ -2,6 +2,7 @@
 const nodeExternals = require('webpack-node-externals');
 const { RunScriptWebpackPlugin } = require('run-script-webpack-plugin');
 const webpack = require('webpack');
+const path = require('path');
 
 // Eksporter en funktion med den korrekte signatur som NestJS CLI forventer
 module.exports = function (options, webpackInstance) {
@@ -11,7 +12,7 @@ module.exports = function (options, webpackInstance) {
     externals: [
       nodeExternals({
         allowlist: ['webpack/hot/poll?100'],
-        modulesDir: '../../node_modules',
+        modulesDir: path.resolve(__dirname, '../../node_modules'),
       }),
     ],
     plugins: [
@@ -22,5 +23,29 @@ module.exports = function (options, webpackInstance) {
       }),
       new RunScriptWebpackPlugin({ name: options.output.filename }),
     ],
+    resolve: {
+      ...options.resolve,
+      alias: {
+        ...options.resolve?.alias,
+        rxjs: path.resolve(__dirname, '../../node_modules/rxjs')
+      }
+    },
+    module: {
+      ...options.module,
+      rules: [
+        ...(options.module?.rules || []),
+        {
+          test: /\.ts$/,
+          exclude: /node_modules/,
+          use: {
+            loader: 'ts-loader',
+            options: {
+              transpileOnly: true,
+              configFile: path.resolve(__dirname, 'tsconfig.build.json'),
+            },
+          },
+        },
+      ],
+    },
   };
 };

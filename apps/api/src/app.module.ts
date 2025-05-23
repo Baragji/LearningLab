@@ -38,11 +38,14 @@ import { ConfigService } from './config/config.service';
   imports: [
     ConfigModule,
 
-    // Registrer CacheModule globalt med faste værdier
-    CacheModule.register({
+    // Registrer CacheModule globalt med faste værdier og memory store
+    CacheModule.registerAsync({
       isGlobal: true,
-      ttl: 60, // Standard TTL på 60 sekunder
-      max: 100, // Maksimalt 100 elementer i cachen
+      useFactory: () => ({
+        ttl: 60, // Standard TTL på 60 sekunder
+        max: 100, // Maksimalt 100 elementer i cachen
+        store: 'memory', // Brug memory store eksplicit
+      }),
     }),
 
     ThrottlerModule.forRoot([

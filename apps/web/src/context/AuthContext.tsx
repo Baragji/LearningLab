@@ -67,6 +67,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
       const userData: User = await response.json();
       setUser(userData);
       setToken(currentToken); // Sørg for at token state også er sat
+      
+      // Gem brugerdata i localStorage for offline brug
+      localStorage.setItem('userData', JSON.stringify(userData));
+      
       console.log('AuthContext: Brugerprofil hentet og sat:', userData);
     } catch (error) {
       console.error('AuthContext: Fejl ved hentning af brugerprofil:', error);
@@ -253,6 +257,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     console.log('AuthContext: Logger ud...');
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
+    localStorage.removeItem('userData');
     setToken(null);
     setRefreshToken(null);
     setTokenExpiresAt(null);
