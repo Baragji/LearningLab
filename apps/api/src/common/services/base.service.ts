@@ -48,7 +48,7 @@ export abstract class BaseService<T> {
       sort = 'createdAt',
       order = 'desc',
       filter = {},
-      include = {}
+      include = {},
     } = options;
 
     // Beregn skip-værdi for paginering
@@ -57,7 +57,7 @@ export abstract class BaseService<T> {
     // Opbyg where-betingelse med filter og ekskluder slettede poster
     const where = {
       ...filter,
-      deletedAt: null
+      deletedAt: null,
     };
 
     // Opbyg orderBy-objekt
@@ -70,9 +70,9 @@ export abstract class BaseService<T> {
         orderBy,
         skip,
         take: limit,
-        include
+        include,
       }),
-      this.prisma[this.getModelName()].count({ where })
+      this.prisma[this.getModelName()].count({ where }),
     ]);
 
     // Beregn metadata for paginering
@@ -86,8 +86,8 @@ export abstract class BaseService<T> {
         limit,
         totalPages,
         hasNextPage: page < totalPages,
-        hasPrevPage: page > 1
-      }
+        hasPrevPage: page > 1,
+      },
     };
   }
 
@@ -97,14 +97,19 @@ export abstract class BaseService<T> {
    * @param include Valgfrie relationer der skal inkluderes
    * @returns Post eller null hvis ikke fundet
    */
-  async findById(id: number, include: Record<string, any> = {}): Promise<T | null> {
+  async findById(
+    id: number,
+    include: Record<string, any> = {},
+  ): Promise<T | null> {
     const item = await this.prisma[this.getModelName()].findUnique({
       where: { id, deletedAt: null },
-      include
+      include,
     });
 
     if (!item) {
-      throw new NotFoundException(`${this.getModelDisplayName()} med ID ${id} blev ikke fundet`);
+      throw new NotFoundException(
+        `${this.getModelDisplayName()} med ID ${id} blev ikke fundet`,
+      );
     }
 
     return item;
@@ -119,11 +124,11 @@ export abstract class BaseService<T> {
   async create(data: any, userId?: number): Promise<T> {
     try {
       return await this.prisma[this.getModelName()].create({
-        data: { 
-          ...data, 
+        data: {
+          ...data,
           createdBy: userId || null,
-          updatedBy: userId || null
-        }
+          updatedBy: userId || null,
+        },
       });
     } catch (error) {
       this.handleDatabaseError(error, 'oprettelse');
@@ -144,10 +149,10 @@ export abstract class BaseService<T> {
 
       return await this.prisma[this.getModelName()].update({
         where: { id },
-        data: { 
-          ...data, 
-          updatedBy: userId || null 
-        }
+        data: {
+          ...data,
+          updatedBy: userId || null,
+        },
       });
     } catch (error) {
       if (error instanceof NotFoundException) {
@@ -170,10 +175,10 @@ export abstract class BaseService<T> {
 
       return await this.prisma[this.getModelName()].update({
         where: { id },
-        data: { 
-          deletedAt: new Date(), 
-          updatedBy: userId || null 
-        }
+        data: {
+          deletedAt: new Date(),
+          updatedBy: userId || null,
+        },
       });
     } catch (error) {
       if (error instanceof NotFoundException) {
@@ -193,26 +198,33 @@ export abstract class BaseService<T> {
     try {
       // Tjek om posten eksisterer (også selvom den er slettet)
       const item = await this.prisma[this.getModelName()].findUnique({
-        where: { id }
+        where: { id },
       });
 
       if (!item) {
-        throw new NotFoundException(`${this.getModelDisplayName()} med ID ${id} blev ikke fundet`);
+        throw new NotFoundException(
+          `${this.getModelDisplayName()} med ID ${id} blev ikke fundet`,
+        );
       }
 
       if (!item['deletedAt']) {
-        throw new BadRequestException(`${this.getModelDisplayName()} med ID ${id} er ikke slettet`);
+        throw new BadRequestException(
+          `${this.getModelDisplayName()} med ID ${id} er ikke slettet`,
+        );
       }
 
       return await this.prisma[this.getModelName()].update({
         where: { id },
-        data: { 
-          deletedAt: null, 
-          updatedBy: userId || null 
-        }
+        data: {
+          deletedAt: null,
+          updatedBy: userId || null,
+        },
       });
     } catch (error) {
-      if (error instanceof NotFoundException || error instanceof BadRequestException) {
+      if (
+        error instanceof NotFoundException ||
+        error instanceof BadRequestException
+      ) {
         throw error;
       }
       this.handleDatabaseError(error, 'genopretning');
@@ -226,7 +238,9 @@ export abstract class BaseService<T> {
    */
   protected handleDatabaseError(error: any, operation: string): never {
     console.error(`Databasefejl under ${operation}:`, error);
-    throw new BadRequestException(`Der opstod en fejl under ${operation} af ${this.getModelDisplayName().toLowerCase()}`);
+    throw new BadRequestException(
+      `Der opstod en fejl under ${operation} af ${this.getModelDisplayName().toLowerCase()}`,
+    );
   }
 
   /**

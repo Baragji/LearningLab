@@ -5,7 +5,8 @@
  * Disse matcher værdierne defineret i Prisma schemaet.
  */
 export enum Role {
-  USER = 'USER',
+  STUDENT = 'STUDENT',
+  TEACHER = 'TEACHER',
   ADMIN = 'ADMIN',
 }
 
@@ -19,8 +20,17 @@ export interface User {
   email: string;
   name?: string | null; // Navn er valgfrit og kan være null
   role: Role;
+  
+  // Nye felter til brugerprofildata
+  profileImage?: string | null; // URL til profilbillede
+  bio?: string | null; // Brugerens biografi eller beskrivelse
+  socialLinks?: Record<string, string> | null; // Sociale links som et objekt (f.eks. {twitter: "url", linkedin: "url"})
+  settings?: Record<string, unknown> | null; // Brugerindstillinger som et objekt
+  
   createdAt: Date; // Tidspunkt for oprettelse af brugeren
   updatedAt: Date; // Tidspunkt for seneste opdatering af brugeren
+  deletedAt?: Date | null; // Tidspunkt for soft delete af brugeren
+  
   // passwordResetToken, passwordResetExpires og passwordHash er udeladt,
   // da de er backend-specifikke og ikke bør være en del af den delte kerne-type.
 }

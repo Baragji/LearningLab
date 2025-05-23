@@ -87,7 +87,7 @@ export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     // Registrer UserIdentificationMiddleware for alle ruter
     consumer.apply(UserIdentificationMiddleware).forRoutes('*');
-    
+
     // Temporarily disable CSRF middleware until properly configured
     // consumer.apply(CsrfMiddleware).forRoutes('*');
   }
