@@ -24,9 +24,16 @@ services:
     ports:
       - "3000:3000"
     environment:
+      - PORT=3000
       - DATABASE_URL=postgresql://test:test@postgres:5432/learninglab_dev?schema=public
       - JWT_SECRET=${JWT_SECRET}
       - JWT_EXPIRES_IN=${JWT_EXPIRES_IN}
+      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET}
+      - JWT_REFRESH_EXPIRES_IN=${JWT_REFRESH_EXPIRES_IN}
+      - SALT_ROUNDS=${SALT_ROUNDS}
+      - CORS_ORIGINS=http://localhost:3000,http://localhost:3001
+      - NODE_ENV=production
+      - RUNNING_IN_DOCKER=true
     depends_on:
       - postgres
     restart: unless-stopped

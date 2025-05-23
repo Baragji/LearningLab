@@ -9,7 +9,8 @@
     "build": "yarn prisma:generate && tsc -p tsconfig.build.json --skipLibCheck",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
-    "dev": "yarn prisma:generate && nest build --webpack --webpackPath webpack-hmr.config.js --watch",
+    "predev": "chmod +x ../../../scripts/ensure-db.sh && ../../../scripts/ensure-db.sh",
+    "dev": "cross-env NODE_ENV=development yarn prisma:generate && cross-env NODE_ENV=development nest build --webpack --webpackPath webpack-hmr.config.js --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
@@ -21,9 +22,9 @@
     "test:ci": "yarn prisma:generate && jest --ci --runInBand",
     "prisma:generate": "prisma generate",
     "prisma:deploy": "prisma migrate deploy",
-    "prisma:studio": "prisma studio",
-    "prisma:migrate:dev": "prisma migrate dev",
-    "seed": "ts-node prisma/seed.ts"
+    "prisma:studio": "chmod +x ../../../scripts/ensure-db.sh && ../../../scripts/ensure-db.sh && prisma studio",
+    "prisma:migrate:dev": "chmod +x ../../../scripts/ensure-db.sh && ../../../scripts/ensure-db.sh && prisma migrate dev",
+    "seed": "chmod +x ../../../scripts/ensure-db.sh && ../../../scripts/ensure-db.sh && ts-node prisma/seed.ts"
   },
   "dependencies": {
     "@nest-lab/throttler-storage-redis": "^1.1.0",
@@ -82,6 +83,7 @@
     "@types/webpack-hot-middleware": "^2",
     "@typescript-eslint/eslint-plugin": "^6.2.1",
     "@typescript-eslint/parser": "^6.2.1",
+    "cross-env": "^7.0.3",
     "eslint": "^8.57.1",
     "eslint-config-prettier": "^8.9.0",
     "eslint-plugin-prettier": "^5.0.0",

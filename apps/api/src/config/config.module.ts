@@ -13,6 +13,9 @@ import authConfig from './auth.config';
   imports: [
     NestConfigModule.forRoot({
       isGlobal: true,
+      envFilePath: process.env.NODE_ENV === 'development' 
+        ? ['.env.development', '.env'] 
+        : '.env',
       validationSchema: validationSchemaForEnv,
       load: [
         appConfig,
