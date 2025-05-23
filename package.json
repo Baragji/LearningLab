@@ -9,13 +9,14 @@
   ],
   "scripts": {
     "build": "turbo run build",
-    "dev": "turbo run dev --parallel",
+    "ensure-db": "chmod +x ./scripts/ensure-db.sh && ./scripts/ensure-db.sh",
+    "dev": "yarn ensure-db && turbo run dev --parallel",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "prisma:migrate": "./scripts/prisma-commands.sh migrate",
+    "prisma:migrate": "yarn ensure-db && ./scripts/prisma-commands.sh migrate",
     "prisma:generate": "./scripts/prisma-commands.sh generate",
-    "prisma:studio": "./scripts/prisma-commands.sh studio",
-    "seed": "cd apps/api && yarn seed"
+    "prisma:studio": "yarn ensure-db && ./scripts/prisma-commands.sh studio",
+    "seed": "yarn ensure-db && cd apps/api && yarn seed"
   },
   "devDependencies": {
     "@nestjs/common": "^11.1.1",
