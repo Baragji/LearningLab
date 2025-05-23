@@ -16,12 +16,6 @@ export function makeStore() {
 
 const store = makeStore();
 
-// Add get method to store for compatibility with some libraries
-store.get = function(key: string) {
-  const state = this.getState();
-  return state[key];
-};
-
 export type RootState = ReturnType<typeof store.getState>;
 
 export type AppDispatch = typeof store.dispatch;
@@ -29,5 +23,11 @@ export type AppDispatch = typeof store.dispatch;
 export const useAppDispatch = () => useDispatch<AppDispatch>();
 
 export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
+
+// Helper function to get state by key for compatibility with some libraries
+export const getStoreState = (key: string) => {
+  const state = store.getState();
+  return state[key];
+};
 
 export default store;
