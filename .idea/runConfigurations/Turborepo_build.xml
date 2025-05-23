@@ -1,0 +1,14 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Turborepo: build" type="js.build_tools.npm" singleton="false" nameIsGenerated="false">
+    <package-json value="$ProjectFileDir$/package.json" />
+    <command value="run" />
+    <scripts>
+      <script value="turbo" />
+    </scripts>
+    <arguments value="build $Prompt$" />
+    <node-interpreter value="project" />
+    <package-manager value="yarn" />
+    <envs />
+    <method v="2" />
+  </configuration>
+</component>

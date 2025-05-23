@@ -1,0 +1,10 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Playwright" type="JavaScriptTestRunnerPlaywright">
+    <node-interpreter value="project" />
+    <playwright-package value="$ProjectFileDir$/node_modules/playwright" />
+    <working-dir value="$ProjectFileDir$" />
+    <command value="test" />
+    <envs />
+    <method v="2" />
+  </configuration>
+</component>
