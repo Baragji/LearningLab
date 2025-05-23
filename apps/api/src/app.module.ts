@@ -8,8 +8,9 @@ import { PersistenceModule } from './persistence/persistence.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { ThrottlerModule } from '@nestjs/throttler';
-// Import CsrfMiddleware
+// Import Middlewares
 import { CsrfMiddleware } from './common/middleware/csrf.middleware';
+import { UserIdentificationMiddleware } from './common/middleware/user-identification.middleware';
 import { CoursesModule } from './controllers/courses.module';
 import { ModulesModule } from './controllers/modules.module';
 import { LessonsModule } from './controllers/lessons.module';
@@ -27,6 +28,7 @@ import { SimpleCacheInterceptor } from './common/interceptors/simple-cache.inter
 import { ConfigModule } from './config/config.module';
 // Import ConfigService
 import { ConfigService } from './config/config.service';
+import { JwtService } from '@nestjs/jwt';
 // Midlertidigt deaktiveret pga. problemer med import
 // import {
 //   serverSchema,
@@ -73,6 +75,7 @@ import { ConfigService } from './config/config.service';
   providers: [
     AppService,
     NestConfigService,
+    JwtService, // Tilføj JwtService for UserIdentificationMiddleware
     // Registrer SimpleCacheInterceptor globalt
     {
       provide: APP_INTERCEPTOR,
@@ -82,6 +85,9 @@ import { ConfigService } from './config/config.service';
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
+    // Registrer UserIdentificationMiddleware for alle ruter
+    consumer.apply(UserIdentificationMiddleware).forRoutes('*');
+    
     // Temporarily disable CSRF middleware until properly configured
     // consumer.apply(CsrfMiddleware).forRoutes('*');
   }

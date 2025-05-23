@@ -2,11 +2,12 @@
 import { Module } from '@nestjs/common';
 import { SubjectAreaController } from './subjectArea.controller.nest';
 import { PersistenceModule } from '../persistence/persistence.module';
+import { SubjectAreaService } from './services/subject-area.service';
 
 @Module({
   imports: [PersistenceModule],
   controllers: [SubjectAreaController],
-  providers: [],
-  exports: [],
+  providers: [SubjectAreaService],
+  exports: [SubjectAreaService],
 })
 export class SubjectAreasModule {}
