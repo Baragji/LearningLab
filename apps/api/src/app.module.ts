@@ -8,6 +8,7 @@ import { PersistenceModule } from './persistence/persistence.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { ThrottlerModule } from '@nestjs/throttler';
+// Import CsrfMiddleware
 import { CsrfMiddleware } from './common/middleware/csrf.middleware';
 import { CoursesModule } from './controllers/courses.module';
 import { ModulesModule } from './controllers/modules.module';
@@ -24,6 +25,7 @@ import { CacheModule } from '@nestjs/cache-manager';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { SimpleCacheInterceptor } from './common/interceptors/simple-cache.interceptor';
 import { ConfigModule } from './config/config.module';
+// Import ConfigService
 import { ConfigService } from './config/config.service';
 // Midlertidigt deaktiveret pga. problemer med import
 // import {

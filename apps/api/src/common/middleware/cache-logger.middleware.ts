@@ -17,17 +17,17 @@ export class CacheLoggerMiddleware implements NestMiddleware {
 
   async use(req: Request, res: Response, next: NextFunction) {
     // Gem original response.end metode
-    const originalEnd = res.end;
+    // Unused variable commented out to fix lint warning
+    // const originalEnd = res.end;
     const originalJson = res.json;
-    const self = this;
 
     // Overvåg cache hits/misses baseret på X-Cache-Hit header
     res.on('finish', () => {
       const cacheHit = res.getHeader('X-Cache-Hit');
       if (cacheHit === 'true') {
-        self.cacheHits++;
+        this.cacheHits++;
       } else if (cacheHit === 'false') {
-        self.cacheMisses++;
+        this.cacheMisses++;
       }
     });
 
