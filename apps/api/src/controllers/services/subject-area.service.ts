@@ -1,7 +1,7 @@
 // apps/api/src/controllers/services/subject-area.service.ts
 import { Injectable, ConflictException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../../persistence/prisma/prisma.service';
-import { BaseService } from '../../common/services/base.service';
+import { BaseService, PaginationOptions, PaginatedResult } from '../../common/services/base.service';
 import { SubjectArea } from '@prisma/client';
 import { CreateSubjectAreaDto, UpdateSubjectAreaDto } from '../dto/subject-area/subject-area.dto';
 
@@ -12,17 +12,33 @@ export class SubjectAreaService extends BaseService<SubjectArea> {
   }
 
   /**
+   * Finder alle fagområder med paginering, sortering og filtrering
+   * @param options Indstillinger for paginering, sortering og filtrering
+   * @returns Pagineret resultat med fagområder
+   */
+  async findAllSubjectAreas(options: PaginationOptions = {}): Promise<PaginatedResult<SubjectArea>> {
+    // Tilføj standard include for fagområder
+    const include = { 
+      ...options.include,
+      courses: options.include?.courses ?? false
+    };
+
+    return this.findAll({ ...options, include });
+  }
+
+  /**
    * Finder et fagområde ud fra slug
    * @param slug Fagområde slug
+   * @param includeRelations Om relationer skal inkluderes
    * @returns Fagområde eller null hvis ikke fundet
    */
-  async findBySlug(slug: string): Promise<SubjectArea | null> {
+  async findBySlug(slug: string, includeRelations: boolean = false): Promise<SubjectArea | null> {
     return this.prisma.subjectArea.findFirst({
       where: { 
         slug,
         deletedAt: null
       },
-      include: { courses: true }
+      include: includeRelations ? { courses: true } : undefined
     });
   }
 
@@ -109,6 +125,23 @@ export class SubjectAreaService extends BaseService<SubjectArea> {
     }
 
     return this.softDelete(id, userId);
+  }
+
+  /**
+   * Søger efter fagområder baseret på navn eller slug
+   * @param searchTerm Søgeterm
+   * @param options Indstillinger for paginering og sortering
+   * @returns Pagineret resultat med fagområder
+   */
+  async searchSubjectAreas(searchTerm: string, options: PaginationOptions = {}): Promise<PaginatedResult<SubjectArea>> {
+    const filter = {
+      OR: [
+        { name: { contains: searchTerm, mode: 'insensitive' } },
+        { slug: { contains: searchTerm, mode: 'insensitive' } }
+      ]
+    };
+
+    return this.findAll({ ...options, filter });
   }
 
   /**

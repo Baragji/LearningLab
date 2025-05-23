@@ -3,31 +3,104 @@ import { NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../../persistence/prisma/prisma.service';
 
 /**
- * Base service der implementerer standard CRUD-operationer med soft delete-funktionalitet
- * og sporing af brugerhandlinger (createdBy, updatedBy).
+ * Interface til paginering, sortering og filtrering
+ */
+export interface PaginationOptions {
+  page?: number;
+  limit?: number;
+  sort?: string;
+  order?: 'asc' | 'desc';
+  filter?: Record<string, any>;
+  include?: Record<string, any>;
+}
+
+/**
+ * Interface til pagineret resultat
+ */
+export interface PaginatedResult<T> {
+  data: T[];
+  meta: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+    hasNextPage: boolean;
+    hasPrevPage: boolean;
+  };
+}
+
+/**
+ * Base service der implementerer standard CRUD-operationer med soft delete-funktionalitet,
+ * sporing af brugerhandlinger (createdBy, updatedBy), samt filtrering, sortering og paginering.
  */
 export abstract class BaseService<T> {
   constructor(protected readonly prisma: PrismaService) {}
 
   /**
    * Finder alle poster af en bestemt model, ekskluderer slettede poster
-   * @param filter Valgfrit filter
-   * @returns Array af poster
+   * @param options Valgfrie indstillinger for paginering, sortering og filtrering
+   * @returns Array af poster eller pagineret resultat
    */
-  async findAll(filter: any = {}): Promise<T[]> {
-    return this.prisma[this.getModelName()].findMany({
-      where: { ...filter, deletedAt: null }
-    });
+  async findAll(options: PaginationOptions = {}): Promise<PaginatedResult<T>> {
+    const {
+      page = 1,
+      limit = 10,
+      sort = 'createdAt',
+      order = 'desc',
+      filter = {},
+      include = {}
+    } = options;
+
+    // Beregn skip-værdi for paginering
+    const skip = (page - 1) * limit;
+
+    // Opbyg where-betingelse med filter og ekskluder slettede poster
+    const where = {
+      ...filter,
+      deletedAt: null
+    };
+
+    // Opbyg orderBy-objekt
+    const orderBy = { [sort]: order };
+
+    // Hent data med paginering, sortering og filtrering
+    const [data, total] = await Promise.all([
+      this.prisma[this.getModelName()].findMany({
+        where,
+        orderBy,
+        skip,
+        take: limit,
+        include
+      }),
+      this.prisma[this.getModelName()].count({ where })
+    ]);
+
+    // Beregn metadata for paginering
+    const totalPages = Math.ceil(total / limit);
+
+    return {
+      data,
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages,
+        hasNextPage: page < totalPages,
+        hasPrevPage: page > 1
+      }
+    };
   }
 
   /**
    * Finder en post ud fra ID, ekskluderer slettede poster
    * @param id Post ID
+   * @param include Valgfrie relationer der skal inkluderes
    * @returns Post eller null hvis ikke fundet
    */
-  async findById(id: number): Promise<T | null> {
+  async findById(id: number, include: Record<string, any> = {}): Promise<T | null> {
     const item = await this.prisma[this.getModelName()].findUnique({
-      where: { id, deletedAt: null }
+      where: { id, deletedAt: null },
+      include
     });
 
     if (!item) {

@@ -15,6 +15,9 @@ import {
   HttpStatus,
   HttpCode,
   Request,
+  Query,
+  DefaultValuePipe,
+  ParseBoolPipe,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -23,6 +26,7 @@ import {
   ApiBearerAuth,
   ApiParam,
   ApiBody,
+  ApiQuery,
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
@@ -33,8 +37,10 @@ import {
   CreateSubjectAreaDto,
   UpdateSubjectAreaDto,
   SubjectAreaResponseDto,
+  PaginatedSubjectAreaResponseDto,
 } from './dto/subject-area/subject-area.dto';
 import { SubjectAreaService } from './services/subject-area.service';
+import { PaginatedResult } from '../common/services/base.service';
 
 // Udvid Express Request interface til at inkludere userId
 interface RequestWithUser extends Request {
@@ -46,18 +52,48 @@ interface RequestWithUser extends Request {
 export class SubjectAreaController {
   constructor(private readonly subjectAreaService: SubjectAreaService) {}
 
-  @ApiOperation({ summary: 'Hent alle fagområder' })
+  @ApiOperation({ summary: 'Hent alle fagområder med paginering, sortering og filtrering' })
+  @ApiQuery({ name: 'page', description: 'Sidenummer', type: Number, required: false })
+  @ApiQuery({ name: 'limit', description: 'Antal resultater per side', type: Number, required: false })
+  @ApiQuery({ name: 'sort', description: 'Felt der skal sorteres efter', type: String, required: false })
+  @ApiQuery({ name: 'order', description: 'Sorteringsretning (asc/desc)', enum: ['asc', 'desc'], required: false })
+  @ApiQuery({ name: 'filter', description: 'JSON-streng med filtreringsparametre', type: String, required: false })
+  @ApiQuery({ name: 'includeCourses', description: 'Inkluder kurser i resultatet', type: Boolean, required: false })
   @ApiResponse({
     status: 200,
-    description: 'Liste af alle fagområder',
-    type: [SubjectAreaDto],
+    description: 'Pagineret liste af fagområder',
+    type: PaginatedSubjectAreaResponseDto,
   })
+  @ApiResponse({ status: 400, description: 'Ugyldig anmodning - Fejl i filtreringsparametre' })
   @ApiResponse({ status: 500, description: 'Serverfejl' })
   @Get()
-  async getAllSubjectAreas(): Promise<SubjectAreaDto[]> {
+  async getAllSubjectAreas(
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
+    @Query('sort', new DefaultValuePipe('createdAt')) sort: string,
+    @Query('order', new DefaultValuePipe('desc')) order: 'asc' | 'desc',
+    @Query('filter') filterString?: string,
+    @Query('includeCourses', new DefaultValuePipe(false), ParseBoolPipe) includeCourses?: boolean,
+  ): Promise<PaginatedResult<SubjectAreaDto>> {
     try {
-      return await this.subjectAreaService.findAll();
+      // Parse filter hvis det er angivet
+      const filter = filterString ? JSON.parse(filterString) : {};
+      
+      // Opret include-objekt baseret på includeCourses
+      const include = { courses: includeCourses };
+
+      return await this.subjectAreaService.findAllSubjectAreas({
+        page,
+        limit,
+        sort,
+        order,
+        filter,
+        include,
+      });
     } catch (error) {
+      if (error instanceof SyntaxError) {
+        throw new BadRequestException('Ugyldigt filter-format. Skal være gyldig JSON.');
+      }
       console.error('Fejl ved hentning af fagområder:', error);
       throw new BadRequestException(
         'Der opstod en fejl ved hentning af fagområder',
@@ -65,8 +101,52 @@ export class SubjectAreaController {
     }
   }
 
+  @ApiOperation({ summary: 'Søg efter fagområder' })
+  @ApiQuery({ name: 'term', description: 'Søgeterm', type: String, required: true })
+  @ApiQuery({ name: 'page', description: 'Sidenummer', type: Number, required: false })
+  @ApiQuery({ name: 'limit', description: 'Antal resultater per side', type: Number, required: false })
+  @ApiQuery({ name: 'includeCourses', description: 'Inkluder kurser i resultatet', type: Boolean, required: false })
+  @ApiResponse({
+    status: 200,
+    description: 'Pagineret liste af fagområder der matcher søgningen',
+    type: PaginatedSubjectAreaResponseDto,
+  })
+  @ApiResponse({ status: 400, description: 'Ugyldig anmodning' })
+  @ApiResponse({ status: 500, description: 'Serverfejl' })
+  @Get('search')
+  async searchSubjectAreas(
+    @Query('term') searchTerm: string,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
+    @Query('includeCourses', new DefaultValuePipe(false), ParseBoolPipe) includeCourses?: boolean,
+  ): Promise<PaginatedResult<SubjectAreaDto>> {
+    try {
+      if (!searchTerm || searchTerm.trim() === '') {
+        throw new BadRequestException('Søgeterm er påkrævet');
+      }
+
+      // Opret include-objekt baseret på includeCourses
+      const include = { courses: includeCourses };
+
+      return await this.subjectAreaService.searchSubjectAreas(searchTerm, {
+        page,
+        limit,
+        include,
+      });
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+      console.error('Fejl ved søgning efter fagområder:', error);
+      throw new BadRequestException(
+        'Der opstod en fejl ved søgning efter fagområder',
+      );
+    }
+  }
+
   @ApiOperation({ summary: 'Hent et specifikt fagområde ud fra ID' })
   @ApiParam({ name: 'id', description: 'Fagområde ID', type: Number })
+  @ApiQuery({ name: 'includeCourses', description: 'Inkluder kurser i resultatet', type: Boolean, required: false })
   @ApiResponse({
     status: 200,
     description: 'Det angivne fagområde',
@@ -77,9 +157,13 @@ export class SubjectAreaController {
   @Get(':id')
   async getSubjectAreaById(
     @Param('id', ParseIntPipe) id: number,
+    @Query('includeCourses', new DefaultValuePipe(false), ParseBoolPipe) includeCourses?: boolean,
   ): Promise<SubjectAreaDto> {
     try {
-      return await this.subjectAreaService.findById(id);
+      // Opret include-objekt baseret på includeCourses
+      const include = { courses: includeCourses };
+      
+      return await this.subjectAreaService.findById(id, include);
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw error;
@@ -93,6 +177,7 @@ export class SubjectAreaController {
 
   @ApiOperation({ summary: 'Hent et specifikt fagområde ud fra slug' })
   @ApiParam({ name: 'slug', description: 'Fagområde slug', type: String })
+  @ApiQuery({ name: 'includeCourses', description: 'Inkluder kurser i resultatet', type: Boolean, required: false })
   @ApiResponse({
     status: 200,
     description: 'Det angivne fagområde',
@@ -103,9 +188,10 @@ export class SubjectAreaController {
   @Get('slug/:slug')
   async getSubjectAreaBySlug(
     @Param('slug') slug: string,
+    @Query('includeCourses', new DefaultValuePipe(false), ParseBoolPipe) includeCourses?: boolean,
   ): Promise<SubjectAreaDto> {
     try {
-      const subjectArea = await this.subjectAreaService.findBySlug(slug);
+      const subjectArea = await this.subjectAreaService.findBySlug(slug, includeCourses);
 
       if (!subjectArea) {
         throw new NotFoundException('Fagområdet blev ikke fundet');
