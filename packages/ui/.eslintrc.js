@@ -21,5 +21,7 @@ module.exports = {
   },
   rules: {
     "react/react-in-jsx-scope": "off",
+    // Deaktiver prop-types, da vi bruger TypeScript
+    "react/prop-types": "off",
   },
 };

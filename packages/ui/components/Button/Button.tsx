@@ -34,14 +34,14 @@ export interface ButtonProps {
 /**
  * Primary UI component for user interaction
  */
-export const Button: React.FC<ButtonProps> = ({
+export const Button = ({
   children = 'boo',
   onClick,
   variant = 'primary',
   size = 'medium',
   disabled = false,
   className = '',
-  type = 'button',
+  type = 'button' as const,
   ...props
 }) => {
   // Base classes
