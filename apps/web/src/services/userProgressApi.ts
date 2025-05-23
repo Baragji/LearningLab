@@ -30,12 +30,15 @@ export const updateQuizProgress = async (
     console.error('Error updating quiz progress:', error);
     
     // Implement offline support by storing the data locally
-    // This is a simplified version - in a real app, you would use a more robust solution
-    const offlineData = {
+    // Get the user ID from localStorage if available
+    const userDataStr = localStorage.getItem('userData');
+    const userId = userDataStr ? JSON.parse(userDataStr).id : 0;
+    
+    const offlineData: QueuedRequest = {
+      userId,
       quizId,
       score,
-      answers,
-      completedAt: new Date().toISOString(),
+      status: 'COMPLETED',
     };
     
     // Store in localStorage for later sync
@@ -46,7 +49,7 @@ export const updateQuizProgress = async (
     // Return a mock response
     return {
       id: 0,
-      userId: 0,
+      userId,
       quizId,
       status: 'COMPLETED',
       score,
@@ -56,29 +59,46 @@ export const updateQuizProgress = async (
   }
 };
 
+export interface QueuedRequest {
+  userId: number;
+  lessonId?: number;
+  quizId?: number;
+  status: string;
+  score?: number;
+  quizAttemptId?: number;
+}
+
 /**
  * Syncs offline quiz progress updates when the user comes back online
  */
-export const syncOfflineQuizUpdates = async (): Promise<void> => {
-  const offlineUpdates = JSON.parse(localStorage.getItem('offlineQuizUpdates') || '[]');
-  
-  if (offlineUpdates.length === 0) {
+export async function syncOfflineQuizUpdates() {
+  // Hent køen fra localStorage
+  const queued: QueuedRequest[] = 
+    JSON.parse(localStorage.getItem('offlineQuizUpdates') || '[]');
+
+  if (queued.length === 0) {
+    console.log('Ingen offline-opdateringer at synce.');
     return;
   }
-  
-  try {
-    // Process each offline update
-    for (const update of offlineUpdates) {
-      await apiClient.patch('/user-progress', update);
+
+  const failed: QueuedRequest[] = [];
+
+  for (const req of queued) {
+    try {
+      await apiClient.post('/user-progress', req);
+    } catch (err) {
+      console.error('Fejl ved sync af én opdatering:', err);
+      failed.push(req);
     }
-    
-    // Clear offline updates after successful sync
-    localStorage.removeItem('offlineQuizUpdates');
-  } catch (error) {
-    console.error('Error syncing offline quiz updates:', error);
-    // Keep the offline updates for the next sync attempt
   }
-};
+
+  // Opdater køen i localStorage med dem, der fejlede
+  if (failed.length > 0) {
+    localStorage.setItem('offlineQuizUpdates', JSON.stringify(failed));
+  } else {
+    localStorage.removeItem('offlineQuizUpdates');
+  }
+}
 
 /**
  * Gets the user's progress for a specific course

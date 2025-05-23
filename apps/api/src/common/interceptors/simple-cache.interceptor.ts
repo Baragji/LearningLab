@@ -28,21 +28,41 @@ export class SimpleCacheInterceptor implements NestInterceptor {
     }
 
     const request = context.switchToHttp().getRequest();
-    const cacheKey = `${request.method}_${request.url}`;
 
-    // Tjek om data findes i cachen
-    const cachedData = await this.cacheManager.get(cacheKey);
-    if (cachedData) {
-      this.logger.log(`Cache hit for ${cacheKey}`);
-      return of(cachedData);
+    // Skip cache for POST, PUT, DELETE, PATCH requests
+    if (['POST', 'PUT', 'DELETE', 'PATCH'].includes(request.method)) {
+      return next.handle();
     }
 
-    this.logger.log(`Cache miss for ${cacheKey}`);
+    const cacheKey = `${request.method}_${request.url}`;
+
+    try {
+      // Tjek om data findes i cachen
+      const cachedData = await this.cacheManager.get(cacheKey);
+      if (cachedData) {
+        this.logger.log(`Cache hit for ${cacheKey}`);
+        return of(cachedData);
+      }
+
+      this.logger.log(`Cache miss for ${cacheKey}`);
+    } catch (error) {
+      this.logger.error(
+        `Cache error: ${(error as Error).message || 'Unknown error'}`,
+      );
+      // Continue with the request even if cache fails
+    }
 
     // Hvis ikke i cache, hent data og gem i cache
     return next.handle().pipe(
       tap(async (data) => {
-        await this.cacheManager.set(cacheKey, data, this.ttl);
+        try {
+          await this.cacheManager.set(cacheKey, data, this.ttl);
+        } catch (error) {
+          this.logger.error(
+            `Cache set error: ${(error as Error).message || 'Unknown error'}`,
+          );
+          // Continue even if cache set fails
+        }
       }),
     );
   }

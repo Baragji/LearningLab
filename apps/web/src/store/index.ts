@@ -16,6 +16,12 @@ export function makeStore() {
 
 const store = makeStore();
 
+// Add get method to store for compatibility with some libraries
+store.get = function(key: string) {
+  const state = this.getState();
+  return state[key];
+};
+
 export type RootState = ReturnType<typeof store.getState>;
 
 export type AppDispatch = typeof store.dispatch;
