@@ -7,9 +7,15 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { LocalStrategy } from './strategies/local/local';
 import { JwtStrategy } from './strategies/jwt/jwt';
-import { ConfigModule as NestConfigModule } from '@nestjs/config';
+import { GoogleStrategy } from './strategies/google/google.strategy';
+import { GithubStrategy } from './strategies/github/github.strategy';
+import {
+  ConfigModule as NestConfigModule,
+  ConfigService,
+} from '@nestjs/config';
 import { PersistenceModule } from '../persistence/persistence.module';
 import { SharedModule } from '../shared/shared.module';
+import socialAuthConfig from '../config/social-auth.config';
 
 /**
  * AuthModule håndterer autentificering og autorisation i applikationen.
@@ -27,11 +33,19 @@ import { SharedModule } from '../shared/shared.module';
       signOptions: { expiresIn: process.env.JWT_EXPIRES_IN || '1d' },
     }),
     SharedModule, // Importér SharedModule i stedet for at konfigurere JwtModule direkte
+    NestConfigModule.forFeature(socialAuthConfig), // Tilføj social auth config
     NestConfigModule, // global via AppModule, but imported here for clarity
     PersistenceModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService, LocalStrategy, JwtStrategy],
+  providers: [
+    AuthService,
+    LocalStrategy,
+    JwtStrategy,
+    // Social login strategier er deaktiveret indtil de skal bruges i produktion
+    // GoogleStrategy,
+    // GithubStrategy,
+  ],
   exports: [AuthService, JwtModule],
 })
 export class AuthModule {}

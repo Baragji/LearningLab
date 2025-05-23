@@ -10,7 +10,7 @@ datasource db {
 model User {
   id                   Int       @id @default(autoincrement())
   email                String    @unique
-  passwordHash         String
+  passwordHash         String?   // Gjort valgfri for social login
   name                 String?
   role                 Role      @default(STUDENT)
   createdAt            DateTime  @default(now())
@@ -27,6 +27,15 @@ model User {
   bio          String?
   socialLinks  Json?
   settings     Json?
+
+  // Social login fields
+  googleId     String?  @unique
+  githubId     String?  @unique
+  provider     AuthProvider?
+  lastLogin    DateTime?
+
+  // User groups
+  groups       UserGroup[] @relation("UserToGroup")
 
   createdContentBlocks ContentBlock[] @relation("ContentBlockCreatedByUser")
   updatedContentBlocks ContentBlock[] @relation("ContentBlockUpdatedByUser")
@@ -136,4 +145,24 @@ enum ContentBlockType {
   IMAGE_URL
   VIDEO_URL
   QUIZ_REF
+}
+
+enum AuthProvider {
+  LOCAL
+  GOOGLE
+  GITHUB
+}
+
+model UserGroup {
+  id          Int       @id @default(autoincrement())
+  name        String    @unique
+  description String?
+  permissions Json?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+  createdBy   Int?
+  updatedBy   Int?
+  
+  users       User[]    @relation("UserToGroup")
 }

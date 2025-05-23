@@ -6,7 +6,6 @@ import {
   StartQuizAttemptInput,
   SubmitAnswerInput,
   CompleteQuizAttemptInput,
-  User,
 } from '@repo/core';
 
 const prisma = new PrismaClient();

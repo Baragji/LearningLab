@@ -91,7 +91,7 @@ export function LoginScreen() {
 
           {/* Fejlmeddelelse for formularen */}
           {formError && (
-            <div className="p-3 text-sm text-red-700 bg-red-100 border border-red-400 rounded-md">
+            <div role="alert" className="p-3 text-sm text-red-700 bg-red-100 border border-red-400 rounded-md">
               {formError}
             </div>
           )}

@@ -34,7 +34,11 @@
   "dependencies": {
     "@nestjs/config": "^4.0.2",
     "@types/axios": "^0.14.4",
+    "@types/passport-github2": "^1.2.9",
+    "@types/passport-google-oauth20": "^2.0.16",
     "axios": "^1.9.0",
+    "passport-github2": "^0.1.12",
+    "passport-google-oauth20": "^2.0.0",
     "reflect-metadata": "^0.2.2"
   },
   "engines": {

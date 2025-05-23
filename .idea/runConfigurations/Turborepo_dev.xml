@@ -1,13 +1,13 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Turborepo: dev" type="js.build_tools.npm" factoryName="npm" singleton="false" nameIsGenerated="false">
-    <package-json value="$ProjectFileDir$/package.json" />
+  <configuration default="false" name="Turborepo: dev" type="js.build_tools.npm">
+    <package-json value="$PROJECT_DIR$/package.json" />
     <command value="run" />
     <scripts>
-      <script value="turbo" />
+      <script value="dev" />
     </scripts>
-    <arguments value="dev --scope=$Prompt$" />
+    <arguments value="run dev --filter=&quot;$Prompt$&quot;" />
     <node-interpreter value="project" />
-    <package-manager value="yarn" />
+    <package-manager value="$PROJECT_DIR$/.yarn/releases/yarn-4.9.1.cjs" />
     <envs />
     <method v="2" />
   </configuration>

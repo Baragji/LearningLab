@@ -1,6 +1,9 @@
 // apps/api/src/app.module.ts
 import { Module, MiddlewareConsumer, NestModule } from '@nestjs/common';
-import { ConfigService as NestConfigService } from '@nestjs/config';
+import {
+  ConfigModule as NestConfigModule,
+  ConfigService as NestConfigService,
+} from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ErrorTestController } from './controllers/error-test.controller';
@@ -9,7 +12,6 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { ThrottlerModule } from '@nestjs/throttler';
 // Import Middlewares
-import { CsrfMiddleware } from './common/middleware/csrf.middleware';
 import { UserIdentificationMiddleware } from './common/middleware/user-identification.middleware';
 import { CoursesModule } from './controllers/courses.module';
 import { ModulesModule } from './controllers/modules.module';
@@ -20,6 +22,7 @@ import { QuizAttemptsModule } from './controllers/quizAttempts.module';
 import { UserProgressModule } from './controllers/userProgress.module';
 import { SubjectAreasModule } from './controllers/subjectAreas.module';
 import { PensumModule } from './controllers/pensum.module';
+import { UserGroupsModule } from './user-groups/user-groups.module';
 import { SharedModule } from './shared/shared.module';
 import { CommonModule } from './common/common.module';
 import { CacheModule } from '@nestjs/cache-manager';
@@ -29,6 +32,8 @@ import { ConfigModule } from './config/config.module';
 // Import ConfigService
 import { ConfigService } from './config/config.service';
 import { JwtService } from '@nestjs/jwt';
+// Import social auth config
+import socialAuthConfig from './config/social-auth.config';
 // Midlertidigt deaktiveret pga. problemer med import
 // import {
 //   serverSchema,
@@ -39,6 +44,9 @@ import { JwtService } from '@nestjs/jwt';
 @Module({
   imports: [
     ConfigModule,
+
+    // Registrer social auth config
+    NestConfigModule.forFeature(socialAuthConfig),
 
     // Registrer CacheModule globalt med faste værdier og memory store
     CacheModule.register({
@@ -58,6 +66,7 @@ import { JwtService } from '@nestjs/jwt';
     PersistenceModule,
     UsersModule,
     AuthModule,
+    UserGroupsModule, // Tilføj UserGroupsModule
     CoursesModule,
     ModulesModule,
     LessonsModule,

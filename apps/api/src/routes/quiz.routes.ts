@@ -6,7 +6,7 @@ import * as quizAttemptController from '../controllers/quizAttempt.controller';
 import * as userProgressController from '../controllers/userProgress.controller';
 import { authenticateJWT, authorizeAdmin } from '../middleware/auth.middleware';
 
-const router = express.Router();
+const router: express.Router = express.Router();
 
 // Quiz routes
 router.get('/quizzes', quizController.getAllQuizzes);

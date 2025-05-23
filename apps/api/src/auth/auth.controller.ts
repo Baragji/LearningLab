@@ -9,6 +9,8 @@ import {
   HttpStatus,
   Body,
   ValidationPipe,
+  Res,
+  Req,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -16,11 +18,17 @@ import {
   ApiResponse,
   ApiBearerAuth,
   ApiBody,
+  ApiExcludeEndpoint,
 } from '@nestjs/swagger';
+import { Response } from 'express';
+import { ConfigService } from '@nestjs/config';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { LoginThrottlerGuard } from './guards/login-throttler.guard';
+// Social login guards er deaktiveret indtil de skal bruges i produktion
+// import { GoogleAuthGuard } from './guards/google-auth.guard';
+// import { GithubAuthGuard } from './guards/github-auth.guard';
 import { User as CoreUser } from '@repo/core'; // Importer CoreUser fra @repo/core
 import { LoginDto } from './dto/login.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
@@ -36,7 +44,10 @@ interface AuthenticatedRequest extends globalThis.Request {
 @ApiTags('Authentication')
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private configService: ConfigService,
+  ) {}
 
   @ApiOperation({ summary: 'Log ind med email og password' })
   @ApiBody({ type: LoginDto })
@@ -166,4 +177,65 @@ export class AuthController {
   ): Promise<{ access_token: string }> {
     return this.authService.refreshToken(refreshTokenDto.refresh_token);
   }
+
+  // Social login endpoints er deaktiveret indtil de skal bruges i produktion
+  /*
+  // Google Auth endpoints
+  @ApiOperation({ summary: 'Start Google OAuth login flow' })
+  @ApiResponse({
+    status: 302,
+    description: 'Redirect til Google login',
+  })
+  @Get('google')
+  @UseGuards(GoogleAuthGuard)
+  googleAuth() {
+    // Guard redirecter til Google
+    return { msg: 'Google Authentication' };
+  }
+
+  @ApiExcludeEndpoint() // Skjul fra Swagger da det er en callback URL
+  @Get('google/callback')
+  @UseGuards(GoogleAuthGuard)
+  async googleAuthCallback(
+    @Req() req: AuthenticatedRequest,
+    @Res() res: Response,
+  ) {
+    const tokens = await this.authService.login(req.user);
+    const frontendURL = this.configService.get<string>('socialAuth.frontendURL');
+    
+    // Redirect til frontend med tokens som query params
+    return res.redirect(
+      `${frontendURL}/auth/social-callback?access_token=${tokens.access_token}&refresh_token=${tokens.refresh_token}`,
+    );
+  }
+
+  // GitHub Auth endpoints
+  @ApiOperation({ summary: 'Start GitHub OAuth login flow' })
+  @ApiResponse({
+    status: 302,
+    description: 'Redirect til GitHub login',
+  })
+  @Get('github')
+  @UseGuards(GithubAuthGuard)
+  githubAuth() {
+    // Guard redirecter til GitHub
+    return { msg: 'GitHub Authentication' };
+  }
+
+  @ApiExcludeEndpoint() // Skjul fra Swagger da det er en callback URL
+  @Get('github/callback')
+  @UseGuards(GithubAuthGuard)
+  async githubAuthCallback(
+    @Req() req: AuthenticatedRequest,
+    @Res() res: Response,
+  ) {
+    const tokens = await this.authService.login(req.user);
+    const frontendURL = this.configService.get<string>('socialAuth.frontendURL');
+    
+    // Redirect til frontend med tokens som query params
+    return res.redirect(
+      `${frontendURL}/auth/social-callback?access_token=${tokens.access_token}&refresh_token=${tokens.refresh_token}`,
+    );
+  }
+  */
 }

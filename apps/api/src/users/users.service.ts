@@ -3,6 +3,7 @@ import {
   Injectable,
   ConflictException,
   InternalServerErrorException,
+  BadRequestException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../persistence/prisma/prisma.service';
@@ -14,7 +15,12 @@ import {
   User as PrismaGeneratedUserType,
   Role as PrismaGeneratedRoleType,
 } from '@prisma/client';
-import { User as CoreUser, Role as CoreRole, Role } from '@repo/core';
+import {
+  User as CoreUser,
+  Role as CoreRole,
+  Role,
+  AuthProvider,
+} from '@repo/core';
 import { ServerEnv } from '@repo/config';
 
 @Injectable()
@@ -26,13 +32,13 @@ export class UsersService {
     private configService: ConfigService<ServerEnv, true>,
   ) {
     const saltFromEnv = this.configService.get('SALT_ROUNDS', { infer: true });
-    if (typeof saltFromEnv !== 'number') {
+    if (typeof saltFromEnv === 'number') {
+      this.saltRounds = saltFromEnv;
+    } else {
       console.warn(
         `SALT_ROUNDS var ikke et tal i ConfigService, falder tilbage til 10. Værdi: ${saltFromEnv}`,
       );
       this.saltRounds = 10;
-    } else {
-      this.saltRounds = saltFromEnv;
     }
   }
 
@@ -40,12 +46,14 @@ export class UsersService {
     user: PrismaGeneratedUserType,
   ): Omit<CoreUser, 'passwordHash'> {
     const {
-      passwordHash,
-      passwordResetToken,
-      passwordResetExpires,
+      passwordHash: _passwordHash,
+      passwordResetToken: _passwordResetToken,
+      passwordResetExpires: _passwordResetExpires,
       ...result
     } = user;
-    return {
+
+    // Opret et objekt med de grundlæggende brugerfelter
+    const coreUser: Partial<CoreUser> = {
       ...result,
       name: result.name ?? undefined,
       role: user.role as CoreRole,
@@ -56,11 +64,35 @@ export class UsersService {
       createdAt: new Date(user.createdAt),
       updatedAt: new Date(user.updatedAt),
     };
+
+    // Tilføj social login felter hvis de findes i Prisma-skemaet
+    // Bemærk: Vi tjekker om felterne eksisterer på user-objektet
+    if ('googleId' in user) {
+      coreUser.googleId = (user as any).googleId ?? undefined;
+    }
+
+    if ('githubId' in user) {
+      coreUser.githubId = (user as any).githubId ?? undefined;
+    }
+
+    if ('provider' in user) {
+      coreUser.provider = (user as any).provider as AuthProvider | undefined;
+    }
+
+    if ('lastLogin' in user) {
+      coreUser.lastLogin = (user as any).lastLogin
+        ? new Date((user as any).lastLogin)
+        : undefined;
+    }
+
+    return coreUser as Omit<CoreUser, 'passwordHash'>;
   }
 
   async create(
     createUserDto: CreateUserDto,
+    currentUserId?: number,
   ): Promise<Omit<CoreUser, 'passwordHash'>> {
+    // Destrukturering af createUserDto
     const {
       email,
       password,
@@ -82,30 +114,53 @@ export class UsersService {
       );
     }
 
-    let hashedPassword;
-    try {
-      hashedPassword = await bcrypt.hash(password, this.saltRounds);
-    } catch (error) {
-      console.error('Fejl under hashing af password:', error);
-      throw new InternalServerErrorException(
-        'Der opstod en intern fejl under brugeroprettelse (hashing).',
-      );
+    // Opret data objekt til Prisma
+    const userData: any = {
+      email,
+      name: name || null,
+      role:
+        (role as unknown as PrismaGeneratedRoleType) ||
+        ('STUDENT' as PrismaGeneratedRoleType),
+      profileImage: profileImage || null,
+      bio: bio || null,
+      socialLinks: socialLinks || null,
+      settings: settings || null,
+      createdBy: currentUserId || null,
+      updatedBy: currentUserId || null,
+    };
+
+    // Social login er deaktiveret indtil det skal bruges i produktion
+    // Vi fjerner alle social login felter fra userData for at undgå Prisma-fejl
+
+    // Bemærk: Vi har fjernet følgende felter:
+    // - googleId
+    // - githubId
+    // - provider
+    // - lastLogin
+
+    // Når social login skal aktiveres igen, skal Prisma-skemaet opdateres med disse felter,
+    // og derefter skal Prisma-klienten regenereres.
+
+    // Hvis password er angivet, hash det (for normal login)
+    if (password) {
+      try {
+        userData.passwordHash = await bcrypt.hash(password, this.saltRounds);
+        // Social login er deaktiveret, så vi fjerner provider-feltet
+        // userData.provider = AuthProvider.LOCAL;
+      } catch (error) {
+        console.error('Fejl under hashing af password:', error);
+        throw new InternalServerErrorException(
+          'Der opstod en intern fejl under brugeroprettelse (hashing).',
+        );
+      }
+    } else {
+      // Password er påkrævet, da social login er deaktiveret
+      throw new BadRequestException('Password er påkrævet for login.');
     }
 
     try {
       const prismaUser = await this.prisma.user.create({
-        data: {
-          email,
-          passwordHash: hashedPassword,
-          name: name || null,
-          role:
-            (role as unknown as PrismaGeneratedRoleType) ||
-            ('STUDENT' as PrismaGeneratedRoleType),
-          profileImage: profileImage || null,
-          bio: bio || null,
-          socialLinks: socialLinks || null,
-          settings: settings || null,
-        },
+        data: userData,
       });
       return this.mapToCoreUser(prismaUser);
     } catch (error) {
@@ -173,7 +228,10 @@ export class UsersService {
     if (password) {
       try {
         // Tilføj passwordHash til updateData
-        (updateData as any).passwordHash = await bcrypt.hash(password, this.saltRounds);
+        (updateData as any).passwordHash = await bcrypt.hash(
+          password,
+          this.saltRounds,
+        );
       } catch (error) {
         console.error('Fejl under hashing af password:', error);
         throw new InternalServerErrorException(
@@ -258,5 +316,118 @@ export class UsersService {
       where: { id },
       data: updateData,
     });
+  }
+
+  async findUsersByRoleAndIds(
+    role: Role,
+    ids: number[],
+  ): Promise<PrismaGeneratedUserType[]> {
+    return this.prisma.user.findMany({
+      where: {
+        id: { in: ids },
+        role: role as PrismaGeneratedRoleType,
+        deletedAt: null,
+      },
+    });
+  }
+
+  async bulkInvite(
+    invitations: { email: string; name?: string; role: Role }[],
+    currentUserId?: number,
+  ): Promise<{ success: boolean; count: number; failed: string[] }> {
+    const results = {
+      success: true,
+      count: 0,
+      failed: [] as string[],
+    };
+
+    // Generer et tilfældigt password for hver bruger
+    const generateRandomPassword = () => {
+      const length = 12;
+      const charset =
+        'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+';
+      let password = '';
+      for (let i = 0; i < length; i++) {
+        const randomIndex = Math.floor(Math.random() * charset.length);
+        password += charset[randomIndex];
+      }
+      return password;
+    };
+
+    // Behandl hver invitation
+    for (const invitation of invitations) {
+      try {
+        // Tjek om brugeren allerede eksisterer
+        const existingUser = await this.findOneByEmail(invitation.email);
+        if (existingUser) {
+          results.failed.push(`${invitation.email} (eksisterer allerede)`);
+          continue;
+        }
+
+        // Opret bruger med tilfældigt password
+        const password = generateRandomPassword();
+        const createUserDto = {
+          email: invitation.email,
+          password,
+          name: invitation.name,
+          role: invitation.role,
+        };
+
+        await this.create(createUserDto, currentUserId);
+        results.count++;
+
+        // Her kunne man implementere afsendelse af invitation via email
+        // med det genererede password
+        // await this.emailService.sendInvitation(invitation.email, password);
+      } catch (error) {
+        console.error(`Fejl ved invitation af ${invitation.email}:`, error);
+        results.failed.push(invitation.email);
+        results.success = false;
+      }
+    }
+
+    return results;
+  }
+
+  async bulkDelete(
+    userIds: number[],
+    currentUserId?: number,
+  ): Promise<{ success: boolean; count: number }> {
+    const results = {
+      success: true,
+      count: 0,
+    };
+
+    try {
+      // Soft delete alle brugere på én gang
+      const result = await this.prisma.user.updateMany({
+        where: {
+          id: { in: userIds },
+          deletedAt: null, // Kun slet brugere, der ikke allerede er slettet
+        },
+        data: {
+          deletedAt: new Date(),
+          updatedBy: currentUserId || null,
+        },
+      });
+
+      results.count = result.count;
+    } catch (error) {
+      console.error('Fejl ved bulk-sletning af brugere:', error);
+      results.success = false;
+    }
+
+    return results;
+  }
+
+  async bulkGet(userIds: number[]): Promise<Omit<CoreUser, 'passwordHash'>[]> {
+    const users = await this.prisma.user.findMany({
+      where: {
+        id: { in: userIds },
+        deletedAt: null,
+      },
+    });
+
+    return users.map((user) => this.mapToCoreUser(user));
   }
 }
