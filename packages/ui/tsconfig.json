@@ -8,6 +8,6 @@
     "declaration": true, // God praksis for pakker der refereres til
     "declarationMap": true // God praksis for pakker der refereres til
   },
-  "include": ["index.tsx", "components/**/*.tsx", "components/**/*.ts"], // Updated to include actual source files with proper extensions
+  "include": ["index.tsx", "components/**/*.tsx", "src/types/**/*.d.ts" , "components/**/*.ts"], // Updated to include actual source files with proper extensions
   "exclude": ["dist", "build", "node_modules"]
 }

@@ -1,54 +1,78 @@
-Sammenfatning og anbefalinger
-Baseret på min analyse og de ændringer, vi har foretaget, kan jeg give dig følgende svar på dine specifikke spørgsmål:
+/bin/zsh -c "cd /Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab && yarn build"
+Console output is saving to: /Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/.zencoder/Zencoder-65bb7545-9101-46c3-95f4-154f6c7fea03.log
+turbo 2.5.3
 
-A. Installation af @types/jest
-@types/jest var allerede installeret i både root package.json og i apps/api/package.json. I et monorepo-setup som dit er det bedst at have det installeret på begge niveauer:
+• Packages in scope: @repo/config, @repo/core, api, create-solid-wow, tsconfig, ui, web
+• Running build in 7 packages
+• Remote caching disabled
+@repo/core:build: cache hit (outputs already on disk), replaying logs a2dc8b4385eb7710
+@repo/config:build: cache hit (outputs already on disk), replaying logs 374b7a5dfc2a46c1
+create-solid-wow:build: cache hit (outputs already on disk), replaying logs a8d0527cf522d05f
+@repo/config:build:
+@repo/config:build:
+create-solid-wow:build:
+create-solid-wow:build:
+@repo/core:build:
+@repo/core:build:
+api:build: cache hit (outputs already on disk), replaying logs ee52f37af1c06bbb
+api:build:
+api:build: Environment variables loaded from .env
+api:build: Prisma schema loaded from prisma/schema.prisma
+api:build:
+api:build: ✔ Generated Prisma Client (v5.22.0) to ./../../node_modules/@prisma/client in 380ms
+api:build:
+api:build: Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+api:build:
+api:build: Tip: Interested in query caching in just a few lines of code? Try Accelerate today! https://pris.ly/tip-3-accelerate
+api:build:
+web:build: cache miss, executing 2c522dcacab35a85
+web:build:
+web:build: - info Loaded env from /Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/apps/web/.env.local
+web:build: - info Loaded env from /Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/apps/web/.env
+- info Linting and checking validity of types ..- warn TypeScript project references are not fully supported. Attempting to build in incremental mode.
+- info Linting and checking validity of types
+- info Creating an optimized production build
+web:build: - info Compiled successfully
+- info Collecting page data
+[=   ] - info Generating static pages (5/26)TypeError: Cannot read properties of null (reading 'useState')
+web:build:     at exports.useState (/Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/apps/web/.next/server/chunks/893.js:52:234)
+web:build:     at NotificationProvider (/Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/apps/web/.next/server/pages/ui-examples.js:1410:65)
+web:build:     at Wc (/Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom-server.browser.production.min.js:68:44)
+web:build:     at Zc (/Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom-server.browser.production.min.js:70:253)
+web:build:     at Z (/Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom-server.browser.production.min.js:76:89)
+web:build:     at $c (/Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom-server.browser.production.min.js:78:98)
+web:build:     at Zc (/Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom-server.browser.production.min.js:71:145)
+web:build:     at Z (/Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom-server.browser.production.min.js:76:89)
+web:build:     at $c (/Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom-server.browser.production.min.js:78:98)
+web:build:     at bd (/Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom-server.browser.production.min.js:77:404)
+web:build:
+web:build: Error occurred prerendering page "/ui-examples". Read more: https://nextjs.org/docs/messages/prerender-error
+web:build: TypeError: Cannot read properties of null (reading 'useState')
+web:build:     at exports.useState (/Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/apps/web/.next/server/chunks/893.js:52:234)
+web:build:     at NotificationProvider (/Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/apps/web/.next/server/pages/ui-examples.js:1410:65)
+web:build:     at Wc (/Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom-server.browser.production.min.js:68:44)
+web:build:     at Zc (/Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom-server.browser.production.min.js:70:253)
+web:build:     at Z (/Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom-server.browser.production.min.js:76:89)
+web:build:     at $c (/Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom-server.browser.production.min.js:78:98)
+web:build:     at Zc (/Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom-server.browser.production.min.js:71:145)
+web:build:     at Z (/Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom-server.browser.production.min.js:76:89)
+web:build:     at $c (/Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom-server.browser.production.min.js:78:98)
+web:build:     at bd (/Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/node_modules/react-dom/cjs/react-dom-server.browser.production.min.js:77:404)
+- info Generating static pages (26/26)
+web:build:
+web:build: > Export encountered errors on following paths:
+web:build:      /ui-examples
+web:build:
+web:build: ERROR: command finished with error: command (/Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/apps/web) /private/var/folders/x2/f1vmvt6j2t33s61mh088mvfr0000gn/T/xfs-7700406e/yarn run build exited (1)
+web#build: command (/Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/apps/web) /private/var/folders/x2/f1vmvt6j2t33s61mh088mvfr0000gn/T/xfs-7700406e/yarn run build exited (1)
 
-I root package.json som en dev-dependency (hvilket du allerede havde)
-I de specifikke workspace package.json-filer, der indeholder tests (hvilket du også allerede havde for API-appen)
-Dette sikrer, at typedefinitionerne er tilgængelige både for root-projektet og for de enkelte workspaces.
+ Tasks:    4 successful, 5 total
+Cached:    4 cached, 5 total
+  Time:    41.647s
+Failed:    web#build
 
-B. Opdatering af tsconfig.json-filer
-Vi har opdateret følgende tsconfig.json-filer:
+ ERROR  run failed: command  exited (1)
 
-apps/api/tsconfig.json: Tilføjet "jest" til "types"-arrayet
-packages/tsconfig/nestjs.json: Tilføjet et "types"-array med "node" og "jest"
-Dette sikrer, at Jest-typerne er tilgængelige i alle NestJS-apps, der udvider nestjs.json-konfigurationen.
+Process finished with exit code 1
 
-C. Andre konfigurationsændringer
-Der var ikke behov for yderligere ændringer i jest.config.js eller lignende filer, da Jest-konfigurationen allerede var korrekt defineret i apps/api/package.json.
-
-D. Verificering af ændringerne
-Vi har verificeret, at ændringerne har løst problemerne ved at:
-
-Køre TypeScript-kompilatoren på API-appen uden fejl
-Køre lint-checks, som kun viste advarsler (ikke relateret til Jest)
-Køre Jest-tests, som alle passerede uden TypeScript-fejl
-Bedste praksis for TypeScript og Jest i et Turborepo-setup
-Her er nogle bedste praksis for at sikre, at TypeScript og Jest spiller godt sammen i et Turborepo-setup:
-
-Installer @types/jest i både root og workspace package.json-filer
-
-Dette sikrer, at typedefinitionerne er tilgængelige overalt
-Tilføj "jest" til "types"-arrayet i relevante tsconfig.json-filer
-
-I root tsconfig.json (hvis det indeholder tests)
-I workspace-specifikke tsconfig.json-filer
-I delte tsconfig.json-filer (som nestjs.json)
-Brug konsistente Jest-konfigurationer på tværs af workspaces
-
-Definer fælles Jest-konfigurationer i delte pakker
-Udvid disse konfigurationer i workspace-specifikke Jest-konfigurationer
-Undgå --skipLibCheck når muligt
-
-Som du nævnte, er det bedre at have en korrekt konfiguration end at bruge --skipLibCheck
-Dette sikrer, at alle typefejl fanges under kompilering
-Håndter lint-advarsler
-
-Overvej at løse de lint-advarsler, der blev vist under lint-checket
-Dette vil forbedre kodekvaliteten og gøre det lettere at identificere reelle problemer
-Konklusion
-Med de ændringer, vi har foretaget, er Jest-relaterede TypeScript-fejl nu løst i dit Turborepo-setup. Du kan nu kompilere og køre tests uden at bruge --skipLibCheck-flaget, hvilket var dit mål.
-
-Der er stadig nogle lint-advarsler relateret til ubrugte variabler og imports, men disse er ikke kritiske for funktionaliteten og kan løses separat, hvis du ønsker det.
 

@@ -8,12 +8,12 @@ module.exports = {
   // Override the content paths with more specific ones for this app
   content: [
     // Include UI components from packages - be more specific to avoid node_modules
-    "../../packages/ui/src/**/*.{js,ts,jsx,tsx}",
-    "../../packages/ui/components/**/*.{js,ts,jsx,tsx}",
+    "../../packages/ui/src/**/*.{js,ts,jsx,tsx,css}",
+    "../../packages/ui/components/**/*.{js,ts,jsx,tsx,css}",
     // Local app files
-    "./src/**/*.{js,ts,jsx,tsx}",
-    "./pages/**/*.{js,ts,jsx,tsx}",
-    "./components/**/*.{js,ts,jsx,tsx}",
+    "./src/**/*.{js,ts,jsx,tsx,css}",
+    "./pages/**/*.{js,ts,jsx,tsx,css}",
+    "./components/**/*.{js,ts,jsx,tsx,css}",
   ],
   // Minimal safelist - only include what's absolutely necessary
   safelist: [
@@ -37,16 +37,107 @@ module.exports = {
           750: '#2d3748', // Adding the custom gray-750 color
         },
       },
+      backdropSaturate: {
+        '0': '0',
+        '50': '.5',
+        '100': '1',
+        '150': '1.5',
+        '200': '2',
+      },
+      animation: {
+        // Animations for replacing Framer Motion
+        fadeIn: 'fadeIn 0.3s ease-in-out forwards',
+        fadeOut: 'fadeOut 0.2s ease-in-out forwards',
+        scaleIn: 'scaleIn 0.3s ease-out forwards',
+        scaleOut: 'scaleOut 0.2s ease-in forwards',
+        slideDown: 'slideDown 0.3s ease-out forwards',
+        slideUp: 'slideUp 0.2s ease-in forwards',
+        rotateIn: 'rotateIn 0.5s ease-out forwards',
+        fadeInDown: 'fadeInDown 0.4s ease-out forwards',
+        fadeInSlideRight: 'fadeInSlideRight 0.4s ease-out forwards',
+        menuAppear: 'menuAppear 0.2s ease-out forwards',
+        // Notification specific animations
+        'notification-enter': 'notification-enter 0.3s cubic-bezier(0.21, 1.02, 0.73, 1) forwards',
+        'notification-exit': 'notification-exit 0.3s cubic-bezier(0.06, 0.71, 0.55, 1) forwards',
+      },
+      keyframes: {
+        fadeIn: {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' },
+        },
+        fadeOut: {
+          '0%': { opacity: '1' },
+          '100%': { opacity: '0' },
+        },
+        scaleIn: {
+          '0%': { transform: 'scale(0.8)', opacity: '0' },
+          '100%': { transform: 'scale(1)', opacity: '1' },
+        },
+        scaleOut: {
+          '0%': { transform: 'scale(1)', opacity: '1' },
+          '100%': { transform: 'scale(0.8)', opacity: '0' },
+        },
+        slideDown: {
+          '0%': { height: '0', opacity: '0' },
+          '100%': { height: 'auto', opacity: '1' },
+        },
+        slideUp: {
+          '0%': { height: 'auto', opacity: '1' },
+          '100%': { height: '0', opacity: '0' },
+        },
+        rotateIn: {
+          '0%': { transform: 'rotate(-90deg)' },
+          '100%': { transform: 'rotate(0)' },
+        },
+        fadeInDown: {
+          '0%': { opacity: '0', transform: 'translateY(-10px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+        fadeInSlideRight: {
+          '0%': { opacity: '0', transform: 'translateX(-5px)' },
+          '100%': { opacity: '1', transform: 'translateX(0)' },
+        },
+        menuAppear: {
+          '0%': { opacity: '0', transform: 'scale(0.95) translateY(-10px)' },
+          '100%': { opacity: '1', transform: 'scale(1) translateY(0)' },
+        },
+        'notification-enter': {
+          '0%': { transform: 'translateY(16px)', opacity: '0' },
+          '100%': { transform: 'translateY(0)', opacity: '1' },
+        },
+        'notification-exit': {
+          '0%': { transform: 'translateY(0)', opacity: '1' },
+          '100%': { transform: 'translateY(-16px)', opacity: '0' },
+        },
+        progress: {
+          '0%': { width: '100%' },
+          '100%': { width: '0%' },
+        },
+      },
     },
   },
   // Optimizations for production
   future: {
     hoverOnlyWhenSupported: true, // Reduces CSS by only applying hover styles on devices that support hover
   },
+  // Tilføj custom utilities
+  plugins: [
+    function({ addUtilities }) {
+      const newUtilities = {
+        '.transform-origin-top': {
+          'transform-origin': 'top center',
+        },
+        '.transform-origin-bottom': {
+          'transform-origin': 'bottom center',
+        },
+      }
+      addUtilities(newUtilities)
+    }
+  ],
   // Disable unused core plugins to reduce bundle size
   corePlugins: {
     // Disable plugins that you don't use
-    // Enable backdropBlur for glassmorphism effect
+    // Enable backdropBlur and backdropSaturate for glassmorphism effect
     backdropBlur: true,
     backdropBrightness: false,
     backdropContrast: false,
@@ -54,7 +145,7 @@ module.exports = {
     backdropHueRotate: false,
     backdropInvert: false,
     backdropOpacity: false,
-    backdropSaturate: false,
+    backdropSaturate: true, // Enable for glassmorphism effect
     backdropSepia: false,
     rotate: false,
     skew: false,
@@ -75,9 +166,10 @@ module.exports = {
     borderOpacity: true, // Enable for glassmorphism
     divideOpacity: false,
     placeholderOpacity: false,
-    ringOpacity: false,
-    ringOffsetWidth: false,
-    ringOffsetColor: false,
+    ringOpacity: true, // Enable for focus rings
+    ring: true, // Enable for focus rings
+    ringOffsetWidth: true, // Enable for focus rings
+    ringOffsetColor: true, // Enable for focus rings
     boxShadowColor: false,
     gradientColorStops: false,
     mixBlendMode: false,
