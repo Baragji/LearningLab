@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const nodeExternals = require('webpack-node-externals');
 const { RunScriptWebpackPlugin } = require('run-script-webpack-plugin');
-const { PnpWebpackPlugin } = require('pnp-webpack-plugin');
+const webpack = require('webpack');
 
-module.exports = function (options, webpack) {
+// Eksporter en funktion med den korrekte signatur som NestJS CLI forventer
+module.exports = function (options, webpackInstance) {
   return {
     ...options,
     entry: ['webpack/hot/poll?100', options.entry],
@@ -13,24 +14,10 @@ module.exports = function (options, webpack) {
         modulesDir: '../../node_modules',
       }),
     ],
-    resolve: {
-      ...options.resolve,
-      plugins: [
-        ...(options.resolve?.plugins || []),
-        PnpWebpackPlugin,
-      ],
-    },
-    resolveLoader: {
-      ...options.resolveLoader,
-      plugins: [
-        ...(options.resolveLoader?.plugins || []),
-        PnpWebpackPlugin.moduleLoader(module),
-      ],
-    },
     plugins: [
       ...options.plugins,
-      new webpack.HotModuleReplacementPlugin(),
-      new webpack.WatchIgnorePlugin({
+      new webpackInstance.HotModuleReplacementPlugin(),
+      new webpackInstance.WatchIgnorePlugin({
         paths: [/\.js$/, /\.d\.ts$/],
       }),
       new RunScriptWebpackPlugin({ name: options.output.filename }),
