@@ -15,10 +15,39 @@ model User {
   passwordHash         String
   role                 Role           @default(USER)
   updatedAt            DateTime       @updatedAt
+  deletedAt            DateTime?
   passwordResetExpires DateTime?
   passwordResetToken   String?        @unique
   quizAttempts         QuizAttempt[]
   progress             UserProgress[]
+
+  // Relations for createdBy and updatedBy
+  createdByUser   User?   @relation("CreatedByUser", fields: [createdBy], references: [id])
+  createdBy       Int?
+  updatedByUser   User?   @relation("UpdatedByUser", fields: [updatedBy], references: [id])
+  updatedBy       Int?
+
+  // Self-relations
+  createdUsers    User[]  @relation("CreatedByUser")
+  updatedUsers    User[]  @relation("UpdatedByUser")
+
+  // Relations for created and updated entities
+  createdSubjectAreas   SubjectArea[]  @relation("SubjectAreaCreatedByUser")
+  updatedSubjectAreas   SubjectArea[]  @relation("SubjectAreaUpdatedByUser")
+  createdCourses        Course[]       @relation("CourseCreatedByUser")
+  updatedCourses        Course[]       @relation("CourseUpdatedByUser")
+  createdModules        Module[]       @relation("ModuleCreatedByUser")
+  updatedModules        Module[]       @relation("ModuleUpdatedByUser")
+  createdLessons        Lesson[]       @relation("LessonCreatedByUser")
+  updatedLessons        Lesson[]       @relation("LessonUpdatedByUser")
+  createdContentBlocks  ContentBlock[] @relation("ContentBlockCreatedByUser")
+  updatedContentBlocks  ContentBlock[] @relation("ContentBlockUpdatedByUser")
+  createdQuizzes        Quiz[]         @relation("QuizCreatedByUser")
+  updatedQuizzes        Quiz[]         @relation("QuizUpdatedByUser")
+  createdQuestions      Question[]     @relation("QuestionCreatedByUser")
+  updatedQuestions      Question[]     @relation("QuestionUpdatedByUser")
+  createdAnswerOptions  AnswerOption[] @relation("AnswerOptionCreatedByUser")
+  updatedAnswerOptions  AnswerOption[] @relation("AnswerOptionUpdatedByUser")
 }
 
 model SubjectArea {
@@ -27,7 +56,14 @@ model SubjectArea {
   slug      String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  deletedAt DateTime?
   courses   Course[]
+
+  // Relations for createdBy and updatedBy
+  createdByUser   User?   @relation("SubjectAreaCreatedByUser", fields: [createdBy], references: [id])
+  createdBy       Int?
+  updatedByUser   User?   @relation("SubjectAreaUpdatedByUser", fields: [updatedBy], references: [id])
+  updatedBy       Int?
 }
 
 model Course {
@@ -38,8 +74,15 @@ model Course {
   subjectAreaId Int
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
+  deletedAt     DateTime?
   subjectArea   SubjectArea @relation(fields: [subjectAreaId], references: [id])
   modules       Module[]
+
+  // Relations for createdBy and updatedBy
+  createdByUser   User?   @relation("CourseCreatedByUser", fields: [createdBy], references: [id])
+  createdBy       Int?
+  updatedByUser   User?   @relation("CourseUpdatedByUser", fields: [updatedBy], references: [id])
+  updatedBy       Int?
 }
 
 model Module {
@@ -50,9 +93,16 @@ model Module {
   courseId    Int
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  deletedAt   DateTime?
   lessons     Lesson[]
   course      Course   @relation(fields: [courseId], references: [id])
   quizzes     Quiz[]   @relation("ModuleQuizzes")
+
+  // Relations for createdBy and updatedBy
+  createdByUser   User?   @relation("ModuleCreatedByUser", fields: [createdBy], references: [id])
+  createdBy       Int?
+  updatedByUser   User?   @relation("ModuleUpdatedByUser", fields: [updatedBy], references: [id])
+  updatedBy       Int?
 }
 
 model Lesson {
@@ -63,10 +113,17 @@ model Lesson {
   moduleId      Int
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
+  deletedAt     DateTime?
   contentBlocks ContentBlock[]
   module        Module         @relation(fields: [moduleId], references: [id])
   quizzes       Quiz[]         @relation("LessonQuizzes")
   userProgress  UserProgress[] @relation("LessonProgress")
+
+  // Relations for createdBy and updatedBy
+  createdByUser   User?   @relation("LessonCreatedByUser", fields: [createdBy], references: [id])
+  createdBy       Int?
+  updatedByUser   User?   @relation("LessonUpdatedByUser", fields: [updatedBy], references: [id])
+  updatedBy       Int?
 }
 
 model ContentBlock {
@@ -77,7 +134,14 @@ model ContentBlock {
   lessonId  Int
   createdAt DateTime         @default(now())
   updatedAt DateTime         @updatedAt
+  deletedAt DateTime?
   lesson    Lesson           @relation(fields: [lessonId], references: [id])
+
+  // Relations for createdBy and updatedBy
+  createdByUser   User?   @relation("ContentBlockCreatedByUser", fields: [createdBy], references: [id])
+  createdBy       Int?
+  updatedByUser   User?   @relation("ContentBlockUpdatedByUser", fields: [updatedBy], references: [id])
+  updatedBy       Int?
 }
 
 model Quiz {
@@ -88,11 +152,18 @@ model Quiz {
   moduleId     Int?
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
+  deletedAt    DateTime?
   questions    Question[]
   lesson       Lesson?        @relation("LessonQuizzes", fields: [lessonId], references: [id])
   module       Module?        @relation("ModuleQuizzes", fields: [moduleId], references: [id])
   attempts     QuizAttempt[]
   userProgress UserProgress[] @relation("QuizProgress")
+
+  // Relations for createdBy and updatedBy
+  createdByUser   User?   @relation("QuizCreatedByUser", fields: [createdBy], references: [id])
+  createdBy       Int?
+  updatedByUser   User?   @relation("QuizUpdatedByUser", fields: [updatedBy], references: [id])
+  updatedBy       Int?
 }
 
 model Question {
@@ -102,9 +173,16 @@ model Question {
   quizId        Int
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
+  deletedAt     DateTime?
   answerOptions AnswerOption[]
   quiz          Quiz           @relation(fields: [quizId], references: [id])
   userAnswers   UserAnswer[]
+
+  // Relations for createdBy and updatedBy
+  createdByUser   User?   @relation("QuestionCreatedByUser", fields: [createdBy], references: [id])
+  createdBy       Int?
+  updatedByUser   User?   @relation("QuestionUpdatedByUser", fields: [updatedBy], references: [id])
+  updatedBy       Int?
 }
 
 model AnswerOption {
@@ -114,8 +192,15 @@ model AnswerOption {
   questionId  Int
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
+  deletedAt   DateTime?
   question    Question     @relation(fields: [questionId], references: [id])
   userAnswers UserAnswer[]
+
+  // Relations for createdBy and updatedBy
+  createdByUser   User?   @relation("AnswerOptionCreatedByUser", fields: [createdBy], references: [id])
+  createdBy       Int?
+  updatedByUser   User?   @relation("AnswerOptionUpdatedByUser", fields: [updatedBy], references: [id])
+  updatedBy       Int?
 }
 
 model QuizAttempt {
@@ -127,6 +212,7 @@ model QuizAttempt {
   completedAt DateTime?
   createdAt   DateTime       @default(now())
   updatedAt   DateTime       @updatedAt
+  deletedAt   DateTime?
   quiz        Quiz           @relation(fields: [quizId], references: [id])
   user        User           @relation(fields: [userId], references: [id])
   userAnswers UserAnswer[]
@@ -141,6 +227,7 @@ model UserAnswer {
   inputText              String?
   createdAt              DateTime      @default(now())
   updatedAt              DateTime      @updatedAt
+  deletedAt              DateTime?
   question               Question      @relation(fields: [questionId], references: [id])
   quizAttempt            QuizAttempt   @relation(fields: [quizAttemptId], references: [id])
   selectedAnswerOption   AnswerOption? @relation(fields: [selectedAnswerOptionId], references: [id])
@@ -156,6 +243,7 @@ model UserProgress {
   quizAttemptId Int?
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
+  deletedAt     DateTime?
   lesson        Lesson?        @relation("LessonProgress", fields: [lessonId], references: [id])
   quizAttempt   QuizAttempt?   @relation(fields: [quizAttemptId], references: [id])
   quiz          Quiz?          @relation("QuizProgress", fields: [quizId], references: [id])
