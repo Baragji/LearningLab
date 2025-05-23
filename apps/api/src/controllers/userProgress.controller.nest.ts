@@ -522,4 +522,173 @@ export class UserProgressController {
       );
     }
   }
+
+  @ApiOperation({ summary: 'Hent fremskridt for alle kurser for den aktuelle bruger' })
+  @ApiResponse({
+    status: 200,
+    description: 'Liste af fremskridt for alle kurser',
+    type: [CourseProgressDto],
+  })
+  @ApiResponse({ status: 401, description: 'Ikke autoriseret' })
+  @ApiResponse({ status: 500, description: 'Serverfejl' })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Get('courses')
+  async getAllCoursesProgress(@Request() req): Promise<CourseProgressDto[]> {
+    const userId = req.user?.id;
+
+    if (!userId) {
+      throw new UnauthorizedException('Ikke autoriseret');
+    }
+
+    try {
+      // Hent alle kurser
+      const courses = await this.prisma.course.findMany({
+        include: {
+          modules: {
+            include: {
+              lessons: true,
+              quizzes: true,
+            },
+          },
+        },
+      });
+
+      // Hent brugerens fremskridt
+      const userProgress = await this.prisma.userProgress.findMany({
+        where: { userId },
+      });
+
+      // Beregn fremskridt for hvert kursus
+      const coursesProgress: CourseProgressDto[] = [];
+
+      for (const course of courses) {
+        const lessonIds: number[] = [];
+        const quizIds: number[] = [];
+
+        course.modules.forEach((module) => {
+          module.lessons.forEach((lesson) => lessonIds.push(lesson.id));
+          module.quizzes.forEach((quiz) => quizIds.push(quiz.id));
+        });
+
+        // Find fremskridt for dette kursus
+        const courseProgress = userProgress.filter(
+          (p) =>
+            (p.lessonId && lessonIds.includes(p.lessonId)) ||
+            (p.quizId && quizIds.includes(p.quizId)),
+        );
+
+        const totalItems = lessonIds.length + quizIds.length;
+        const completedItems = courseProgress.filter(
+          (p) => p.status === ProgressStatus.COMPLETED,
+        ).length;
+        const inProgressItems = courseProgress.filter(
+          (p) => p.status === ProgressStatus.IN_PROGRESS,
+        ).length;
+
+        const percentageComplete =
+          totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 0;
+
+        coursesProgress.push({
+          courseId: course.id,
+          totalItems,
+          completedItems,
+          inProgressItems,
+          percentageComplete,
+          status:
+            percentageComplete === 100
+              ? ProgressStatus.COMPLETED
+              : percentageComplete > 0
+                ? ProgressStatus.IN_PROGRESS
+                : ProgressStatus.NOT_STARTED,
+          detailedProgress: courseProgress,
+        });
+      }
+
+      return coursesProgress;
+    } catch (error) {
+      console.error(`Fejl ved hentning af fremskridt for alle kurser:`, error);
+      throw new BadRequestException(
+        'Der opstod en fejl ved hentning af fremskridt',
+      );
+    }
+  }
+
+  @ApiOperation({ summary: 'Hent statistik for den aktuelle bruger' })
+  @ApiResponse({
+    status: 200,
+    description: 'Brugerstatistik med XP og quiz-resultater',
+    schema: {
+      type: 'object',
+      properties: {
+        totalXp: { type: 'number' },
+        quizResults: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              quizId: { type: 'number' },
+              quizTitle: { type: 'string' },
+              score: { type: 'number' },
+              completedAt: { type: 'string', format: 'date-time' },
+            },
+          },
+        },
+      },
+    },
+  })
+  @ApiResponse({ status: 401, description: 'Ikke autoriseret' })
+  @ApiResponse({ status: 500, description: 'Serverfejl' })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Get('statistics')
+  async getUserStatistics(@Request() req): Promise<{ totalXp: number; quizResults: any[] }> {
+    const userId = req.user?.id;
+
+    if (!userId) {
+      throw new UnauthorizedException('Ikke autoriseret');
+    }
+
+    try {
+      // Hent bruger
+      const user = await this.prisma.user.findUnique({
+        where: { id: userId },
+      });
+      
+      // Håndter tilfælde hvor xp-feltet ikke eksisterer endnu
+      const userXp = user && 'xp' in user ? user.xp : 0;
+
+      // Hent quiz-forsøg med score
+      const quizAttempts = await this.prisma.quizAttempt.findMany({
+        where: { userId },
+        orderBy: { completedAt: 'desc' },
+        include: {
+          quiz: {
+            select: {
+              id: true,
+              title: true,
+            },
+          },
+        },
+      });
+
+      // Formatér quiz-resultater
+      const quizResults = quizAttempts.map((attempt) => ({
+        quizId: attempt.quizId,
+        quizTitle: attempt.quiz.title,
+        score: attempt.score,
+        completedAt: attempt.completedAt,
+      }));
+
+      return {
+        totalXp: userXp,
+        quizResults,
+      };
+    } catch (error) {
+      console.error(`Fejl ved hentning af brugerstatistik:`, error);
+      throw new BadRequestException(
+        'Der opstod en fejl ved hentning af brugerstatistik',
+      );
+    }
+  }
 }

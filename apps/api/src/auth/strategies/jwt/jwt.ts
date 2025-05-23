@@ -26,13 +26,21 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   private mapToCoreUser(user: PrismaUser): Omit<CoreUser, 'passwordHash'> {
-    const { passwordHash, passwordResetToken, passwordResetExpires, ...rest } =
-      user;
+    const {
+      passwordHash,
+      passwordResetToken,
+      passwordResetExpires,
+      socialLinks,
+      settings,
+      ...rest
+    } = user;
     return {
       ...rest,
       role: user.role as CoreRole,
       createdAt: new Date(user.createdAt),
       updatedAt: new Date(user.updatedAt),
+      socialLinks: socialLinks as Record<string, string> | null,
+      settings: settings as Record<string, unknown> | null,
     };
   }
 
