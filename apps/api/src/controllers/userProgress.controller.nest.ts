@@ -523,7 +523,9 @@ export class UserProgressController {
     }
   }
 
-  @ApiOperation({ summary: 'Hent fremskridt for alle kurser for den aktuelle bruger' })
+  @ApiOperation({
+    summary: 'Hent fremskridt for alle kurser for den aktuelle bruger',
+  })
   @ApiResponse({
     status: 200,
     description: 'Liste af fremskridt for alle kurser',
@@ -642,7 +644,9 @@ export class UserProgressController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Get('statistics')
-  async getUserStatistics(@Request() req): Promise<{ totalXp: number; quizResults: any[] }> {
+  async getUserStatistics(
+    @Request() req,
+  ): Promise<{ totalXp: number; quizResults: any[] }> {
     const userId = req.user?.id;
 
     if (!userId) {
@@ -654,7 +658,7 @@ export class UserProgressController {
       const user = await this.prisma.user.findUnique({
         where: { id: userId },
       });
-      
+
       // Håndter tilfælde hvor xp-feltet ikke eksisterer endnu
       const userXp = user && 'xp' in user ? user.xp : 0;
 

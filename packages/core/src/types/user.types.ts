@@ -11,6 +11,16 @@ export enum Role {
 }
 
 /**
+ * Definerer de mulige autentificeringsmetoder.
+ * Disse matcher værdierne defineret i Prisma schemaet.
+ */
+export enum AuthProvider {
+  LOCAL = 'LOCAL',
+  GOOGLE = 'GOOGLE',
+  GITHUB = 'GITHUB',
+}
+
+/**
  * Interface for en bruger.
  * Dette er en ren data-kontrakt og indeholder ikke backend-specifikke felter som passwordHash.
  * Den er beregnet til at blive brugt på tværs af frontend og backend for type-sikkerhed.
@@ -27,10 +37,33 @@ export interface User {
   socialLinks?: Record<string, string> | null; // Sociale links som et objekt (f.eks. {twitter: "url", linkedin: "url"})
   settings?: Record<string, unknown> | null; // Brugerindstillinger som et objekt
   
+  // Social login felter
+  googleId?: string | null;
+  githubId?: string | null;
+  provider?: AuthProvider | null;
+  lastLogin?: Date | null;
+  
+  // Brugergrupper
+  groups?: UserGroup[] | null;
+  
   createdAt: Date; // Tidspunkt for oprettelse af brugeren
   updatedAt: Date; // Tidspunkt for seneste opdatering af brugeren
   deletedAt?: Date | null; // Tidspunkt for soft delete af brugeren
   
   // passwordResetToken, passwordResetExpires og passwordHash er udeladt,
   // da de er backend-specifikke og ikke bør være en del af den delte kerne-type.
+}
+
+/**
+ * Interface for en brugergruppe.
+ */
+export interface UserGroup {
+  id: number;
+  name: string;
+  description?: string | null;
+  permissions?: Record<string, unknown> | null;
+  users?: User[] | null;
+  createdAt: Date;
+  updatedAt: Date;
+  deletedAt?: Date | null;
 }

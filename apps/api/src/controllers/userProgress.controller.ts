@@ -2,7 +2,7 @@
 
 import { Request, Response } from 'express';
 import { PrismaClient, ProgressStatus } from '@prisma/client';
-import { User, Role } from '@repo/core';
+import { Role } from '@repo/core';
 
 const prisma = new PrismaClient();
 

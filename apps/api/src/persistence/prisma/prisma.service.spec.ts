@@ -1,6 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PrismaService } from './prisma.service';
-import { type PrismaClient } from '@prisma/client';
 import { OnModuleInit } from '@nestjs/common';
 
 // Stubbed methods

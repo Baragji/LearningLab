@@ -2,7 +2,6 @@
 services:
   - type: web
     name: api-service
-    env: node
     rootDir: apps/api
     plan: free
     region: frankfurt
@@ -13,7 +12,7 @@ services:
       yarn workspace api prisma generate
       # 🚀 Bygger core, config og api i korrekt rækkefølge
       npx turbo run build --filter=...api
-      # 🗄 Kør databasmigrationer
+      # 🗄 Kør databasemigrationer
       yarn workspace api prisma migrate deploy
 
     startCommand: node dist/main.js

@@ -8,7 +8,7 @@ import * as lessonController from '../controllers/lesson.controller';
 import * as contentBlockController from '../controllers/contentBlock.controller';
 import { authenticateJWT, authorizeAdmin } from '../middleware/auth.middleware';
 
-const router = express.Router();
+const router: express.Router = express.Router();
 
 // Subject Area routes
 router.get('/subject-areas', subjectAreaController.getAllSubjectAreas);

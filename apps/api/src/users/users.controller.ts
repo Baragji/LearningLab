@@ -16,6 +16,7 @@ import {
   ParseIntPipe,
   NotFoundException,
   ForbiddenException,
+  BadRequestException,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -29,6 +30,9 @@ import {
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { BulkInviteUsersDto } from './dto/bulk-invite-users.dto';
+import { BulkDeleteUsersDto } from './dto/bulk-delete-users.dto';
+import { BulkGetUsersDto } from './dto/bulk-get-users.dto';
 // Importer CoreUser og Role fra @repo/core for returtypen
 import { User as CoreUser, Role } from '@repo/core';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -292,5 +296,132 @@ export class UsersController {
     }
 
     await this.usersService.softDelete(id, currentUser.id);
+  }
+
+  @ApiOperation({ summary: 'Inviter flere brugere på én gang' })
+  @ApiBody({ type: BulkInviteUsersDto })
+  @ApiResponse({
+    status: 201,
+    description: 'Brugere inviteret succesfuldt',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Ugyldig anmodning - Valideringsfejl',
+  })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
+  @Post('bulk-invite')
+  @UsePipes(
+    new ValidationPipe({
+      transform: true,
+      whitelist: true,
+      forbidNonWhitelisted: true,
+    }),
+  )
+  @HttpCode(HttpStatus.CREATED)
+  async bulkInvite(
+    @Body() bulkInviteUsersDto: BulkInviteUsersDto,
+    @CurrentUser() currentUser: Omit<CoreUser, 'passwordHash'>,
+  ): Promise<{ success: boolean; count: number; failed: string[] }> {
+    if (
+      !bulkInviteUsersDto.invitations ||
+      bulkInviteUsersDto.invitations.length === 0
+    ) {
+      throw new BadRequestException('Ingen brugere at invitere');
+    }
+
+    return this.usersService.bulkInvite(
+      bulkInviteUsersDto.invitations,
+      currentUser.id,
+    );
+  }
+
+  @ApiOperation({ summary: 'Slet flere brugere på én gang' })
+  @ApiBody({ type: BulkDeleteUsersDto })
+  @ApiResponse({
+    status: 200,
+    description: 'Brugere slettet succesfuldt',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Ugyldig anmodning - Valideringsfejl',
+  })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
+  @Post('bulk-delete')
+  @UsePipes(
+    new ValidationPipe({
+      transform: true,
+      whitelist: true,
+      forbidNonWhitelisted: true,
+    }),
+  )
+  async bulkDelete(
+    @Body() bulkDeleteUsersDto: BulkDeleteUsersDto,
+    @CurrentUser() currentUser: Omit<CoreUser, 'passwordHash'>,
+  ): Promise<{ success: boolean; count: number }> {
+    if (
+      !bulkDeleteUsersDto.userIds ||
+      bulkDeleteUsersDto.userIds.length === 0
+    ) {
+      throw new BadRequestException('Ingen brugere at slette');
+    }
+
+    // Tjek om der er administratorer blandt de brugere, der skal slettes
+    const adminUsers = await this.usersService.findUsersByRoleAndIds(
+      Role.ADMIN,
+      bulkDeleteUsersDto.userIds,
+    );
+
+    if (adminUsers.length > 0) {
+      // Tjek om der er mindst én administrator, der ikke bliver slettet
+      const { total } = await this.usersService.findAll(
+        1,
+        1,
+        undefined,
+        Role.ADMIN,
+      );
+      if (total <= adminUsers.length) {
+        throw new ForbiddenException('Kan ikke slette alle administratorer');
+      }
+    }
+
+    return this.usersService.bulkDelete(
+      bulkDeleteUsersDto.userIds,
+      currentUser.id,
+    );
+  }
+
+  @ApiOperation({ summary: 'Hent flere brugere på én gang baseret på ID' })
+  @ApiBody({ type: BulkGetUsersDto })
+  @ApiResponse({
+    status: 200,
+    description: 'Brugere hentet succesfuldt',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Ugyldig anmodning - Valideringsfejl',
+  })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN, Role.TEACHER)
+  @Post('bulk-get')
+  @UsePipes(
+    new ValidationPipe({
+      transform: true,
+      whitelist: true,
+      forbidNonWhitelisted: true,
+    }),
+  )
+  async bulkGet(
+    @Body() bulkGetUsersDto: BulkGetUsersDto,
+  ): Promise<Omit<CoreUser, 'passwordHash'>[]> {
+    if (!bulkGetUsersDto.userIds || bulkGetUsersDto.userIds.length === 0) {
+      throw new BadRequestException("Ingen bruger-ID'er angivet");
+    }
+
+    return this.usersService.bulkGet(bulkGetUsersDto.userIds);
   }
 }

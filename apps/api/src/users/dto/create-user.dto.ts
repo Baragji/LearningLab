@@ -12,7 +12,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { Role } from '@repo/core'; // Importer Role enum fra @repo/core
+import { Role, AuthProvider } from '@repo/core'; // Importer Role og AuthProvider enums fra @repo/core
 import { Type } from 'class-transformer';
 
 export class CreateUserDto {
@@ -33,11 +33,11 @@ export class CreateUserDto {
   })
   @IsString({ message: 'Password skal være en streng.' })
   @MinLength(8, { message: 'Password skal være mindst 8 tegn langt.' })
-  @IsNotEmpty({ message: 'Password må ikke være tomt.' })
   @Matches(/((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {
     message:
       'Passwordet er for svagt. Det skal indeholde store og små bogstaver, tal og/eller specialtegn.',
   })
+  @IsNotEmpty({ message: 'Password må ikke være tom.' })
   password: string;
 
   @ApiPropertyOptional({
@@ -101,4 +101,10 @@ export class CreateUserDto {
   @IsObject({ message: 'Indstillinger skal være et objekt.' })
   @IsOptional()
   settings?: Record<string, any>;
+
+  // Social login er deaktiveret indtil det skal bruges i produktion
+  // Følgende felter er fjernet:
+  // - googleId
+  // - githubId
+  // - provider
 }

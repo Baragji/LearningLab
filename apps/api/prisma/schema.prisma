@@ -28,6 +28,9 @@ model User {
   
   quizAttempts         QuizAttempt[]
   progress             UserProgress[]
+  
+  // User groups relation
+  groups               UserGroup[]    @relation("UserToUserGroup")
 
   // Relations for createdBy and updatedBy
   createdByUser   User?   @relation("CreatedByUser", fields: [createdBy], references: [id])
@@ -56,6 +59,10 @@ model User {
   updatedQuestions      Question[]     @relation("QuestionUpdatedByUser")
   createdAnswerOptions  AnswerOption[] @relation("AnswerOptionCreatedByUser")
   updatedAnswerOptions  AnswerOption[] @relation("AnswerOptionUpdatedByUser")
+  
+  // User groups created and updated
+  createdUserGroups     UserGroup[]    @relation("UserGroupCreatedByUser")
+  updatedUserGroups     UserGroup[]    @relation("UserGroupUpdatedByUser")
 }
 
 model SubjectArea {
@@ -304,4 +311,23 @@ enum CourseStatus {
   DRAFT
   PUBLISHED
   ARCHIVED
+}
+
+model UserGroup {
+  id          Int       @id @default(autoincrement())
+  name        String    @unique
+  description String?
+  permissions Json?     // Gemmer tilladelser som JSON (f.eks. {canManageUsers: true, canManageCourses: true})
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+  
+  // Relation til brugere
+  users       User[]    @relation("UserToUserGroup")
+  
+  // Relations for createdBy and updatedBy
+  createdByUser   User?   @relation("UserGroupCreatedByUser", fields: [createdBy], references: [id])
+  createdBy       Int?
+  updatedByUser   User?   @relation("UserGroupUpdatedByUser", fields: [updatedBy], references: [id])
+  updatedBy       Int?
 }
