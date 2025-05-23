@@ -1,0 +1,72 @@
+
+{
+  "projectNavn": "LearningLab",
+  "beskrivelse": "En fuldstack monorepo læringsplatform bygget med Turborepo, NestJS (backend), Next.js (frontend) og Prisma ORM med PostgreSQL.",
+  "version": "0.1.0 (igangværende udvikling)",
+  "nodeVersion": "20.12.2",
+  "packageManager": {
+    "name": "Yarn",
+    "version": "4.9.1"
+  },
+  "buildTools": [
+    {"name": "Turborepo", "version": "2.3.5"},
+    {"name": "TypeScript", "version": "^5.3.3 (primært i apps), ^5.1.6 (i nogle packages)"},
+    "Webpack (via NestJS CLI & Next.js)",
+    "Tailwind CSS"
+  ],
+  "hovedsprog": ["TypeScript", "JavaScript"],
+  "rammeværk": {
+    "backend": {"name": "NestJS", "version": "^10.3.10"},
+    "frontend": {"name": "Next.js", "version": "^14.1.0"}
+  },
+  "orm": {
+    "name": "Prisma",
+    "versionCLI": "^5.22.0",
+    "versionClient": "^5.22.0"
+  },
+  "database": "PostgreSQL",
+  "workspaces": [
+    "apps/api",
+    "apps/web",
+    "packages/config",
+    "packages/core",
+    "packages/ui",
+    "packages/tsconfig",
+    "packages/create-solid-wow"
+  ],
+  "styling": ["Tailwind CSS", "CSS Modules (potentielt via Next.js/React)"],
+  "testing": {
+    "unitIntegration": ["Jest", "Supertest (for NestJS e2e)"],
+    "e2e": ["Playwright"]
+  },
+  "ciCd": {
+    "platform": "GitHub Actions",
+    "codeQuality": "Qodana"
+  },
+  "docker": {
+    "bruges": true,
+    "filer": ["Dockerfile.api", "docker-compose.yml", "render.yaml"]
+  },
+  "bemærkelsesværdigeBiblioteker": [
+    {"name": "React", "version": "^18.2.0"},
+    {"name": "@nestjs/swagger", "version": "^7.4.0"},
+    {"name": "axios", "version": "^1.9.0"},
+    {"name": "Redux Toolkit (RTK Query)", "version": "^1.9.5"},
+    {"name": "Zod", "version": "varierer/ikke specificeret i uddrag"},
+    {"name": "class-validator", "version": "^0.14.1"},
+    {"name": "class-transformer", "version": "^0.5.1"}
+  ],
+  "miljøvariabler": [
+    "DATABASE_URL", "JWT_SECRET", "JWT_EXPIRES_IN", "SALT_ROUNDS", "PORT", "NODE_ENV",
+    "NEXT_PUBLIC_APP_NAME", "NEXT_PUBLIC_API_URL", "NEXT_PUBLIC_WS_URL",
+    "POSTGRES_USER", "POSTGRES_PASSWORD", "POSTGRES_DB", "CI", "QODANA_TOKEN"
+  ],
+  "apiDokumentation": "Swagger (via @nestjs/swagger)",
+  "projektStruktur": "Monorepo (Turborepo)",
+  "åbneSpørgsmål": [
+    "Er .env.example template filer leveret for alle services?",
+    "Strategi for håndtering af produktionshemmeligheder (f.eks. Doppler, Vault)?",
+    "Playwright test scope og detaljeret konfiguration.",
+    "Detaljer for Qodana-konfiguration (fra qodana.yaml?)."
+  ]
+}
