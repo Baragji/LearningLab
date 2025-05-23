@@ -1,41 +1,85 @@
-# Udviklingsplan (Development Plan)
+## Kort svar
 
-## Fase 1: Grundlæggende Infrastruktur (Basic Infrastructure)
-- Opsætning af monorepo struktur med Turborepo
-- Konfiguration af NestJS backend
-- Konfiguration af NextJS frontend
-- Opsætning af PostgreSQL database med Prisma ORM
-- Implementering af grundlæggende brugerautentifikation
+Ja – de foreslåede tiltag stemmer overens med din kodebase, dit stack og anerkendte bedste praksisser, men med et par justeringer:
 
-## Fase 2: Kernefeatures (Core Features)
-- Brugeradministration (User Management)
-- Quiz-modul med forskellige spørgsmålstyper
-- Resultatsystem og pointberegning
-- Administratorpanel til at oprette og redigere quizzer
+1. **create-solid-wow** har allerede `typescript` og `@types/node` som dev-dependencies, så du behøver ikke tilføje dem igen . I stedet skal du rette dit `tsconfig.json`’s `lib`-felt (f.eks. til `["ES2018","DOM"]`) eller fjerne `lib` helt, så de globale typer (Array, Boolean osv.) automatisk inkluderes .
 
-## Fase 3: Avancerede Features (Advanced Features)
-- Implementering af real-time funktionalitet med WebSockets
-- Sociale funktioner (deling, kommentarer, likes)
-- Statistik og analyseværktøjer
-- Personaliserede læringsforløb baseret på brugerens præstationer
+2. **apps/api** mangler de byggerværktøjer, du ønsker at bruge (Webpack, ts-loader, HMR). Metadata angiver klart `ts-loader` ^9.4.4 under build-tools , så det er helt korrekt at tilføje:
 
-## Fase 4: Optimering og Skalering (Optimization and Scaling)
-- Performance-optimering af frontend og backend
-- Implementering af caching-strategier
-- Skalering af infrastruktur til at håndtere flere brugere
-- Forbedring af sikkerhed og databeskyttelse
+   ```bash
+   yarn workspace api add -D webpack webpack-cli ts-loader webpack-dev-server webpack-hot-middleware
+   ```
 
-## Fase 5: Udvidelse og Integration (Expansion and Integration)
-- Integration med tredjepartstjenester (Google, Facebook, etc.)
-- Udvikling af mobile apps (iOS og Android)
-- Implementering af betalingsgateway for premium-funktioner
-- Internationalisering og lokalisering
+   Dermed løses både `Can't resolve 'ts-loader'` og `webpack/hot/poll?100` .
 
-## Tidsplan (Timeline)
-- Fase 1: 2 måneder
-- Fase 2: 3 måneder
-- Fase 3: 4 måneder
-- Fase 4: 2 måneder
-- Fase 5: 5 måneder
+3. **apps/web** fejler, fordi der ikke findes en gyldig `apps/web/package.json` og fordi Next.js ikke er deklareret. Ifølge din metadata kører frontend på Next.js 13.4.12 , så opret i `apps/web/package.json` mindst:
 
-Total estimeret udviklingstid: 16 måneder
+   ```json
+   {
+     "name": "web",
+     "version": "1.0.0",
+     "private": true,
+     "dependencies": {
+       "next": "13.4.12",
+       "react": "18.x",
+       "react-dom": "18.x"
+     },
+     "scripts": {
+       "dev": "next dev",
+       "build": "next build",
+       "start": "next start",
+       "lint": "next lint"
+     }
+   }
+   ```
+
+   Herefter vil `next-route-loader`-fejlen og “No file content” forsvinde .
+
+---
+
+## Detaljeret gennemgang
+
+### 1. create-solid-wow og globale typer
+
+Din `packages/create-solid-wow/package.json` indeholder allerede:
+
+```json
+"devDependencies": {
+  "@types/node": "^18.11.9",
+  "typescript": "^4.9.3",
+  /* … */
+}
+```
+
+Det betyder, at selve TS-pakken er til stede under PnP . Fejlen
+
+```
+TS2318: Cannot find global type 'Array'…  
+The file …/node_modules/typescript/lib/lib.es2018.d.ts not found.
+```
+
+skyldes udelukkende, at du kun har `"lib": ["ES2018"]` i `tsconfig.json`, hvilket ekskluderer de basale standardbiblioteker. Bedste praksis er enten at **udvide** med `"DOM"` eller at **fjerne** `lib`-feltet, så TS bruger standardlisten .
+
+### 2. apps/api: Webpack, ts-loader og HMR
+
+Dine runtime-logs viser, at verifikation af `ts-loader` og `webpack/hot/poll?100` fejler under opløsning, fordi `apps/api/package.json` ikke har disse som dependencies . Metadataen fra repomix bekræfter, at **ts-loader** er en del af dit build-stack . Derfor er det helt korrekt at:
+
+* Tilføje **webpack**, **ts-loader** og HMR-pakker som dev-dependencies
+* Sikre i `webpack.config.js` eller `webpack-hmr.config.js` at du bruger `pnp-webpack-plugin` til PnP-opløsning
+
+Dette følger både din egen struktur og Yarn PnP’s krav til eksplicit deklarerede peer-dependencies.
+
+### 3. apps/web: Next.js-opsætning
+
+Det er konsistent med din repomix-metadata, at frontend kører på **Next.js 13.4.12** med React 18 . Manglende `apps/web/package.json` og deklaration af `next` forklarer fejlene
+
+```
+No file content for apps/web/package.json  
+Can't resolve 'next-route-loader'
+```
+
+. Ved at oprette en komplet `package.json` med passende dependencies og scripts, aktiverer du Next.js’ egne build-loaders under PnP.
+
+---
+
+**Konklusion:** Med de præcise justeringer af `tsconfig.json` i **create-solid-wow** og tilføjelsen af de korrekte dependencies i **apps/api** og **apps/web**, er løsningen fuldt på linje med din kodebase, dit stack og bedste praksis for Yarn PnP-monorepoer.

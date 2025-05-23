@@ -1,0 +1,172 @@
+Baseret på min analyse af din kodebase og de fejl, der opstår under yarn build, vil jeg nu lave en præcis plan for at løse dine build-fejl, tilpasset dit specifikke stack og afhængigheder.
+
+Best Practice Plan til at Løse Yarn Build Fejl
+1. Løsning af TypeScript-fejl i @repo/config
+Hovedproblemet er i @repo/config-pakken, hvor TypeScript ikke kan finde Node.js typedefinitioner og DOM-typedefinitioner. Dette skyldes at lib-feltet i base.json kun indeholder "ES2020" og mangler "DOM", samt at @types/node ikke er installeret i config-pakken.
+
+Trin 1: Tilføj @types/node til @repo/config
+cd /Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab
+yarn workspace @repo/config add -D @types/node
+Trin 2: Opdater tsconfig/base.json til at inkludere DOM
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "display": "Default",
+  "compilerOptions": {
+    "composite": false,
+    "declaration": true,
+    "declarationMap": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "inlineSources": false,
+    "isolatedModules": true,
+    "moduleResolution": "node",
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "preserveWatchOutput": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "target": "ES2020",
+    "lib": ["ES2020", "DOM"]
+  },
+  "exclude": ["node_modules"]
+}
+2. Sikring af korrekt Webpack og HMR-konfiguration for apps/api
+Din api-app bruger Webpack med HMR, men der kan være problemer med konfigurationen under Yarn PnP.
+
+Trin 3: Opdater webpack-hmr.config.js til at understøtte Yarn PnP
+/* eslint-disable @typescript-eslint/no-var-requires */
+const nodeExternals = require('webpack-node-externals');
+const { RunScriptWebpackPlugin } = require('run-script-webpack-plugin');
+const { PnpWebpackPlugin } = require('pnp-webpack-plugin');
+
+module.exports = function (options, webpack) {
+  return {
+    ...options,
+    entry: ['webpack/hot/poll?100', options.entry],
+    externals: [
+      nodeExternals({
+        allowlist: ['webpack/hot/poll?100'],
+        modulesDir: '../../node_modules',
+      }),
+    ],
+    resolve: {
+      ...options.resolve,
+      plugins: [
+        ...(options.resolve?.plugins || []),
+        PnpWebpackPlugin,
+      ],
+    },
+    resolveLoader: {
+      ...options.resolveLoader,
+      plugins: [
+        ...(options.resolveLoader?.plugins || []),
+        PnpWebpackPlugin.moduleLoader(module),
+      ],
+    },
+    plugins: [
+      ...options.plugins,
+      new webpack.HotModuleReplacementPlugin(),
+      new webpack.WatchIgnorePlugin({
+        paths: [/\.js$/, /\.d\.ts$/],
+      }),
+      new RunScriptWebpackPlugin({ name: options.output.filename }),
+    ],
+  };
+};
+Trin 4: Installer pnp-webpack-plugin i api-appen
+cd /Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab
+yarn workspace api add -D pnp-webpack-plugin
+3. Løsning af create-solid-wow TypeScript-problemer
+Baseret på din kodebase og fejlene, skal vi sikre, at create-solid-wow har korrekte TypeScript-konfigurationer.
+
+Trin 5: Opdater tsconfig.json i create-solid-wow
+{
+  "compilerOptions": {
+    "target": "ES2018",
+    "module": "CommonJS",
+    "lib": ["ES2018", "DOM"],
+    "declaration": true,
+    "outDir": "dist",
+    "rootDir": "src",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
+}
+4. Sikring af korrekt Next.js-konfiguration for apps/web
+Din web-app bruger Next.js 13.4.12, og vi skal sikre, at den er korrekt konfigureret med Yarn PnP.
+
+Trin 6: Tilføj next.config.js med PnP-understøttelse
+cd /Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab
+Opret eller opdater next.config.js i apps/web:
+
+// apps/web/next.config.js
+const withTM = require('next-transpile-modules')(['ui', '@repo/core', '@repo/config']);
+
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  reactStrictMode: true,
+  transpilePackages: ['ui', '@repo/core', '@repo/config'],
+  webpack: (config, { isServer, dev }) => {
+    // Tilføj PnP-understøttelse hvis nødvendigt
+    if (!isServer && !dev) {
+      // Optimer client-side bundling i production
+      config.optimization.splitChunks.cacheGroups = {
+        ...config.optimization.splitChunks.cacheGroups,
+        commons: {
+          test: /[\\/]node_modules[\\/]/,
+          name: 'vendors',
+          chunks: 'all',
+        },
+      };
+    }
+    
+    return config;
+  },
+};
+
+module.exports = nextConfig;
+5. Kør lint for at sikre kodebase-kvalitet
+Trin 7: Kør lint på hele projektet
+cd /Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab
+yarn lint
+6. Ryd cache og genbyg projektet
+Trin 8: Ryd Yarn og Turbo cache
+cd /Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab
+rm -rf .yarn/cache
+rm -rf .turbo/cache
+yarn cache clean
+Trin 9: Geninstaller afhængigheder og byg projektet
+cd /Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab
+yarn install
+yarn build
+Opsummering
+Denne plan adresserer de specifikke problemer i din monorepo-struktur:
+
+@repo/config: Manglende Node.js og DOM typedefinitioner
+apps/api: Webpack og HMR-konfiguration med Yarn PnP-understøttelse
+create-solid-wow: Korrekt TypeScript-konfiguration
+apps/web: Next.js-konfiguration med monorepo-understøttelse
+Generel vedligeholdelse: Lint-tjek og cache-rydning
+Planen er skræddersyet til dit præcise stack med:
+
+Yarn 4.9.1 med PnP
+TypeScript 5.x
+Next.js 13.4.12
+NestJS 10.x
+Turbo 2.x
+Webpack 5.x
+Ved at følge denne plan vil du løse de nuværende build-fejl og sikre, at dit projekt følger best practices for monorepo-strukturer med Yarn PnP.
+
+
+
+
+
+
+Notification.tsx
+Current File
+Codebase
