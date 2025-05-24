@@ -1,7 +1,7 @@
 // apps/web/src/screens/auth/reset-password/reset-password.tsx
 import React, { useState, FormEvent, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { useAuth } from '../../../context/AuthContext';
+import { useAuth } from '../../../contexts/AuthContext';
 
 export function ResetPasswordScreen() {
   const router = useRouter();
@@ -39,10 +39,10 @@ export function ResetPasswordScreen() {
     try {
       // Brug resetPassword funktionen fra AuthContext
       const message = await resetPassword(token, newPassword, confirmPassword);
-      
+
       console.log('Nulstilling af adgangskode succesfuld');
       setSuccessMessage(message || 'Din adgangskode er blevet nulstillet! Du bliver nu sendt til login-siden.');
-      
+
       // Omdiriger til login-siden efter en kort pause
       setTimeout(() => {
         router.push('/login');
@@ -126,7 +126,7 @@ export function ResetPasswordScreen() {
               placeholder="Gentag ny adgangskode"
             />
           </div>
-          
+
           {/* Fejlmeddelelse */}
           {error && (
             <div className="p-3 text-sm text-red-700 bg-red-100 border border-red-400 rounded-md">

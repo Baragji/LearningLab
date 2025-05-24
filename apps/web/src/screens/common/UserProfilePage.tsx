@@ -5,7 +5,7 @@ import {
   Typography, 
   Container, 
   Paper, 
-  Grid, 
+  Grid as MuiGrid, 
   TextField, 
   Button, 
   CircularProgress, 
@@ -18,12 +18,15 @@ import {
   IconButton,
   Badge
 } from '@mui/material';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../contexts/AuthContext';
 import PersonIcon from '@mui/icons-material/Person';
 import LockIcon from '@mui/icons-material/Lock';
 import SaveIcon from '@mui/icons-material/Save';
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
 import SettingsIcon from '@mui/icons-material/Settings';
+
+// Brug MuiGrid direkte, da vi har omdøbt den ved import
+const Grid = MuiGrid;
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -67,7 +70,7 @@ const UserProfilePage: React.FC = () => {
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  
+
   // Initialize form with user data when it loads
   React.useEffect(() => {
     if (user) {
@@ -76,22 +79,22 @@ const UserProfilePage: React.FC = () => {
       // Hvis vi havde profileImage og bio i user-objektet, ville vi sætte dem her
     }
   }, [user]);
-  
+
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
   };
-  
+
   const handleProfileUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsUpdating(true);
-    
+
     try {
       // Her ville vi normalt kalde en API til at opdatere profilen
       // await updateProfile({ name, email, bio }).unwrap();
-      
+
       // Simulerer en API-kald med en timeout
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
+
       setSuccessMessage('Profil opdateret');
       // refetchUser();
     } catch (error) {
@@ -101,30 +104,30 @@ const UserProfilePage: React.FC = () => {
       setIsUpdating(false);
     }
   };
-  
+
   const handlePasswordChange = async (e: React.FormEvent) => {
     e.preventDefault();
     setPasswordError('');
-    
+
     if (newPassword !== confirmPassword) {
       setPasswordError('De nye adgangskoder matcher ikke');
       return;
     }
-    
+
     if (newPassword.length < 8) {
       setPasswordError('Adgangskoden skal være mindst 8 tegn lang');
       return;
     }
-    
+
     setIsChangingPassword(true);
-    
+
     try {
       // Her ville vi normalt kalde en API til at ændre adgangskoden
       // await changePassword({ currentPassword, newPassword }).unwrap();
-      
+
       // Simulerer en API-kald med en timeout
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
+
       setSuccessMessage('Adgangskode ændret');
       setCurrentPassword('');
       setNewPassword('');
@@ -137,33 +140,33 @@ const UserProfilePage: React.FC = () => {
       setIsChangingPassword(false);
     }
   };
-  
+
   const handleProfileImageClick = () => {
     fileInputRef.current?.click();
   };
-  
+
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    
+
     // Vis en forhåndsvisning af billedet
     const reader = new FileReader();
     reader.onload = (event) => {
       setProfileImage(event.target?.result as string);
     };
     reader.readAsDataURL(file);
-    
+
     setIsUploadingImage(true);
-    
+
     try {
       // Her ville vi normalt uploade billedet til en server
       // const formData = new FormData();
       // formData.append('profileImage', file);
       // await uploadProfileImage(formData).unwrap();
-      
+
       // Simulerer en API-kald med en timeout
       await new Promise(resolve => setTimeout(resolve, 1500));
-      
+
       setSuccessMessage('Profilbillede uploadet');
     } catch (error) {
       console.error('Fejl ved upload af profilbillede:', error);
@@ -172,11 +175,11 @@ const UserProfilePage: React.FC = () => {
       setIsUploadingImage(false);
     }
   };
-  
+
   const handleCloseSnackbar = () => {
     setSuccessMessage('');
   };
-  
+
   if (authIsLoading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}>
@@ -184,7 +187,7 @@ const UserProfilePage: React.FC = () => {
       </Box>
     );
   }
-  
+
   return (
     <Container maxWidth="md" sx={{ mt: 4, mb: 8 }}>
       <Paper elevation={2} sx={{ p: 4 }}>
@@ -243,9 +246,9 @@ const UserProfilePage: React.FC = () => {
             </Typography>
           </Box>
         </Box>
-        
+
         <Divider sx={{ mb: 3 }} />
-        
+
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
           <Tabs 
             value={tabValue} 
@@ -272,7 +275,7 @@ const UserProfilePage: React.FC = () => {
             />
           </Tabs>
         </Box>
-        
+
         <TabPanel value={tabValue} index={0}>
           <form onSubmit={handleProfileUpdate}>
             <Grid container spacing={3}>
@@ -285,7 +288,7 @@ const UserProfilePage: React.FC = () => {
                   variant="outlined"
                 />
               </Grid>
-              
+
               <Grid item xs={12}>
                 <TextField
                   label="Email"
@@ -297,7 +300,7 @@ const UserProfilePage: React.FC = () => {
                   required
                 />
               </Grid>
-              
+
               <Grid item xs={12}>
                 <TextField
                   label="Biografi"
@@ -310,7 +313,7 @@ const UserProfilePage: React.FC = () => {
                   placeholder="Fortæl lidt om dig selv..."
                 />
               </Grid>
-              
+
               <Grid item xs={12}>
                 <Button
                   type="submit"
@@ -325,7 +328,7 @@ const UserProfilePage: React.FC = () => {
             </Grid>
           </form>
         </TabPanel>
-        
+
         <TabPanel value={tabValue} index={1}>
           <form onSubmit={handlePasswordChange}>
             <Grid container spacing={3}>
@@ -340,7 +343,7 @@ const UserProfilePage: React.FC = () => {
                   required
                 />
               </Grid>
-              
+
               <Grid item xs={12}>
                 <TextField
                   label="Ny adgangskode"
@@ -353,7 +356,7 @@ const UserProfilePage: React.FC = () => {
                   helperText="Adgangskoden skal være mindst 8 tegn lang"
                 />
               </Grid>
-              
+
               <Grid item xs={12}>
                 <TextField
                   label="Bekræft ny adgangskode"
@@ -367,7 +370,7 @@ const UserProfilePage: React.FC = () => {
                   helperText={passwordError || ''}
                 />
               </Grid>
-              
+
               <Grid item xs={12}>
                 <Button
                   type="submit"
@@ -382,22 +385,22 @@ const UserProfilePage: React.FC = () => {
             </Grid>
           </form>
         </TabPanel>
-        
+
         <TabPanel value={tabValue} index={2}>
           <Typography variant="h6" gutterBottom>
             Notifikationsindstillinger
           </Typography>
-          
+
           <Box sx={{ mb: 4 }}>
             <Typography variant="body1" gutterBottom>
               Denne funktion er under udvikling. Her vil du kunne styre dine notifikationsindstillinger.
             </Typography>
           </Box>
-          
+
           <Typography variant="h6" gutterBottom>
             Privatindstillinger
           </Typography>
-          
+
           <Box>
             <Typography variant="body1">
               Denne funktion er under udvikling. Her vil du kunne styre dine privatindstillinger.
@@ -405,7 +408,7 @@ const UserProfilePage: React.FC = () => {
           </Box>
         </TabPanel>
       </Paper>
-      
+
       <Snackbar
         open={!!successMessage}
         autoHideDuration={6000}

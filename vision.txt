@@ -1,0 +1,40 @@
+
+Vision – Kort fortalt:
+Formålet er at udvikle en template/skabelon til en avanceret læringsplatform, der kan:
+•	Starte en færdig platform med én kommando.
+•	Genbruges til forskellige fag (fx laborant, medicin).
+•	Spare tid ved at eliminere manuel opsætning.
+Templaten inkluderer frontend, backend, genbrugelige komponenter og værktøjer til hurtig opsætning (TurboRepo, monorepo m.m.).
+
+Når det virker:
+•	Kørende platform med quiz, AI, temaer og login.
+•	CLI-generator: fx npx create-solid-wow --preset laborant.
+•	Understøttelse af Docker og AI-integration.
+
+Brainstorm – Funktioner i platformen:
+1. Læringsstruktur:
+•	Kursus > Fag > Emne > Lektion.
+•	Tilknyt materiale (PDF, video mm.) pr. emne.
+•	Quizzer og interaktive opgaver (H5P).
+•	Spaced repetition, SCORM/xAPI, LTI-integration.
+2. AI-funktioner:
+•	Automatisk spørgsmålsgenerering ud fra materiale.
+•	Feedback på quizzer, adaptive quizzer og personlig chatbot.
+•	Visualisering af læringsforløb (skill tree).
+3. UI/UX og “Wow-effekter”:
+•	Moderne design (glassmorphism, animationer).
+•	Temaer og farver baseret på bruger/emne.
+•	Hurtig navigation (Cmd+K), offline quiz, haptisk feedback.
+4. Gamification:
+•	XP, badges, leaderboards og fremskridtsringe.
+•	Real-time notifikationer og tip til at tjene XP.
+5. Social læring:
+•	Diskussioner pr. emne og realtidssamarbejde om quizzer.
+6. Admin-værktøjer:
+•	Bruger- og pensumadministration.
+•	Upload til AI, analyser, “nudging”, sikkerhedstjek.
+7. Tilgængelighed:
+•	WCAG 2.2 AA-compliance.
+•	Skærmlæser, kontrasttemaer og responsivt design.
+•	(Valgfrit) stemmekommandoer.
+

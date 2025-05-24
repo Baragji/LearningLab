@@ -1,3 +1,4 @@
+"use client";
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { UserProgress } from '@repo/core/src/types/quiz.types';
 import { getCourseProgress } from '../services/userProgressApi';

@@ -2,7 +2,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { useAuth } from '../../context/useAuth';
+import { useAuth } from '../../contexts/useAuth';
 
 interface SidebarProps {
   isOpen: boolean;

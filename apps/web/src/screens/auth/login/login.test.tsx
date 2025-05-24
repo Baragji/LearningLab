@@ -3,7 +3,7 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { Provider } from 'react-redux';
 import store from '../../../store';
 import { LoginScreen } from "./login";
-import { AuthContext } from '../../../context/AuthContext';
+import { AuthContext } from '../../../contexts/AuthContext';
 import { useRouter } from 'next/router';
 
 // Mock next/router

@@ -9,6 +9,7 @@
   ],
   "scripts": {
     "build": "turbo run build",
+    "build:api": "turbo run build --filter=api...",
     "ensure-db": "chmod +x ./scripts/ensure-db.sh && ./scripts/ensure-db.sh",
     "dev": "yarn ensure-db && turbo run dev --parallel",
     "lint": "turbo run lint",
