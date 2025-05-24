@@ -4,6 +4,7 @@ import {
   Post,
   Get,
   Put,
+  Patch,
   Delete,
   Body,
   Param,
@@ -491,5 +492,95 @@ export class UsersController {
     settings: unknown,
   ) {
     return { valid: true, settings };
+  }
+
+  @ApiOperation({ summary: 'Hent den aktuelle brugers profil' })
+  @ApiResponse({
+    status: 200,
+    description: 'Brugerens profildata',
+    schema: {
+      type: 'object',
+      properties: {
+        id: { type: 'number' },
+        email: { type: 'string' },
+        name: { type: 'string', nullable: true },
+        role: { type: 'string', enum: ['STUDENT', 'TEACHER', 'ADMIN'] },
+        profileImage: { type: 'string', nullable: true },
+        bio: { type: 'string', nullable: true },
+        socialLinks: { type: 'object', nullable: true },
+        settings: { type: 'object', nullable: true },
+        createdAt: { type: 'string', format: 'date-time' },
+        updatedAt: { type: 'string', format: 'date-time' },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Uautoriseret - Ugyldig eller udløbet token',
+  })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Get('me')
+  async getCurrentUser(
+    @CurrentUser() currentUser: Omit<CoreUser, 'passwordHash'>,
+  ): Promise<Omit<CoreUser, 'passwordHash'>> {
+    const user = await this.usersService.findOneById(currentUser.id);
+    if (!user) {
+      throw new NotFoundException(`Bruger med ID ${currentUser.id} blev ikke fundet`);
+    }
+    return this.usersService.mapToCoreUser(user);
+  }
+
+  @ApiOperation({ summary: 'Opdater den aktuelle brugers profil' })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        name: { type: 'string', nullable: true },
+        email: { type: 'string', nullable: true },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Brugerens profil opdateret',
+    schema: {
+      type: 'object',
+      properties: {
+        id: { type: 'number' },
+        email: { type: 'string' },
+        name: { type: 'string', nullable: true },
+        role: { type: 'string', enum: ['STUDENT', 'TEACHER', 'ADMIN'] },
+        profileImage: { type: 'string', nullable: true },
+        bio: { type: 'string', nullable: true },
+        socialLinks: { type: 'object', nullable: true },
+        settings: { type: 'object', nullable: true },
+        createdAt: { type: 'string', format: 'date-time' },
+        updatedAt: { type: 'string', format: 'date-time' },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Uautoriseret - Ugyldig eller udløbet token',
+  })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Patch('profile')
+  async updateProfile(
+    @Body() updateData: { name?: string; email?: string },
+    @CurrentUser() currentUser: Omit<CoreUser, 'passwordHash'>,
+  ): Promise<Omit<CoreUser, 'passwordHash'>> {
+    const user = await this.usersService.findOneById(currentUser.id);
+    if (!user) {
+      throw new NotFoundException(`Bruger med ID ${currentUser.id} blev ikke fundet`);
+    }
+    
+    // Opret et UpdateUserDto objekt med de felter, der skal opdateres
+    const updateUserDto: UpdateUserDto = {};
+    if (updateData.name !== undefined) updateUserDto.name = updateData.name;
+    if (updateData.email !== undefined) updateUserDto.email = updateData.email;
+    
+    return this.usersService.update(currentUser.id, updateUserDto, currentUser.id);
   }
 }
