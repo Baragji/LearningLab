@@ -31,7 +31,9 @@ export class SearchController {
 
   constructor(private readonly searchService: SearchService) {}
 
-  @ApiOperation({ summary: 'Avanceret søgning på tværs af kurser, moduler og lektioner' })
+  @ApiOperation({
+    summary: 'Avanceret søgning på tværs af kurser, moduler og lektioner',
+  })
   @ApiQuery({
     name: 'query',
     required: false,
@@ -95,8 +97,14 @@ export class SearchController {
               title: { type: 'string' },
               description: { type: 'string' },
               slug: { type: 'string' },
-              difficulty: { type: 'string', enum: ['BEGINNER', 'INTERMEDIATE', 'ADVANCED'] },
-              status: { type: 'string', enum: ['DRAFT', 'PUBLISHED', 'ARCHIVED'] },
+              difficulty: {
+                type: 'string',
+                enum: ['BEGINNER', 'INTERMEDIATE', 'ADVANCED'],
+              },
+              status: {
+                type: 'string',
+                enum: ['DRAFT', 'PUBLISHED', 'ARCHIVED'],
+              },
               tags: { type: 'array', items: { type: 'string' } },
               image: { type: 'string', nullable: true },
               subjectArea: {
@@ -176,22 +184,28 @@ export class SearchController {
     @Query('tags') tags?: string,
     @Query('difficulty') difficulty?: Difficulty,
     @Query('status') status?: CourseStatus,
-    @Query('subjectAreaId', new DefaultValuePipe(0), ParseIntPipe) subjectAreaId?: number,
+    @Query('subjectAreaId', new DefaultValuePipe(0), ParseIntPipe)
+    subjectAreaId?: number,
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit = 10,
     @CurrentUser() currentUser?: Omit<CoreUser, 'passwordHash'>,
   ) {
-    this.logger.log(`Udfører avanceret søgning: ${query}, type: ${type}, tags: ${tags}`);
-    
+    this.logger.log(
+      `Udfører avanceret søgning: ${query}, type: ${type}, tags: ${tags}`,
+    );
+
     // Konverter tags fra kommasepareret streng til array
-    const tagArray = tags ? tags.split(',').map(tag => tag.trim()) : undefined;
-    
+    const tagArray = tags
+      ? tags.split(',').map((tag) => tag.trim())
+      : undefined;
+
     // Hvis brugeren ikke er admin eller lærer, vis kun publicerede kurser
-    const allowedStatuses = currentUser && 
-      (currentUser.role === Role.ADMIN || currentUser.role === Role.TEACHER) 
-      ? undefined 
-      : [CourseStatus.PUBLISHED];
-    
+    const allowedStatuses =
+      currentUser &&
+      (currentUser.role === Role.ADMIN || currentUser.role === Role.TEACHER)
+        ? undefined
+        : [CourseStatus.PUBLISHED];
+
     return this.searchService.search({
       query,
       type,
