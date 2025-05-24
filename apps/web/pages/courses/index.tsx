@@ -9,18 +9,24 @@ const Courses: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   
   // Fetch courses from API
-  const { data: courses = [], isLoading: isLoadingCourses, error: coursesError } = useGetCoursesQuery({ 
+  const { data: coursesData, isLoading: isLoadingCourses, error: coursesError } = useGetCoursesQuery({ 
     subjectAreaId: selectedSubjectArea 
   });
+  const courses = Array.isArray(coursesData) ? coursesData : [];
   
   // Fetch subject areas from API
-  const { data: subjectAreas = [], isLoading: isLoadingSubjectAreas } = useGetSubjectAreasQuery();
+  const { data: subjectAreasData, isLoading: isLoadingSubjectAreas } = useGetSubjectAreasQuery();
+  const subjectAreas = Array.isArray(subjectAreasData) ? subjectAreasData : [];
 
   // Filter courses based on search term
-  const filteredCourses = courses.filter(course => 
-    course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    course.description.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredCourses = courses.filter(course => {
+    const title = course.title || '';
+    const description = course.description || '';
+    const searchTermLower = searchTerm.toLowerCase();
+    
+    return title.toLowerCase().includes(searchTermLower) || 
+           description.toLowerCase().includes(searchTermLower);
+  });
 
   return (
     <>
@@ -88,21 +94,21 @@ const Courses: React.FC = () => {
         {!isLoadingCourses && filteredCourses.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredCourses.map((course) => (
-              <Link href={`/courses/${course.id}`} key={course.id}>
+              <Link href={`/courses/${course.id || 0}`} key={course.id || `course-${Math.random()}`}>
                 <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden hover:shadow-lg transition-shadow duration-300">
                   <div className="h-40 bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center">
-                    <span className="text-white text-xl font-bold">{course.title}</span>
+                    <span className="text-white text-xl font-bold">{course.title || 'Unavngivet kursus'}</span>
                   </div>
                   <div className="p-4">
-                    <h3 className="text-lg font-semibold text-gray-800 dark:text-white">{course.title}</h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">{course.description}</p>
+                    <h3 className="text-lg font-semibold text-gray-800 dark:text-white">{course.title || 'Unavngivet kursus'}</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">{course.description || 'Ingen beskrivelse tilgængelig'}</p>
                     
                     <div className="flex items-center mt-4 text-xs text-gray-500 dark:text-gray-400">
                       <div className="flex items-center mr-4">
                         <svg className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                         </svg>
-                        <span>{course.level || 'Begynder'}</span>
+                        <span>{course.difficulty || 'Begynder'}</span>
                       </div>
                       
                       <div className="flex items-center mr-4">

@@ -48,22 +48,31 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setIsLoading(true);
     try {
       const baseUrl = process.env.NEXT_PUBLIC_API_URL || '/api';
+      console.log('AuthContext: Henter brugerprofil fra:', `${baseUrl}/auth/profile`);
+      
       const response = await fetch(`${baseUrl}/auth/profile`, {
         headers: {
           'Authorization': `Bearer ${currentToken}`,
           'Content-Type': 'application/json',
+          'Accept': 'application/json'
         },
+        credentials: 'include',
+        mode: 'cors'
       });
+      
       if (!response.ok) {
         // Hvis token er ugyldigt/udløbet, log ud
         if (response.status === 401) {
           console.error('AuthContext: Ugyldigt token ved hentning af profil. Logger ud.');
           localStorage.removeItem('accessToken');
+          localStorage.removeItem('refreshToken');
           setToken(null);
+          setRefreshToken(null);
           setUser(null);
         }
-        throw new Error('Kunne ikke hente brugerprofil');
+        throw new Error(`Kunne ikke hente brugerprofil: ${response.status} ${response.statusText}`);
       }
+      
       const userData: User = await response.json();
       setUser(userData);
       setToken(currentToken); // Sørg for at token state også er sat
@@ -75,7 +84,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
     } catch (error) {
       console.error('AuthContext: Fejl ved hentning af brugerprofil:', error);
       localStorage.removeItem('accessToken'); // Ryd token ved fejl
+      localStorage.removeItem('refreshToken');
       setToken(null);
+      setRefreshToken(null);
       setUser(null);
     } finally {
       setIsLoading(false);
@@ -109,14 +120,21 @@ export function AuthProvider({ children }: AuthProviderProps) {
     try {
       setIsLoading(true);
       const baseUrl = process.env.NEXT_PUBLIC_API_URL || '/api';
+      console.log('AuthContext: Forsøger at forny token med API URL:', baseUrl);
+      
       const response = await fetch(`${baseUrl}/auth/refresh`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
         body: JSON.stringify({ refresh_token: refreshToken }),
+        credentials: 'include',
+        mode: 'cors'
       });
 
       if (!response.ok) {
-        throw new Error('Kunne ikke forny token');
+        throw new Error(`Kunne ikke forny token: ${response.status} ${response.statusText}`);
       }
 
       const data = await response.json();
@@ -130,10 +148,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
       const newExpiresAt = getTokenExpiration(newAccessToken);
       setTokenExpiresAt(newExpiresAt);
       
+      console.log('AuthContext: Token fornyet succesfuldt');
       setIsLoading(false);
       return true;
     } catch (error) {
-      console.error('Fejl ved fornyelse af token:', error);
+      console.error('AuthContext: Fejl ved fornyelse af token:', error);
       // Ved fejl, log brugeren ud
       logout();
       setIsLoading(false);
@@ -204,10 +223,17 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setIsLoading(true);
     try {
       const baseUrl = process.env.NEXT_PUBLIC_API_URL || '/api';
+      console.log('AuthContext: Forsøger login med API URL:', baseUrl);
+      
       const response = await fetch(`${baseUrl}/auth/login`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
         body: JSON.stringify({ email, password }),
+        credentials: 'include', // Inkluder cookies hvis serveren sender dem
+        mode: 'cors' // Eksplicit CORS mode
       });
 
       if (!response.ok) {
@@ -238,7 +264,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       
       console.log('AuthContext: Tokens gemt efter login.');
       await fetchUserProfile(data.access_token); // Hent og sæt brugerprofil efter login
-      router.push('/profile'); // Omdiriger til profil efter succesfuldt login
+      router.push('/dashboard'); // Omdiriger til dashboard efter succesfuldt login
     } catch (error: any) {
       console.error('AuthContext: Login fejl:', error);
       localStorage.removeItem('accessToken');

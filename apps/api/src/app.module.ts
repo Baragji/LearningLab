@@ -32,6 +32,7 @@ import { ConfigModule } from './config/config.module';
 // Import ConfigService
 import { ConfigService } from './config/config.service';
 import { JwtService } from '@nestjs/jwt';
+import { SearchModule } from './search/search.module';
 // Import social auth config
 import socialAuthConfig from './config/social-auth.config';
 // Midlertidigt deaktiveret pga. problemer med import
@@ -67,6 +68,7 @@ import socialAuthConfig from './config/social-auth.config';
     UsersModule,
     AuthModule,
     UserGroupsModule, // Tilføj UserGroupsModule
+    SearchModule, // Tilføj SearchModule for avanceret søgning
     CoursesModule,
     ModulesModule,
     LessonsModule,

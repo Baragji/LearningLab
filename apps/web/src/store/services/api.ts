@@ -52,12 +52,14 @@ export const api = createApi({
     baseUrl: baseUrl || (isTestEnvironment ? "http://mock-api-for-tests" : "/api"),
     // Brug custom fetch funktion for at håndtere test-miljøer
     fetchFn: customFetch,
+    credentials: 'include', // Inkluder cookies i requests
     prepareHeaders: (headers, { getState }) => {
       // Tilføj authorization header med JWT token hvis brugeren er logget ind
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('accessToken');
       if (token) {
         headers.set('authorization', `Bearer ${token}`);
       }
+      headers.set('Accept', 'application/json');
       return headers;
     },
   }),
