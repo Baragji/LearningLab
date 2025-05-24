@@ -145,6 +145,10 @@ enum ContentBlockType {
   IMAGE_URL
   VIDEO_URL
   QUIZ_REF
+  CODE
+  FILE
+  EMBED
+  INTERACTIVE
 }
 
 enum AuthProvider {
