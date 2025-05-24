@@ -28,6 +28,7 @@ model User {
   
   quizAttempts         QuizAttempt[]
   progress             UserProgress[]
+  certificates         Certificate[]
   
   // User groups relation
   groups               UserGroup[]    @relation("UserToUserGroup")
@@ -63,6 +64,12 @@ model User {
   // User groups created and updated
   createdUserGroups     UserGroup[]    @relation("UserGroupCreatedByUser")
   updatedUserGroups     UserGroup[]    @relation("UserGroupUpdatedByUser")
+  
+  // Question bank relations
+  createdQuestionBanks  QuestionBank[]  @relation("QuestionBankCreatedByUser")
+  updatedQuestionBanks  QuestionBank[]  @relation("QuestionBankUpdatedByUser")
+  createdQuestionBankItems QuestionBankItem[] @relation("QuestionBankItemCreatedByUser")
+  updatedQuestionBankItems QuestionBankItem[] @relation("QuestionBankItemUpdatedByUser")
 }
 
 model SubjectArea {
@@ -180,6 +187,10 @@ model Quiz {
   maxAttempts        Int?
   randomizeQuestions Boolean        @default(false)
   showAnswers        Boolean        @default(true)
+  passingScore       Int?           // Minimum score required to pass (percentage)
+  issueCertificate   Boolean        @default(false) // Whether to issue a certificate upon completion
+  questionBankCategory String?      // Category for question bank
+  tags               String[]       @default([])    // Tags for categorizing quizzes
   createdAt          DateTime       @default(now())
   updatedAt          DateTime       @updatedAt
   deletedAt          DateTime?
@@ -188,6 +199,7 @@ model Quiz {
   module             Module?        @relation("ModuleQuizzes", fields: [moduleId], references: [id])
   attempts           QuizAttempt[]
   userProgress       UserProgress[] @relation("QuizProgress")
+  certificates       Certificate[]
 
   // Relations for createdBy and updatedBy
   createdByUser   User?   @relation("QuizCreatedByUser", fields: [createdBy], references: [id])
@@ -197,16 +209,23 @@ model Quiz {
 }
 
 model Question {
-  id            Int            @id @default(autoincrement())
-  text          String
-  type          QuestionType
-  quizId        Int
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  deletedAt     DateTime?
-  answerOptions AnswerOption[]
-  quiz          Quiz           @relation(fields: [quizId], references: [id])
-  userAnswers   UserAnswer[]
+  id                Int            @id @default(autoincrement())
+  text              String
+  type              QuestionType
+  quizId            Int
+  codeTemplate      String?        // Template code for CODE type questions
+  codeLanguage      String?        // Programming language for CODE type questions
+  expectedOutput    String?        // Expected output for CODE type questions
+  essayMinWords     Int?           // Minimum word count for ESSAY type questions
+  essayMaxWords     Int?           // Maximum word count for ESSAY type questions
+  dragDropItems     Json?          // Items for DRAG_AND_DROP type questions
+  points            Int            @default(1) // Points awarded for correct answer
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+  deletedAt         DateTime?
+  answerOptions     AnswerOption[]
+  quiz              Quiz           @relation(fields: [quizId], references: [id])
+  userAnswers       UserAnswer[]
 
   // Relations for createdBy and updatedBy
   createdByUser   User?   @relation("QuestionCreatedByUser", fields: [createdBy], references: [id])
@@ -254,7 +273,12 @@ model UserAnswer {
   quizAttemptId          Int
   questionId             Int
   selectedAnswerOptionId Int?
-  inputText              String?
+  inputText              String?       // For FILL_IN_BLANK and ESSAY questions
+  codeAnswer             String?       // For CODE questions
+  dragDropAnswer         Json?         // For DRAG_AND_DROP questions
+  isCorrect              Boolean?      // Whether the answer is correct
+  score                  Int?          // Score for this answer (for partial credit)
+  feedback               String?       // Feedback for this answer
   createdAt              DateTime      @default(now())
   updatedAt              DateTime      @updatedAt
   deletedAt              DateTime?
@@ -280,6 +304,69 @@ model UserProgress {
   user          User           @relation(fields: [userId], references: [id])
 }
 
+model Certificate {
+  id            Int       @id @default(autoincrement())
+  userId        Int
+  quizId        Int
+  score         Int
+  issueDate     DateTime  @default(now())
+  certificateId String    @unique // Unique identifier for the certificate
+  title         String
+  description   String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  deletedAt     DateTime?
+  
+  user          User      @relation(fields: [userId], references: [id])
+  quiz          Quiz      @relation(fields: [quizId], references: [id])
+}
+
+model QuestionBank {
+  id            Int       @id @default(autoincrement())
+  name          String
+  description   String?
+  category      String
+  tags          String[]  @default([])
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  deletedAt     DateTime?
+  
+  questions     QuestionBankItem[]
+  
+  // Relations for createdBy and updatedBy
+  createdByUser User?     @relation("QuestionBankCreatedByUser", fields: [createdBy], references: [id])
+  createdBy     Int?
+  updatedByUser User?     @relation("QuestionBankUpdatedByUser", fields: [updatedBy], references: [id])
+  updatedBy     Int?
+}
+
+model QuestionBankItem {
+  id              Int            @id @default(autoincrement())
+  questionBankId  Int
+  text            String
+  type            QuestionType
+  codeTemplate    String?        // Template code for CODE type questions
+  codeLanguage    String?        // Programming language for CODE type questions
+  expectedOutput  String?        // Expected output for CODE type questions
+  essayMinWords   Int?           // Minimum word count for ESSAY type questions
+  essayMaxWords   Int?           // Maximum word count for ESSAY type questions
+  dragDropItems   Json?          // Items for DRAG_AND_DROP type questions
+  points          Int            @default(1) // Points awarded for correct answer
+  difficulty      Difficulty     @default(BEGINNER)
+  answerOptions   Json?          // Answer options stored as JSON
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  deletedAt       DateTime?
+  
+  questionBank    QuestionBank   @relation(fields: [questionBankId], references: [id])
+  
+  // Relations for createdBy and updatedBy
+  createdByUser   User?          @relation("QuestionBankItemCreatedByUser", fields: [createdBy], references: [id])
+  createdBy       Int?
+  updatedByUser   User?          @relation("QuestionBankItemUpdatedByUser", fields: [updatedBy], references: [id])
+  updatedBy       Int?
+}
+
 enum Role {
   STUDENT
   TEACHER
@@ -301,6 +388,9 @@ enum QuestionType {
   MULTIPLE_CHOICE
   FILL_IN_BLANK
   MATCHING
+  DRAG_AND_DROP
+  CODE
+  ESSAY
 }
 
 enum ProgressStatus {

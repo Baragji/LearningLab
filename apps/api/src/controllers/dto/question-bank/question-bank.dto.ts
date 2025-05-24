@@ -1,27 +1,100 @@
-// apps/api/src/controllers/dto/quiz/question.dto.ts
+// apps/api/src/controllers/dto/question-bank/question-bank.dto.ts
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { QuestionType } from '@prisma/client';
 import {
-  IsArray,
-  IsEnum,
   IsNotEmpty,
   IsNumber,
   IsOptional,
   IsPositive,
   IsString,
-  ValidateNested,
+  IsArray,
+  IsEnum,
   Min,
+  Max,
+  ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { CreateAnswerOptionDto } from './answerOption.dto';
+import { QuestionType, Difficulty } from '@prisma/client';
 
-export class QuestionDto {
+export class QuestionBankDto {
   @ApiProperty({
-    description: 'Unik ID for spørgsmålet',
+    description: 'Unik ID for spørgsmålsbanken',
     type: Number,
     example: 1,
   })
   id: number;
+
+  @ApiProperty({
+    description: 'Spørgsmålsbankens navn',
+    type: String,
+    example: 'TypeScript Spørgsmålsbank',
+  })
+  name: string;
+
+  @ApiPropertyOptional({
+    description: 'Spørgsmålsbankens beskrivelse',
+    type: String,
+    example: 'En samling af spørgsmål om TypeScript',
+    nullable: true,
+  })
+  description?: string | null;
+
+  @ApiProperty({
+    description: 'Spørgsmålsbankens kategori',
+    type: String,
+    example: 'Programmering',
+  })
+  category: string;
+
+  @ApiPropertyOptional({
+    description: 'Tags til kategorisering af spørgsmålsbanken',
+    type: [String],
+    example: ['TypeScript', 'JavaScript', 'Programmering'],
+  })
+  tags?: string[];
+
+  @ApiPropertyOptional({
+    description: 'Dato for oprettelse af spørgsmålsbanken',
+    type: Date,
+    example: '2023-05-20T12:00:00Z',
+  })
+  createdAt?: Date;
+
+  @ApiPropertyOptional({
+    description: 'Dato for seneste opdatering af spørgsmålsbanken',
+    type: Date,
+    example: '2023-05-21T14:30:00Z',
+  })
+  updatedAt?: Date;
+
+  @ApiPropertyOptional({
+    description: 'Spørgsmål i spørgsmålsbanken',
+    type: 'array',
+    items: {
+      type: 'object',
+      properties: {
+        id: { type: 'number', example: 1 },
+        text: { type: 'string', example: 'Hvad er TypeScript?' },
+        type: { type: 'string', example: 'MULTIPLE_CHOICE' },
+      },
+    },
+  })
+  questions?: any[];
+}
+
+export class QuestionBankItemDto {
+  @ApiProperty({
+    description: 'Unik ID for spørgsmålet i banken',
+    type: Number,
+    example: 1,
+  })
+  id: number;
+
+  @ApiProperty({
+    description: 'ID for spørgsmålsbanken',
+    type: Number,
+    example: 1,
+  })
+  questionBankId: number;
 
   @ApiProperty({
     description: 'Spørgsmålets tekst',
@@ -36,13 +109,6 @@ export class QuestionDto {
     example: QuestionType.MULTIPLE_CHOICE,
   })
   type: QuestionType;
-
-  @ApiProperty({
-    description: 'ID for den quiz, spørgsmålet tilhører',
-    type: Number,
-    example: 1,
-  })
-  quizId: number;
 
   @ApiPropertyOptional({
     description: 'Skabelon-kode for CODE-type spørgsmål',
@@ -108,6 +174,30 @@ export class QuestionDto {
   })
   points?: number;
 
+  @ApiProperty({
+    description: 'Spørgsmålets sværhedsgrad',
+    enum: Difficulty,
+    example: Difficulty.BEGINNER,
+  })
+  difficulty: Difficulty;
+
+  @ApiPropertyOptional({
+    description: 'Svarmuligheder for spørgsmålet',
+    type: 'object',
+    example: [
+      {
+        text: 'Et programmeringssprog der er en overbygning til JavaScript',
+        isCorrect: true,
+      },
+      {
+        text: 'Et operativsystem',
+        isCorrect: false,
+      },
+    ],
+    nullable: true,
+  })
+  answerOptions?: any | null;
+
   @ApiPropertyOptional({
     description: 'Dato for oprettelse af spørgsmålet',
     type: Date,
@@ -121,27 +211,59 @@ export class QuestionDto {
     example: '2023-05-21T14:30:00Z',
   })
   updatedAt?: Date;
-
-  @ApiPropertyOptional({
-    description: 'Svarmuligheder for spørgsmålet',
-    type: 'array',
-    items: {
-      type: 'object',
-      properties: {
-        id: { type: 'number', example: 1 },
-        text: {
-          type: 'string',
-          example:
-            'Et programmeringssprog der er en overbygning til JavaScript',
-        },
-        isCorrect: { type: 'boolean', example: true },
-      },
-    },
-  })
-  answerOptions?: any[];
 }
 
-export class CreateQuestionDto {
+export class CreateQuestionBankDto {
+  @ApiProperty({
+    description: 'Spørgsmålsbankens navn',
+    type: String,
+    example: 'TypeScript Spørgsmålsbank',
+  })
+  @IsString({ message: 'Navn skal være en streng' })
+  @IsNotEmpty({ message: 'Navn må ikke være tom' })
+  name: string;
+
+  @ApiPropertyOptional({
+    description: 'Spørgsmålsbankens beskrivelse',
+    type: String,
+    example: 'En samling af spørgsmål om TypeScript',
+    nullable: true,
+  })
+  @IsOptional()
+  @IsString({ message: 'Beskrivelse skal være en streng' })
+  description?: string | null;
+
+  @ApiProperty({
+    description: 'Spørgsmålsbankens kategori',
+    type: String,
+    example: 'Programmering',
+  })
+  @IsString({ message: 'Kategori skal være en streng' })
+  @IsNotEmpty({ message: 'Kategori må ikke være tom' })
+  category: string;
+
+  @ApiPropertyOptional({
+    description: 'Tags til kategorisering af spørgsmålsbanken',
+    type: [String],
+    example: ['TypeScript', 'JavaScript', 'Programmering'],
+    default: [],
+  })
+  @IsOptional()
+  @IsArray({ message: 'Tags skal være et array' })
+  @IsString({ each: true, message: 'Hvert tag skal være en streng' })
+  tags?: string[];
+}
+
+export class CreateQuestionBankItemDto {
+  @ApiProperty({
+    description: 'ID for spørgsmålsbanken',
+    type: Number,
+    example: 1,
+  })
+  @IsNumber({}, { message: 'Spørgsmålsbank-ID skal være et tal' })
+  @IsPositive({ message: 'Spørgsmålsbank-ID skal være et positivt tal' })
+  questionBankId: number;
+
   @ApiProperty({
     description: 'Spørgsmålets tekst',
     type: String,
@@ -158,15 +280,6 @@ export class CreateQuestionDto {
   })
   @IsEnum(QuestionType, { message: 'Type skal være en gyldig QuestionType' })
   type: QuestionType;
-
-  @ApiProperty({
-    description: 'ID for den quiz, spørgsmålet tilhører',
-    type: Number,
-    example: 1,
-  })
-  @IsNumber({}, { message: 'Quiz-ID skal være et tal' })
-  @IsPositive({ message: 'Quiz-ID skal være et positivt tal' })
-  quizId: number;
 
   @ApiPropertyOptional({
     description: 'Skabelon-kode for CODE-type spørgsmål',
@@ -249,9 +362,20 @@ export class CreateQuestionDto {
   @Min(1, { message: 'Point skal være mindst 1' })
   points?: number;
 
+  @ApiProperty({
+    description: 'Spørgsmålets sværhedsgrad',
+    enum: Difficulty,
+    example: Difficulty.BEGINNER,
+    default: Difficulty.BEGINNER,
+  })
+  @IsEnum(Difficulty, {
+    message: 'Sværhedsgrad skal være en gyldig Difficulty',
+  })
+  difficulty: Difficulty;
+
   @ApiPropertyOptional({
     description: 'Svarmuligheder for spørgsmålet',
-    type: [CreateAnswerOptionDto],
+    type: 'object',
     example: [
       {
         text: 'Et programmeringssprog der er en overbygning til JavaScript',
@@ -262,15 +386,55 @@ export class CreateQuestionDto {
         isCorrect: false,
       },
     ],
+    nullable: true,
   })
   @IsOptional()
-  @IsArray({ message: 'Svarmuligheder skal være et array' })
-  @ValidateNested({ each: true })
-  @Type(() => CreateAnswerOptionDto)
-  answerOptions?: CreateAnswerOptionDto[];
+  answerOptions?: any | null;
 }
 
-export class UpdateQuestionDto {
+export class UpdateQuestionBankDto {
+  @ApiPropertyOptional({
+    description: 'Spørgsmålsbankens navn',
+    type: String,
+    example: 'TypeScript Spørgsmålsbank - Opdateret',
+  })
+  @IsOptional()
+  @IsString({ message: 'Navn skal være en streng' })
+  @IsNotEmpty({ message: 'Navn må ikke være tom hvis angivet' })
+  name?: string;
+
+  @ApiPropertyOptional({
+    description: 'Spørgsmålsbankens beskrivelse',
+    type: String,
+    example: 'En opdateret samling af spørgsmål om TypeScript',
+    nullable: true,
+  })
+  @IsOptional()
+  @IsString({ message: 'Beskrivelse skal være en streng' })
+  description?: string | null;
+
+  @ApiPropertyOptional({
+    description: 'Spørgsmålsbankens kategori',
+    type: String,
+    example: 'Programmering',
+  })
+  @IsOptional()
+  @IsString({ message: 'Kategori skal være en streng' })
+  @IsNotEmpty({ message: 'Kategori må ikke være tom hvis angivet' })
+  category?: string;
+
+  @ApiPropertyOptional({
+    description: 'Tags til kategorisering af spørgsmålsbanken',
+    type: [String],
+    example: ['TypeScript', 'JavaScript', 'Programmering', 'Avanceret'],
+  })
+  @IsOptional()
+  @IsArray({ message: 'Tags skal være et array' })
+  @IsString({ each: true, message: 'Hvert tag skal være en streng' })
+  tags?: string[];
+}
+
+export class UpdateQuestionBankItemDto {
   @ApiPropertyOptional({
     description: 'Spørgsmålets tekst',
     type: String,
@@ -294,7 +458,7 @@ export class UpdateQuestionDto {
     description: 'Skabelon-kode for CODE-type spørgsmål',
     type: String,
     example:
-      'function add(a: number, b: number): number {\n  // Din kode her\n}',
+      'function add(a: number, b: number): number {\n  // Din opdaterede kode her\n}',
     nullable: true,
   })
   @IsOptional()
@@ -314,7 +478,7 @@ export class UpdateQuestionDto {
   @ApiPropertyOptional({
     description: 'Forventet output for CODE-type spørgsmål',
     type: String,
-    example: '3',
+    example: '5',
     nullable: true,
   })
   @IsOptional()
@@ -324,7 +488,7 @@ export class UpdateQuestionDto {
   @ApiPropertyOptional({
     description: 'Minimum antal ord for ESSAY-type spørgsmål',
     type: Number,
-    example: 100,
+    example: 150,
     nullable: true,
   })
   @IsOptional()
@@ -335,7 +499,7 @@ export class UpdateQuestionDto {
   @ApiPropertyOptional({
     description: 'Maksimum antal ord for ESSAY-type spørgsmål',
     type: Number,
-    example: 500,
+    example: 600,
     nullable: true,
   })
   @IsOptional()
@@ -347,12 +511,13 @@ export class UpdateQuestionDto {
     description: 'Elementer for DRAG_AND_DROP-type spørgsmål',
     type: 'object',
     example: {
-      items: ['TypeScript', 'JavaScript', 'Python'],
-      targets: ['Statisk typet', 'Dynamisk typet', 'Fortolket'],
+      items: ['TypeScript', 'JavaScript', 'Python', 'Java'],
+      targets: ['Statisk typet', 'Dynamisk typet', 'Fortolket', 'Kompileret'],
       correctPairs: [
         [0, 0],
         [1, 1],
         [2, 2],
+        [3, 3],
       ],
     },
     nullable: true,
@@ -363,10 +528,43 @@ export class UpdateQuestionDto {
   @ApiPropertyOptional({
     description: 'Point tildelt for korrekt svar',
     type: Number,
-    example: 1,
+    example: 2,
   })
   @IsOptional()
   @IsNumber({}, { message: 'Point skal være et tal' })
   @Min(1, { message: 'Point skal være mindst 1' })
   points?: number;
+
+  @ApiPropertyOptional({
+    description: 'Spørgsmålets sværhedsgrad',
+    enum: Difficulty,
+    example: Difficulty.INTERMEDIATE,
+  })
+  @IsOptional()
+  @IsEnum(Difficulty, {
+    message: 'Sværhedsgrad skal være en gyldig Difficulty',
+  })
+  difficulty?: Difficulty;
+
+  @ApiPropertyOptional({
+    description: 'Svarmuligheder for spørgsmålet',
+    type: 'object',
+    example: [
+      {
+        text: 'Et programmeringssprog der er en overbygning til JavaScript med statisk typning',
+        isCorrect: true,
+      },
+      {
+        text: 'Et operativsystem',
+        isCorrect: false,
+      },
+      {
+        text: 'En database',
+        isCorrect: false,
+      },
+    ],
+    nullable: true,
+  })
+  @IsOptional()
+  answerOptions?: any | null;
 }
