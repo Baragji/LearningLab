@@ -26,9 +26,10 @@ async function bootstrap() {
       ];
 
   app.enableCors({
-    origin: corsOrigins,
+    origin: true, // Tillad alle origins i udviklingsmiljø
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
+    allowedHeaders: 'Content-Type,Authorization,Accept',
   });
 
   // Global Validation Pipe
