@@ -22,6 +22,8 @@ import { QuizAttemptsModule } from './controllers/quizAttempts.module';
 import { UserProgressModule } from './controllers/userProgress.module';
 import { SubjectAreasModule } from './controllers/subjectAreas.module';
 import { PensumModule } from './controllers/pensum.module';
+import { QuestionBankModule } from './controllers/question-bank.module';
+import { CertificateModule } from './controllers/certificate.module';
 import { UserGroupsModule } from './user-groups/user-groups.module';
 import { SharedModule } from './shared/shared.module';
 import { CommonModule } from './common/common.module';
@@ -78,6 +80,8 @@ import socialAuthConfig from './config/social-auth.config';
     UserProgressModule,
     SubjectAreasModule,
     PensumModule,
+    QuestionBankModule,
+    CertificateModule,
   ],
   controllers: [AppController, ErrorTestController],
   providers: [

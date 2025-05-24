@@ -8,6 +8,9 @@ import {
   IsString,
   IsBoolean,
   Min,
+  Max,
+  IsArray,
+  IsEnum,
 } from 'class-validator';
 
 export class QuizDto {
@@ -81,6 +84,36 @@ export class QuizDto {
   showAnswers?: boolean;
 
   @ApiPropertyOptional({
+    description: 'Minimum score (i procent) for at bestå quizzen',
+    type: Number,
+    example: 70,
+    nullable: true,
+  })
+  passingScore?: number | null;
+
+  @ApiPropertyOptional({
+    description: 'Om der skal udstedes et certifikat ved bestået quiz',
+    type: Boolean,
+    example: false,
+  })
+  issueCertificate?: boolean;
+
+  @ApiPropertyOptional({
+    description: 'Kategori for spørgsmålsbank',
+    type: String,
+    example: 'TypeScript',
+    nullable: true,
+  })
+  questionBankCategory?: string | null;
+
+  @ApiPropertyOptional({
+    description: 'Tags til kategorisering af quizzen',
+    type: [String],
+    example: ['TypeScript', 'Programmering', 'Begynder'],
+  })
+  tags?: string[];
+
+  @ApiPropertyOptional({
     description: 'Dato for oprettelse af quizzen',
     type: Date,
     example: '2023-05-20T12:00:00Z',
@@ -129,6 +162,25 @@ export class QuizDto {
     nullable: true,
   })
   module?: any | null;
+
+  @ApiPropertyOptional({
+    description: 'Certifikater udstedt for denne quiz',
+    type: 'array',
+    items: {
+      type: 'object',
+      properties: {
+        id: { type: 'number', example: 1 },
+        userId: { type: 'number', example: 1 },
+        score: { type: 'number', example: 85 },
+        issueDate: {
+          type: 'string',
+          format: 'date-time',
+          example: '2023-05-25T14:30:00Z',
+        },
+      },
+    },
+  })
+  certificates?: any[];
 }
 
 export class CreateQuizDto {
@@ -215,6 +267,49 @@ export class CreateQuizDto {
   @IsOptional()
   @IsBoolean({ message: 'Vis svar skal være en boolean værdi' })
   showAnswers?: boolean;
+
+  @ApiPropertyOptional({
+    description: 'Minimum score (i procent) for at bestå quizzen',
+    type: Number,
+    example: 70,
+    nullable: true,
+  })
+  @IsOptional()
+  @IsNumber({}, { message: 'Beståelsesscore skal være et tal' })
+  @Min(0, { message: 'Beståelsesscore skal være mindst 0' })
+  @Max(100, { message: 'Beståelsesscore kan maksimalt være 100' })
+  passingScore?: number | null;
+
+  @ApiPropertyOptional({
+    description: 'Om der skal udstedes et certifikat ved bestået quiz',
+    type: Boolean,
+    example: false,
+    default: false,
+  })
+  @IsOptional()
+  @IsBoolean({ message: 'Udsted certifikat skal være en boolean værdi' })
+  issueCertificate?: boolean;
+
+  @ApiPropertyOptional({
+    description: 'Kategori for spørgsmålsbank',
+    type: String,
+    example: 'TypeScript',
+    nullable: true,
+  })
+  @IsOptional()
+  @IsString({ message: 'Kategori skal være en streng' })
+  questionBankCategory?: string | null;
+
+  @ApiPropertyOptional({
+    description: 'Tags til kategorisering af quizzen',
+    type: [String],
+    example: ['TypeScript', 'Programmering', 'Begynder'],
+    default: [],
+  })
+  @IsOptional()
+  @IsArray({ message: 'Tags skal være et array' })
+  @IsString({ each: true, message: 'Hvert tag skal være en streng' })
+  tags?: string[];
 }
 
 export class UpdateQuizDto {
@@ -302,4 +397,45 @@ export class UpdateQuizDto {
   @IsOptional()
   @IsBoolean({ message: 'Vis svar skal være en boolean værdi' })
   showAnswers?: boolean;
+
+  @ApiPropertyOptional({
+    description: 'Minimum score (i procent) for at bestå quizzen',
+    type: Number,
+    example: 70,
+    nullable: true,
+  })
+  @IsOptional()
+  @IsNumber({}, { message: 'Beståelsesscore skal være et tal' })
+  @Min(0, { message: 'Beståelsesscore skal være mindst 0' })
+  @Max(100, { message: 'Beståelsesscore kan maksimalt være 100' })
+  passingScore?: number | null;
+
+  @ApiPropertyOptional({
+    description: 'Om der skal udstedes et certifikat ved bestået quiz',
+    type: Boolean,
+    example: false,
+  })
+  @IsOptional()
+  @IsBoolean({ message: 'Udsted certifikat skal være en boolean værdi' })
+  issueCertificate?: boolean;
+
+  @ApiPropertyOptional({
+    description: 'Kategori for spørgsmålsbank',
+    type: String,
+    example: 'TypeScript',
+    nullable: true,
+  })
+  @IsOptional()
+  @IsString({ message: 'Kategori skal være en streng' })
+  questionBankCategory?: string | null;
+
+  @ApiPropertyOptional({
+    description: 'Tags til kategorisering af quizzen',
+    type: [String],
+    example: ['TypeScript', 'Programmering', 'Avanceret'],
+  })
+  @IsOptional()
+  @IsArray({ message: 'Tags skal være et array' })
+  @IsString({ each: true, message: 'Hvert tag skal være en streng' })
+  tags?: string[];
 }

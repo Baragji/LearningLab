@@ -147,7 +147,7 @@ export class SubmitQuizAnswerDto {
   selectedAnswerOptionId?: number;
 
   @ApiPropertyOptional({
-    description: 'Tekstsvar (for åbne spørgsmål)',
+    description: 'Tekstsvar (for FILL_IN_BLANK og ESSAY spørgsmål)',
     type: String,
     example: 'Mit svar på et åbent spørgsmål',
     nullable: true,
@@ -155,6 +155,31 @@ export class SubmitQuizAnswerDto {
   @IsOptional()
   @IsNotEmpty({ message: 'Tekstsvar må ikke være tomt hvis angivet' })
   inputText?: string;
+
+  @ApiPropertyOptional({
+    description: 'Kodesvar (for CODE spørgsmål)',
+    type: String,
+    example: 'function add(a, b) { return a + b; }',
+    nullable: true,
+  })
+  @IsOptional()
+  @IsNotEmpty({ message: 'Kodesvar må ikke være tomt hvis angivet' })
+  codeAnswer?: string;
+
+  @ApiPropertyOptional({
+    description: 'Drag-and-drop svar (for DRAG_AND_DROP spørgsmål)',
+    type: 'object',
+    example: {
+      pairs: [
+        [0, 2],
+        [1, 0],
+        [2, 1],
+      ],
+    },
+    nullable: true,
+  })
+  @IsOptional()
+  dragDropAnswer?: any;
 }
 
 export class CompleteQuizAttemptDto {
@@ -231,6 +256,57 @@ export class QuizAttemptResultDto {
     example: 80,
   })
   percentageScore: number;
+
+  @ApiPropertyOptional({
+    description: 'Om quizzen er bestået',
+    type: Boolean,
+    example: true,
+  })
+  passed?: boolean;
+
+  @ApiPropertyOptional({
+    description: 'Minimum score (i procent) for at bestå quizzen',
+    type: Number,
+    example: 70,
+    nullable: true,
+  })
+  passingScore?: number | null;
+
+  @ApiPropertyOptional({
+    description: 'Certifikat udstedt for denne quiz',
+    type: 'object',
+    properties: {
+      id: { type: 'number', example: 1 },
+      certificateId: { type: 'string', example: 'CERT-12345-ABCDE' },
+      issueDate: {
+        type: 'string',
+        format: 'date-time',
+        example: '2023-05-20T12:15:00Z',
+      },
+      title: { type: 'string', example: 'TypeScript Grundkursus Certifikat' },
+    },
+    nullable: true,
+  })
+  certificate?: any | null;
+
+  @ApiPropertyOptional({
+    description: 'Detaljeret feedback for hvert spørgsmål',
+    type: 'array',
+    items: {
+      type: 'object',
+      properties: {
+        questionId: { type: 'number', example: 1 },
+        questionText: { type: 'string', example: 'Hvad er TypeScript?' },
+        isCorrect: { type: 'boolean', example: true },
+        score: { type: 'number', example: 1 },
+        feedback: {
+          type: 'string',
+          example: 'Korrekt! TypeScript er en overbygning til JavaScript.',
+        },
+      },
+    },
+  })
+  questionFeedback?: any[];
 }
 
 export class UserAnswerDto {
@@ -264,12 +340,58 @@ export class UserAnswerDto {
   selectedAnswerOptionId?: number | null;
 
   @ApiPropertyOptional({
-    description: 'Tekstsvar for åbne spørgsmål',
+    description: 'Tekstsvar for FILL_IN_BLANK og ESSAY spørgsmål',
     type: String,
     example: 'Mit svar på et åbent spørgsmål',
     nullable: true,
   })
   inputText?: string | null;
+
+  @ApiPropertyOptional({
+    description: 'Kodesvar for CODE spørgsmål',
+    type: String,
+    example: 'function add(a, b) { return a + b; }',
+    nullable: true,
+  })
+  codeAnswer?: string | null;
+
+  @ApiPropertyOptional({
+    description: 'Drag-and-drop svar for DRAG_AND_DROP spørgsmål',
+    type: 'object',
+    example: {
+      pairs: [
+        [0, 2],
+        [1, 0],
+        [2, 1],
+      ],
+    },
+    nullable: true,
+  })
+  dragDropAnswer?: any | null;
+
+  @ApiPropertyOptional({
+    description: 'Om svaret er korrekt',
+    type: Boolean,
+    example: true,
+    nullable: true,
+  })
+  isCorrect?: boolean | null;
+
+  @ApiPropertyOptional({
+    description: 'Score for dette svar (for delvis kredit)',
+    type: Number,
+    example: 0.5,
+    nullable: true,
+  })
+  score?: number | null;
+
+  @ApiPropertyOptional({
+    description: 'Feedback for dette svar',
+    type: String,
+    example: 'Godt forsøg, men ikke helt korrekt. Prøv at overveje...',
+    nullable: true,
+  })
+  feedback?: string | null;
 
   @ApiPropertyOptional({
     description: 'Dato for oprettelse af svaret',

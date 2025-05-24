@@ -45,6 +45,7 @@
     "class-validator": "^0.14.1",
     "cookie-parser": "^1.4.6",
     "csurf": "^1.11.0",
+    "csv-parser": "^3.0.0",
     "dotenv": "^16.4.5",
     "express": "^4.17.21",
     "express-rate-limit": "^7.5.0",
@@ -62,7 +63,8 @@
     "rimraf": "^6.0.1",
     "rxjs": "^7.8.1",
     "swagger-ui-express": "^5.0.1",
-    "uuid": "^10.0.0"
+    "uuid": "^10.0.0",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.4.2",
