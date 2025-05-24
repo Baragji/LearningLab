@@ -8,7 +8,10 @@
 export enum QuestionType {
   MULTIPLE_CHOICE = "MULTIPLE_CHOICE",
   FILL_IN_BLANK = "FILL_IN_BLANK",
-  MATCHING = "MATCHING"
+  MATCHING = "MATCHING",
+  DRAG_AND_DROP = "DRAG_AND_DROP",
+  CODE = "CODE",
+  ESSAY = "ESSAY"
 }
 
 /**
@@ -29,11 +32,19 @@ export interface Quiz {
   description: string;
   lessonId?: number | null;
   moduleId?: number | null;
-  passingScore?: number;
+  timeLimit?: number | null;
+  maxAttempts?: number | null;
+  randomizeQuestions: boolean;
+  showAnswers: boolean;
+  passingScore?: number | null;
+  issueCertificate: boolean;
+  questionBankCategory?: string | null;
+  tags: string[];
   questions?: Question[];
   answerOptions?: Record<number, AnswerOption[]>;
   createdAt: Date;
   updatedAt: Date;
+  deletedAt?: Date | null;
 }
 
 /**
@@ -45,9 +56,17 @@ export interface Question {
   type: QuestionType;
   quizId: number;
   quiz?: Quiz;
+  codeTemplate?: string | null;
+  codeLanguage?: string | null;
+  expectedOutput?: string | null;
+  essayMinWords?: number | null;
+  essayMaxWords?: number | null;
+  dragDropItems?: Record<string, unknown> | null;
+  points: number;
   explanation?: string;
   createdAt: Date;
   updatedAt: Date;
+  deletedAt?: Date | null;
 }
 
 /**
@@ -86,8 +105,14 @@ export interface UserAnswer {
   questionId: number;
   selectedAnswerOptionId?: number | null;
   inputText?: string | null;
+  codeAnswer?: string | null;
+  dragDropAnswer?: Record<string, unknown> | null;
+  isCorrect?: boolean | null;
+  score?: number | null;
+  feedback?: string | null;
   createdAt: Date;
   updatedAt: Date;
+  deletedAt?: Date | null;
 }
 
 /**
@@ -113,6 +138,14 @@ export interface CreateQuizInput {
   description: string;
   lessonId?: number;
   moduleId?: number;
+  timeLimit?: number;
+  maxAttempts?: number;
+  randomizeQuestions?: boolean;
+  showAnswers?: boolean;
+  passingScore?: number;
+  issueCertificate?: boolean;
+  questionBankCategory?: string;
+  tags?: string[];
 }
 
 /**
@@ -122,6 +155,13 @@ export interface CreateQuestionInput {
   text: string;
   type: QuestionType;
   quizId: number;
+  codeTemplate?: string;
+  codeLanguage?: string;
+  expectedOutput?: string;
+  essayMinWords?: number;
+  essayMaxWords?: number;
+  dragDropItems?: Record<string, unknown>;
+  points?: number;
   answerOptions?: CreateAnswerOptionInput[];
 }
 
@@ -149,6 +189,8 @@ export interface SubmitAnswerInput {
   questionId: number;
   selectedAnswerOptionId?: number;
   inputText?: string;
+  codeAnswer?: string;
+  dragDropAnswer?: Record<string, unknown>;
 }
 
 /**
@@ -156,6 +198,51 @@ export interface SubmitAnswerInput {
  */
 export interface CompleteQuizAttemptInput {
   quizAttemptId: number;
+}
+
+/**
+ * Input for creating a question bank
+ */
+export interface CreateQuestionBankInput {
+  name: string;
+  description?: string;
+  category: string;
+  tags?: string[];
+}
+
+/**
+ * Input for creating a question bank item
+ */
+export interface CreateQuestionBankItemInput {
+  questionBankId: number;
+  text: string;
+  type: QuestionType;
+  codeTemplate?: string;
+  codeLanguage?: string;
+  expectedOutput?: string;
+  essayMinWords?: number;
+  essayMaxWords?: number;
+  dragDropItems?: Record<string, unknown>;
+  points?: number;
+  difficulty?: string;
+  answerOptions?: Record<string, unknown>;
+}
+
+/**
+ * Input for importing questions from CSV/Excel
+ */
+export interface ImportQuestionsInput {
+  questionBankId: number;
+  fileContent: string;
+  fileType: 'csv' | 'excel';
+}
+
+/**
+ * Input for adding questions from question bank to a quiz
+ */
+export interface AddQuestionsFromBankInput {
+  quizId: number;
+  questionBankItemIds: number[];
 }
 
 /**
@@ -179,4 +266,58 @@ export interface QuizResult {
   completedAt: Date;
   createdAt: Date;
   updatedAt: Date;
+}
+
+/**
+ * Represents a question bank
+ */
+export interface QuestionBank {
+  id: number;
+  name: string;
+  description?: string | null;
+  category: string;
+  tags: string[];
+  questions?: QuestionBankItem[];
+  createdAt: Date;
+  updatedAt: Date;
+  deletedAt?: Date | null;
+}
+
+/**
+ * Represents a question in a question bank
+ */
+export interface QuestionBankItem {
+  id: number;
+  questionBankId: number;
+  text: string;
+  type: QuestionType;
+  codeTemplate?: string | null;
+  codeLanguage?: string | null;
+  expectedOutput?: string | null;
+  essayMinWords?: number | null;
+  essayMaxWords?: number | null;
+  dragDropItems?: Record<string, unknown> | null;
+  points: number;
+  difficulty: string;
+  answerOptions?: Record<string, unknown> | null;
+  createdAt: Date;
+  updatedAt: Date;
+  deletedAt?: Date | null;
+}
+
+/**
+ * Represents a certificate issued to a user
+ */
+export interface Certificate {
+  id: number;
+  userId: number;
+  quizId: number;
+  score: number;
+  issueDate: Date;
+  certificateId: string;
+  title: string;
+  description?: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+  deletedAt?: Date | null;
 }

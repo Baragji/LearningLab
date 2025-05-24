@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detaljeret Interaktiv Sprintplan: AI Kodningsagent med Gemini Kode Generering</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Visualization & Content Choices:
+        - Overall Timeline: Chart.js horizontal bar chart.
+        - Sprint Details: HTML sections (expandable), now with highly granular task lists.
+        - Gemini Task Brainstorming: Button per sprint. Output in a div.
+        - Gemini Code Generation: Button per granular task item (li). Output in a preformatted div. Library/Method: Gemini API (gemini-2.0-flash) for both.
+        - CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.7s ease-out; /* Even smoother for more content */
+        }
+        .accordion-button[aria-expanded="true"] + .accordion-content {
+            max-height: 10000px; /* Significantly increased for highly granular tasks */
+        }
+        .accordion-button .arrow {
+            transition: transform 0.3s ease-out;
+        }
+        .accordion-button[aria-expanded="true"] .arrow {
+            transform: rotate(90deg);
+        }
+        .code-block { /* For user-provided code examples in the plan */
+            background-color: #e5e7eb; /* Tailwind gray-200 */
+            border: 1px solid #d1d5db; /* Tailwind gray-300 */
+            border-radius: 0.375rem;
+            padding: 0.75rem; /* p-3 */
+            overflow-x: auto;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.875rem;
+            color: #1f2937;
+            white-space: pre;
+            margin-top: 0.25rem; /* mt-1 */
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 350px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .gemini-button, .generate-code-button {
+            background-color: #ea580c;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            font-weight: 500;
+            transition: background-color 0.2s ease-in-out;
+            cursor: pointer;
+        }
+        .gemini-button:hover, .generate-code-button:hover {
+            background-color: #c2410c;
+        }
+        .generate-code-button {
+            background-color: #2563eb;
+            font-size: 0.8rem; /* Smaller for micro-tasks */
+            padding: 0.25rem 0.6rem; /* Smaller padding */
+            margin-top: 0.5rem;
+        }
+        .generate-code-button:hover {
+            background-color: #1d4ed8;
+        }
+        .gemini-output, .generated-code-output {
+            margin-top: 1rem;
+            padding: 1rem;
+            background-color: #fffbeb;
+            border: 1px solid #fde68a;
+            border-radius: 0.375rem;
+        }
+        .generated-code-output {
+            background-color: #f8fafc;
+            border-color: #e2e8f0;
+            margin-top: 0.5rem; /* Closer to its button */
+        }
+        .generated-code-output pre {
+            white-space: pre-wrap;
+            word-break: break-all;
+            font-family: 'Courier New', Courier, monospace; /* Ensure monospaced font for generated code */
+            font-size: 0.875rem; /* text-sm */
+            background-color: #f3f4f6; /* Tailwind gray-100 for the code block itself */
+            border: 1px solid #d1d5db; /* Tailwind gray-300 */
+            border-radius: 0.25rem; /* rounded-sm */
+            padding: 0.75rem; /* p-3 */
+        }
+        .loading-spinner {
+            border: 3px solid #f3f3f3; /* Thinner border for smaller spinners */
+            border-top: 3px solid #ea580c;
+            border-radius: 50%;
+            width: 20px; /* Slightly smaller */
+            height: 20px;
+            animation: spin 1s linear infinite;
+        }
+        .generate-code-button .loading-spinner {
+            border-top: 3px solid #2563eb;
+            width: 14px;
+            height: 14px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .sprint-tasks li {
+            padding-bottom: 0.5rem; /* Add some space below each task item */
+        }
+        .sprint-tasks .sub-task-list {
+            list-style-type: circle; /* Different bullet for sub-sub-tasks if any */
+            margin-left: 1.5rem; /* Indent sub-sub-tasks */
+            margin-top: 0.25rem;
+        }
+
+    </style>
+</head>
+<body class="bg-amber-50 text-neutral-800 antialiased">
+<div class="container mx-auto p-4 sm:p-6 lg:p-8">
+    <header class="text-center mb-8">
+        <h1 class="text-3xl sm:text-4xl font-bold text-orange-600 mb-2">Detaljeret 6-Ugers Sprintplan</h1>
+        <p class="text-lg sm:text-xl text-neutral-700">AI-Drevet Kodningsagent for LearningLab Monorepo</p>
+    </header>
+
+    <section id="introduction" class="mb-10 p-6 bg-white rounded-lg shadow-md">
+        <h2 class="text-2xl font-semibold text-orange-600 mb-3">Introduktion</h2>
+        <p class="text-neutral-700 leading-relaxed">
+            Denne interaktive plan er nu yderligere detaljeret for at guide dig trin-for-trin gennem de 6 sprints (i alt 9 uger) for at bygge en AI-drevet kodningsagent. Hver opgave er nedbrudt i meget små, konkrete trin.
+            For hvert sprint kan du bruge "Brainstorm Opgaver ✨" knappen til at få AI-genererede forslag til overordnede opgaver. For hvert lille, specifikke trin i et sprint, kan du bruge "Generer Kode 💻" knappen til at få et AI-genereret kodeeksempel.
+        </p>
+    </section>
+
+    <section id="timeline-visualization" class="mb-12 p-6 bg-white rounded-lg shadow-md">
+        <h2 class="text-2xl font-semibold text-orange-600 mb-4 text-center">Sprint Tidslinje Oversigt</h2>
+        <p class="text-neutral-700 leading-relaxed mb-4 text-center">
+            Grafen illustrerer varigheden af hver sprint i uger.
+        </p>
+        <div class="chart-container">
+            <canvas id="sprintTimelineChart"></canvas>
+        </div>
+    </section>
+
+    <div id="sprint-sections" class="space-y-6">
+        <div class="bg-white rounded-lg shadow-md overflow-hidden">
+            <button class="accordion-button w-full flex justify-between items-center p-5 text-left text-xl font-semibold text-orange-600 hover:bg-amber-100 focus:outline-none transition-colors duration-150" aria-expanded="false" aria-controls="sprint-0-content" data-sprint-title="Sprint 0: Scaffolding & krav (1 uge)">
+                <span>Sprint 0: Scaffolding & krav (1 uge)</span>
+                <span class="arrow text-2xl transform transition-transform duration-300">&#x276F;</span>
+            </button>
+            <div id="sprint-0-content" class="accordion-content bg-amber-50">
+                <div class="p-5 border-t border-amber-200">
+                    <p class="text-neutral-700 mb-4" data-sprint-description>Grundlæggende opsætning af projektet, definition af use-cases og teknologistak. Hvert trin er designet til at være en lille, isoleret handling.</p>
+                    <h3 class="text-lg font-semibold text-orange-700 mt-4 mb-2">Del 1: Workspace Opsætning</h3>
+                    <ul class="sprint-tasks list-disc list-inside space-y-2 text-neutral-700">
+                        <li data-task-id="s0-step1">Åbn rod `package.json` filen i din editor.</li>
+                        <li data-task-id="s0-step2">Find `workspaces` arrayet i `package.json`.</li>
+                        <li data-task-id="s0-step3">Tilføj strengen `"packages/agent"` til `workspaces` arrayet.
+                            <pre class="code-block mt-1">{
+  "workspaces": [
+    "packages/agent"
+    // ... andre workspaces
+  ]
+}</pre>
+                        </li>
+                        <li data-task-id="s0-step4">Gem ændringerne i `package.json`.</li>
+                        <li data-task-id="s0-step5">Åbn en terminal i projektets rodmappe.</li>
+                        <li data-task-id="s0-step6">Kør kommandoen: `yarn workspace @learninglab/agent init`.</li>
+                        <li data-task-id="s0-step7">Verificer at mappen `packages/agent` er oprettet.</li>
+                        <li data-task-id="s0-step8">Verificer at `packages/agent` indeholder en standard NestJS projektstruktur (f.eks. `src/main.ts`, `src/app.module.ts`).</li>
+                    </ul>
+
+                    <h3 class="text-lg font-semibold text-orange-700 mt-4 mb-2">Del 2: Definition af Agent Use-Cases (Dokumentation)</h3>
+                    <ul class="sprint-tasks list-disc list-inside space-y-2 text-neutral-700">
+                        <li data-task-id="s0-step9">Opret/åbn en fil til dokumentation af use-cases (f.eks. `packages/agent/docs/use-cases.md`).</li>
+                        <li data-task-id="s0-step10">Dokumentér use-case 1: "Autocomplete af hele funktioner i `apps/api` (NestJS)". Beskriv input, output, og forventet adfærd.</li>
+                        <li data-task-id="s0-step11">Dokumentér use-case 2: "Autocomplete af hele funktioner i `apps/web` (Next.js)". Beskriv input, output, og forventet adfærd.</li>
+                        <li data-task-id="s0-step12">Dokumentér use-case 3: "Refaktorering (fx 'extract method')". Beskriv input (valgt kode, ny funktionsnavn), output (modificeret kode).</li>
+                        <li data-task-id="s0-step13">Dokumentér use-case 4: "Generering af CRUD-endpoints i NestJS baseret på en entity". Beskriv input (entity definition), output (controller/service kode).</li>
+                        <li data-task-id="s0-step14">Dokumentér use-case 5: "Test-fixes via Jest/Supertest/Playwright". Beskriv input (fejlende test, kode), output (korrigeret kode).</li>
+                    </ul>
+
+                    <h3 class="text-lg font-semibold text-orange-700 mt-4 mb-2">Del 3: Teknologistak for Agenten (Dokumentation)</h3>
+                    <ul class="sprint-tasks list-disc list-inside space-y-2 text-neutral-700">
+                        <li data-task-id="s0-step15">Opret/åbn `packages/agent/README.md`.</li>
+                        <li data-task-id="s0-step16">Tilføj en sektion "Teknologistak" i `README.md`.</li>
+                        <li data-task-id="s0-step17">Dokumentér: Runtime & Sprog: Node.js 20.12.2, TypeScript.</li>
+                        <li data-task-id="s0-step18">Dokumentér: Framework: NestJS (genbrug af eksisterende monorepo setup).</li>
+                        <li data-task-id="s0-step19">Dokumentér: Model API: Hugging Face Inference API (Model: `bigcode/starcoder2-7b`, gratis tier).</li>
+                        <li data-task-id="s0-step20">Dokumentér: Index Store (initielt): In-memory.</li>
+                        <li data-task-id="s0-step21">Dokumentér: Caching (senere): Redis.</li>
+                    </ul>
+
+                    <h3 class="text-lg font-semibold text-orange-700 mt-4 mb-2">Del 4: Grundlæggende Arkitektur Dokumentation</h3>
+                    <ul class="sprint-tasks list-disc list-inside space-y-2 text-neutral-700">
+                        <li data-task-id="s0-step22">I `packages/agent/README.md`, tilføj en sektion "Overordnet Arkitektur".</li>
+                        <li data-task-id="s0-step23">Beskriv kort de primære moduler (f.eks. `AppModule`, `ContextModule`, `OrchestrationModule`).</li>
+                        <li data-task-id="s0-step24">Beskriv kort ansvarsområder for controllere (API-endpoints) og services (forretningslogik).</li>
+                    </ul>
+
+                    <div class="mt-6">
+                        <button class="gemini-button flex items-center justify-center" data-sprint-id="0">
+                            <span class="button-text">Brainstorm Flere Opgaver ✨</span>
+                            <div class="loading-spinner hidden ml-2"></div>
+                        </button>
+                        <div class="gemini-output hidden mt-2" id="gemini-output-0"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-md overflow-hidden">
+            <button class="accordion-button w-full flex justify-between items-center p-5 text-left text-xl font-semibold text-orange-600 hover:bg-amber-100 focus:outline-none transition-colors duration-150" aria-expanded="false" aria-controls="sprint-1-content" data-sprint-title="Sprint 1: Model-API & Docker (2 uger)">
+                <span>Sprint 1: Model-API & Docker (2 uger)</span>
+                <span class="arrow text-2xl transform transition-transform duration-300">&#x276F;</span>
+            </button>
+            <div id="sprint-1-content" class="accordion-content bg-amber-50">
+                <div class="p-5 border-t border-amber-200">
+                    <p class="text-neutral-700 mb-4" data-sprint-description>Integration med Hugging Face API for tekstgenerering og containerisering af agenten med Docker.</p>
+                    <h3 class="text-lg font-semibold text-orange-700 mt-4 mb-2">Del 1: Hugging Face Client Opsætning</h3>
+                    <ul class="sprint-tasks list-disc list-inside space-y-2 text-neutral-700">
+                        <li data-task-id="s1-step1">Åbn en terminal i projektets rodmappe.</li>
+                        <li data-task-id="s1-step2">Kør kommandoen: `yarn workspace @learninglab/agent add @huggingface/inference`.</li>
+                        <li data-task-id="s1-step3">Åbn `packages/agent/package.json` og verificer at `@huggingface/inference` er tilføjet til `dependencies`.</li>
+                    </ul>
+                    <h3 class="text-lg font-semibold text-orange-700 mt-4 mb-2">Del 2: `/generate` Endpoint Implementering</h3>
+                    <ul class="sprint-tasks list-disc list-inside space-y-2 text-neutral-700">
+                        <li data-task-id="s1-step4">Åbn `packages/agent/src/app.controller.ts`.</li>
+                        <li data-task-id="s1-step5">Tilføj import: `import { Controller, Post, Body, HttpException, HttpStatus } from '@nestjs/common';`.</li>
+                        <li data-task-id="s1-step6">Tilføj import: `import { HfInference } from '@huggingface/inference';`.</li>
+                        <li data-task-id="s1-step7">Tilføj import (hvis ConfigService bruges for API key): `import { ConfigService } from '@nestjs/config';`.</li>
+                        <li data-task-id="s1-step8">I `AppController` klassen, injicer `ConfigService` i constructoren (hvis brugt): `constructor(private configService: ConfigService) {}`.</li>
+                        <li data-task-id="s1-step9">Definer en ny async metode: `@Post('generate') async generate(@Body('prompt') prompt: string) { ... }`.</li>
+                        <li data-task-id="s1-step10">Indeni `generate` metoden, hent Hugging Face API nøglen: `const apiKey = this.configService.get<string>('HF_API_KEY');` (eller `process.env.HF_API_KEY` hvis ConfigService ikke bruges endnu).</li>
+                        <li data-task-id="s1-step11">Tjek om `apiKey` er sat, ellers throw `HttpException`.</li>
+                        <li data-task-id="s1-step12">Initialiser HfInference: `const hf = new HfInference(apiKey);`.</li>
+                        <li data-task-id="s1-step13">Implementer et try-catch block for API kaldet.</li>
+                        <li data-task-id="s1-step14">Indeni try block, kald tekstgenerering: `const res = await hf.textGeneration({ model: 'bigcode/starcoder2-7b', inputs: prompt, parameters: { max_new_tokens: 256, return_full_text: false } });`.</li>
+                        <li data-task-id="s1-step15">Returner resultatet: `return { text: res.generated_text };`.</li>
+                        <li data-task-id="s1-step16">I catch block, log fejlen og throw `HttpException` med passende status og besked.</li>
+                        <li data-task-id="s1-step17">Sørg for at `HF_API_KEY` er defineret i din `.env` fil i `packages/agent` (f.eks. `HF_API_KEY=your_hf_api_key_here`).</li>
+                        <li data-task-id="s1-step18">Hvis `ConfigModule` ikke er sat op i `packages/agent/src/app.module.ts`, importer `ConfigModule` fra `@nestjs/config` og tilføj `ConfigModule.forRoot({ isGlobal: true, envFilePath: '.env' })` til `imports` arrayet i `AppModule`.</li>
+                    </ul>
+                    <h3 class="text-lg font-semibold text-orange-700 mt-4 mb-2">Del 3: Dockerisering af Agenten</h3>
+                    <ul class="sprint-tasks list-disc list-inside space-y-2 text-neutral-700">
+                        <li data-task-id="s1-step19">Opret filen `packages/agent/Dockerfile`.</li>
+                        <li data-task-id="s1-step20">I `Dockerfile`, tilføj: `FROM node:20-alpine AS base`.</li>
+                        <li data-task-id="s1-step21">I `Dockerfile`, tilføj: `WORKDIR /usr/src/app`.</li>
+                        <li data-task-id="s1-step22">I `Dockerfile`, kopier rod `package.json`, `yarn.lock`, `tsconfig.json`, `.yarnrc.yml` (hvis det findes): `COPY package.json yarn.lock tsconfig.json .yarnrc.yml* ./`.</li>
+                        <li data-task-id="s1-step23">I `Dockerfile`, kopier agentens `package.json`: `COPY packages/agent/package.json ./packages/agent/package.json`.</li>
+                        <li data-task-id="s1-step24">I `Dockerfile`, installer dependencies: `RUN yarn install --frozen-lockfile --ignore-scripts`.</li>
+                        <li data-task-id="s1-step25">I `Dockerfile`, kopier hele projektets indhold: `COPY . .`.</li>
+                        <li data-task-id="s1-step26">I `Dockerfile`, byg agenten: `RUN yarn workspace @learninglab/agent build`.</li>
+                        <li data-task-id="s1-step27">I `Dockerfile`, start et nyt stage for production: `FROM node:20-alpine AS production`.</li>
+                        <li data-task-id="s1-step28">I `Dockerfile` (production stage), sæt `WORKDIR /usr/src/app`.</li>
+                        <li data-task-id="s1-step29">I `Dockerfile` (production stage), kopier `node_modules`: `COPY --from=base /usr/src/app/node_modules ./node_modules`.</li>
+                        <li data-task-id="s1-step30">I `Dockerfile` (production stage), kopier agentens `package.json`: `COPY --from=base /usr/src/app/packages/agent/package.json ./packages/agent/package.json`.</li>
+                        <li data-task-id="s1-step31">I `Dockerfile` (production stage), kopier build output: `COPY --from=base /usr/src/app/dist ./dist`.</li>
+                        <li data-task-id="s1-step32">I `Dockerfile` (production stage), kopier agentens `.env` fil (eller håndter env vars anderledes): `COPY packages/agent/.env ./packages/agent/.env`. (Bemærk: for produktion er det bedre at injecte env vars).</li>
+                        <li data-task-id="s1-step33">I `Dockerfile` (production stage), definer kommando: `CMD ["node", "dist/packages/agent/main.js"]`.</li>
+                    </ul>
+                    <h3 class="text-lg font-semibold text-orange-700 mt-4 mb-2">Del 4: Docker Compose Opsætning</h3>
+                    <ul class="sprint-tasks list-disc list-inside space-y-2 text-neutral-700">
+                        <li data-task-id="s1-step34">Åbn/opret `docker-compose.yml` i projektets rodmappe.</li>
+                        <li data-task-id="s1-step35">Tilføj en service `agent`:
+                            <pre class="code-block mt-1">services:
+  agent:
+    build:
+      context: .
+      dockerfile: packages/agent/Dockerfile
+    environment:
+      - HF_API_KEY=${HF_API_KEY}
+      # Add other necessary env vars like NODE_ENV=development
+    ports:
+      - "4000:3000" # Host:Container
+    volumes: # Optional: for development to reflect code changes
+      - ./packages/agent/src:/usr/src/app/packages/agent/src
+      - ./dist/packages/agent:/usr/src/app/dist/packages/agent
+    # command: yarn workspace @learninglab/agent start:dev # For development with hot-reloading
+</pre>
+                        </li>
+                        <li data-task-id="s1-step36">Sørg for at `HF_API_KEY` er tilgængelig for `docker-compose` (f.eks. via en rod `.env` fil, der loades af compose).</li>
+                    </ul>
+                    <h3 class="text-lg font-semibold text-orange-700 mt-4 mb-2">Del 5: Lokal Test af Dockeriseret Agent</h3>
+                    <ul class="sprint-tasks list-disc list-inside space-y-2 text-neutral-700">
+                        <li data-task-id="s1-step37">Åbn en terminal i projektets rodmappe.</li>
+                        <li data-task-id="s1-step38">Kør kommandoen: `docker-compose up --build agent`.</li>
+                        <li data-task-id="s1-step39">Vent til agenten starter og lytter på port 3000 (output i terminalen).</li>
+                        <li data-task-id="s1-step40">Brug `curl` eller Postman til at sende en POST request: `curl -X POST -H "Content-Type: application/json" -d '{"prompt":"Skriv en typescript funktion der returnerer hello world"}' http://localhost:4000/generate`.</li>
+                        <li data-task-id="s1-step41">Verificer at du modtager et JSON respons med en `text` property indeholdende genereret kode/tekst.</li>
+                        <li data-task-id="s1-step42">Stop containeren med `Ctrl+C` i terminalen, og kør evt. `docker-compose down` for at fjerne den.</li>
+                    </ul>
+
+                    <div class="mt-6">
+                        <button class="gemini-button flex items-center justify-center" data-sprint-id="1">
+                            <span class="button-text">Brainstorm Flere Opgaver ✨</span>
+                            <div class="loading-spinner hidden ml-2"></div>
+                        </button>
+                        <div class="gemini-output hidden mt-2" id="gemini-output-1"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-gray-200 p-4 rounded-lg text-center text-gray-600">
+            Sprint 2 til 6 er ikke fuldt detaljeret her for at holde eksemplet overskueligt. De ville følge samme granulære opdelingsmønster.
+        </div>
+
+
+    </div>
+
+    <footer class="mt-12 pt-8 border-t border-amber-200 text-center">
+        <p class="text-neutral-600 text-sm">Når sprintene er gennemført, har du en fuldt integreret, selvhostet AI-coding-agent i dit LearningLab-monorepo. God fornøjelse med buildet!</p>
+    </footer>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const accordionButtons = document.querySelectorAll('.accordion-button');
+        accordionButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const isExpanded = button.getAttribute('aria-expanded') === 'true' || false;
+                button.setAttribute('aria-expanded', !isExpanded);
+            });
+        });
+
+        const ctx = document.getElementById('sprintTimelineChart').getContext('2d');
+        const sprintTimelineChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Sprint 0', 'Sprint 1', 'Sprint 2', 'Sprint 3', 'Sprint 4', 'Sprint 5', 'Sprint 6'],
+                datasets: [{
+                    label: 'Varighed (uger)',
+                    data: [1, 2, 2, 2, 1, 1, 1],
+                    backgroundColor: [
+                        'rgba(245, 158, 11, 0.7)', 'rgba(234, 88, 12, 0.7)', 'rgba(234, 88, 12, 0.7)',
+                        'rgba(234, 88, 12, 0.7)', 'rgba(245, 158, 11, 0.7)', 'rgba(245, 158, 11, 0.7)',
+                        'rgba(245, 158, 11, 0.7)'
+                    ],
+                    borderColor: [
+                        'rgba(245, 158, 11, 1)', 'rgba(234, 88, 12, 1)', 'rgba(234, 88, 12, 1)',
+                        'rgba(234, 88, 12, 1)', 'rgba(245, 158, 11, 1)', 'rgba(245, 158, 11, 1)',
+                        'rgba(245, 158, 11, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false, indexAxis: 'y',
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        title: { display: true, text: 'Uger', font: { size: 14, family: 'Inter' }, color: '#404040' },
+                        ticks: { font: { family: 'Inter' }, color: '#525252' }
+                    },
+                    y: { ticks: { font: { family: 'Inter', weight: '500' }, color: '#525252' } }
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        enabled: true, backgroundColor: 'rgba(0,0,0,0.8)',
+                        titleFont: { family: 'Inter', size: 14 }, bodyFont: { family: 'Inter', size: 12 },
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) { label += ': '; }
+                                if (context.parsed.x !== null) { label += context.parsed.x + ' uge(r)'; }
+                                return label;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        const geminiButtons = document.querySelectorAll('.gemini-button');
+        geminiButtons.forEach(button => {
+            button.addEventListener('click', async () => {
+                const sprintId = button.dataset.sprintId;
+                const outputDiv = document.getElementById(`gemini-output-${sprintId}`);
+                const accordionButtonForSprint = button.closest('.bg-white').querySelector('.accordion-button');
+                const sprintTitle = accordionButtonForSprint.dataset.sprintTitle;
+                const sprintDescriptionElement = accordionButtonForSprint.nextElementSibling.querySelector('[data-sprint-description]');
+                const sprintDescription = sprintDescriptionElement ? sprintDescriptionElement.textContent.trim() : 'Generel sprintbeskrivelse mangler.';
+
+                const buttonTextElement = button.querySelector('.button-text');
+                const spinner = button.querySelector('.loading-spinner');
+
+                buttonTextElement.textContent = 'Brainstormer...';
+                spinner.classList.remove('hidden');
+                outputDiv.classList.add('hidden');
+                outputDiv.textContent = '';
+
+                const prompt = `Baseret på følgende sprint i en AI-kodningsagent projektplan, brainstorm yderligere potentielle overordnede opgaver, overvejelser eller udfordringer for hele sprintet. Vær konkret og handlingsorienteret. Formater svaret som en punktopstilling.\n\nSprint Titel: ${sprintTitle}\nSprint Beskrivelse: ${sprintDescription}\n\nBrainstormede Overordnede Opgaver for Sprintet:`;
+
+                try {
+                    const resultText = await callGeminiAPI(prompt);
+                    outputDiv.textContent = resultText;
+                } catch (error) {
+                    console.error('Fejl ved brainstorming:', error);
+                    outputDiv.textContent = `Fejl: ${error.message}. Tjek konsollen.`;
+                } finally {
+                    buttonTextElement.textContent = 'Brainstorm Flere Opgaver ✨';
+                    spinner.classList.add('hidden');
+                    outputDiv.classList.remove('hidden');
+                    if (accordionButtonForSprint.getAttribute('aria-expanded') === 'false') {
+                        accordionButtonForSprint.click();
+                    }
+                }
+            });
+        });
+
+        function addGenerateCodeButtons() {
+            const allTaskItems = document.querySelectorAll('.sprint-tasks li');
+            allTaskItems.forEach((taskItem) => {
+                const taskId = taskItem.dataset.taskId;
+                if (!taskId) {
+                    console.warn("Task item mangler data-task-id:", taskItem.textContent.trim());
+                    return;
+                }
+
+                if (taskItem.querySelector('.generate-code-button')) return; // Undgå duplikater
+
+                // Prøv at finde den nærmeste sprint-titel og beskrivelse
+                const sprintContentDiv = taskItem.closest('.accordion-content');
+                if (!sprintContentDiv) return;
+                const accordionButtonForSprint = sprintContentDiv.previousElementSibling;
+                const sprintTitle = accordionButtonForSprint ? accordionButtonForSprint.dataset.sprintTitle : "Ukendt Sprint";
+                const sprintDescriptionElement = sprintContentDiv.querySelector('[data-sprint-description]');
+                const sprintOverallDescription = sprintDescriptionElement ? sprintDescriptionElement.textContent.trim() : "Ingen overordnet sprintbeskrivelse.";
+
+
+                let taskTextContent = "";
+                // Klon noden for at undgå at modificere DOM'en under tekstopsamling
+                const taskNodeClone = taskItem.cloneNode(true);
+                // Fjern eventuelle eksisterende knapper/output divs fra klonen før tekstopsamling
+                taskNodeClone.querySelectorAll('.generate-code-button, .generated-code-output, .code-block, .sub-task-list').forEach(el => el.remove());
+                taskTextContent = taskNodeClone.textContent.trim().replace(/\s+/g, ' ');
+
+                if (!taskTextContent) return; // Spring over hvis opgaveteksten er tom
+
+                const buttonContainer = document.createElement('div');
+                buttonContainer.classList.add('mt-1'); // Mindre margin for tættere knapper
+
+                const button = document.createElement('button');
+                button.classList.add('generate-code-button', 'flex', 'items-center'); // Fjernet justify-center for venstrejustering
+                button.innerHTML = `<span class="button-text">Generer Kode 💻</span><div class="loading-spinner hidden ml-2"></div>`;
+
+                const outputDiv = document.createElement('div');
+                outputDiv.id = `code-output-${taskId}`;
+                outputDiv.classList.add('generated-code-output', 'hidden', 'mt-1');
+                outputDiv.innerHTML = `<pre></pre>`; // pre-tag tilføjes her, class code-block tilføjes senere hvis kode modtages
+
+                button.addEventListener('click', async () => {
+                    const buttonTextElement = button.querySelector('.button-text');
+                    const spinner = button.querySelector('.loading-spinner');
+                    const preElement = outputDiv.querySelector('pre');
+
+                    buttonTextElement.textContent = 'Genererer...';
+                    spinner.classList.remove('hidden');
+                    outputDiv.classList.add('hidden');
+                    preElement.textContent = '';
+                    preElement.classList.remove('code-block'); // Fjern styling hvis det er en fejlbesked
+
+                    const technologiesHint = extractTechnologiesHint(sprintTitle, taskTextContent);
+                    const projectContext = "Projektet er en AI-drevet kodningsagent bygget med NestJS (TypeScript) til backend/agent logik, og potentielt Next.js for en web UI. Den interagerer med Hugging Face modeller og bruger Docker for containerisering.";
+
+                    const prompt = `Du er en ekspert AI-kodningsassistent. Generer en komplet og funktionel kodeblok for følgende specifikke, lille opgave. Inkluder kun selve koden, uden ekstra forklaringer eller markdown-formatering (som \`\`\`language). Hvis opgaven er en kommando, returner kun kommandoen. Hvis det er en filændring, vis kun den relevante del af filen eller et diff.
+Projekt Kontekst: ${projectContext}
+Sprint: "${sprintTitle}"
+Sprint Beskrivelse: "${sprintOverallDescription}"
+Specifik Lille Opgave: "${taskTextContent}"
+${technologiesHint}
+Sørg for at koden er klar til at blive kopieret og brugt. Vær meget præcis ift. den lille opgave.`;
+
+                    try {
+                        const resultText = await callGeminiAPI(prompt);
+                        preElement.textContent = resultText.trim();
+                        preElement.classList.add('code-block'); // Tilføj styling for kode
+                    } catch (error) {
+                        console.error('Fejl ved kodegenerering for opgave:', taskTextContent, error);
+                        preElement.textContent = `Fejl: ${error.message}. Tjek konsollen.`;
+                    } finally {
+                        buttonTextElement.textContent = 'Generer Kode 💻';
+                        spinner.classList.add('hidden');
+                        outputDiv.classList.remove('hidden');
+                        if (accordionButtonForSprint && accordionButtonForSprint.getAttribute('aria-expanded') === 'false') {
+                            accordionButtonForSprint.click();
+                        }
+                    }
+                });
+
+                buttonContainer.appendChild(button);
+                taskItem.appendChild(buttonContainer);
+                taskItem.appendChild(outputDiv);
+            });
+        }
+
+        function extractTechnologiesHint(sprintTitle, taskDescription) {
+            let tech = [];
+            const lowerSprint = sprintTitle.toLowerCase();
+            const lowerTask = taskDescription.toLowerCase();
+
+            if (lowerSprint.includes("docker") || lowerTask.includes("dockerfile") || lowerTask.includes("docker-compose") || lowerTask.includes("dockerisering")) tech.push("Dockerfile", "YAML (for docker-compose)");
+            if (lowerTask.includes(".ts") || lowerTask.includes("typescript") || lowerSprint.includes("nestjs") || lowerSprint.includes("next.js")) tech.push("TypeScript");
+            if (lowerSprint.includes("nestjs")) tech.push("NestJS framework");
+            if (lowerSprint.includes("next.js")) tech.push("Next.js framework");
+            if (lowerTask.includes("package.json") || lowerTask.includes("yarn workspace")) tech.push("JSON (for package.json)", "Yarn kommandoer");
+            if (lowerTask.includes("jest") || lowerTask.includes("supertest") || lowerTask.includes("playwright")) tech.push("Jest/Supertest/Playwright (for tests)");
+            if (lowerTask.includes("redis") || lowerTask.includes("ioredis")) tech.push("Redis/ioredis (Node.js)");
+            if (lowerTask.includes("github actions") || lowerTask.includes(".yml")) tech.push("YAML (for GitHub Actions)");
+            if (lowerTask.includes("vs code extension")) tech.push("JavaScript/TypeScript (for VS Code Extension API)", "JSON (for package.json i extension)");
+            if (lowerTask.includes("prometheus") || lowerTask.includes("@nestjs/terminus")) tech.push("TypeScript (for NestJS Terminus/Prometheus metrics)");
+            if (lowerTask.includes("curl")) tech.push("Bash/Shell (for curl kommandoer)");
+
+            if (tech.length > 0) {
+                return `Relevante teknologier/formater kunne være: ${[...new Set(tech)].join(', ')}. Prioriter sprog/syntaks der passer til disse. For filændringer, vis kun den relevante del eller diff. For kommandoer, vis kun kommandoen.`;
+            }
+            return "Forsøg at udlede sprog/teknologi/format fra opgaven. For kommandoer, vis kun kommandoen.";
+        }
+
+        async function callGeminiAPI(prompt) {
+            let chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
+            const payload = { contents: chatHistory };
+            const apiKey = "";
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                console.error('Gemini API Error:', errorData);
+                throw new Error(`API fejl: ${response.status} ${response.statusText}. Detaljer: ${errorData?.error?.message || 'Ukendt fejl'}`);
+            }
+
+            const result = await response.json();
+
+            if (result.candidates && result.candidates.length > 0 &&
+                result.candidates[0].content && result.candidates[0].content.parts &&
+                result.candidates[0].content.parts.length > 0) {
+                return result.candidates[0].content.parts[0].text;
+            } else {
+                console.error('Unexpected API response structure for prompt:', prompt, result);
+                throw new Error('Kunne ikke generere svar. Uventet API respons struktur.');
+            }
+        }
+
+        addGenerateCodeButtons();
+    });
+</script>
+</body>
+</html>
