@@ -18,29 +18,33 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
     // Get the database URL from environment variables
     let dbUrl = process.env.DATABASE_URL;
     let originalUrl = '';
-    let logMessages = [];
+    const logMessages = [];
 
     if (!dbUrl) {
       logMessages.push({
         level: 'error',
-        message: 'DATABASE_URL environment variable is not set!'
+        message: 'DATABASE_URL environment variable is not set!',
       });
-      dbUrl = 'postgresql://test:test@localhost:5432/learninglab_dev?schema=public';
+      dbUrl =
+        'postgresql://test:test@localhost:5432/learninglab_dev?schema=public';
       logMessages.push({
         level: 'warn',
-        message: `Using default database URL: ${dbUrl.replace(/\/\/.*?@/, '//***@')}`
+        message: `Using default database URL: ${dbUrl.replace(/\/\/.*?@/, '//***@')}`,
       });
     }
 
-    // If URL contains 'postgres:' and we're not explicitly running in Docker, 
+    // If URL contains 'postgres:' and we're not explicitly running in Docker,
     // or we're in development mode, replace 'postgres:' with 'localhost:'
-    if (dbUrl && dbUrl.includes('postgres:') && 
-        (!isRunningInDocker || nodeEnv === 'development')) {
+    if (
+      dbUrl &&
+      dbUrl.includes('postgres:') &&
+      (!isRunningInDocker || nodeEnv === 'development')
+    ) {
       originalUrl = dbUrl;
       dbUrl = dbUrl.replace('postgres:', 'localhost:');
       logMessages.push({
         level: 'log',
-        message: `Modified database URL from ${originalUrl.replace(/\/\/.*?@/, '//***@')} to ${dbUrl.replace(/\/\/.*?@/, '//***@')}`
+        message: `Modified database URL from ${originalUrl.replace(/\/\/.*?@/, '//***@')} to ${dbUrl.replace(/\/\/.*?@/, '//***@')}`,
       });
     }
 
@@ -55,7 +59,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
         dbName = 'learninglab_dev';
         logMessages.push({
           level: 'warn',
-          message: `Database name is missing in URL. Adding default database name: ${dbName}`
+          message: `Database name is missing in URL. Adding default database name: ${dbName}`,
         });
 
         // Reconstruct the URL with the database name
@@ -66,18 +70,18 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
 
         logMessages.push({
           level: 'log',
-          message: `Updated database URL: ${dbUrl.replace(/\/\/.*?@/, '//***@')}`
+          message: `Updated database URL: ${dbUrl.replace(/\/\/.*?@/, '//***@')}`,
         });
       } else {
         logMessages.push({
           level: 'log',
-          message: `Connecting to database: ${dbName}`
+          message: `Connecting to database: ${dbName}`,
         });
       }
     } catch (error) {
       logMessages.push({
         level: 'warn',
-        message: `Could not parse database URL: ${error instanceof Error ? error.message : String(error)}`
+        message: `Could not parse database URL: ${error instanceof Error ? error.message : String(error)}`,
       });
     }
 
@@ -93,7 +97,9 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
     });
 
     // Log the final database URL being used (with credentials masked)
-    this.logger.log(`Final database URL being used: ${dbUrl.replace(/\/\/.*?@/, '//***@')}`);
+    this.logger.log(
+      `Final database URL being used: ${dbUrl.replace(/\/\/.*?@/, '//***@')}`,
+    );
 
     // Now we can use this.logger to output the collected messages
     for (const msg of logMessages) {
@@ -104,9 +110,13 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
 
     // Log connection information after super() call
     if (!isRunningInDocker) {
-      this.logger.log(`Running outside Docker in ${nodeEnv} environment, using localhost for database connection`);
+      this.logger.log(
+        `Running outside Docker in ${nodeEnv} environment, using localhost for database connection`,
+      );
     } else {
-      this.logger.log(`Running in Docker in ${nodeEnv} environment, using database connection: ${dbUrl?.replace(/\/\/.*?@/, '//***@')}`);
+      this.logger.log(
+        `Running in Docker in ${nodeEnv} environment, using database connection: ${dbUrl?.replace(/\/\/.*?@/, '//***@')}`,
+      );
     }
   }
 
@@ -138,20 +148,31 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
           const dbUrl = process.env.DATABASE_URL || '';
           const dbUrlObj = new URL(dbUrl);
           const pathParts = dbUrlObj.pathname.split('/');
-          const dbName = pathParts.length > 1 ? pathParts[1].split('?')[0] : 'unknown';
+          const dbName =
+            pathParts.length > 1 ? pathParts[1].split('?')[0] : 'unknown';
           const username = dbUrlObj.username;
 
-          this.logger.warn(`Connection attempt details: Database: "${dbName}", User: "${username}"`);
-          this.logger.warn('Please ensure the database exists and the user has proper permissions');
+          this.logger.warn(
+            `Connection attempt details: Database: "${dbName}", User: "${username}"`,
+          );
+          this.logger.warn(
+            'Please ensure the database exists and the user has proper permissions',
+          );
 
           // Suggest potential fixes
           this.logger.warn('Potential fixes:');
           this.logger.warn('1. Check if the database exists');
-          this.logger.warn('2. Ensure the user has proper permissions on the database');
+          this.logger.warn(
+            '2. Ensure the user has proper permissions on the database',
+          );
           this.logger.warn('3. Verify the DATABASE_URL is correctly formatted');
-          this.logger.warn('4. If using Docker, ensure the postgres container is running');
+          this.logger.warn(
+            '4. If using Docker, ensure the postgres container is running',
+          );
         } catch (parseError) {
-          this.logger.warn(`Could not parse database URL for diagnostics: ${parseError instanceof Error ? parseError.message : String(parseError)}`);
+          this.logger.warn(
+            `Could not parse database URL for diagnostics: ${parseError instanceof Error ? parseError.message : String(parseError)}`,
+          );
         }
       }
 
@@ -177,9 +198,15 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
         this.logger.error(
           `Failed to connect to the database after ${this.MAX_RETRIES} attempts: ${errorMessage}`,
         );
-        this.logger.error('Please check that your database is running and accessible.');
-        this.logger.error('If running locally, make sure PostgreSQL is installed and running on port 5432.');
-        this.logger.error('If using Docker, make sure the postgres container is running with: docker-compose up -d postgres');
+        this.logger.error(
+          'Please check that your database is running and accessible.',
+        );
+        this.logger.error(
+          'If running locally, make sure PostgreSQL is installed and running on port 5432.',
+        );
+        this.logger.error(
+          'If using Docker, make sure the postgres container is running with: docker-compose up -d postgres',
+        );
         // Kast ikke fejl for at tillade applikationen at starte uden database i byggemiljøer
       }
     }
@@ -193,12 +220,16 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
   async executeWithRetry<T>(operation: () => Promise<T>): Promise<T> {
     // If not connected to the database, try to connect first
     if (!this.isConnected) {
-      this.logger.warn('Database not connected. Attempting to connect before executing operation...');
+      this.logger.warn(
+        'Database not connected. Attempting to connect before executing operation...',
+      );
       await this.connectWithRetry();
 
       // If still not connected after retry, throw an error
       if (!this.isConnected) {
-        throw new Error('Cannot execute database operation: Database is not connected');
+        throw new Error(
+          'Cannot execute database operation: Database is not connected',
+        );
       }
     }
 
@@ -256,7 +287,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
         error.message.includes('Connection terminated') ||
         error.message.includes('ECONNREFUSED') ||
         error.message.includes('ETIMEDOUT') ||
-        error.message.includes('Can\'t reach database')
+        error.message.includes("Can't reach database")
       );
     }
 

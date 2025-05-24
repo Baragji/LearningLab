@@ -13,6 +13,12 @@ import {
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Role } from '@repo/core';
 import { Type } from 'class-transformer';
+import { SocialLinks, socialLinksSchema } from '../schemas/social-links.schema';
+import {
+  UserSettings,
+  userSettingsSchema,
+} from '../schemas/user-settings.schema';
+import { ZodValidationPipe } from '../../common/pipes/zod-validation.pipe';
 
 export class UpdateUserDto {
   @ApiPropertyOptional({
@@ -79,15 +85,23 @@ export class UpdateUserDto {
       linkedin: 'https://linkedin.com/in/username',
     },
   })
-  @IsObject({ message: 'Sociale links skal være et objekt.' })
   @IsOptional()
-  socialLinks?: Record<string, string>;
+  @ValidateNested()
+  @Type(() => Object)
+  @IsObject({ message: 'Sociale links skal være et objekt.' })
+  socialLinks?: SocialLinks;
 
   @ApiPropertyOptional({
     description: 'Brugerens indstillinger',
-    example: { notifications: true, privacy: { showEmail: false } },
+    example: {
+      notifications: { email: true, browser: true },
+      privacy: { showProfile: true, showProgress: false },
+      theme: 'system',
+    },
   })
-  @IsObject({ message: 'Indstillinger skal være et objekt.' })
   @IsOptional()
-  settings?: Record<string, any>;
+  @ValidateNested()
+  @Type(() => Object)
+  @IsObject({ message: 'Indstillinger skal være et objekt.' })
+  settings?: UserSettings;
 }

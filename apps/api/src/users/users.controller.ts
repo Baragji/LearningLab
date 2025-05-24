@@ -39,6 +39,9 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe';
+import { socialLinksSchema } from './schemas/social-links.schema';
+import { userSettingsSchema } from './schemas/user-settings.schema';
 
 @ApiTags('Users')
 @Controller('users')
@@ -423,5 +426,70 @@ export class UsersController {
     }
 
     return this.usersService.bulkGet(bulkGetUsersDto.userIds);
+  }
+
+  @ApiOperation({ summary: 'Valider sociale links JSON' })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        socialLinks: {
+          type: 'object',
+          example: {
+            twitter: 'https://twitter.com/username',
+            linkedin: 'https://linkedin.com/in/username',
+            github: 'https://github.com/username',
+            website: 'https://example.com',
+          },
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'JSON valideret succesfuldt',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Ugyldig JSON struktur',
+  })
+  @Post('validate-social-links')
+  async validateSocialLinks(
+    @Body('socialLinks', new ZodValidationPipe(socialLinksSchema))
+    socialLinks: unknown,
+  ) {
+    return { valid: true, socialLinks };
+  }
+
+  @ApiOperation({ summary: 'Valider brugerindstillinger JSON' })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        settings: {
+          type: 'object',
+          example: {
+            notifications: { email: true, browser: true },
+            privacy: { showProfile: true, showProgress: false },
+            theme: 'system',
+          },
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'JSON valideret succesfuldt',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Ugyldig JSON struktur',
+  })
+  @Post('validate-settings')
+  async validateSettings(
+    @Body('settings', new ZodValidationPipe(userSettingsSchema))
+    settings: unknown,
+  ) {
+    return { valid: true, settings };
   }
 }

@@ -14,6 +14,12 @@ import {
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Role, AuthProvider } from '@repo/core'; // Importer Role og AuthProvider enums fra @repo/core
 import { Type } from 'class-transformer';
+import { SocialLinks, socialLinksSchema } from '../schemas/social-links.schema';
+import {
+  UserSettings,
+  userSettingsSchema,
+} from '../schemas/user-settings.schema';
+import { ZodValidationPipe } from '../../common/pipes/zod-validation.pipe';
 
 export class CreateUserDto {
   @ApiProperty({
@@ -89,18 +95,26 @@ export class CreateUserDto {
     },
     required: false,
   })
-  @IsObject({ message: 'Sociale links skal være et objekt.' })
   @IsOptional()
-  socialLinks?: Record<string, string>;
+  @ValidateNested()
+  @Type(() => Object)
+  @IsObject({ message: 'Sociale links skal være et objekt.' })
+  socialLinks?: SocialLinks;
 
   @ApiPropertyOptional({
     description: 'Brugerens indstillinger',
-    example: { notifications: true, privacy: { showEmail: false } },
+    example: {
+      notifications: { email: true, browser: true },
+      privacy: { showProfile: true, showProgress: false },
+      theme: 'system',
+    },
     required: false,
   })
-  @IsObject({ message: 'Indstillinger skal være et objekt.' })
   @IsOptional()
-  settings?: Record<string, any>;
+  @ValidateNested()
+  @Type(() => Object)
+  @IsObject({ message: 'Indstillinger skal være et objekt.' })
+  settings?: UserSettings;
 
   // Social login er deaktiveret indtil det skal bruges i produktion
   // Følgende felter er fjernet:
