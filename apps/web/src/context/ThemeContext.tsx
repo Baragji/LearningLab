@@ -1,3 +1,4 @@
+"use client";
 // apps/web/src/context/ThemeContext.tsx
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 

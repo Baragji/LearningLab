@@ -1,8 +1,8 @@
 // apps/web/src/components/layout/Header.tsx
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { useTheme } from '../../context/ThemeContext';
-import { useAuth } from '../../context/AuthContext';
+import { useTheme } from '../../contexts/ThemeContext';
+import { useAuth } from '../../contexts/AuthContext';
 
 // Tilføj CSS-klasser for animationer
 const ANIMATION_CLASSES = {
@@ -33,7 +33,7 @@ const Header: React.FC = () => {
       if (isScrolled !== scrolled) {
         setScrolled(isScrolled);
       }
-      
+
       // Calculate scroll progress for potential progress indicator
       const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
       const progress = scrollHeight > 0 ? window.scrollY / scrollHeight : 0;
@@ -42,7 +42,7 @@ const Header: React.FC = () => {
 
     // Add scroll event listener
     window.addEventListener('scroll', handleScroll);
-    
+
     // Clean up
     return () => {
       window.removeEventListener('scroll', handleScroll);
@@ -60,7 +60,7 @@ const Header: React.FC = () => {
     if (userMenuOpen) {
       document.addEventListener('mousedown', handleClickOutside);
     }
-    
+
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
@@ -91,7 +91,7 @@ const Header: React.FC = () => {
           className="h-1 bg-gradient-to-r from-blue-500 to-blue-600 dark:from-blue-400 dark:to-blue-500 absolute top-0 left-0 transition-all duration-200 ease-out shadow-sm"
           style={{ width: `${scrollProgress * 100}%`, opacity: scrolled ? 1 : 0.8 }}
         />
-        
+
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
             {/* Logo and navigation */}
@@ -111,7 +111,7 @@ const Header: React.FC = () => {
                   </span>
                 </Link>
               </div>
-              
+
               {/* Desktop navigation */}
               <nav className="hidden md:ml-6 md:flex md:space-x-4">
                 {[
@@ -134,7 +134,7 @@ const Header: React.FC = () => {
                 ))}
               </nav>
             </div>
-            
+
             {/* Right side controls */}
             <div className="flex items-center">
               {/* Theme toggle with animation */}
@@ -161,7 +161,7 @@ const Header: React.FC = () => {
                   </svg>
                 )}
               </button>
-              
+
               {/* User menu */}
               <div className="ml-4 relative" ref={userMenuRef}>
                 <button
@@ -188,7 +188,7 @@ const Header: React.FC = () => {
                     </div>
                   )}
                 </button>
-                
+
                 {/* User dropdown menu with enhanced glassmorphism effect */}
                 {userMenuOpen && (
                   <div
@@ -229,7 +229,7 @@ const Header: React.FC = () => {
                   </div>
                 )}
               </div>
-              
+
               {/* Mobile menu button with animation */}
               <div className="ml-4 md:hidden flex items-center">
                 <button
@@ -252,7 +252,7 @@ const Header: React.FC = () => {
             </div>
           </div>
         </div>
-        
+
         {/* Mobile menu with enhanced glassmorphism effect */}
         {mobileMenuOpen && (
           <div 

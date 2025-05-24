@@ -1,7 +1,7 @@
 // apps/web/src/screens/auth/signup/signup.tsx
 import React, { useState, FormEvent } from 'react';
 import { useRouter } from 'next/router';
-import { useAuth } from '../../../context/AuthContext';
+import { useAuth } from '../../../contexts/AuthContext';
 
 export function SignupScreen() {
   const router = useRouter();
@@ -27,10 +27,10 @@ export function SignupScreen() {
     try {
       // Brug signup funktionen fra AuthContext
       await signup(name || undefined, email, password);
-      
+
       console.log('Registrering succesfuld');
       setSuccessMessage('Din konto er blevet oprettet! Du bliver nu sendt til login-siden.');
-      
+
       // Omdiriger til login-siden efter en kort pause, så brugeren kan se succesbeskeden.
       setTimeout(() => {
         router.push('/login');
@@ -135,7 +135,7 @@ export function SignupScreen() {
               placeholder="Gentag din adgangskode"
             />
           </div>
-          
+
           {/* Fejlmeddelelse */}
           {error && (
             <div className="p-3 text-sm text-red-700 bg-red-100 border border-red-400 rounded-md">

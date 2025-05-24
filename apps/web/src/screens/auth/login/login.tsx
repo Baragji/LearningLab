@@ -1,6 +1,6 @@
 // apps/web/src/screens/auth/login/login.tsx
 import React, { useState, FormEvent } from 'react';
-import { useAuth } from '../../../context/AuthContext'; // Importer useAuth hook'en
+import { useAuth } from '../../../contexts/AuthContext'; // Importer useAuth hook'en
 // useRouter er ikke længere nødvendig her, da AuthContext håndterer omdirigering efter login
 
 export function LoginScreen() {

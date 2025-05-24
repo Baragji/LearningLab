@@ -170,6 +170,8 @@ export function ZodValidationPipe(schema: ZodSchema) {
 
 **Current Issue:** There are two different styles of controllers in the codebase.
 
+**Note:** During implementation of this section, we encountered build errors in the web app due to missing UI components and contexts. The web app is trying to use components from `@/components/ui/...` (likely shadcn/ui components) and contexts from `@/contexts/...` that don't exist yet. We've created a `build:api` script in the root package.json to build only the API and its dependencies, allowing us to continue working on the API without being blocked by the web app build errors. These UI components and contexts should be implemented as part of the UI improvements phase.
+
 **Steps:**
 
 1. Create a NestJS controller for each Express-style controller:

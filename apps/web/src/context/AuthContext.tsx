@@ -1,6 +1,7 @@
+"use client";
 // apps/web/src/context/AuthContext.tsx
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 
 // Definer en type for brugerobjektet, som vi forventer fra backend
 // Denne type matcher den, vi brugte i ProfilePage og den, som vores /api/auth/profile returnerer
@@ -18,6 +19,8 @@ interface AuthContextType {
   token: string | null; // JWT access token
   refreshToken: string | null; // JWT refresh token
   isLoading: boolean; // Til at vise loading state under auth operationer
+  isAuthenticated: boolean; // Om brugeren er autentificeret
+  apiClient?: any; // API client til at lave requests
   login: (email: string, password: string) => Promise<void>; // Funktion til at logge ind
   logout: () => void; // Funktion til at logge ud
   signup: (name: string | undefined, email: string, password: string) => Promise<void>; // Funktion til at oprette en ny bruger
@@ -41,7 +44,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [refreshToken, setRefreshToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true); // Start med loading true for at tjekke initial auth state
   const [tokenExpiresAt, setTokenExpiresAt] = useState<number | null>(null);
+  const [apiClient, setApiClient] = useState<any>(null);
   const router = useRouter();
+  
+  // Computed property for isAuthenticated
+  const isAuthenticated = !!user;
 
   // Funktion til at hente brugerprofil baseret på et token
   const fetchUserProfile = async (currentToken: string) => {
@@ -442,6 +449,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
     token,
     refreshToken,
     isLoading,
+    isAuthenticated,
+    apiClient,
     login,
     logout,
     signup,

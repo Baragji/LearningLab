@@ -104,11 +104,11 @@ const SearchPage = () => {
   const searchParams = useSearchParams();
   
   // Get search parameters from URL
-  const initialQuery = searchParams.get('q') || '';
-  const initialType = (searchParams.get('type') as 'course' | 'module' | 'lesson' | 'all') || 'all';
-  const initialTags = searchParams.get('tags') || '';
-  const initialDifficulty = searchParams.get('difficulty') as Difficulty | undefined;
-  const initialSubjectAreaId = searchParams.get('subjectAreaId') ? parseInt(searchParams.get('subjectAreaId')!) : undefined;
+  const initialQuery = searchParams?.get('q') || '';
+  const initialType = (searchParams?.get('type') as 'course' | 'module' | 'lesson' | 'all') || 'all';
+  const initialTags = searchParams?.get('tags') || '';
+  const initialDifficulty = searchParams?.get('difficulty') as Difficulty | undefined;
+  const initialSubjectAreaId = searchParams?.get('subjectAreaId') ? parseInt(searchParams?.get('subjectAreaId')!) : undefined;
   
   // State for search parameters
   const [searchQuery, setSearchQuery] = useState(initialQuery);
@@ -314,7 +314,7 @@ const SearchPage = () => {
                   <Filter className="h-4 w-4 mr-2" />
                   Indholdstype
                 </label>
-                <Select value={searchType} onValueChange={setSearchType}>
+                <Select value={searchType} onValueChange={(value) => setSearchType(value as 'course' | 'module' | 'lesson' | 'all')}>
                   <SelectTrigger>
                     <SelectValue placeholder="Alle typer" />
                   </SelectTrigger>
