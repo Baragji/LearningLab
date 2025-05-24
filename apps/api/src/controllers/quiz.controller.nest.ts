@@ -258,6 +258,13 @@ export class QuizController {
           description,
           lessonId: lessonId || null,
           moduleId: moduleId || null,
+          timeLimit: createQuizDto.timeLimit || null,
+          maxAttempts: createQuizDto.maxAttempts || null,
+          randomizeQuestions: createQuizDto.randomizeQuestions || false,
+          showAnswers:
+            createQuizDto.showAnswers !== undefined
+              ? createQuizDto.showAnswers
+              : true,
         },
       });
     } catch (error) {
@@ -339,6 +346,22 @@ export class QuizController {
           description: description || existingQuiz.description,
           lessonId: lessonId !== undefined ? lessonId : existingQuiz.lessonId,
           moduleId: moduleId !== undefined ? moduleId : existingQuiz.moduleId,
+          timeLimit:
+            updateQuizDto.timeLimit !== undefined
+              ? updateQuizDto.timeLimit
+              : existingQuiz.timeLimit,
+          maxAttempts:
+            updateQuizDto.maxAttempts !== undefined
+              ? updateQuizDto.maxAttempts
+              : existingQuiz.maxAttempts,
+          randomizeQuestions:
+            updateQuizDto.randomizeQuestions !== undefined
+              ? updateQuizDto.randomizeQuestions
+              : existingQuiz.randomizeQuestions,
+          showAnswers:
+            updateQuizDto.showAnswers !== undefined
+              ? updateQuizDto.showAnswers
+              : existingQuiz.showAnswers,
         },
       });
     } catch (error) {

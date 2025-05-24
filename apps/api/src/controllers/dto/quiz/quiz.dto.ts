@@ -6,6 +6,8 @@ import {
   IsOptional,
   IsPositive,
   IsString,
+  IsBoolean,
+  Min,
 } from 'class-validator';
 
 export class QuizDto {
@@ -47,6 +49,36 @@ export class QuizDto {
     nullable: true,
   })
   moduleId?: number | null;
+
+  @ApiPropertyOptional({
+    description: 'Tidsbegrænsning for quizzen i sekunder',
+    type: Number,
+    example: 600,
+    nullable: true,
+  })
+  timeLimit?: number | null;
+
+  @ApiPropertyOptional({
+    description: 'Maksimalt antal forsøg tilladt for quizzen',
+    type: Number,
+    example: 3,
+    nullable: true,
+  })
+  maxAttempts?: number | null;
+
+  @ApiPropertyOptional({
+    description: 'Om spørgsmålene skal vises i tilfældig rækkefølge',
+    type: Boolean,
+    example: false,
+  })
+  randomizeQuestions?: boolean;
+
+  @ApiPropertyOptional({
+    description: 'Om svarene skal vises efter quizzen er gennemført',
+    type: Boolean,
+    example: true,
+  })
+  showAnswers?: boolean;
 
   @ApiPropertyOptional({
     description: 'Dato for oprettelse af quizzen',
@@ -141,6 +173,48 @@ export class CreateQuizDto {
   @IsNumber({}, { message: 'Modul-ID skal være et tal' })
   @IsPositive({ message: 'Modul-ID skal være et positivt tal' })
   moduleId?: number | null;
+
+  @ApiPropertyOptional({
+    description: 'Tidsbegrænsning for quizzen i sekunder',
+    type: Number,
+    example: 600,
+    nullable: true,
+  })
+  @IsOptional()
+  @IsNumber({}, { message: 'Tidsbegrænsning skal være et tal' })
+  @IsPositive({ message: 'Tidsbegrænsning skal være et positivt tal' })
+  timeLimit?: number | null;
+
+  @ApiPropertyOptional({
+    description: 'Maksimalt antal forsøg tilladt for quizzen',
+    type: Number,
+    example: 3,
+    nullable: true,
+  })
+  @IsOptional()
+  @IsNumber({}, { message: 'Maksimalt antal forsøg skal være et tal' })
+  @Min(1, { message: 'Maksimalt antal forsøg skal være mindst 1' })
+  maxAttempts?: number | null;
+
+  @ApiPropertyOptional({
+    description: 'Om spørgsmålene skal vises i tilfældig rækkefølge',
+    type: Boolean,
+    example: false,
+    default: false,
+  })
+  @IsOptional()
+  @IsBoolean({ message: 'Tilfældig rækkefølge skal være en boolean værdi' })
+  randomizeQuestions?: boolean;
+
+  @ApiPropertyOptional({
+    description: 'Om svarene skal vises efter quizzen er gennemført',
+    type: Boolean,
+    example: true,
+    default: true,
+  })
+  @IsOptional()
+  @IsBoolean({ message: 'Vis svar skal være en boolean værdi' })
+  showAnswers?: boolean;
 }
 
 export class UpdateQuizDto {
@@ -188,4 +262,44 @@ export class UpdateQuizDto {
   @IsNumber({}, { message: 'Modul-ID skal være et tal' })
   @IsPositive({ message: 'Modul-ID skal være et positivt tal' })
   moduleId?: number | null;
+
+  @ApiPropertyOptional({
+    description: 'Tidsbegrænsning for quizzen i sekunder',
+    type: Number,
+    example: 600,
+    nullable: true,
+  })
+  @IsOptional()
+  @IsNumber({}, { message: 'Tidsbegrænsning skal være et tal' })
+  @IsPositive({ message: 'Tidsbegrænsning skal være et positivt tal' })
+  timeLimit?: number | null;
+
+  @ApiPropertyOptional({
+    description: 'Maksimalt antal forsøg tilladt for quizzen',
+    type: Number,
+    example: 3,
+    nullable: true,
+  })
+  @IsOptional()
+  @IsNumber({}, { message: 'Maksimalt antal forsøg skal være et tal' })
+  @Min(1, { message: 'Maksimalt antal forsøg skal være mindst 1' })
+  maxAttempts?: number | null;
+
+  @ApiPropertyOptional({
+    description: 'Om spørgsmålene skal vises i tilfældig rækkefølge',
+    type: Boolean,
+    example: false,
+  })
+  @IsOptional()
+  @IsBoolean({ message: 'Tilfældig rækkefølge skal være en boolean værdi' })
+  randomizeQuestions?: boolean;
+
+  @ApiPropertyOptional({
+    description: 'Om svarene skal vises efter quizzen er gennemført',
+    type: Boolean,
+    example: true,
+  })
+  @IsOptional()
+  @IsBoolean({ message: 'Vis svar skal være en boolean værdi' })
+  showAnswers?: boolean;
 }

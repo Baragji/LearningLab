@@ -526,7 +526,9 @@ export class UsersController {
   ): Promise<Omit<CoreUser, 'passwordHash'>> {
     const user = await this.usersService.findOneById(currentUser.id);
     if (!user) {
-      throw new NotFoundException(`Bruger med ID ${currentUser.id} blev ikke fundet`);
+      throw new NotFoundException(
+        `Bruger med ID ${currentUser.id} blev ikke fundet`,
+      );
     }
     return this.usersService.mapToCoreUser(user);
   }
@@ -573,14 +575,20 @@ export class UsersController {
   ): Promise<Omit<CoreUser, 'passwordHash'>> {
     const user = await this.usersService.findOneById(currentUser.id);
     if (!user) {
-      throw new NotFoundException(`Bruger med ID ${currentUser.id} blev ikke fundet`);
+      throw new NotFoundException(
+        `Bruger med ID ${currentUser.id} blev ikke fundet`,
+      );
     }
-    
+
     // Opret et UpdateUserDto objekt med de felter, der skal opdateres
     const updateUserDto: UpdateUserDto = {};
     if (updateData.name !== undefined) updateUserDto.name = updateData.name;
     if (updateData.email !== undefined) updateUserDto.email = updateData.email;
-    
-    return this.usersService.update(currentUser.id, updateUserDto, currentUser.id);
+
+    return this.usersService.update(
+      currentUser.id,
+      updateUserDto,
+      currentUser.id,
+    );
   }
 }

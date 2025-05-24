@@ -2,9 +2,9 @@ import { PrismaClient, Role } from '@prisma/client';
 
 async function createTestData() {
   console.log('Creating test data...');
-  
+
   const prisma = new PrismaClient();
-  
+
   try {
     // Create a test user
     const user = await prisma.user.create({
@@ -12,24 +12,24 @@ async function createTestData() {
         email: 'test@example.com',
         passwordHash: 'hashed_password_here',
         name: 'Test User',
-        role: Role.ADMIN
-      }
+        role: Role.ADMIN,
+      },
     });
-    
+
     console.log('Created test user:', user.id);
-    
+
     // Create a test subject area
     const subjectArea = await prisma.subjectArea.create({
       data: {
         name: 'Test Subject Area',
         slug: 'test-subject-area',
         description: 'A test subject area for testing purposes',
-        createdBy: user.id
-      }
+        createdBy: user.id,
+      },
     });
-    
+
     console.log('Created test subject area:', subjectArea.id);
-    
+
     // Create a test course
     const course = await prisma.course.create({
       data: {
@@ -37,12 +37,12 @@ async function createTestData() {
         description: 'A test course for testing purposes',
         slug: 'test-course',
         subjectAreaId: subjectArea.id,
-        createdBy: user.id
-      }
+        createdBy: user.id,
+      },
     });
-    
+
     console.log('Created test course:', course.id);
-    
+
     // Create a test module
     const module = await prisma.module.create({
       data: {
@@ -50,12 +50,12 @@ async function createTestData() {
         description: 'A test module for testing purposes',
         order: 1,
         courseId: course.id,
-        createdBy: user.id
-      }
+        createdBy: user.id,
+      },
     });
-    
+
     console.log('Created test module:', module.id);
-    
+
     // Create a test lesson
     const lesson = await prisma.lesson.create({
       data: {
@@ -63,12 +63,12 @@ async function createTestData() {
         description: 'A test lesson for testing purposes',
         order: 1,
         moduleId: module.id,
-        createdBy: user.id
-      }
+        createdBy: user.id,
+      },
     });
-    
+
     console.log('Created test lesson:', lesson.id);
-    
+
     console.log('Test data created successfully!');
   } catch (error) {
     console.error('Error creating test data:', error);
@@ -79,4 +79,4 @@ async function createTestData() {
 
 createTestData()
   .then(() => console.log('Done'))
-  .catch(error => console.error('Failed:', error));
+  .catch((error) => console.error('Failed:', error));
