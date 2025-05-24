@@ -1,6 +1,38 @@
 import React from 'react';
+import { cva, type VariantProps } from "class-variance-authority";
+import { cn } from '../../utils/cn';
 
-export interface SkeletonProps {
+/**
+ * Skeleton variants using class-variance-authority
+ */
+const skeletonVariants = cva(
+  "relative overflow-hidden bg-gray-200 dark:bg-gray-700 rounded-md",
+  {
+    variants: {
+      animation: {
+        shimmer: "skeleton-shimmer",
+        pulse: "skeleton-pulse",
+      },
+      radius: {
+        none: "rounded-none",
+        sm: "rounded-sm",
+        md: "rounded-md",
+        lg: "rounded-lg",
+        full: "rounded-full",
+      },
+    },
+    defaultVariants: {
+      animation: "shimmer",
+      radius: "md",
+    },
+  }
+);
+
+/**
+ * Extended Skeleton props interface
+ */
+export interface SkeletonProps extends React.HTMLAttributes<HTMLDivElement>, 
+  VariantProps<typeof skeletonVariants> {
   /**
    * The width of the skeleton
    */
@@ -10,46 +42,65 @@ export interface SkeletonProps {
    */
   height?: string | number;
   /**
-   * The border radius of the skeleton
+   * The border radius of the skeleton (custom value)
+   * Use radius prop for predefined values
    */
   borderRadius?: string | number;
   /**
    * Whether to show the shimmer effect
+   * @deprecated Use animation="shimmer" or animation="pulse" instead
    */
   shimmer?: boolean;
-  /**
-   * Additional CSS class names
-   */
-  className?: string;
 }
 
 /**
  * Base Skeleton component for loading states
+ * Enhanced with Shadcn/UI patterns
  */
-export const Skeleton = ({
-                           width = '100%',
-                           height = '1rem',
-                           borderRadius = '0.25rem',
-                           shimmer = true,
-                           className = '',
-                         }: SkeletonProps): JSX.Element => {
-  // Convert width and height to string with px if they are numbers
-  const widthStyle = typeof width === 'number' ? `${width}px` : width;
-  const heightStyle = typeof height === 'number' ? `${height}px` : height;
-  const radiusStyle = typeof borderRadius === 'number' ? `${borderRadius}px` : borderRadius;
+export const Skeleton = React.forwardRef<HTMLDivElement, SkeletonProps>(
+  ({ 
+    width = '100%',
+    height = '1rem',
+    borderRadius,
+    shimmer = true,
+    animation,
+    radius,
+    className,
+    ...props
+  }, ref) => {
+    // Convert width and height to string with px if they are numbers
+    const widthStyle = typeof width === 'number' ? `${width}px` : width;
+    const heightStyle = typeof height === 'number' ? `${height}px` : height;
+    
+    // Handle custom border radius if provided
+    const radiusStyle = typeof borderRadius === 'number' ? `${borderRadius}px` : borderRadius;
+    
+    // For backward compatibility, if shimmer is explicitly set to false, use pulse animation
+    const animationValue = animation || (shimmer ? 'shimmer' : 'pulse');
+    
+    return (
+      <div
+        ref={ref}
+        className={cn(
+          skeletonVariants({ 
+            animation: animationValue, 
+            radius: radiusStyle ? undefined : radius,
+            className 
+          })
+        )}
+        style={{
+          width: widthStyle,
+          height: heightStyle,
+          ...(radiusStyle ? { borderRadius: radiusStyle } : {}),
+        }}
+        aria-hidden="true"
+        {...props}
+      />
+    );
+  }
+);
 
-  return (
-    <div
-      className={`bg-gray-200 dark:bg-gray-700 relative overflow-hidden ${shimmer ? 'skeleton-shimmer' : 'skeleton-pulse'} ${className}`}
-      style={{
-        width: widthStyle,
-        height: heightStyle,
-        borderRadius: radiusStyle,
-      }}
-      aria-hidden="true"
-    />
-  );
-};
+Skeleton.displayName = "Skeleton";
 
 /**
  * Skeleton Text component for text placeholders
