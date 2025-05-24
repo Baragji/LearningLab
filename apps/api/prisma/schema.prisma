@@ -171,19 +171,23 @@ model ContentBlock {
 }
 
 model Quiz {
-  id           Int            @id @default(autoincrement())
-  title        String
-  description  String
-  lessonId     Int?
-  moduleId     Int?
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
-  deletedAt    DateTime?
-  questions    Question[]
-  lesson       Lesson?        @relation("LessonQuizzes", fields: [lessonId], references: [id])
-  module       Module?        @relation("ModuleQuizzes", fields: [moduleId], references: [id])
-  attempts     QuizAttempt[]
-  userProgress UserProgress[] @relation("QuizProgress")
+  id                 Int            @id @default(autoincrement())
+  title              String
+  description        String
+  lessonId           Int?
+  moduleId           Int?
+  timeLimit          Int?           // in seconds
+  maxAttempts        Int?
+  randomizeQuestions Boolean        @default(false)
+  showAnswers        Boolean        @default(true)
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+  deletedAt          DateTime?
+  questions          Question[]
+  lesson             Lesson?        @relation("LessonQuizzes", fields: [lessonId], references: [id])
+  module             Module?        @relation("ModuleQuizzes", fields: [moduleId], references: [id])
+  attempts           QuizAttempt[]
+  userProgress       UserProgress[] @relation("QuizProgress")
 
   // Relations for createdBy and updatedBy
   createdByUser   User?   @relation("QuizCreatedByUser", fields: [createdBy], references: [id])
@@ -287,6 +291,10 @@ enum ContentBlockType {
   IMAGE_URL
   VIDEO_URL
   QUIZ_REF
+  CODE
+  FILE
+  EMBED
+  INTERACTIVE
 }
 
 enum QuestionType {
