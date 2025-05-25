@@ -50,9 +50,7 @@ const AdminCoursesPage: React.FC = () => {
       }
     };
 
-    if (token) {
-      fetchCourses();
-    }
+    fetchCourses();
   }, [token]);
 
   const handleDelete = async (id: number) => {
