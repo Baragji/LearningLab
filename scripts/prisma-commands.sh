@@ -27,6 +27,11 @@ case "$1" in
     ;;
   "studio")
     # Opens Prisma Studio for database visualization
+    # Ensure we use the DATABASE_URL from .env and not system credentials
+    if [ -f .env ]; then
+      export $(grep -v '^#' .env | xargs)
+    fi
+    echo "Starting Prisma Studio with DATABASE_URL: $DATABASE_URL"
     npx prisma studio
     ;;
   "status")
