@@ -1,11 +1,11 @@
-// Button components
+// Legacy components
 export * from "./components/Button/Button";
-
-// Skeleton components
 export * from "./components/Skeleton/Skeleton";
-
-// Notification components
 export * from "./components/Notification/Notification";
 export * from "./components/Notification/NotificationProvider";
 
-// Framer Motion re-exports er fjernet
+// MUI components
+export * from "./components/mui";
+
+// Theme
+export * from "./theme";
