@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import Link from 'next/link';
-import { QuizProvider } from '../../../../src/context/QuizContext';
+import { QuizProvider } from '../../../../src/contexts/QuizContext';
 import QuizContainer from '../../../../src/components/quiz/QuizContainer';
 import OfflineQuizNotification from '../../../../src/components/quiz/OfflineQuizNotification';
 import { Quiz, Question, AnswerOption, QuestionType } from '@repo/core/src/types/quiz.types';
