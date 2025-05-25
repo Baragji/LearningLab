@@ -4,7 +4,7 @@ import { Router } from 'express';
 import * as questionBankController from '../controllers/questionBank.controller';
 import { authenticateJWT } from '../middleware/auth.middleware';
 
-const router = Router();
+const router: Router = Router();
 
 // Beskyttede ruter (kræver autentificering)
 router.get('/', authenticateJWT, questionBankController.getAllQuestionBanks);

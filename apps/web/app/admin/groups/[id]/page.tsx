@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
-import { Button } from '@/components/ui/button';
+import { AppButton as Button } from '@/components/ui/AppButton';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
@@ -175,7 +175,7 @@ const GroupEditPage = ({ params }: { params: { id: string } }) => {
       fetchGroupData();
       fetchGroupMembers();
     }
-  }, [isAuthenticated, user, groupId]);
+  }, [isAuthenticated, user, groupId, fetchGroupData, fetchGroupMembers]);
   
   // Handle form input change
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {

@@ -3,41 +3,36 @@
   "projectNavn": "LearningLab",
   "beskrivelse": "En fuldstack monorepo læringsplatform bygget med Turborepo, NestJS (backend), Next.js (frontend) og Prisma ORM med PostgreSQL.",
   "version": "0.1.0 (igangværende udvikling)",
-  "nodeVersion": "20.12.2",
+  "nodeVersion": "22",
   "packageManager": {
     "name": "Yarn",
     "version": "4.9.1"
   },
   "buildTools": [
     {"name": "Turborepo", "version": "2.3.5"},
-    {"name": "TypeScript", "version": "^5.3.3 (primært i apps), ^5.1.6 (i nogle packages)"},
+    {"name": "TypeScript", "version": "^5.8.3"},
     "Webpack (via NestJS CLI & Next.js)",
     "Tailwind CSS"
   ],
   "hovedsprog": ["TypeScript", "JavaScript"],
   "rammeværk": {
     "backend": {"name": "NestJS", "version": "^10.3.10"},
-    "frontend": {"name": "Next.js", "version": "^14.1.0"}
+    "frontend": {"name": "Next.js", "version": "13.4.12"}
   },
   "orm": {
     "name": "Prisma",
-    "versionCLI": "^5.22.0",
-    "versionClient": "^5.22.0"
+    "versionCLI": "6.8.2",
+    "versionClient": "6.8.2"
   },
   "database": "PostgreSQL",
   "workspaces": [
-    "apps/api",
-    "apps/web",
-    "packages/config",
-    "packages/core",
-    "packages/ui",
-    "packages/tsconfig",
-    "packages/create-solid-wow"
+    "apps/*",
+    "packages/*"
   ],
   "styling": ["Tailwind CSS", "CSS Modules (potentielt via Next.js/React)"],
   "testing": {
     "unitIntegration": ["Jest", "Supertest (for NestJS e2e)"],
-    "e2e": ["Playwright"]
+    "e2e": ["Playwright (kun konfigureret for web app)"]
   },
   "ciCd": {
     "platform": "GitHub Actions",
@@ -48,25 +43,31 @@
     "filer": ["Dockerfile.api", "docker-compose.yml", "render.yaml"]
   },
   "bemærkelsesværdigeBiblioteker": [
-    {"name": "React", "version": "^18.2.0"},
+    {"name": "React", "version": "18.2.0"},
     {"name": "@nestjs/swagger", "version": "^7.4.0"},
     {"name": "axios", "version": "^1.9.0"},
     {"name": "Redux Toolkit (RTK Query)", "version": "^1.9.5"},
     {"name": "Zod", "version": "varierer/ikke specificeret i uddrag"},
     {"name": "class-validator", "version": "^0.14.1"},
-    {"name": "class-transformer", "version": "^0.5.1"}
+    {"name": "class-transformer", "version": "^0.5.1"},
+    {"name": "passport-github2", "version": "^0.1.12"},
+    {"name": "passport-google-oauth20", "version": "^2.0.0"}
   ],
   "miljøvariabler": [
     "DATABASE_URL", "JWT_SECRET", "JWT_EXPIRES_IN", "SALT_ROUNDS", "PORT", "NODE_ENV",
     "NEXT_PUBLIC_APP_NAME", "NEXT_PUBLIC_API_URL", "NEXT_PUBLIC_WS_URL",
-    "POSTGRES_USER", "POSTGRES_PASSWORD", "POSTGRES_DB", "CI", "QODANA_TOKEN"
+    "POSTGRES_USER", "POSTGRES_PASSWORD", "POSTGRES_DB", "CI", "QODANA_TOKEN",
+    "JWT_REFRESH_SECRET", "JWT_REFRESH_EXPIRES_IN", "CORS_ORIGINS", "RUNNING_IN_DOCKER"
   ],
   "apiDokumentation": "Swagger (via @nestjs/swagger)",
   "projektStruktur": "Monorepo (Turborepo)",
   "åbneSpørgsmål": [
-    "Er .env.example template filer leveret for alle services?",
+    "Er .env.example template filer leveret for alle services? (Svar: Nej, kun for API app)",
     "Strategi for håndtering af produktionshemmeligheder (f.eks. Doppler, Vault)?",
     "Playwright test scope og detaljeret konfiguration.",
     "Detaljer for Qodana-konfiguration (fra qodana.yaml?)."
-  ]
+  ],
+  "authentication": {
+    "strategier": ["JWT", "GitHub OAuth", "Google OAuth"]
+  }
 }
