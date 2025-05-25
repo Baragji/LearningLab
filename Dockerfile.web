@@ -1,0 +1,56 @@
+FROM node:18-alpine AS base
+
+# Install dependencies only when needed
+FROM base AS deps
+WORKDIR /app
+
+# Copy package files
+COPY package.json yarn.lock* ./
+COPY .yarnrc.yml ./
+COPY .yarn ./.yarn
+COPY apps/web/package.json ./apps/web/package.json
+COPY packages/config/package.json ./packages/config/package.json
+COPY packages/ui/package.json ./packages/ui/package.json
+COPY packages/tsconfig/package.json ./packages/tsconfig/package.json
+
+# Install dependencies
+RUN yarn install --frozen-lockfile
+
+# Rebuild the source code only when needed
+FROM base AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY --from=deps /app/.yarn ./.yarn
+COPY . .
+
+# Set environment variables
+ENV NEXT_TELEMETRY_DISABLED 1
+ENV NODE_ENV production
+
+# Build the application
+RUN yarn workspace web build
+
+# Production image, copy all the files and run next
+FROM base AS runner
+WORKDIR /app
+
+ENV NODE_ENV production
+ENV NEXT_TELEMETRY_DISABLED 1
+
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
+
+# Copy necessary files
+COPY --from=builder /app/apps/web/next.config.js ./
+COPY --from=builder /app/apps/web/package.json ./
+COPY --from=builder /app/apps/web/public ./public
+COPY --from=builder --chown=nextjs:nodejs /app/apps/web/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/apps/web/.next/static ./.next/static
+
+USER nextjs
+
+EXPOSE 3001
+
+ENV PORT 3001
+
+CMD ["node", "server.js"]

@@ -1,190 +1,354 @@
-# Project Guidelines for LearningLab
+# Projekt Guidelines for LearningLab
 
-## Project Overview
+## Projekt Oversigt
 
-LearningLab is a fullstack application built using a monorepo architecture with Turborepo. The project consists of a NestJS backend API, a NextJS frontend, and shared packages for UI components, configuration, and TypeScript definitions.
+LearningLab er en fullstack applikation bygget med en monorepo arkitektur ved hjælp af Turborepo. Projektet består af et NestJS backend API, en NextJS frontend og delte pakker til UI-komponenter, konfiguration og TypeScript definitioner.
 
-## Project Structure
+## Systemkrav
+
+- **Node.js**: Version 22.x (LTS)
+- **Yarn**: Version 4.9.1 (pakke manager)
+- **Docker**: Nyeste version (til containerisering)
+- **Docker Compose**: Nyeste version (til orkestrering af containere)
+
+## Projekt Struktur
 
 ```
 LearningLab/
-├── apps/                  # Application packages
+├── apps/                  # Applikationspakker
 │   ├── api/               # NestJS backend API
-│   │   ├── src/           # Source code
-│   │   │   ├── auth/      # Authentication modules with strategies (GitHub, Google, JWT, Local)
-│   │   │   ├── common/    # Common utilities (filters, interceptors, middleware, pipes, services)
-│   │   │   ├── config/    # Configuration settings
-│   │   │   ├── controllers/# API controllers with DTOs
-│   │   │   ├── middleware/# Custom middleware
-│   │   │   ├── modules/   # Feature modules
-│   │   │   ├── persistence/# Database access layer
-│   │   │   ├── quiz/      # Quiz functionality
-│   │   │   ├── routes/    # Route definitions
-│   │   │   ├── search/    # Search functionality
-│   │   │   ├── services/  # Service layer
-│   │   │   ├── shared/    # Shared utilities
-│   │   │   ├── user-groups/# User group management
-│   │   │   ├── users/     # User management
-│   │   │   └── ...        # Other modules
+│   │   ├── src/           # Kildekode
+│   │   │   ├── auth/      # Autentifikationsmoduler med strategier (GitHub, Google, JWT, Local)
+│   │   │   ├── common/    # Fælles utilities (filters, interceptors, middleware, pipes, services)
+│   │   │   ├── config/    # Konfigurationsindstillinger
+│   │   │   ├── controllers/# API controllers med DTOs
+│   │   │   ├── middleware/# Brugerdefineret middleware
+│   │   │   ├── modules/   # Funktionsmoduler
+│   │   │   ├── persistence/# Database adgangslag
+│   │   │   ├── quiz/      # Quiz funktionalitet
+│   │   │   ├── routes/    # Rutedefinitioner
+│   │   │   ├── search/    # Søgefunktionalitet
+│   │   │   ├── services/  # Servicelag
+│   │   │   ├── shared/    # Delte utilities
+│   │   │   ├── user-groups/# Brugergruppeadministration
+│   │   │   ├── users/     # Brugeradministration
+│   │   │   └── ...        # Andre moduler
 │   ├── web/               # NextJS frontend
-│   │   ├── pages/         # Next.js pages
-│   │   │   ├── admin/     # Admin pages
-│   │   │   ├── courses/   # Course pages
-│   │   │   ├── lessons/   # Lesson pages
-│   │   │   └── quiz/      # Quiz pages
-│   │   ├── src/           # Source code
-│   │   │   ├── components/# React components
-│   │   │   │   ├── auth/  # Authentication components
-│   │   │   │   ├── common/# Common components
-│   │   │   │   ├── content/# Content display components
-│   │   │   │   ├── layout/# Layout components
-│   │   │   │   ├── quiz/  # Quiz components
-│   │   │   │   └── ui/    # UI components
-│   │   │   ├── context/   # React context (Note: duplicate with contexts/)
-│   │   │   ├── contexts/  # React contexts (Note: duplicate with context/)
-│   │   │   ├── hooks/     # Custom React hooks
-│   │   │   ├── lib/       # Utility libraries
-│   │   │   ├── screens/   # Page components
-│   │   │   │   ├── admin/ # Admin screens
-│   │   │   │   ├── auth/  # Authentication screens
-│   │   │   │   ├── common/# Common screens
-│   │   │   │   └── employee/# Employee screens
-│   │   │   ├── services/  # Service layer
+│   │   ├── pages/         # Next.js sider
+│   │   │   ├── admin/     # Admin sider
+│   │   │   ├── courses/   # Kursus sider
+│   │   │   ├── lessons/   # Lektions sider
+│   │   │   └── quiz/      # Quiz sider
+│   │   ├── src/           # Kildekode
+│   │   │   ├── components/# React komponenter
+│   │   │   │   ├── auth/  # Autentifikationskomponenter
+│   │   │   │   ├── common/# Fælles komponenter
+│   │   │   │   ├── content/# Indholdsvisningskomponenter
+│   │   │   │   ├── layout/# Layout komponenter
+│   │   │   │   ├── quiz/  # Quiz komponenter
+│   │   │   │   └── ui/    # UI komponenter
+│   │   │   ├── contexts/  # React contexts (konsolideret fra context/ og contexts/)
+│   │   │   ├── hooks/     # Brugerdefinerede React hooks
+│   │   │   ├── lib/       # Utility biblioteker
+│   │   │   ├── screens/   # Sidekomponenter
+│   │   │   │   ├── admin/ # Admin skærme
+│   │   │   │   ├── auth/  # Autentifikationsskærme
+│   │   │   │   ├── common/# Fælles skærme
+│   │   │   │   └── employee/# Medarbejderskærme
+│   │   │   ├── services/  # Servicelag
 │   │   │   ├── store/     # Redux store
 │   │   │   ├── styles/    # CSS styles
-│   │   │   └── utils/     # Utility functions
-├── packages/              # Shared packages
-│   ├── config/            # Shared configuration (eslint, tailwind, etc.)
-│   ├── core/              # Core shared functionality
-│   ├── create-solid-wow/  # Additional package not in original guidelines
-│   ├── ui/                # Shared UI components
-│   │   ├── components/    # UI components
+│   │   │   └── utils/     # Utility funktioner
+├── packages/              # Delte pakker
+│   ├── config/            # Delt konfiguration (eslint, tailwind, osv.)
+│   ├── core/              # Kernekomponenter til delt funktionalitet
+│   ├── create-solid-wow/  # Yderligere pakke
+│   ├── ui/                # Delte UI komponenter
+│   │   ├── components/    # UI komponenter
 │   │   └── utils/         # UI utilities
-│   └── tsconfig/          # Shared TypeScript configurations
-├── prisma/                # Prisma ORM configuration
-│   ├── migrations/        # Database migrations
-│   └── schema.prisma      # Database schema
+│   └── tsconfig/          # Delte TypeScript konfigurationer
+├── prisma/                # Prisma ORM konfiguration
+│   ├── migrations/        # Database migrationer
+│   └── schema.prisma      # Database skema
 ├── scripts/               # Utility scripts
-└── docker-compose.yml     # Docker configuration for API and database (web app missing)
+├── docs/                  # Dokumentation
+│   └── deployment/        # Deployment guides og dokumentation
+├── docker-compose.yml     # Docker konfiguration for API, web og database
+├── Dockerfile.api         # Dockerfile til API
+├── Dockerfile.web         # Dockerfile til web applikation
+└── nginx.conf             # Nginx reverse proxy konfiguration
 ```
 
 ## Tech Stack
 
-- **Backend**: NestJS with TypeScript
-- **Frontend**: NextJS with TypeScript, Tailwind CSS, and Redux Toolkit
-- **Database**: PostgreSQL with Prisma ORM
-- **Testing**: Jest
-- **Package Management**: Yarn workspaces
-- **Build System**: Turborepo
-- **Deployment**: Docker
-- **Authentication**: Multiple strategies including GitHub, Google, JWT, and Local
+### Backend (API)
+- **Framework**: NestJS v10.3.10
+- **Sprog**: TypeScript v5.3.3
+- **Database**: PostgreSQL v15 med Prisma ORM v6.8.2
+- **Autentifikation**: JWT, Passport med GitHub og Google OAuth
+- **API Dokumentation**: Swagger/OpenAPI
+- **Caching**: Redis (via @nestjs/cache-manager)
+- **Rate Limiting**: @nestjs/throttler med Redis storage
 
-## Development Workflow
+### Frontend (Web)
+- **Framework**: Next.js v13.4.12
+- **Sprog**: TypeScript v5.1.6
+- **UI Biblioteker**: 
+  - Material UI v7.1.0
+  - Radix UI (forskellige komponenter)
+  - Tailwind CSS v3.3.3
+- **State Management**: Redux Toolkit v1.9.5
+- **HTTP Client**: Axios v1.9.0
+- **Komponent Bibliotek**: Eget UI bibliotek (workspace:ui)
+
+### Delte Pakker
+- **Konfiguration**: ESLint v8/v9, Prettier v3.0.0, TypeScript konfigurationer
+- **Core**: Delte typer og utilities
+- **UI**: Delte UI komponenter
+
+### DevOps & Infrastruktur
+- **Containerisering**: Docker med multi-stage builds
+- **Orkestrering**: Docker Compose
+- **CI/CD**: GitHub Actions
+- **Kvalitetssikring**: JetBrains Qodana
+- **Deployment**: 
+  - API: Render
+  - Web: Vercel
+  - Lokal: Docker Compose med Nginx reverse proxy
+
+### Test
+- **Unit Testing**: Jest v29.6.2
+- **E2E Testing**: Playwright v1.52.0
+- **API Testing**: Supertest v6.3.3
+
+### Pakke Management
+- **Monorepo**: Turborepo v2.3.5
+- **Pakke Manager**: Yarn v4.9.1 med Workspaces
+
+## Udviklingsworkflow
 
 ### Setup
 
-1. Install NPS (Node Package Scripts) globally:
-   ```
-   npm i -g nps
-   ```
-
-2. Configure environment variables:
-    - For frontend: `cd apps/web && cp .env.example .env`
-    - For backend: `cd apps/api && cp .env.example .env`
-
-3. Install dependencies:
-   ```
-   nps prepare
+1. Sørg for at have Node.js v22 installeret:
+   ```bash
+   # Tjek Node.js version
+   node -v
+   # Skal vise v22.x.x
    ```
 
-### Development
+2. Aktiver Corepack for at bruge Yarn v4:
+   ```bash
+   corepack enable
+   ```
 
-To run the development environment:
-```
-nps dev
-```
+3. Klon repository og installer afhængigheder:
+   ```bash
+   git clone <repository-url>
+   cd LearningLab
+   yarn install
+   ```
 
-This will start both the API and web applications in development mode with hot reloading.
+4. Konfigurer miljøvariabler:
+   - For frontend: `cp apps/web/.env.example apps/web/.env.local`
+   - For backend: `cp apps/api/.env.example apps/api/.env`
+   - Gennemgå og opdater miljøvariablerne i hver fil i henhold til din lokale opsætning
+   - Vigtige variabler at konfigurere:
+     - Database forbindelsesstreng (API)
+     - JWT hemmeligheder (API)
+     - OAuth legitimationsoplysninger for GitHub og Google (hvis du bruger social login)
+     - API URL for frontend
 
-### Database Management
+### Udvikling
 
-- Run migrations: `yarn prisma:migrate`
-- Generate Prisma client: `yarn prisma:generate`
-- Open Prisma Studio: `yarn prisma:studio`
-- Seed the database: `yarn seed`
-
-## Testing
-
-Run tests using:
-```
-nps test
-```
-
-For continuous testing during development:
-```
-nps test:watch
-```
-
-For CI/CD environments:
-```
-nps test:ci
+Start udviklingsmiljøet:
+```bash
+yarn dev
 ```
 
-## Build Process
+Dette vil starte både API og web applikationerne i udviklingstilstand med hot reloading.
 
-To build all applications and packages:
+For at starte kun API:
+```bash
+yarn workspace api dev
 ```
-nps build
+
+For at starte kun web:
+```bash
+yarn workspace web dev
+```
+
+### Database Administration
+
+- Kør migrationer: `yarn prisma:migrate`
+- Generer Prisma klient: `yarn prisma:generate`
+- Åbn Prisma Studio: `yarn prisma:studio`
+- Seed databasen: `yarn seed`
+
+## Test
+
+Kør tests:
+```bash
+yarn test
+```
+
+For kontinuerlig test under udvikling:
+```bash
+yarn test:watch
+```
+
+For CI/CD miljøer:
+```bash
+yarn test:ci
+```
+
+For E2E tests (web):
+```bash
+yarn workspace web test:e2e
+```
+
+## Build Proces
+
+For at bygge alle applikationer og pakker:
+```bash
+yarn build
+```
+
+For at bygge kun API:
+```bash
+yarn build:api
 ```
 
 ## Deployment
 
-### Using Docker (Current Implementation)
+### Lokal Deployment med Docker
 
 ```bash
-# Start both the database and API service
+# Start alle services (database, API, web og Nginx)
 docker-compose up -d
 
-# To view logs
+# Se logs
 docker-compose logs -f
+
+# Stop alle services
+docker-compose down
 ```
 
-This will start:
-- PostgreSQL database on port 5432
-- API service on port 3000
+Dette vil starte:
+- PostgreSQL database på port 5432
+- API service på port 3000 (internt)
+- Web applikation på port 3001 (internt)
+- Nginx reverse proxy på port 80 (eksponeret)
 
-**Note**: The current Docker configuration does not include the web application or Nginx reverse proxy as mentioned in the original guidelines. This is a discrepancy that needs to be addressed.
+Applikationen vil være tilgængelig på:
+- Web: http://localhost
+- API: http://localhost/api
 
-## Code Style Guidelines
+### Cloud Deployment
 
-- Follow the ESLint and Prettier configurations provided in the project
-- Run `yarn lint` to check for linting issues
-- Run `yarn format` to automatically format code
-- Write unit tests for all new features
-- Follow the NestJS style guide for backend code
-- Use TypeScript for type safety throughout the project
+Projektet er konfigureret til deployment på:
+- **API**: Render
+- **Web**: Vercel
 
-## Troubleshooting
+Se detaljerede deployment guides i `/docs/deployment/` mappen:
+- Environment-specifikke deployment guides
+- CI/CD hemmeligheder og miljøvariabler
+- Deployment alignment guide
+- CI/CD fejlfindingsguide
 
-If you encounter database connection issues:
+## Kodestil Guidelines
 
-1. Make sure the database container is running:
+- Følg ESLint og Prettier konfigurationerne i projektet
+- Kør `yarn lint` for at tjekke for linting problemer
+- Kør `yarn format` for automatisk at formatere kode
+- Skriv unit tests for alle nye funktioner
+- Følg NestJS stilguiden for backend kode
+- Brug TypeScript for typesikkerhed i hele projektet
+
+## Fejlfinding
+
+### Database Forbindelsesproblemer
+
+1. Sørg for at databasecontaineren kører:
    ```bash
    docker ps
    ```
 
-2. Check the database logs:
+2. Tjek database logs:
    ```bash
    docker-compose logs postgres
    ```
 
-3. For the error "Can't reach database server at `localhost:5432`":
-    - If running the API directly (not in Docker), make sure the database is started with `docker-compose up postgres -d`
-    - If running in Docker, make sure both services are on the same network
+3. For fejlen "Can't reach database server at `localhost:5432`":
+   - Hvis du kører API direkte (ikke i Docker), skal du sørge for at databasen er startet med `docker-compose up postgres -d`
+   - Hvis du kører i Docker, skal du sørge for at begge services er på samme netværk
 
-## Known Structure Discrepancies
+### API Forbindelsesproblemer
 
-1. The web application has both `context/` and `contexts/` directories which appear to serve similar purposes.
-2. The Docker configuration does not include the web application or Nginx reverse proxy as mentioned in the guidelines.
-3. The API structure includes additional directories not mentioned in the original guidelines, such as `persistence/`, `search/`, and `user-groups/`.
-4. There is an additional package `create-solid-wow` not mentioned in the original guidelines.
+1. Tjek API logs:
+   ```bash
+   docker-compose logs api
+   ```
+
+2. Sørg for at CORS er konfigureret korrekt i API'en
+3. Tjek at miljøvariablen `NEXT_PUBLIC_API_URL` er korrekt i web applikationen
+
+### Web Applikationsproblemer
+
+1. Tjek web logs:
+   ```bash
+   docker-compose logs web
+   ```
+
+2. Tjek browser konsollen for fejl
+3. Sørg for at API'en er tilgængelig og fungerer korrekt
+
+## CI/CD Pipeline
+
+Projektet bruger GitHub Actions til CI/CD:
+
+1. **Build og Test**: Kører på alle pull requests og pushes til main
+   - Installerer afhængigheder
+   - Bygger alle pakker og applikationer
+   - Kører unit tests
+   - Kører E2E tests med Playwright
+
+2. **Deploy til Render (API)**: Kører kun på pushes til main
+   - Trigger et deploy via Render deploy hook
+
+3. **Deploy til Vercel (Web)**: Kører kun på pushes til main
+   - Deployer web applikationen til Vercel
+
+4. **Kodekvalitet**: Kører Qodana kodekvalitetsanalyse
+
+Se `.github/workflows/` mappen for detaljerede konfigurationer.
+
+## Dokumentation
+
+Yderligere dokumentation findes i `/docs/` mappen:
+
+- Deployment guides
+- Miljøspecifikke konfigurationer
+- CI/CD hemmeligheder og miljøvariabler
+- Fejlfindingsguides
+
+## Kendte Problemer og Løsninger
+
+1. **Duplikerede Context Mapper**: Web applikationen havde tidligere både `context/` og `contexts/` mapper, som er blevet konsolideret til `contexts/`.
+
+2. **Docker Konfiguration**: Docker konfigurationen er blevet opdateret til at inkludere web applikationen og Nginx reverse proxy.
+
+3. **Node.js Version**: Projektet kræver Node.js v22. Ældre versioner understøttes ikke.
+
+4. **Yarn Version**: Projektet bruger Yarn v4.9.1 via Corepack. Sørg for at aktivere Corepack før installation.
+
+## Bidrag til Projektet
+
+1. Fork repository
+2. Opret en feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit dine ændringer (`git commit -m 'Add some amazing feature'`)
+4. Push til branch (`git push origin feature/amazing-feature`)
+5. Åbn en Pull Request
+
+## Licens
+
+Dette projekt er licenseret under [LICENSE] - se LICENSE filen for detaljer.
