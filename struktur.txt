@@ -19,36 +19,12 @@ LearningLab
 │  ├─ vcs.xml
 │  ├─ webResources.xml
 │  └─ workspace.xml
-├─ .junie
-│  └─ oldguide.md
 ├─ .node-version
-├─ .repomix
-│  └─ bundles.json
 ├─ .yarn
 │  ├─ install-state.gz
 │  └─ releases
 │     └─ yarn-4.9.1.cjs
 ├─ .yarnrc.yml
-├─ .zencoder
-│  ├─ README.md
-│  ├─ Zencoder-0837ecf2-4b3a-4238-bfe4-1f84df721a3e.log
-│  ├─ Zencoder-2ac4afe0-89a3-400b-a40d-f529bf91cea0.log
-│  ├─ Zencoder-44afc8d1-79e5-40fd-8b74-e085754f3965.log
-│  ├─ Zencoder-4abb949c-a65e-4693-aec7-f9c53a842410.log
-│  ├─ Zencoder-575c2f9d-8546-40a1-a2aa-b7c395461b84.log
-│  ├─ Zencoder-5c00a04a-5718-4bae-b774-10b85f0001b8.log
-│  ├─ Zencoder-5c7fef70-251f-42ee-baa5-697e49dd529d.log
-│  ├─ Zencoder-a486f42b-0441-41ad-845b-1c18641dc510.log
-│  ├─ Zencoder-e1e64256-787a-45ac-bdde-3440d5e8598e.log
-│  ├─ Zencoder-ed724e50-0f12-4991-8900-bdd37479bcab.log
-│  ├─ backups
-│  │  └─ apps
-│  │     └─ api
-│  │        └─ src
-│  │           └─ config
-│  │              └─ node-version.spec.ts.backup
-│  └─ cleanup.sh
-├─ .zencoder_backup
 ├─ Dockerfile.api
 ├─ Dockerfile.web
 ├─ E1-MVP-UI-Plan.md
@@ -56,6 +32,7 @@ LearningLab
 ├─ LICENSE
 ├─ Optimering.txt
 ├─ Plan.txt
+├─ README.md
 ├─ Seedpensum.txt
 ├─ Vision&brainstom.txt
 ├─ api
@@ -447,6 +424,7 @@ LearningLab
 │     └─ tsconfig.json
 ├─ cleanup.sh
 ├─ code-review-issues.md
+├─ debugging-plan.md
 ├─ docker-compose.yml
 ├─ docker-deployment-guide.md
 ├─ docs
@@ -542,8 +520,6 @@ LearningLab
 │     ├─ .eslintrc.js
 │     ├─ components
 │     │  ├─ Button
-│     │  │  ├─ Button.test.tsx
-│     │  │  └─ Button.tsx
 │     │  ├─ Notification
 │     │  │  ├─ Notification.test.tsx
 │     │  │  ├─ Notification.tsx
@@ -559,12 +535,22 @@ LearningLab
 │     │     │  ├─ Button.tsx
 │     │     │  └─ index.ts
 │     │     ├─ Card
+│     │     │  ├─ Card.test.tsx
+│     │     │  ├─ Card.tsx
+│     │     │  └─ index.ts
 │     │     ├─ Checkbox
 │     │     │  ├─ Checkbox.test.tsx
 │     │     │  ├─ Checkbox.tsx
 │     │     │  ├─ README.md
 │     │     │  └─ index.ts
 │     │     ├─ Dialog
+│     │     │  ├─ Dialog.test.tsx
+│     │     │  ├─ Dialog.tsx
+│     │     │  └─ index.ts
+│     │     ├─ Paper
+│     │     │  ├─ Paper.test.tsx
+│     │     │  ├─ Paper.tsx
+│     │     │  └─ index.ts
 │     │     ├─ Select
 │     │     │  ├─ README.md
 │     │     │  ├─ Select.test.tsx
@@ -572,6 +558,9 @@ LearningLab
 │     │     │  └─ index.ts
 │     │     ├─ Table
 │     │     ├─ Tabs
+│     │     │  ├─ Tabs.test.tsx
+│     │     │  ├─ Tabs.tsx
+│     │     │  └─ index.ts
 │     │     ├─ TextField
 │     │     │  ├─ README.md
 │     │     │  ├─ TextField.test.tsx
@@ -611,6 +600,7 @@ LearningLab
 ├─ stackinfo-mismatch-report.md
 ├─ stackinfo.txt
 ├─ stackudvkiling
+├─ terminalfejl.txt
 ├─ tsconfig.json
 ├─ turbo.json
 ├─ vision.txt

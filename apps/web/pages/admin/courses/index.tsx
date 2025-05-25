@@ -150,4 +150,10 @@ const AdminCoursesPage: React.FC = () => {
   );
 };
 
+export const getServerSideProps = async () => {
+  return {
+    props: {},
+  };
+};
+
 export default AdminCoursesPage;

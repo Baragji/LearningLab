@@ -6,6 +6,9 @@
     "jsx": "react-jsx",
     "lib": ["dom", "dom.iterable", "esnext"],
     "module": "ESNext",
-    "target": "ES6"
+    "target": "ES6",
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "moduleResolution": "node"
   }
 }

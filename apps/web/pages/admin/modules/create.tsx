@@ -97,6 +97,17 @@ const CreateModulePage: React.FC = () => {
     }
   };
 
+  // Kun render indholdet når token er tilgængelig (client-side)
+  if (typeof window !== 'undefined' && !token) {
+    return (
+      <Layout>
+        <div className="flex justify-center items-center h-64">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+        </div>
+      </Layout>
+    );
+  }
+
   return (
     <Layout>
       <div className="space-y-6">
@@ -201,6 +212,12 @@ const CreateModulePage: React.FC = () => {
       </div>
     </Layout>
   );
+};
+
+export const getServerSideProps = async () => {
+  return {
+    props: {},
+  };
 };
 
 export default CreateModulePage;

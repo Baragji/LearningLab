@@ -9,7 +9,10 @@
     "baseUrl": "./src",
     "module": "commonjs",
     "target": "es2017",
-    "sourceMap": true
+    "sourceMap": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "moduleResolution": "node"
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]
