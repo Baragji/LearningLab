@@ -35,6 +35,7 @@
   },
   "dependencies": {
     "@nestjs/config": "^4.0.2",
+    "@radix-ui/react-slot": "^1.2.3",
     "@types/axios": "^0.14.4",
     "@types/passport-github2": "^1.2.9",
     "@types/passport-google-oauth20": "^2.0.16",

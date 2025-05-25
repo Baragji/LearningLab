@@ -37,36 +37,33 @@ describe('Button Component', () => {
   });
 
   it('applies the correct classes for different variants', () => {
-    const { rerender } = render(<Button variant="primary">Primary</Button>);
+    const { rerender } = render(<Button variant="default">Default</Button>);
     
     let buttonElement = screen.getByRole('button');
-    expect(buttonElement).toHaveClass('bg-red-500');
+    expect(buttonElement).toHaveClass('bg-primary-500');
     
     rerender(<Button variant="secondary">Secondary</Button>);
     buttonElement = screen.getByRole('button');
     expect(buttonElement).toHaveClass('bg-gray-200');
     
-    rerender(<Button variant="danger">Danger</Button>);
+    rerender(<Button variant="destructive">Destructive</Button>);
     buttonElement = screen.getByRole('button');
-    expect(buttonElement).toHaveClass('bg-red-600');
+    expect(buttonElement).toHaveClass('bg-red-500');
   });
 
   it('applies the correct classes for different sizes', () => {
-    const { rerender } = render(<Button size="small">Small</Button>);
+    const { rerender } = render(<Button size="sm">Small</Button>);
     
     let buttonElement = screen.getByRole('button');
-    expect(buttonElement).toHaveClass('px-2.5');
-    expect(buttonElement).toHaveClass('text-xs');
+    expect(buttonElement).toHaveClass('h-9');
     
-    rerender(<Button size="medium">Medium</Button>);
+    rerender(<Button size="default">Medium</Button>);
     buttonElement = screen.getByRole('button');
-    expect(buttonElement).toHaveClass('px-4');
-    expect(buttonElement).toHaveClass('text-sm');
+    expect(buttonElement).toHaveClass('h-10');
     
-    rerender(<Button size="large">Large</Button>);
+    rerender(<Button size="lg">Large</Button>);
     buttonElement = screen.getByRole('button');
-    expect(buttonElement).toHaveClass('px-6');
-    expect(buttonElement).toHaveClass('text-lg');
+    expect(buttonElement).toHaveClass('h-11');
   });
 
   it('applies disabled styles when disabled', () => {

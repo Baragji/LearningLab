@@ -4,7 +4,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
-import { Button } from '@/components/ui/button';
+import { AppButton as Button } from '@/components/ui/AppButton';
 import { Input } from '@/components/ui/input';
 import { 
   Table, 
