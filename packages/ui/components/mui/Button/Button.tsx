@@ -1,8 +1,10 @@
 // packages/ui/components/mui/Button/Button.tsx
-import React, { forwardRef } from 'react';
-import { Button as MuiButton, ButtonProps as MuiButtonProps, CircularProgress } from '@mui/material';
+import * as React from 'react';
+import { Button as MuiButton, CircularProgress } from '@mui/material';
+import type { ButtonProps as MuiButtonProps } from '@mui/material';
 
-export interface ButtonProps extends Omit<MuiButtonProps, 'color'> {
+// Definerer vores egne props
+export type ButtonProps = Omit<MuiButtonProps, 'color'> & {
   /**
    * Variant af knappen
    * @default 'contained'
@@ -16,18 +18,6 @@ export interface ButtonProps extends Omit<MuiButtonProps, 'color'> {
   color?: 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning';
   
   /**
-   * Størrelse af knappen
-   * @default 'medium'
-   */
-  size?: 'small' | 'medium' | 'large';
-  
-  /**
-   * Om knappen skal fylde hele bredden
-   * @default false
-   */
-  fullWidth?: boolean;
-  
-  /**
    * Om knappen er i loading-tilstand
    * @default false
    */
@@ -38,21 +28,16 @@ export interface ButtonProps extends Omit<MuiButtonProps, 'color'> {
    * @default 'Loading...'
    */
   loadingText?: string;
-}
+};
 
 /**
- * Primær UI-komponent til brugerinteraktion
+ * Button-komponent til brugerinput
  */
-export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
-  props,
-  ref
-) {
+export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
   const {
     children,
     variant = 'contained',
     color = 'primary',
-    size = 'medium',
-    fullWidth = false,
     isLoading = false,
     loadingText = 'Loading...',
     disabled,
@@ -65,8 +50,6 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
       ref={ref}
       variant={variant}
       color={color}
-      size={size}
-      fullWidth={fullWidth}
       disabled={isLoading || disabled}
       startIcon={isLoading ? <CircularProgress size={20} color="inherit" /> : startIcon}
       {...rest}

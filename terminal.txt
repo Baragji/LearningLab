@@ -1,0 +1,125 @@
+Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % yarn build
+turbo 2.5.3
+
+• Packages in scope: @repo/config, @repo/core, api, create-solid-wow, tsconfig, ui, web
+• Running build in 7 packages
+• Remote caching disabled
+create-solid-wow:build: cache hit (outputs already on disk), replaying logs f7ad3db729840cc3
+@repo/core:build: cache hit (outputs already on disk), replaying logs 8001529624fbc40d
+@repo/config:build: cache hit (outputs already on disk), replaying logs 79d4112b49f5b9ee
+ui:build: cache miss, executing bc3a3ec00f352cef
+ui:build: 
+api:build: cache hit (outputs already on disk), replaying logs 17a92eae190136ee
+api:build: Environment variables loaded from .env
+api:build: Prisma schema loaded from prisma/schema.prisma
+api:build: 
+api:build: ✔ Generated Prisma Client (v6.8.2) to ./../../node_modules/@prisma/client in 665ms
+api:build: 
+api:build: Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+api:build: 
+api:build: Tip: Need your database queries to be 1000x faster? Accelerate offers you that and more: https://pris.ly/tip-2-accelerate
+api:build: 
+ui:build: No build step required for UI package
+web:build: cache miss, executing f551ec6e64f72e4a
+web:build: 
+web:build: - info Loaded env from /Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/apps/web/.env.local
+web:build: - info Loaded env from /Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/apps/web/.env
+- info Creating an optimized production build  
+web:build: - info Compiled successfully
+- info Linting and checking validity of types ...- warn TypeScript project references are not fully supported. Attempting to build in incremental mode.
+
+web:build: ./app/admin/groups/[id]/page.tsx
+web:build: 109:9  Warning: The 'fetchGroupData' function makes the dependencies of useEffect Hook (at line 178) change on every render. Move it inside the useEffect callback. Alternatively, wrap the definition of 'fetchGroupData' in its own useCallback() Hook.  react-hooks/exhaustive-deps
+web:build: 138:9  Warning: The 'fetchGroupMembers' function makes the dependencies of useEffect Hook (at line 178) change on every render. To fix this, wrap the definition of 'fetchGroupMembers' in its own useCallback() Hook.  react-hooks/exhaustive-deps
+web:build: 530:41  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+web:build: 693:33  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+web:build: 
+web:build: ./app/admin/users/[id]/page.tsx
+web:build: 172:6  Warning: React Hook useEffect has missing dependencies: 'fetchUserData' and 'fetchUserGroups'. Either include them or remove the dependency array.  react-hooks/exhaustive-deps
+web:build: 345:19  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+web:build: 
+web:build: ./app/admin/users/page.tsx
+web:build: 181:6  Warning: React Hook useEffect has missing dependencies: 'fetchUserGroups' and 'fetchUsers'. Either include them or remove the dependency array.  react-hooks/exhaustive-deps
+web:build: 523:37  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+web:build: 
+web:build: ./app/search/page.tsx
+web:build: 162:6  Warning: React Hook useEffect has a missing dependency: 'performSearch'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+web:build: 479:33  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+web:build: 657:29  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+web:build: 
+web:build: ./pages/admin/user-groups/index.tsx
+web:build: 57:6  Warning: React Hook useEffect has a missing dependency: 'fetchUserGroups'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+web:build: 
+web:build: ./pages/settings.tsx
+web:build: 314:19  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+web:build: 
+web:build: ./src/contexts/ProgressContext.tsx
+web:build: 68:6  Warning: React Hook useEffect has a missing dependency: 'fetchUserProgress'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+web:build: 
+web:build: info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/basic-features/eslint#disabling-rules
+- info Linting and checking validity of types  
+- info Collecting page data  
+[=   ] - info Generating static pages (22/26)- warn Entire page /search deopted into client-side rendering. https://nextjs.org/docs/messages/deopted-into-client-rendering /search
+- info Generating static pages (26/26)
+- info Finalizing page optimization  
+web:build: 
+web:build: Route (app)                                        Size     First Load JS
+web:build: ┌ λ /admin/groups/[id]                             6.06 kB         337 kB
+web:build: ├ ○ /admin/users                                   8.04 kB         339 kB
+web:build: ├ λ /admin/users/[id]                              6.25 kB         337 kB
+web:build: └ ○ /search                                        4.88 kB         336 kB
+web:build: + First Load JS shared by all                      328 kB
+web:build:   ├ chunks/1dd3208c-38c954fc9ffc8aa6.js            50.6 kB
+web:build:   ├ chunks/main-app-a70e2c2e198de6c0.js            221 B
+web:build:   ├ chunks/vendors-ce4d729860664090.js             275 kB
+web:build:   └ chunks/webpack-0b7486e850b81c77.js             1.75 kB
+web:build: 
+web:build: Route (pages)                                      Size     First Load JS
+web:build: ┌ ○ /                                              314 B           331 kB
+web:build: ├   /_app                                          0 B             331 kB
+web:build: ├ ○ /404                                           185 B           331 kB
+web:build: ├ ○ /admin                                         1.4 kB          332 kB
+web:build: ├ λ /admin/courses                                 1.62 kB         332 kB
+web:build: ├ λ /admin/courses/create                          1.97 kB         333 kB
+web:build: ├ λ /admin/courses/edit/[id]                       2.07 kB         333 kB
+web:build: ├ λ /admin/modules                                 1.67 kB         332 kB
+web:build: ├ λ /admin/modules/create                          1.9 kB          333 kB
+web:build: ├ λ /admin/modules/edit/[id]                       1.99 kB         333 kB
+web:build: ├ ○ /admin/user-groups                             2.06 kB         333 kB
+web:build: ├ ○ /admin/users/assign-to-course                  1.74 kB         333 kB
+web:build: ├ ○ /admin/users/edit/[id]                         2.88 kB         334 kB
+web:build: ├ ○ /admin/users/invite                            3.36 kB         334 kB
+web:build: ├ ○ /courses                                       1.65 kB         332 kB
+web:build: ├ ○ /courses/[slug]                                2.2 kB          333 kB
+web:build: ├ ○ /courses/[slug]/quizzes/[id]                   5.38 kB         336 kB
+web:build: ├ ○ /courses/[slug]/quizzes/[id]/results (927 ms)  4.09 kB         335 kB
+web:build: ├ ○ /dashboard                                     1.64 kB         332 kB
+web:build: ├ ○ /forgot-password                               1.64 kB         332 kB
+web:build: ├ ○ /lessons/[id]                                  2.13 kB         333 kB
+web:build: ├ ○ /login                                         1.5 kB          332 kB
+web:build: ├ ○ /my-courses                                    1.47 kB         332 kB
+web:build: ├ ○ /profile                                       2.9 kB          334 kB
+web:build: ├ ○ /quiz/[id]                                     2.75 kB         334 kB
+web:build: ├ ○ /reset-password                                1.73 kB         332 kB
+web:build: ├ ○ /settings                                      3.63 kB         334 kB
+web:build: ├ ○ /signup                                        1.67 kB         332 kB
+web:build: ├ ○ /statistics                                    1.44 kB         332 kB
+web:build: └ ○ /ui-examples (910 ms)                          9.53 kB         340 kB
+web:build: + First Load JS shared by all                      340 kB
+web:build:   ├ chunks/framework-273365f85ea4a358.js           45.2 kB
+web:build:   ├ chunks/main-a9c02345e5d87cca.js                138 B
+web:build:   ├ chunks/pages/_app-a8e0979000188699.js          8.61 kB
+web:build:   ├ chunks/vendors-ce4d729860664090.js             275 kB
+web:build:   ├ chunks/webpack-0b7486e850b81c77.js             1.75 kB
+web:build:   └ css/c8f4256ab81c0abe.css                       9.19 kB
+web:build: 
+web:build: λ  (Server)  server-side renders at runtime (uses getInitialProps or getServerSideProps)
+web:build: ○  (Static)  automatically rendered as static HTML (uses no initial props)
+web:build: 
+web:build: 
+
+ Tasks:    6 successful, 6 total
+Cached:    4 cached, 6 total
+  Time:    43.675s 
+
+Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % 

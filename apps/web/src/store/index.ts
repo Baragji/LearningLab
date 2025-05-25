@@ -25,7 +25,7 @@ export const useAppDispatch = () => useDispatch<AppDispatch>();
 export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
 
 // Helper function to get state by key for compatibility with some libraries
-export const getStoreState = (key: string) => {
+export const getStoreState = (key: keyof RootState) => {
   const state = store.getState();
   return state[key];
 };

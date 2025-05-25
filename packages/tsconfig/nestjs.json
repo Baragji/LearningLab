@@ -18,6 +18,8 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
     "useDefineForClassFields": true,
+    "esModuleInterop": true,
+    "moduleResolution": "node",
     "types": ["node", "jest"]
   }
 }

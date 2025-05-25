@@ -139,7 +139,7 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(function Select(
   const labelId = `${selectId}-label`;
 
   // Default renderValue funktion for multiple select
-  const defaultRenderValue = (selected: unknown) => {
+  const defaultRenderValue = (selected: unknown): React.ReactNode => {
     if (!selected || (Array.isArray(selected) && selected.length === 0)) {
       return placeholder || '';
     }
@@ -148,13 +148,13 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(function Select(
       // Find labels for selected values
       const selectedLabels = selected.map(value => {
         const option = options.find(opt => opt.value === value);
-        return option ? option.label : value;
+        return option ? option.label : String(value);
       });
 
       return (
         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
           {selectedLabels.map((label) => (
-            <Chip key={label} label={label} size="small" />
+            <Chip key={String(label)} label={String(label)} size="small" />
           ))}
         </Box>
       );
@@ -162,7 +162,7 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(function Select(
 
     // For single select
     const option = options.find(opt => opt.value === selected);
-    return option ? option.label : selected;
+    return option ? option.label : String(selected);
   };
 
   // Input props for loading and startIcon
