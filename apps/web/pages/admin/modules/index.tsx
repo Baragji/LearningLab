@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Layout from '../../../src/components/layout/Layout';
 import { useAuth } from '../../../src/contexts/useAuth';
+import { GetServerSidePropsContext } from 'next';
+import { parseCookies } from 'nookies';
 
 interface Module {
   id: number;
@@ -48,9 +50,7 @@ const AdminModulesPage: React.FC = () => {
       }
     };
 
-    if (token) {
-      fetchModules();
-    }
+    fetchModules();
   }, [token]);
 
   const handleDelete = async (id: number) => {
@@ -80,16 +80,7 @@ const AdminModulesPage: React.FC = () => {
     }
   };
 
-  // Kun render indholdet når token er tilgængelig (client-side)
-  if (typeof window !== 'undefined' && !token) {
-    return (
-      <Layout>
-        <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-        </div>
-      </Layout>
-    );
-  }
+
 
   return (
     <Layout>
@@ -166,7 +157,31 @@ const AdminModulesPage: React.FC = () => {
   );
 };
 
-export const getServerSideProps = async () => {
+// Funktion til at validere om brugeren er autentificeret baseret på token
+const isUserAuthenticated = (token: string | undefined): boolean => {
+  // Dette er en simpel implementering, der blot tjekker om token eksisterer
+  return !!token;
+};
+
+export const getServerSideProps = async (context: GetServerSidePropsContext) => {
+  // Hent cookies fra request
+  const cookies = parseCookies(context);
+  
+  // Hent token fra access_token cookie
+  const token = cookies.access_token;
+  
+  // Valider token
+  if (!isUserAuthenticated(token)) {
+    // Hvis token ikke er gyldig eller mangler, redirect til login
+    return {
+      redirect: {
+        destination: '/login',
+        permanent: false,
+      },
+    };
+  }
+  
+  // Hvis token er gyldig, returner props
   return {
     props: {},
   };
