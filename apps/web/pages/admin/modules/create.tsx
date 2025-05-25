@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Layout from '../../../src/components/layout/Layout';
-import { useAuth } from '../../../src/context/useAuth';
+import { useAuth } from '../../../src/contexts/useAuth';
 
 interface Course {
   id: number;
