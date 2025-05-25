@@ -6001,6 +6001,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"cookie@npm:^0.4.1":
+  version: 0.4.2
+  resolution: "cookie@npm:0.4.2"
+  checksum: 10c0/beab41fbd7c20175e3a2799ba948c1dcc71ef69f23fe14eeeff59fc09f50c517b0f77098db87dbb4c55da802f9d86ee86cdc1cd3efd87760341551838d53fca2
+  languageName: node
+  linkType: hard
+
 "cookie@npm:^1.0.1":
   version: 1.0.2
   resolution: "cookie@npm:1.0.2"
@@ -11533,6 +11540,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"nookies@npm:^2.5.2":
+  version: 2.5.2
+  resolution: "nookies@npm:2.5.2"
+  dependencies:
+    cookie: "npm:^0.4.1"
+    set-cookie-parser: "npm:^2.4.6"
+  checksum: 10c0/e44d65022f4bc8e7135db8c19373d278ae4bbaf093e6a537e109a050c603d13d6538431e674e33a43715dd502220c45dee0cb86253695c7040352298feccb3e2
+  languageName: node
+  linkType: hard
+
 "nopt@npm:^8.0.0":
   version: 8.1.0
   resolution: "nopt@npm:8.1.0"
@@ -13437,7 +13454,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"set-cookie-parser@npm:^2.6.0":
+"set-cookie-parser@npm:^2.4.6, set-cookie-parser@npm:^2.6.0":
   version: 2.7.1
   resolution: "set-cookie-parser@npm:2.7.1"
   checksum: 10c0/060c198c4c92547ac15988256f445eae523f57f2ceefeccf52d30d75dedf6bff22b9c26f756bd44e8e560d44ff4ab2130b178bd2e52ef5571bf7be3bd7632d9a
@@ -15471,6 +15488,7 @@ __metadata:
     next: "npm:13.4.12"
     next-router-mock: "npm:^1.0.2"
     next-transpile-modules: "npm:10.0.1"
+    nookies: "npm:^2.5.2"
     postcss: "npm:^8.4.27"
     react: "npm:18.2.0"
     react-dom: "npm:18.2.0"
