@@ -1,41 +1,39 @@
-Du har helt ret, og jeg beklager min fejl. Lad mig forklare problemet mere detaljeret:
+Opsummering af arbejdet
+Jeg har udført to hovedopgaver på filen apps/web/pages/admin/courses/index.tsx:
 
-Min fejltagelse:
-Jeg antog fejlagtigt, at fordi AuthContext.tsx gemmer token i localStorage med nøglen 'accessToken', så ville der også være en cookie med samme navn. Dette er en kritisk fejl i min analyse.
+Opgave 1: Opdatering af server-side authentication
+Ændret cookie-navn i getServerSideProps:
 
-Korrekt forståelse:
-localStorage vs. Cookies:
+Ændret fra accessToken til access_token baseret på bekræftelse fra backend-koden (auth.controller.ts)
+Sikret at token-validering og redirect-logik fungerer korrekt
+Verificeret nødvendige imports:
 
-localStorage er kun tilgængeligt i browseren (client-side)
-localStorage sendes IKKE automatisk med HTTP-requests
-getServerSideProps kører på serveren og har kun adgang til data, der sendes med i HTTP-requesten
-Server-side authentication:
+Bekræftet at GetServerSidePropsContext fra next allerede var importeret
+Bekræftet at parseCookies fra nookies allerede var importeret
+Verificeret at nookies pakken er installeret i projektet (version 2.5.2)
+Opgave 2: Fjernelse af client-side token check
+Identificeret og fjernet client-side token check:
 
-Serveren kan kun få adgang til information, der sendes med i requesten, typisk via Cookies eller HTTP Headers
-For at server-side authentication skal virke, skal der være en cookie, der indeholder auth-token
-Analyse af AuthContext.tsx:
-Ved nærmere gennemgang af AuthContext.tsx kan jeg se, at systemet primært bruger localStorage til at gemme tokens:
+Fjernet betinget kald til fetchCourses() i useEffect hook:
+// Før:
+if (token) {
+  fetchCourses();
+}
 
-// Gemmer tokens i localStorage
-localStorage.setItem('accessToken', data.access_token);
-localStorage.setItem('refreshToken', data.refresh_token);
-Men jeg kan ikke se nogen kode, der eksplicit sætter en cookie. Der er dog nogle hints:
+// Efter:
+fetchCourses();
+Bevaret vigtig funktionalitet:
 
-// I login-funktionen
-const response = await fetch(`${baseUrl}/auth/login`, {
-  // ...
-  credentials: 'include', // Include cookies if the server sends them
-  mode: 'cors' // Explicit CORS mode
-});
-Dette credentials: 'include' antyder, at backend-serveren muligvis sætter cookies i response, som browseren så gemmer. Men vi kan ikke se fra frontend-koden, hvad disse cookies hedder.
+Beholdt token i dependency array for useEffect hook, da token stadig bruges i API-kald
+Bevaret token-brug i authorization headers for API-requests
+Bevaret token-brug i handleDelete funktionen
+Bevaret al JSX og anden logik i komponenten
+Resultat
+Koden er nu opdateret til at:
 
-Korrekt tilgang:
-For at finde det rigtige cookie-navn, bør man:
+Korrekt validere brugerens authentication på server-side ved at tjekke for access_token cookie
+Redirecte ikke-autentificerede brugere til login-siden
+Altid forsøge at hente kurser når komponenten monteres, uanset om en token er tilgængelig på client-side
+Stadig bruge token til API-kald når den er tilgængelig
+Disse ændringer sikrer en mere robust authentication-flow, hvor server-side check håndterer adgangskontrol, og client-side kode ikke unødigt forhindrer rendering af komponenten.
 
-Undersøge backend-koden for at se, hvilken cookie der sættes ved login
-Bruge browserens udviklingsværktøjer (Application > Cookies) efter login for at se, hvilke cookies der er sat
-Alternativt, tjekke netværksanmodninger i browser-udviklingsværktøjerne for at se, hvilke cookies der sendes med requests
-Hvis systemet kun bruger localStorage og ikke sætter cookies, vil den server-side authentication-tilgang, vi har implementeret, ikke virke uden yderligere ændringer i login-flowet, så det også sætter en HTTP-only cookie.
-
-Anbefaling:
-Vi bør ændre cookie-navnet i getServerSideProps til det korrekte navn, når det er identificeret. Hvis der ikke findes en auth-cookie, skal login-flowet ændres til også at sætte en cookie, eller vi skal bruge en anden tilgang til server-side authentication.
