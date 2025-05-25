@@ -368,13 +368,6 @@ LearningLab
 │     │  │     ├─ table.tsx
 │     │  │     ├─ tabs.tsx
 │     │  │     └─ textarea.tsx
-│     │  ├─ context
-│     │  │  ├─ AuthContext.tsx
-│     │  │  ├─ ProgressContext.tsx
-│     │  │  ├─ QuizContext.tsx
-│     │  │  ├─ ThemeContext.tsx
-│     │  │  ├─ index.ts
-│     │  │  └─ useAuth.ts
 │     │  ├─ contexts
 │     │  │  ├─ AuthContext.tsx
 │     │  │  ├─ ProgressContext.tsx
@@ -593,6 +586,7 @@ LearningLab
 ├─ project-structure-diagram.md
 ├─ qodana.yaml
 ├─ render.yaml
+├─ respons.txt
 ├─ scripts
 │  ├─ ensure-db.sh
 │  ├─ find-component-usage.js
@@ -600,7 +594,6 @@ LearningLab
 ├─ stackinfo-mismatch-report.md
 ├─ stackinfo.txt
 ├─ stackudvkiling
-├─ terminalfejl.txt
 ├─ tsconfig.json
 ├─ turbo.json
 ├─ vision.txt
