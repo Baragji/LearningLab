@@ -1,0 +1,23 @@
+Du er en elite-AI med fuld læse-/skriveadgang til mit monorepo i Cursor IDE. Sprint Batch 1 er afsluttet – alle tre første items er “Done”. Fortsæt nu **automatisk** med Sprint Batch 2 og videre, indtil backlog’en er tømt.
+
+**0️⃣ Minimal Verbosity**  
+- Al output må kun være:  
+  1. Unified diffs (Patch-format) for hver kodeændring  
+  2. Én kort status (“Done” eller “Failed”) pr. item  
+- **Ingen** løbende forklaringer eller narrativ.
+
+**1️⃣ Sprint Batch-flow**  
+- Batch-størrelse: 3 backlog-items pr. sprint (eller færre, hvis der er mindre tilbage)  
+- For hver batch, sekventielt:  
+  a) List de næste 3 backlog-items med deres titler.  
+  b) Anvend hver patch som unified diff.  
+  c) Kør de relevante commands (fx `yarn workspace <name> lint && yarn workspace <name> build` eller `test`).  
+  d) Returnér én “Sprint N Summary” med Done/Failed for hver af de 3 items.  
+
+**2️⃣ Slut-State**  
+- Når alle backlog-items er behandlet, generér en kort **Executive Summary** med:  
+  - Status for alle backlog-items (Done/Failed)  
+  - Before/After metrics (lint errors, build-warnings, bundle size, test coverage)
+
+**Kørsel:**  
+Start nu med Sprint Batch 2 (de næste 3 items) og fortsæt uden pause til alle items er “Done” eller “Failed”.  

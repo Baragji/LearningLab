@@ -32,7 +32,7 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
 import { SimpleCacheInterceptor } from './common/interceptors/simple-cache.interceptor';
 import { ConfigModule } from './config/config.module';
 // Import ConfigService
-import { ConfigService } from './config/config.service';
+// import { ConfigService } from './config/config.service'; // Removed unused import
 import { JwtService } from '@nestjs/jwt';
 import { SearchModule } from './search/search.module';
 // Import social auth config

@@ -28,7 +28,7 @@ import {
   ModuleDto,
   CreateModuleDto,
   UpdateModuleDto,
-  UpdateModulesOrderDto,
+  // UpdateModulesOrderDto, // Removed unused import
 } from './dto/module/module.dto';
 
 @ApiTags('Modules')
@@ -230,89 +230,6 @@ export class ModuleController {
       console.error(`Fejl ved opdatering af modul med id ${id}:`, error);
       throw new BadRequestException(
         'Der opstod en fejl ved opdatering af modulet',
-      );
-    }
-  }
-
-  @ApiOperation({ summary: 'Opdater rækkefølgen af moduler i et kursus' })
-  @ApiParam({ name: 'courseId', description: 'ID for kurset', type: Number })
-  @ApiBody({ type: UpdateModulesOrderDto })
-  @ApiResponse({
-    status: 200,
-    description: 'Modulrækkefølgen blev opdateret',
-    type: [ModuleDto],
-  })
-  @ApiResponse({
-    status: 400,
-    description: 'Ugyldig anmodning - Valideringsfejl',
-  })
-  @ApiResponse({ status: 404, description: 'Kurset blev ikke fundet' })
-  @ApiResponse({ status: 500, description: 'Serverfejl' })
-  @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
-  @Put('course/:courseId/order')
-  async updateModulesOrder(
-    @Param('courseId', ParseIntPipe) courseId: number,
-    @Body() updateModulesOrderDto: UpdateModulesOrderDto,
-  ): Promise<ModuleDto[]> {
-    const { moduleIds } = updateModulesOrderDto;
-
-    if (!Array.isArray(moduleIds)) {
-      throw new BadRequestException(
-        "moduleIds skal være et array af modul-ID'er",
-      );
-    }
-
-    try {
-      // Tjek om kurset eksisterer
-      const course = await this.prisma.course.findUnique({
-        where: { id: courseId },
-        include: { modules: true },
-      });
-
-      if (!course) {
-        throw new NotFoundException('Kurset blev ikke fundet');
-      }
-
-      // Tjek om alle moduler tilhører kurset
-      const courseModuleIds = course.modules.map((module) => module.id);
-      const allModulesExist = moduleIds.every((id) =>
-        courseModuleIds.includes(Number(id)),
-      );
-
-      if (!allModulesExist) {
-        throw new BadRequestException(
-          'Et eller flere moduler tilhører ikke det angivne kursus',
-        );
-      }
-
-      // Opdater rækkefølgen af moduler
-      const updates = moduleIds.map((moduleId, index) => {
-        return this.prisma.module.update({
-          where: { id: Number(moduleId) },
-          data: { order: index + 1 },
-        });
-      });
-
-      await this.prisma.$transaction(updates);
-
-      return await this.prisma.module.findMany({
-        where: { courseId },
-        orderBy: { order: 'asc' },
-      });
-    } catch (error) {
-      if (
-        error instanceof NotFoundException ||
-        error instanceof BadRequestException
-      ) {
-        throw error;
-      }
-      console.error(
-        `Fejl ved opdatering af modulrækkefølge for kursus ${courseId}:`,
-        error,
-      );
-      throw new BadRequestException(
-        'Der opstod en fejl ved opdatering af modulrækkefølgen',
       );
     }
   }

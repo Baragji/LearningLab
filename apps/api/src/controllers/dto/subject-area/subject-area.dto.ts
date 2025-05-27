@@ -9,11 +9,8 @@ import {
   IsNumber,
   Min,
   IsEnum,
-  IsObject,
-  ValidateNested,
   IsBoolean,
 } from 'class-validator';
-import { Type } from 'class-transformer';
 
 export class SubjectAreaDto {
   @ApiProperty({

@@ -11,7 +11,6 @@ import {
   UseInterceptors,
   UploadedFile,
   ParseIntPipe,
-  UseGuards,
   Req,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -34,14 +33,9 @@ import {
   UpdateQuestionBankDto,
   UpdateQuestionBankItemDto,
 } from './dto/question-bank/question-bank.dto';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { RolesGuard } from '../auth/guards/roles.guard';
-import { Roles } from '../auth/decorators/roles.decorator';
-import { Role } from '@repo/core';
 
 @ApiTags('Question Bank')
 @Controller('question-bank')
-@UseGuards(JwtAuthGuard, RolesGuard)
 export class QuestionBankController {
   constructor(
     private prisma: PrismaService,
@@ -122,7 +116,6 @@ export class QuestionBankController {
     description: 'The created question bank',
     type: QuestionBankDto,
   })
-  @Roles(Role.TEACHER, Role.ADMIN)
   async createQuestionBank(
     @Body() data: CreateQuestionBankDto,
     @Req() req: any,
@@ -148,7 +141,6 @@ export class QuestionBankController {
     type: QuestionBankDto,
   })
   @ApiParam({ name: 'id', description: 'Question bank ID' })
-  @Roles(Role.TEACHER, Role.ADMIN)
   async updateQuestionBank(
     @Param('id', ParseIntPipe) id: number,
     @Body() data: UpdateQuestionBankDto,
@@ -172,7 +164,6 @@ export class QuestionBankController {
   @ApiOperation({ summary: 'Delete a question bank' })
   @ApiResponse({ status: 204, description: 'Question bank deleted' })
   @ApiParam({ name: 'id', description: 'Question bank ID' })
-  @Roles(Role.ADMIN)
   async deleteQuestionBank(@Param('id', ParseIntPipe) id: number) {
     // First delete all questions in the bank
     await this.prisma.questionBankItem.deleteMany({
@@ -231,11 +222,10 @@ export class QuestionBankController {
   @ApiOperation({ summary: 'Add a question to a question bank' })
   @ApiResponse({
     status: 201,
-    description: 'The created question',
+    description: 'The added question',
     type: QuestionBankItemDto,
   })
   @ApiParam({ name: 'id', description: 'Question bank ID' })
-  @Roles(Role.TEACHER, Role.ADMIN)
   async addQuestionToBank(
     @Param('id', ParseIntPipe) id: number,
     @Body() data: CreateQuestionBankItemDto,
@@ -261,7 +251,6 @@ export class QuestionBankController {
   })
   @ApiParam({ name: 'bankId', description: 'Question bank ID' })
   @ApiParam({ name: 'questionId', description: 'Question ID' })
-  @Roles(Role.TEACHER, Role.ADMIN)
   async updateQuestionInBank(
     @Param('bankId', ParseIntPipe) bankId: number,
     @Param('questionId', ParseIntPipe) questionId: number,
@@ -287,7 +276,6 @@ export class QuestionBankController {
   @ApiResponse({ status: 204, description: 'Question deleted' })
   @ApiParam({ name: 'bankId', description: 'Question bank ID' })
   @ApiParam({ name: 'questionId', description: 'Question ID' })
-  @Roles(Role.TEACHER, Role.ADMIN)
   async deleteQuestionFromBank(
     @Param('bankId', ParseIntPipe) bankId: number,
     @Param('questionId', ParseIntPipe) questionId: number,
@@ -303,35 +291,26 @@ export class QuestionBankController {
   }
 
   @Post(':id/import')
-  @ApiOperation({ summary: 'Import questions from CSV or Excel' })
-  @ApiResponse({
-    status: 201,
-    description: 'Questions imported successfully',
-    schema: {
-      type: 'object',
-      properties: {
-        success: { type: 'boolean' },
-        importedCount: { type: 'number' },
-        questionIds: { type: 'array', items: { type: 'number' } },
-      },
-    },
-  })
-  @ApiParam({ name: 'id', description: 'Question bank ID' })
+  @ApiOperation({ summary: 'Import questions from a file' })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
+    description: 'CSV or Excel file containing questions',
+    type: 'file',
     schema: {
       type: 'object',
       properties: {
         file: {
           type: 'string',
           format: 'binary',
-          description: 'CSV or Excel file with questions',
         },
       },
     },
   })
+  @ApiResponse({
+    status: 201,
+    description: 'Questions imported successfully',
+  })
   @UseInterceptors(FileInterceptor('file'))
-  @Roles(Role.TEACHER, Role.ADMIN)
   async importQuestions(
     @Param('id', ParseIntPipe) id: number,
     @UploadedFile() file: any,
@@ -356,56 +335,15 @@ export class QuestionBankController {
   }
 
   @Post(':id/copy-to-quiz/:quizId')
-  @ApiOperation({ summary: 'Copy questions from bank to a quiz' })
+  @ApiOperation({
+    summary: 'Copy questions from a question bank to a quiz',
+  })
   @ApiResponse({
     status: 201,
     description: 'Questions copied successfully',
-    schema: {
-      type: 'object',
-      properties: {
-        success: { type: 'boolean' },
-        copiedCount: { type: 'number' },
-        questionIds: { type: 'array', items: { type: 'number' } },
-      },
-    },
   })
   @ApiParam({ name: 'id', description: 'Question bank ID' })
   @ApiParam({ name: 'quizId', description: 'Quiz ID' })
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        questionIds: {
-          type: 'array',
-          items: { type: 'number' },
-          description: 'IDs of questions to copy (empty for all)',
-        },
-        count: {
-          type: 'number',
-          description:
-            'Number of random questions to copy (if questionIds is empty)',
-        },
-        difficulty: {
-          type: 'string',
-          enum: ['BEGINNER', 'INTERMEDIATE', 'ADVANCED'],
-          description: 'Filter by difficulty when selecting random questions',
-        },
-        type: {
-          type: 'string',
-          enum: [
-            'MULTIPLE_CHOICE',
-            'FILL_IN_BLANK',
-            'MATCHING',
-            'DRAG_AND_DROP',
-            'CODE',
-            'ESSAY',
-          ],
-          description: 'Filter by type when selecting random questions',
-        },
-      },
-    },
-  })
-  @Roles(Role.TEACHER, Role.ADMIN)
   async copyQuestionsToQuiz(
     @Param('id', ParseIntPipe) bankId: number,
     @Param('quizId', ParseIntPipe) quizId: number,

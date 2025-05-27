@@ -1,8 +1,9 @@
 // apps/web/app/admin/users/page.tsx
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { useAuth } from '@/contexts/AuthContext';
 import { AppButton as Button } from '@/components/ui/AppButton';
 import { Input } from '@/components/ui/input';
@@ -133,7 +134,7 @@ const AdminUsersPage = () => {
   }, [isAuthenticated, isLoading, user, router]);
   
   // Fetch users
-  const fetchUsers = async (page = 1, filter = searchQuery, role = roleFilter) => {
+  const fetchUsers = useCallback(async (page = 1, filter = searchQuery, role = roleFilter) => {
     if (!apiClient) return;
     
     setIsLoadingUsers(true);
@@ -154,10 +155,10 @@ const AdminUsersPage = () => {
     } finally {
       setIsLoadingUsers(false);
     }
-  };
+  }, [apiClient, searchQuery, roleFilter]);
   
   // Fetch user groups
-  const fetchUserGroups = async () => {
+  const fetchUserGroups = useCallback(async () => {
     if (!apiClient) return;
     
     setIsLoadingGroups(true);
@@ -170,7 +171,7 @@ const AdminUsersPage = () => {
     } finally {
       setIsLoadingGroups(false);
     }
-  };
+  }, [apiClient]);
   
   // Fetch users and groups on component mount
   useEffect(() => {
@@ -178,7 +179,7 @@ const AdminUsersPage = () => {
       fetchUsers();
       fetchUserGroups();
     }
-  }, [isAuthenticated, user]);
+  }, [isAuthenticated, user, fetchUsers, fetchUserGroups]);
   
   // Handle search
   const handleSearch = () => {
@@ -509,54 +510,58 @@ const AdminUsersPage = () => {
                             </TableCell>
                           </TableRow>
                         ) : (
-                          users.map((user) => (
-                            <TableRow key={user.id}>
+                          users.map((u) => (
+                            <TableRow key={u.id}>
                               <TableCell>
                                 <Checkbox 
-                                  checked={selectedUsers.includes(user.id)}
-                                  onCheckedChange={() => handleUserSelection(user.id)}
+                                  checked={selectedUsers.includes(u.id)}
+                                  onCheckedChange={() => handleUserSelection(u.id)}
                                 />
                               </TableCell>
                               <TableCell className="font-medium">
-                                <div className="flex items-center gap-2">
-                                  {user.profileImage ? (
-                                    <img 
-                                      src={user.profileImage} 
-                                      alt={user.name || ''} 
-                                      className="h-8 w-8 rounded-full object-cover"
+                                <div className="flex items-center">
+                                  {u.profileImage ? (
+                                    <Image 
+                                      src={u.profileImage} 
+                                      alt={u.name || u.email} 
+                                      width={32} 
+                                      height={32} 
+                                      className="w-8 h-8 rounded-full mr-3 object-cover"
                                     />
                                   ) : (
-                                    <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center">
-                                      {user.name ? user.name[0].toUpperCase() : user.email[0].toUpperCase()}
+                                    <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-gray-500 mr-3">
+                                      {u.name ? u.name.charAt(0).toUpperCase() : u.email.charAt(0).toUpperCase()}
                                     </div>
                                   )}
-                                  {user.name || 'Unavngivet'}
+                                  <div>
+                                    {u.name || 'Unavngivet'}
+                                  </div>
                                 </div>
                               </TableCell>
-                              <TableCell>{user.email}</TableCell>
+                              <TableCell>{u.email}</TableCell>
                               <TableCell>
                                 <Badge variant={
-                                  user.role === Role.ADMIN 
+                                  u.role === Role.ADMIN 
                                     ? 'destructive' 
-                                    : user.role === Role.TEACHER 
+                                    : u.role === Role.TEACHER 
                                       ? 'default' 
                                       : 'secondary'
                                 }>
-                                  {user.role === Role.ADMIN 
+                                  {u.role === Role.ADMIN 
                                     ? 'Administrator' 
-                                    : user.role === Role.TEACHER 
+                                    : u.role === Role.TEACHER 
                                       ? 'Underviser' 
                                       : 'Studerende'}
                                 </Badge>
                               </TableCell>
                               <TableCell>
-                                {new Date(user.createdAt).toLocaleDateString('da-DK')}
+                                {new Date(u.createdAt).toLocaleDateString('da-DK')}
                               </TableCell>
                               <TableCell className="text-right">
                                 <Button 
                                   variant="ghost" 
                                   size="sm"
-                                  onClick={() => router.push(`/admin/users/${user.id}`)}
+                                  onClick={() => router.push(`/admin/users/${u.id}`)}
                                 >
                                   Rediger
                                 </Button>

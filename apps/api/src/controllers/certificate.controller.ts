@@ -202,7 +202,10 @@ export class CertificateController {
     type: CertificateDto,
   })
   @Roles(Role.ADMIN, Role.TEACHER)
-  async createCertificate(@Body() data: CreateCertificateDto, @Req() req: any) {
+  async createCertificate(
+    @Body() data: CreateCertificateDto,
+    @Req() _req: any,
+  ) {
     // Generate a unique certificate ID
     const certificateId = `CERT-${uuidv4().substring(0, 8)}`;
 

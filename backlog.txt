@@ -1,0 +1,148 @@
+
+Okay, here is the prioritized backlog based on the issues identified in the chunks analyzed so far:
+
+1.  **fix(web): Resolve ESLint warnings for `react-hooks/exhaustive-deps`**
+    *   **How-to**:
+        *   Identify all instances by running `yarn workspace web lint` or by reviewing the `yarn workspace web build` output. Warnings were noted in files like `app/admin/groups/[id]/page.tsx`, `app/admin/users/[id]/page.tsx`, `app/admin/users/page.tsx`, `app/search/page.tsx`, `pages/admin/user-groups/index.tsx`, and `src/contexts/ProgressContext.tsx`.
+        *   For each warning, analyze the `useEffect` dependencies.
+        *   If a function used in `useEffect` is defined within the component and changes on every render, wrap its definition in `useCallback` with its own dependencies.
+        *   Add all true dependencies (including `useCallback`-wrapped functions) to the `useEffect` dependency array.
+        *   Example:
+            ```typescript
+            // Before
+            const fetchData = () => { console.log(someDep); };
+            useEffect(() => {
+              fetchData();
+            }, []); // Warning: missing fetchData or someDep
+
+            // After
+            const fetchData = useCallback(() => { console.log(someDep); }, [someDep]);
+            useEffect(() => {
+              fetchData();
+            }, [fetchData]);
+            ```
+    *   **Success-kriterium**: `yarn workspace web lint` and `yarn workspace web build` show no `react-hooks/exhaustive-deps` warnings.
+    *   **Estimeret tidsforbrug**: 1.5 - 2.5 timer.
+
+2.  **fix(web): Replace `<img>` with `next/image` component**
+    *   **How-to**:
+        *   Identify all instances of `<img />` tags from `yarn workspace web lint` or `yarn workspace web build` output. Warnings were noted in files like `app/admin/groups/[id]/page.tsx`, `app/admin/users/[id]/page.tsx`, `app/admin/users/page.tsx`, `app/search/page.tsx`, and `pages/settings.tsx`.
+        *   Import `Image` from `next/image`.
+        *   Replace `<img src="path/to/image.png" alt="My Image" />` with `<Image src="path/to/image.png" alt="My Image" width={500} height={300} />`.
+        *   You must provide `width` and `height` for local images. For remote images, additionally configure `images.remotePatterns` in `apps/web/next.config.js`.
+        *   Example for `next.config.js` for remote images:
+            ```javascript
+            // apps/web/next.config.js
+            module.exports = {
+              images: {
+                remotePatterns: [
+                  {
+                    protocol: 'https',
+                    hostname: 'example.com', // Replace with actual hostname
+                    // port: '', // Optional
+                    // pathname: '/images/**', // Optional, be specific if possible
+                  },
+                ],
+              },
+            };
+            ```
+    *   **Success-kriterium**: `yarn workspace web lint` and `yarn workspace web build` show no `@next/next/no-img-element` warnings. Images are displayed correctly and are optimized by Next.js.
+    *   **Estimeret tidsforbrug**: 2 - 3 timer.
+
+3.  **fix(api): Resolve ESLint warnings for unused variables**
+    *   **How-to**:
+        *   Run `yarn workspace api lint`. Review output for `'...' is defined but never used` warnings.
+        *   Based on previous logs, affected files include `auth/auth.controller.ts`, `controllers/dto/user-progress/user-progress.dto.ts`, `controllers/error-test.controller.ts`, and many others.
+        *   For each unused variable:
+            *   If truly not needed, remove its definition and import statement.
+            *   If it's part of an interface implementation or intended for future use, and the ESLint rule `no-unused-vars` allows it (check `apps/api/.eslintrc.js`, previous logs suggest `Allowed unused vars must match /^_/u`), prefix the variable name with an underscore (e.g., `_Type`, `_unusedParam`).
+        *   Example:
+            ```diff
+            - import { UnusedType } from 'some-module';
+            - function example(usedParam, unusedParam) {
+            + function example(usedParam, _unusedParam) {
+            -   const unusedLocal = 1;
+                return usedParam;
+              }
+            ```
+    *   **Success-kriterium**: `yarn workspace api lint` shows no warnings for unused variables.
+    *   **Estimeret tidsforbrug**: 2 - 4 timer.
+
+4.  **chore: Resolve TypeScript version compatibility warning for `@typescript-eslint`**
+    *   **How-to**:
+        *   The warning `WARNING: You are currently running a version of TypeScript which is not officially supported by @typescript-eslint/typescript-estree... YOUR TYPESCRIPT VERSION: 5.3.3` appears when linting or testing in workspaces like `apps/api`, `apps/web`, `packages/ui` (and likely others using `@typescript-eslint`).
+        *   Update `@typescript-eslint/eslint-plugin` and `@typescript-eslint/parser` to their latest versions in the root `package.json` and any workspace `package.json` files that might override them.
+        *   Run `yarn install` in the root directory after updating `package.json` files.
+        *   Example (in `package.json`):
+            ```diff
+            "devDependencies": {
+            -    "@typescript-eslint/eslint-plugin": "^6.2.1", // or other old version
+            -    "@typescript-eslint/parser": "^6.2.1", // or other old version
+            +    "@typescript-eslint/eslint-plugin": "^7.x.x", // Replace x.x with latest
+            +    "@typescript-eslint/parser": "^7.x.x", // Replace x.x with latest
+            }
+            ```
+    *   **Success-kriterium**: Linting (`yarn lint`) and build/test commands (`turbo run build`, `turbo run test`) for all relevant packages complete without the TypeScript version compatibility warning.
+    *   **Estimeret tidsforbrug**: 1 - 2 timer.
+
+5.  **refactor(api): Align tsconfig paths with Jest for build consistency**
+    *   **How-to**:
+        *   Jest in `apps/api/package.json` now maps `@repo/core` and `@repo/config` to their `dist` folders using `<rootDir>/../../../packages/...` (resolving from `apps/api/src/`).
+        *   Verify and update `apps/api/tsconfig.json` (and `apps/api/tsconfig.build.json` if it overrides paths) to use equivalent path mappings for the TypeScript compiler.
+        *   Assuming `apps/api/tsconfig.json` is the primary config for path aliases:
+            *   File path: `apps/api/tsconfig.json`
+            *   If `compilerOptions.baseUrl` is `"."` (relative to `tsconfig.json` file):
+                ```json
+                {
+                  "compilerOptions": {
+                    "baseUrl": ".",
+                    "paths": {
+                      "@repo/core/*": ["../packages/core/dist/*"],
+                      "@repo/config/*": ["../packages/config/dist/*"]
+                    }
+                  }
+                }
+                ```
+            *   If `compilerOptions.baseUrl` is `"src"`:
+                ```json
+                {
+                  "compilerOptions": {
+                    "baseUrl": "src", // Or "./src"
+                    "paths": {
+                      "@repo/core/*": ["../../packages/core/dist/*"], // Relative from 'src'
+                      "@repo/config/*": ["../../packages/config/dist/*"] // Relative from 'src'
+                    }
+                  }
+                }
+                ```
+    *   **Success-kriterium**: `yarn workspace api build` completes successfully. Runtime behavior of the built API is consistent with module resolution during tests, particularly for `@repo/core` and `@repo/config` imports.
+    *   **Estimeret tidsforbrug**: 0.5 - 1 hour.
+
+6.  **chore(ui): Add `sideEffects: false` to `package.json` for tree-shaking**
+    *   **How-to**:
+        *   Edit `packages/ui/package.json`.
+        *   Add the `sideEffects: false` field to indicate to bundlers that importing modules from this package has no global side effects, allowing for better tree-shaking.
+        *   File path: `packages/ui/package.json`
+        *   Code diff:
+            ```diff
+            {
+              "name": "@repo/ui",
+              // ... other fields
+            + "sideEffects": false,
+              "version": "0.1.0" // Example, ensure it's placed correctly
+            }
+            ```
+    *   **Success-kriterium**: `sideEffects: false` is present in `packages/ui/package.json`.
+    *   **Estimeret tidsforbrug**: 0.25 hours.
+
+7.  **chore: Audit and remove unnecessary devDependencies**
+    *   **How-to**:
+        *   Review `devDependencies` in the root `package.json` and in each workspace `package.json` (`apps/*`, `packages/*`).
+        *   Identify and remove dependencies that are:
+            *   No longer used.
+            *   Duplicated (e.g., if a tool is globally available from the root and workspaces don't need a specific version).
+            *   Redundant.
+        *   Use `yarn workspace <workspace_name> remove <package_name> --dev` or manually edit `package.json` then run `yarn install` at the root.
+        *   Consider running `yarn dedupe --check` to identify duplicates that can be resolved.
+    *   **Success-kriterium**: Reduced number of `devDependencies` across the monorepo. All builds, tests, and linting still pass successfully.
+    *   **Estimeret tidsforbrug**: 2 - 4 timer.

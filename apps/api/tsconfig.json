@@ -8,10 +8,10 @@
     "target": "ES2020",
     "useDefineForClassFields": true,
     "paths": {
-      "@repo/core": ["../../packages/core/src"],
-      "@repo/core/*": ["../../packages/core/src/*"],
-      "@repo/config": ["../../packages/config/src"],
-      "@repo/config/*": ["../../packages/config/src/*"]
+      "@repo/core": ["../../packages/core/dist"],
+      "@repo/core/*": ["../../packages/core/dist/*"],
+      "@repo/config": ["../../packages/config/dist"],
+      "@repo/config/*": ["../../packages/config/dist/*"]
     },
     "typeRoots": [
       "./node_modules/@types",

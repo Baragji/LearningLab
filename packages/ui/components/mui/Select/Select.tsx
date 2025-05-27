@@ -10,7 +10,8 @@ import {
   Chip,
   Box,
   CircularProgress,
-  InputAdornment
+  InputAdornment,
+  InputBaseComponentProps
 } from '@mui/material';
 
 export interface SelectOption {
@@ -166,7 +167,7 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(function Select(
   };
 
   // Input props for loading and startIcon
-  const inputProps: any = {
+  const inputProps: Partial<InputBaseComponentProps> = {
     ...(rest.inputProps || {}),
   };
 

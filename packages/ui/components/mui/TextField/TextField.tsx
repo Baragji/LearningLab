@@ -4,7 +4,8 @@ import {
   TextField as MuiTextField, 
   TextFieldProps as MuiTextFieldProps,
   InputAdornment,
-  IconButton
+  IconButton,
+  // InputProps, // Remove unused import
 } from '@mui/material';
 
 export interface TextFieldProps extends Omit<MuiTextFieldProps, 'variant'> {
@@ -92,7 +93,6 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(function Tex
     ...rest
   } = props;
 
-  // Handle maxLength constraint
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (maxLength && e.target.value.length > maxLength) {
       e.target.value = e.target.value.slice(0, maxLength);
@@ -102,13 +102,13 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(function Tex
     }
   };
 
-  // Create input props with adornments if icons are provided
-  const inputProps: any = {
-    ...(rest.inputProps || {}),
+  const finalInputProps: MuiTextFieldProps['InputProps'] = {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ...((rest.InputProps as any) || {}),
   };
 
-  if (startIcon || endIcon || isLoading) {
-    inputProps.startAdornment = startIcon && (
+  if (startIcon || isLoading) {
+    finalInputProps!.startAdornment = startIcon && (
       <InputAdornment position="start">
         {onStartIconClick ? (
           <IconButton edge="start" onClick={onStartIconClick} size="small">
@@ -119,8 +119,10 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(function Tex
         )}
       </InputAdornment>
     );
+  }
 
-    inputProps.endAdornment = (endIcon || isLoading) && (
+  if (endIcon || isLoading) {
+    finalInputProps!.endAdornment = (endIcon || isLoading) && (
       <InputAdornment position="end">
         {isLoading ? (
           <div className="animate-spin h-4 w-4">
@@ -147,7 +149,7 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(function Tex
       fullWidth={fullWidth}
       size={size}
       onChange={handleChange}
-      InputProps={inputProps}
+      InputProps={finalInputProps}
       disabled={isLoading || rest.disabled}
       {...rest}
     />

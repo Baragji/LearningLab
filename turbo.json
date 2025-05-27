@@ -6,7 +6,7 @@
     "CI",
     "SKIP_ENV_VALIDATION"
   ],
-  "pipeline": {
+  "tasks": {
     "build": {
       "dependsOn": ["^build"],
       "outputs": [

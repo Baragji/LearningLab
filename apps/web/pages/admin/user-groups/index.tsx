@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/router';
 import Layout from '../../../src/components/layout/Layout';
 import axios from 'axios';
@@ -34,7 +34,7 @@ const UserGroupsPage: React.FC = () => {
   const [groupToDelete, setGroupToDelete] = useState<number | null>(null);
 
   // Fetch user groups
-  const fetchUserGroups = async () => {
+  const fetchUserGroups = useCallback(async () => {
     setLoading(true);
     try {
       let url = `/api/user-groups?page=${page}&limit=${limit}`;
@@ -50,11 +50,11 @@ const UserGroupsPage: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [page, limit, filter]);
 
   useEffect(() => {
     fetchUserGroups();
-  }, [page, limit, filter]);
+  }, [fetchUserGroups]);
 
   // Handle create new group
   const handleCreateGroup = () => {

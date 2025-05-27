@@ -17,41 +17,50 @@
     "prisma:migrate": "yarn ensure-db && ./scripts/prisma-commands.sh migrate",
     "prisma:generate": "./scripts/prisma-commands.sh generate",
     "prisma:studio": "yarn ensure-db && ./scripts/prisma-commands.sh studio",
-    "seed": "yarn ensure-db && cd apps/api && yarn seed"
+    "seed": "yarn ensure-db && cd apps/api && yarn seed",
+    "test": "turbo run test",
+    "test:ci": "turbo run test:ci",
+    "clean": "turbo run clean && rimraf node_modules .turbo .yarn/cache .yarn/install-state.gz"
   },
   "devDependencies": {
-    "@nestjs/common": "^11.1.1",
-    "@types/eslint": "^9.6.1",
+    "@types/eslint": "^8.44.2",
     "@types/jest": "^29.5.14",
-    "@types/node": "^22.15.21",
-    "@typescript-eslint/eslint-plugin": "^8.32.1",
-    "@typescript-eslint/parser": "^8.32.1",
-    "eslint": "^9.27.0",
+    "@types/node": "^20.4.5",
+    "@typescript-eslint/eslint-plugin": "^8.10.2",
+    "@typescript-eslint/parser": "^8.10.2",
+    "eslint": "^8.46.0",
+    "husky": "^8.0.3",
+    "lint-staged": "^15.2.0",
     "prettier": "^3.0.0",
-    "prisma": "6.8.2",
-    "rxjs": "^7.8.2",
-    "turbo": "^2.3.5",
-    "typescript": "^5.8.3"
-  },
-  "dependencies": {
-    "@nestjs/config": "^4.0.2",
-    "@radix-ui/react-slot": "^1.2.3",
-    "@types/axios": "^0.14.4",
-    "@types/passport-github2": "^1.2.9",
-    "@types/passport-google-oauth20": "^2.0.16",
-    "axios": "^1.9.0",
-    "passport-github2": "^0.1.12",
-    "passport-google-oauth20": "^2.0.0",
-    "reflect-metadata": "^0.2.2"
+    "prisma": "^5.6.0",
+    "rimraf": "^5.0.1",
+    "turbo": "^2.5.3",
+    "typescript": "5.3.3"
   },
   "engines": {
     "npm": ">=7.0.0",
-    "node": ">=22 <23"
+    "node": ">=18.0.0"
   },
   "resolutions": {
     "@types/react": "18.2.18",
+    "@types/react-dom": "18.2.18",
+    "@types/node": "20.4.5",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "typescript": "5.3.3"
+    "typescript": "5.3.3",
+    "@typescript-eslint/eslint-plugin": "6.2.1",
+    "@typescript-eslint/parser": "6.2.1",
+    "eslint": "8.46.0",
+    "express": "4.19.2",
+    "@types/uuid": "9.0.8"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx}": [
+      "eslint --cache --fix",
+      "prettier --write"
+    ],
+    "*.{md,json,css,scss,yaml,yml}": [
+      "prettier --write"
+    ]
   }
 }

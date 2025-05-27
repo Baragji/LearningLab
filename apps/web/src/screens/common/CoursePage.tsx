@@ -156,7 +156,7 @@ const CoursePage: React.FC = () => {
             const isUnlocked = isModuleUnlocked(index);
             
             return (
-              <Grid size={{ xs: 12, sm: 6, md: 4 }} key={module.id}>
+              <Grid item xs={12} sm={6} md={4} key={module.id}>
                 <Card 
                   elevation={2}
                   sx={{

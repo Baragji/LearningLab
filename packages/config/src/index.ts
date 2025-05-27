@@ -1,8 +1,3 @@
 // packages/config/src/index.ts
-
-/**
- * Hoved-eksportfil for @repo/config TypeScript-delen.
- * Herfra eksporteres validerede miljøvariabler og potentielt andre konfigurationsfunktioner.
- */
-
-export * from './env';
+export { serverEnv, clientEnv, serverSchema, clientSchema } from './env';
+export type { ServerEnv, ClientEnv } from './env';

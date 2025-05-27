@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { useAuth } from '@/contexts/AuthContext';
 import { AppButton as Button } from '@/components/ui/AppButton';
 import { Input } from '@/components/ui/input';
@@ -111,7 +112,7 @@ const UserEditPage = ({ params }: { params: { id: string } }) => {
   }, [isAuthenticated, isLoading, user, router]);
   
   // Fetch user data
-  const fetchUserData = async () => {
+  const fetchUserData = useCallback(async () => {
     if (!apiClient) return;
     
     setIsLoadingUser(true);
@@ -140,10 +141,10 @@ const UserEditPage = ({ params }: { params: { id: string } }) => {
     } finally {
       setIsLoadingUser(false);
     }
-  };
+  }, [apiClient, userId, router]);
   
   // Fetch user groups
-  const fetchUserGroups = async () => {
+  const fetchUserGroups = useCallback(async () => {
     if (!apiClient) return;
     
     setIsLoadingGroups(true);
@@ -161,7 +162,7 @@ const UserEditPage = ({ params }: { params: { id: string } }) => {
     } finally {
       setIsLoadingGroups(false);
     }
-  };
+  }, [apiClient, userId]);
   
   // Fetch data on component mount
   useEffect(() => {
@@ -169,7 +170,7 @@ const UserEditPage = ({ params }: { params: { id: string } }) => {
       fetchUserData();
       fetchUserGroups();
     }
-  }, [isAuthenticated, user, userId]);
+  }, [isAuthenticated, user, userId, fetchUserData, fetchUserGroups]);
   
   // Handle form input change
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -341,17 +342,20 @@ const UserEditPage = ({ params }: { params: { id: string } }) => {
                 <CardTitle>Brugeroplysninger</CardTitle>
               </CardHeader>
               <CardContent className="flex flex-col items-center text-center">
-                {userData?.profileImage ? (
-                  <img 
-                    src={userData.profileImage} 
-                    alt={userData.name || ''} 
-                    className="h-32 w-32 rounded-full object-cover mb-4"
-                  />
-                ) : (
-                  <div className="h-32 w-32 rounded-full bg-muted flex items-center justify-center mb-4 text-4xl font-semibold">
-                    {userData?.name ? userData.name[0].toUpperCase() : userData?.email[0].toUpperCase()}
-                  </div>
-                )}
+                <div className="relative w-32 h-32 rounded-full overflow-hidden border-4 border-gray-200 dark:border-gray-700">
+                  {formData.profileImage ? (
+                    <Image 
+                      src={formData.profileImage} 
+                      alt={formData.name || formData.email} 
+                      layout="fill" 
+                      objectFit="cover" 
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gray-300 flex items-center justify-center text-gray-500 text-4xl">
+                      {formData.name ? formData.name.charAt(0).toUpperCase() : formData.email.charAt(0).toUpperCase()}
+                    </div>
+                  )}
+                </div>
                 <h3 className="text-xl font-semibold">{userData?.name || 'Unavngivet'}</h3>
                 <p className="text-muted-foreground mb-2">{userData?.email}</p>
                 <Badge variant={

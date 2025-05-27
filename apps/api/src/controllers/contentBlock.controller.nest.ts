@@ -24,7 +24,6 @@ import {
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { PrismaService } from '../persistence/prisma/prisma.service';
-import { ContentBlockType } from '@prisma/client';
 import {
   ContentBlockDto,
   CreateContentBlockDto,

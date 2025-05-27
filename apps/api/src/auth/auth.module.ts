@@ -7,11 +7,11 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { LocalStrategy } from './strategies/local/local';
 import { JwtStrategy } from './strategies/jwt/jwt';
-import { GoogleStrategy } from './strategies/google/google.strategy';
-import { GithubStrategy } from './strategies/github/github.strategy';
+// import { GoogleStrategy } from './strategies/google/google.strategy'; // Removed unused import
+// import { GithubStrategy } from './strategies/github/github.strategy'; // Removed unused import
 import {
   ConfigModule as NestConfigModule,
-  ConfigService,
+  // ConfigService, // Removed unused import
 } from '@nestjs/config';
 import { PersistenceModule } from '../persistence/persistence.module';
 import { SharedModule } from '../shared/shared.module';

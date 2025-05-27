@@ -1,29 +1,93 @@
-# Node
+# Dependencies
 node_modules
-
-# Yarn Berry cache
-.yarn/cache
-.yarn/unplugged
-.yarn/build-state.yml
-
-# Plug’n’Play files
+.pnp
+.pnp.js
 .pnp.cjs
 .pnp.loader.mjs
 
-# Build output
-.next
-dist
-out
-build
+# Testing
 coverage
+*.lcov
+.nyc_output
+
+# Next.js
+.next
+out
+next-env.d.ts
+
+# Production
+build
+dist
 
 # Misc
-.env*
 .DS_Store
+*.pem
+.idea
+.vscode
+
+# Debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Environment files
+.env
+.env.local
+.env.development
+.env.development.local
+.env.test
+.env.test.local
+.env.production
+.env.production.local
 
 # Turbo
 .turbo
 **/.turbo
 
+# Vercel
+.vercel
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Prisma
+prisma/*.db
+prisma/*.db-journal
+
+# Yarn Berry
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+
+# Playwright
+test-results
+playwright-report
+
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+logs
+*.log
+
 # Output files
 repomix-output.xml
+
+# Temporary files
+tmp
+temp
+*.tmp
+*.temp

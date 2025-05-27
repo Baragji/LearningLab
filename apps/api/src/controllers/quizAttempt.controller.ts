@@ -1,6 +1,6 @@
 // apps/api/src/controllers/quizAttempt.controller.ts
 
-import { Request, Response } from 'express';
+// import { Request, Response } from 'express'; // Removed unused import
 import { PrismaClient, ProgressStatus } from '@prisma/client';
 import {
   StartQuizAttemptInput,
@@ -14,13 +14,13 @@ const prisma = new PrismaClient();
  * Henter alle quiz-forsøg for en bruger
  */
 export const getUserQuizAttempts = async (
-  req: Request,
-  res: Response,
+  req: any,
+  _res: any, // Prefix unused variable
 ): Promise<void> => {
   const userId = (req.user as any)?.id as number;
 
   if (!userId) {
-    res.status(401).json({ message: 'Ikke autoriseret' });
+    _res.status(401).json({ message: 'Ikke autoriseret' });
     return;
   }
 
@@ -36,13 +36,13 @@ export const getUserQuizAttempts = async (
       orderBy: { startedAt: 'desc' },
     });
 
-    res.status(200).json(quizAttempts);
+    _res.status(200).json(quizAttempts);
   } catch (error) {
     console.error(
       `Fejl ved hentning af quiz-forsøg for bruger ${userId}:`,
       error,
     );
-    res
+    _res
       .status(500)
       .json({ message: 'Der opstod en fejl ved hentning af quiz-forsøg' });
   }
@@ -52,14 +52,14 @@ export const getUserQuizAttempts = async (
  * Henter et specifikt quiz-forsøg ud fra ID
  */
 export const getQuizAttemptById = async (
-  req: Request,
-  res: Response,
+  req: any,
+  _res: any, // Prefix unused variable
 ): Promise<void> => {
   const { id } = req.params;
   const userId = (req.user as any)?.id as number;
 
   if (!userId) {
-    res.status(401).json({ message: 'Ikke autoriseret' });
+    _res.status(401).json({ message: 'Ikke autoriseret' });
     return;
   }
 
@@ -86,22 +86,22 @@ export const getQuizAttemptById = async (
     });
 
     if (!quizAttempt) {
-      res.status(404).json({ message: 'Quiz-forsøget blev ikke fundet' });
+      _res.status(404).json({ message: 'Quiz-forsøget blev ikke fundet' });
       return;
     }
 
     // Tjek om quiz-forsøget tilhører den aktuelle bruger
     if (quizAttempt.userId !== userId) {
-      res
+      _res
         .status(403)
         .json({ message: 'Du har ikke adgang til dette quiz-forsøg' });
       return;
     }
 
-    res.status(200).json(quizAttempt);
+    _res.status(200).json(quizAttempt);
   } catch (error) {
     console.error(`Fejl ved hentning af quiz-forsøg med id ${id}:`, error);
-    res
+    _res
       .status(500)
       .json({ message: 'Der opstod en fejl ved hentning af quiz-forsøget' });
   }
@@ -111,14 +111,14 @@ export const getQuizAttemptById = async (
  * Starter et nyt quiz-forsøg
  */
 export const startQuizAttempt = async (
-  req: Request,
-  res: Response,
+  req: any,
+  _res: any, // Prefix unused variable
 ): Promise<void> => {
   const { quizId }: StartQuizAttemptInput = req.body;
   const userId = (req.user as any)?.id as number;
 
   if (!userId) {
-    res.status(401).json({ message: 'Ikke autoriseret' });
+    _res.status(401).json({ message: 'Ikke autoriseret' });
     return;
   }
 
@@ -130,13 +130,13 @@ export const startQuizAttempt = async (
     });
 
     if (!quiz) {
-      res.status(404).json({ message: 'Den angivne quiz findes ikke' });
+      _res.status(404).json({ message: 'Den angivne quiz findes ikke' });
       return;
     }
 
     // Tjek om quizzen har spørgsmål
     if (quiz.questions.length === 0) {
-      res.status(400).json({ message: 'Quizzen har ingen spørgsmål' });
+      _res.status(400).json({ message: 'Quizzen har ingen spørgsmål' });
       return;
     }
 
@@ -177,10 +177,10 @@ export const startQuizAttempt = async (
       });
     }
 
-    res.status(201).json(newQuizAttempt);
+    _res.status(201).json(newQuizAttempt);
   } catch (error) {
     console.error(`Fejl ved start af quiz-forsøg for quiz ${quizId}:`, error);
-    res
+    _res
       .status(500)
       .json({ message: 'Der opstod en fejl ved start af quiz-forsøget' });
   }
@@ -190,8 +190,8 @@ export const startQuizAttempt = async (
  * Indsender et svar på et spørgsmål i et quiz-forsøg
  */
 export const submitAnswer = async (
-  req: Request,
-  res: Response,
+  req: any,
+  _res: any, // Prefix unused variable
 ): Promise<void> => {
   const {
     quizAttemptId,
@@ -204,7 +204,7 @@ export const submitAnswer = async (
   const userId = (req.user as any)?.id as number;
 
   if (!userId) {
-    res.status(401).json({ message: 'Ikke autoriseret' });
+    _res.status(401).json({ message: 'Ikke autoriseret' });
     return;
   }
 
@@ -216,12 +216,12 @@ export const submitAnswer = async (
     });
 
     if (!quizAttempt) {
-      res.status(404).json({ message: 'Quiz-forsøget blev ikke fundet' });
+      _res.status(404).json({ message: 'Quiz-forsøget blev ikke fundet' });
       return;
     }
 
     if (quizAttempt.userId !== userId) {
-      res
+      _res
         .status(403)
         .json({ message: 'Du har ikke adgang til dette quiz-forsøg' });
       return;
@@ -229,7 +229,7 @@ export const submitAnswer = async (
 
     // Tjek om quiz-forsøget er afsluttet
     if (quizAttempt.completedAt) {
-      res.status(400).json({ message: 'Quiz-forsøget er allerede afsluttet' });
+      _res.status(400).json({ message: 'Quiz-forsøget er allerede afsluttet' });
       return;
     }
 
@@ -240,12 +240,14 @@ export const submitAnswer = async (
     });
 
     if (!question) {
-      res.status(404).json({ message: 'Spørgsmålet blev ikke fundet' });
+      _res.status(404).json({ message: 'Spørgsmålet blev ikke fundet' });
       return;
     }
 
     if (question.quizId !== quizAttempt.quizId) {
-      res.status(400).json({ message: 'Spørgsmålet tilhører ikke denne quiz' });
+      _res
+        .status(400)
+        .json({ message: 'Spørgsmålet tilhører ikke denne quiz' });
       return;
     }
 
@@ -272,7 +274,7 @@ export const submitAnswer = async (
         data: answerData,
       });
 
-      res.status(200).json(updatedAnswer);
+      _res.status(200).json(updatedAnswer);
       return;
     }
 
@@ -285,13 +287,13 @@ export const submitAnswer = async (
       },
     });
 
-    res.status(201).json(newAnswer);
+    _res.status(201).json(newAnswer);
   } catch (error) {
     console.error(
       `Fejl ved indsendelse af svar for quiz-forsøg ${quizAttemptId}:`,
       error,
     );
-    res
+    _res
       .status(500)
       .json({ message: 'Der opstod en fejl ved indsendelse af svaret' });
   }
@@ -301,14 +303,14 @@ export const submitAnswer = async (
  * Afslutter et quiz-forsøg og beregner scoren
  */
 export const completeQuizAttempt = async (
-  req: Request,
-  res: Response,
+  req: any,
+  _res: any, // Prefix unused variable
 ): Promise<void> => {
   const { quizAttemptId }: CompleteQuizAttemptInput = req.body;
   const userId = (req.user as any)?.id as number;
 
   if (!userId) {
-    res.status(401).json({ message: 'Ikke autoriseret' });
+    _res.status(401).json({ message: 'Ikke autoriseret' });
     return;
   }
 
@@ -336,12 +338,12 @@ export const completeQuizAttempt = async (
     });
 
     if (!quizAttempt) {
-      res.status(404).json({ message: 'Quiz-forsøget blev ikke fundet' });
+      _res.status(404).json({ message: 'Quiz-forsøget blev ikke fundet' });
       return;
     }
 
     if (quizAttempt.userId !== userId) {
-      res
+      _res
         .status(403)
         .json({ message: 'Du har ikke adgang til dette quiz-forsøg' });
       return;
@@ -349,7 +351,7 @@ export const completeQuizAttempt = async (
 
     // Tjek om quiz-forsøget allerede er afsluttet
     if (quizAttempt.completedAt) {
-      res.status(400).json({ message: 'Quiz-forsøget er allerede afsluttet' });
+      _res.status(400).json({ message: 'Quiz-forsøget er allerede afsluttet' });
       return;
     }
 
@@ -647,7 +649,7 @@ export const completeQuizAttempt = async (
       }
     }
 
-    res.status(200).json({
+    _res.status(200).json({
       ...updatedQuizAttempt,
       totalPoints,
       earnedPoints,
@@ -659,7 +661,7 @@ export const completeQuizAttempt = async (
       `Fejl ved afslutning af quiz-forsøg ${quizAttemptId}:`,
       error,
     );
-    res
+    _res
       .status(500)
       .json({ message: 'Der opstod en fejl ved afslutning af quiz-forsøget' });
   }

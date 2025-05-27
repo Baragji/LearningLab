@@ -9,8 +9,6 @@ import {
   HttpStatus,
   Body,
   ValidationPipe,
-  Res,
-  Req,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -18,9 +16,7 @@ import {
   ApiResponse,
   ApiBearerAuth,
   ApiBody,
-  ApiExcludeEndpoint,
 } from '@nestjs/swagger';
-import { Response } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './guards/local-auth.guard';

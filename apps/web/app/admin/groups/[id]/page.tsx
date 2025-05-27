@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { useAuth } from '@/contexts/AuthContext';
 import { AppButton as Button } from '@/components/ui/AppButton';
 import { Input } from '@/components/ui/input';
@@ -106,7 +107,7 @@ const GroupEditPage = ({ params }: { params: { id: string } }) => {
   }, [isAuthenticated, isLoading, user, router]);
   
   // Fetch group data
-  const fetchGroupData = async () => {
+  const fetchGroupData = useCallback(async () => {
     if (!apiClient) return;
     
     setIsLoadingGroup(true);
@@ -132,10 +133,10 @@ const GroupEditPage = ({ params }: { params: { id: string } }) => {
     } finally {
       setIsLoadingGroup(false);
     }
-  };
+  }, [apiClient, groupId, router]);
   
   // Fetch group members
-  const fetchGroupMembers = async (page = 1) => {
+  const fetchGroupMembers = useCallback(async (page = 1) => {
     if (!apiClient) return;
     
     setIsLoadingMembers(true);
@@ -151,7 +152,7 @@ const GroupEditPage = ({ params }: { params: { id: string } }) => {
     } finally {
       setIsLoadingMembers(false);
     }
-  };
+  }, [apiClient, groupId]);
   
   // Fetch available users (not in the group)
   const fetchAvailableUsers = async () => {
@@ -527,14 +528,16 @@ const GroupEditPage = ({ params }: { params: { id: string } }) => {
                                   <TableCell className="font-medium">
                                     <div className="flex items-center gap-2">
                                       {member.profileImage ? (
-                                        <img 
+                                        <Image 
                                           src={member.profileImage} 
-                                          alt={member.name || ''} 
-                                          className="h-8 w-8 rounded-full object-cover"
+                                          alt={member.name || member.email} 
+                                          width={32} 
+                                          height={32} 
+                                          className="w-8 h-8 rounded-full mr-3" 
                                         />
                                       ) : (
-                                        <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center">
-                                          {member.name ? member.name[0].toUpperCase() : member.email[0].toUpperCase()}
+                                        <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-gray-500 mr-3">
+                                          {member.name ? member.name.charAt(0).toUpperCase() : member.email.charAt(0).toUpperCase()}
                                         </div>
                                       )}
                                       {member.name || 'Unavngivet'}
@@ -679,42 +682,44 @@ const GroupEditPage = ({ params }: { params: { id: string } }) => {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {availableUsers.map((user) => (
-                        <TableRow key={user.id}>
+                      {availableUsers.map((availableUser) => (
+                        <TableRow key={availableUser.id}>
                           <TableCell>
                             <Checkbox 
-                              checked={selectedUserIds.includes(user.id)}
-                              onCheckedChange={() => handleUserSelection(user.id)}
+                              checked={selectedUserIds.includes(availableUser.id)}
+                              onCheckedChange={() => handleUserSelection(availableUser.id)}
                             />
                           </TableCell>
                           <TableCell className="font-medium">
                             <div className="flex items-center gap-2">
-                              {user.profileImage ? (
-                                <img 
-                                  src={user.profileImage} 
-                                  alt={user.name || ''} 
-                                  className="h-8 w-8 rounded-full object-cover"
+                              {availableUser.profileImage ? (
+                                <Image 
+                                  src={availableUser.profileImage} 
+                                  alt={availableUser.name || availableUser.email} 
+                                  width={32} 
+                                  height={32} 
+                                  className="w-8 h-8 rounded-full mr-3" 
                                 />
                               ) : (
-                                <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center">
-                                  {user.name ? user.name[0].toUpperCase() : user.email[0].toUpperCase()}
+                                <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-gray-500 mr-3">
+                                  {availableUser.name ? availableUser.name.charAt(0).toUpperCase() : availableUser.email.charAt(0).toUpperCase()}
                                 </div>
                               )}
-                              {user.name || 'Unavngivet'}
+                              {availableUser.name || 'Unavngivet'}
                             </div>
                           </TableCell>
-                          <TableCell>{user.email}</TableCell>
+                          <TableCell>{availableUser.email}</TableCell>
                           <TableCell>
                             <Badge variant={
-                              user.role === Role.ADMIN 
+                              availableUser.role === Role.ADMIN 
                                 ? 'destructive' 
-                                : user.role === Role.TEACHER 
+                                : availableUser.role === Role.TEACHER 
                                   ? 'default' 
                                   : 'secondary'
                             }>
-                              {user.role === Role.ADMIN 
+                              {availableUser.role === Role.ADMIN 
                                 ? 'Administrator' 
-                                : user.role === Role.TEACHER 
+                                : availableUser.role === Role.TEACHER 
                                   ? 'Underviser' 
                                   : 'Studerende'}
                             </Badge>
