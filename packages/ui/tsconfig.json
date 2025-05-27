@@ -12,6 +12,6 @@
     "esModuleInterop": true,
     "moduleResolution": "node"
   },
-  "include": ["index.tsx", "components/**/*.tsx", "src/types/**/*.d.ts", "components/**/*.ts", "utils/**/*.ts"],
+  "include": ["index.tsx", "components/**/*.tsx", "src/types/**/*.d.ts", "components/**/*.ts", "utils/**/*.ts", "theme/**/*.ts"],
   "exclude": ["dist", "build", "node_modules"]
 }
