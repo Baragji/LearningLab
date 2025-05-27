@@ -1,4 +1,3 @@
-const withTM = require("next-transpile-modules")(["ui", "@repo/core", "@repo/config"]);
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
 });
@@ -25,4 +24,4 @@ const nextConfig = {
   },
 };
 
-module.exports = withBundleAnalyzer(withTM(nextConfig));
+module.exports = withBundleAnalyzer(nextConfig);

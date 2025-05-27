@@ -1,6 +1,7 @@
 // apps/web/src/screens/common/ModulePage.tsx
 import React, { useCallback } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useRouter } from 'next/router';
+import Link from 'next/link';
 import { 
   Box, 
   Typography, 
@@ -35,8 +36,8 @@ import QuizIcon from '@mui/icons-material/Quiz';
 import LinearProgress from '@mui/material/LinearProgress';
 
 const ModulePage: React.FC = () => {
-  const { moduleId } = useParams<{ moduleId: string }>();
-  const navigate = useNavigate();
+  const router = useRouter();
+  const { moduleId } = router.query as { moduleId: string };
   
   const { 
     data: module, 
@@ -125,18 +126,22 @@ const ModulePage: React.FC = () => {
       >
         {subjectArea && (
           <Link 
-            to={`/subject-area/${subjectArea.id}`}
-            style={{ color: 'inherit', textDecoration: 'none' }}
+            href={`/subject-area/${subjectArea.id}`}
+            passHref
           >
-            {subjectArea.name}
+            <Typography component="a" sx={{ color: 'inherit', textDecoration: 'none' }}>
+              {subjectArea.name}
+            </Typography>
           </Link>
         )}
         {course && (
           <Link 
-            to={`/course/${course.id}`}
-            style={{ color: 'inherit', textDecoration: 'none' }}
+            href={`/course/${course.id}`}
+            passHref
           >
-            {course.title}
+            <Typography component="a" sx={{ color: 'inherit', textDecoration: 'none' }}>
+              {course.title}
+            </Typography>
           </Link>
         )}
         <Typography color="text.primary">{module.title}</Typography>
@@ -174,7 +179,7 @@ const ModulePage: React.FC = () => {
         
         <Grid container spacing={3}>
           {sortedLessons.map((lesson) => (
-            <Grid size={{ xs: 12, sm: 6, md: 4 }} key={lesson.id}>
+            <Grid item xs={12} sm={6} md={4} key={lesson.id}>
               <Card 
                 elevation={2}
                 sx={{
@@ -207,8 +212,8 @@ const ModulePage: React.FC = () => {
                 )}
                 
                 <CardActionArea 
-                  sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', alignItems: 'stretch' }}
-                  onClick={() => navigate(`/lesson/${lesson.id}`)}
+                  onClick={() => router.push(`/lessons/${lesson.id}`)}
+                  sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}
                 >
                   <CardContent sx={{ flexGrow: 1 }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
@@ -229,23 +234,14 @@ const ModulePage: React.FC = () => {
       </Paper>
       
       {/* Navigation buttons */}
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 4 }}>
+      <Box sx={{ mt: 4, textAlign: 'center' }}>
         <Button 
+          variant="outlined" 
           startIcon={<ArrowBackIcon />} 
-          onClick={() => navigate(`/course/${course?.id}`)}
+          onClick={() => router.back()}
         >
           Back to Course
         </Button>
-        
-        {sortedLessons.length > 0 && (
-          <Button 
-            endIcon={<NavigateNextIcon />} 
-            variant="contained"
-            onClick={() => navigate(`/lesson/${sortedLessons[0].id}`)}
-          >
-            Start First Lesson
-          </Button>
-        )}
       </Box>
     </Container>
   );

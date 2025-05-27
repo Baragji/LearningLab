@@ -11,7 +11,6 @@ import {
   BadRequestException,
   UseGuards,
   ParseIntPipe,
-  UseInterceptors,
   Inject,
   Logger,
 } from '@nestjs/common';

@@ -1,5 +1,5 @@
 "use client";
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
 import { useAuth } from './AuthContext';
 
 // Define types for user progress
@@ -58,17 +58,8 @@ export function ProgressProvider({ children }: ProgressProviderProps) {
   });
   const [isLoading, setIsLoading] = useState(true);
 
-  // Fetch user progress when user or token changes
-  useEffect(() => {
-    if (user && token) {
-      fetchUserProgress();
-    } else {
-      setIsLoading(false);
-    }
-  }, [user, token]);
-
   // Function to fetch user progress from API
-  const fetchUserProgress = async () => {
+  const fetchUserProgress = useCallback(async () => {
     setIsLoading(true);
     try {
       const baseUrl = process.env.NEXT_PUBLIC_API_URL || '/api';
@@ -96,7 +87,16 @@ export function ProgressProvider({ children }: ProgressProviderProps) {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [token]);
+
+  // Fetch user progress when user or token changes
+  useEffect(() => {
+    if (user && token) {
+      fetchUserProgress();
+    } else {
+      setIsLoading(false);
+    }
+  }, [user, token, fetchUserProgress]);
 
   // Function to mark a lesson as completed
   const markLessonCompleted = async (lessonId: number) => {

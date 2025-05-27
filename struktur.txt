@@ -20,6 +20,8 @@ LearningLab
 │  ├─ webResources.xml
 │  └─ workspace.xml
 ├─ .node-version
+├─ .trae
+│  └─ .ignore
 ├─ .yarn
 │  ├─ install-state.gz
 │  └─ releases
@@ -421,6 +423,7 @@ LearningLab
 ├─ docker-compose.yml
 ├─ docker-deployment-guide.md
 ├─ docs
+│  ├─ Overiew.md
 │  ├─ deployment
 │  │  ├─ README.md
 │  │  ├─ ci-cd-secrets-guide.md

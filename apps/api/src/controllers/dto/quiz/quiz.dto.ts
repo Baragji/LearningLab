@@ -10,7 +10,6 @@ import {
   Min,
   Max,
   IsArray,
-  IsEnum,
 } from 'class-validator';
 
 export class QuizDto {

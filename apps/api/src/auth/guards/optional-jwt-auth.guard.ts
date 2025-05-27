@@ -9,7 +9,7 @@ import { AuthGuard } from '@nestjs/passport';
  */
 @Injectable()
 export class OptionalJwtAuthGuard extends AuthGuard('jwt') {
-  handleRequest(err: any, user: any, info: any, context: ExecutionContext) {
+  handleRequest(err: any, user: any, _info: any, _context: ExecutionContext) {
     // Returner brugeren hvis autentificeret, ellers returner undefined (ingen fejl)
     return user;
   }

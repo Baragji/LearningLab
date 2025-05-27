@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import Image from 'next/image';
 import { useAuth } from '@/contexts/AuthContext';
 import { AppButton as Button } from '@/components/ui/AppButton';
 import { Input } from '@/components/ui/input';
@@ -154,38 +155,8 @@ const SearchPage = () => {
     fetchSubjectAreas();
   }, [apiClient]);
   
-  // Perform search when URL parameters change
-  useEffect(() => {
-    if (initialQuery) {
-      performSearch();
-    }
-  }, [initialQuery, initialType, initialTags, initialDifficulty, initialSubjectAreaId]);
-  
-  // Update URL with search parameters
-  const updateSearchParams = (params: Record<string, string | undefined>) => {
-    const url = new URL(window.location.href);
-    
-    // Clear existing search params
-    url.searchParams.delete('q');
-    url.searchParams.delete('type');
-    url.searchParams.delete('tags');
-    url.searchParams.delete('difficulty');
-    url.searchParams.delete('subjectAreaId');
-    url.searchParams.delete('page');
-    
-    // Add new search params
-    Object.entries(params).forEach(([key, value]) => {
-      if (value) {
-        url.searchParams.set(key, value);
-      }
-    });
-    
-    // Update URL without reloading the page
-    window.history.pushState({}, '', url.toString());
-  };
-  
   // Perform search
-  const performSearch = async (page = 1) => {
+  const performSearch = useCallback(async (page = 1) => {
     if (!apiClient) return;
     
     setIsSearching(true);
@@ -217,6 +188,37 @@ const SearchPage = () => {
     } finally {
       setIsSearching(false);
     }
+  }, [apiClient, searchQuery, searchType, searchTags, difficulty, subjectAreaId]);
+  
+  // Perform search when URL parameters change or performSearch dependencies change
+  useEffect(() => {
+    if (initialQuery) {
+      performSearch();
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialQuery, initialType, initialTags, initialDifficulty, initialSubjectAreaId, performSearch]);
+  
+  // Update URL with search parameters
+  const updateSearchParams = (params: Record<string, string | undefined>) => {
+    const url = new URL(window.location.href);
+    
+    // Clear existing search params
+    url.searchParams.delete('q');
+    url.searchParams.delete('type');
+    url.searchParams.delete('tags');
+    url.searchParams.delete('difficulty');
+    url.searchParams.delete('subjectAreaId');
+    url.searchParams.delete('page');
+    
+    // Add new search params
+    Object.entries(params).forEach(([key, value]) => {
+      if (value) {
+        url.searchParams.set(key, value);
+      }
+    });
+    
+    // Update URL without reloading the page
+    window.history.pushState({}, '', url.toString());
   };
   
   // Handle search form submission
@@ -476,9 +478,11 @@ const SearchPage = () => {
                           <Card key={course.id} className="overflow-hidden">
                             {course.image && (
                               <div className="h-40 overflow-hidden">
-                                <img 
+                                <Image 
                                   src={course.image} 
                                   alt={course.title} 
+                                  width={400}
+                                  height={160}
                                   className="w-full h-full object-cover transition-transform hover:scale-105"
                                 />
                               </div>
@@ -654,9 +658,11 @@ const SearchPage = () => {
                       <Card key={course.id} className="overflow-hidden">
                         {course.image && (
                           <div className="h-40 overflow-hidden">
-                            <img 
+                            <Image 
                               src={course.image} 
                               alt={course.title} 
+                              width={400}
+                              height={160}
                               className="w-full h-full object-cover transition-transform hover:scale-105"
                             />
                           </div>

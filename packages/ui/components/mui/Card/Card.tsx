@@ -7,7 +7,6 @@ import {
   CardHeader,
   CardActions,
   CardMedia,
-  Typography,
 } from '@mui/material';
 
 export interface CardProps extends Omit<MuiCardProps, 'title'> {

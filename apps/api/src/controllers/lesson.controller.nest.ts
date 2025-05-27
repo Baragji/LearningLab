@@ -242,89 +242,6 @@ export class LessonController {
     }
   }
 
-  @ApiOperation({ summary: 'Opdater rækkefølgen af lektioner i et modul' })
-  @ApiParam({ name: 'moduleId', description: 'ID for modulet', type: Number })
-  @ApiBody({ type: UpdateLessonsOrderDto })
-  @ApiResponse({
-    status: 200,
-    description: 'Lektionsrækkefølgen blev opdateret',
-    type: [LessonDto],
-  })
-  @ApiResponse({
-    status: 400,
-    description: 'Ugyldig anmodning - Valideringsfejl',
-  })
-  @ApiResponse({ status: 404, description: 'Modulet blev ikke fundet' })
-  @ApiResponse({ status: 500, description: 'Serverfejl' })
-  @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
-  @Put('module/:moduleId/order')
-  async updateLessonsOrder(
-    @Param('moduleId', ParseIntPipe) moduleId: number,
-    @Body() updateLessonsOrderDto: UpdateLessonsOrderDto,
-  ): Promise<LessonDto[]> {
-    const { lessonIds } = updateLessonsOrderDto;
-
-    if (!Array.isArray(lessonIds)) {
-      throw new BadRequestException(
-        "lessonIds skal være et array af lektion-ID'er",
-      );
-    }
-
-    try {
-      // Tjek om modulet eksisterer
-      const module = await this.prisma.module.findUnique({
-        where: { id: moduleId },
-        include: { lessons: true },
-      });
-
-      if (!module) {
-        throw new NotFoundException('Modulet blev ikke fundet');
-      }
-
-      // Tjek om alle lektioner tilhører modulet
-      const moduleLessonIds = module.lessons.map((lesson) => lesson.id);
-      const allLessonsExist = lessonIds.every((id) =>
-        moduleLessonIds.includes(Number(id)),
-      );
-
-      if (!allLessonsExist) {
-        throw new BadRequestException(
-          'En eller flere lektioner tilhører ikke det angivne modul',
-        );
-      }
-
-      // Opdater rækkefølgen af lektioner
-      const updates = lessonIds.map((lessonId, index) => {
-        return this.prisma.lesson.update({
-          where: { id: Number(lessonId) },
-          data: { order: index + 1 },
-        });
-      });
-
-      await this.prisma.$transaction(updates);
-
-      return await this.prisma.lesson.findMany({
-        where: { moduleId },
-        orderBy: { order: 'asc' },
-      });
-    } catch (error) {
-      if (
-        error instanceof NotFoundException ||
-        error instanceof BadRequestException
-      ) {
-        throw error;
-      }
-      console.error(
-        `Fejl ved opdatering af lektionsrækkefølge for modul ${moduleId}:`,
-        error,
-      );
-      throw new BadRequestException(
-        'Der opstod en fejl ved opdatering af lektionsrækkefølgen',
-      );
-    }
-  }
-
   @ApiOperation({ summary: 'Slet en lektion' })
   @ApiParam({ name: 'id', description: 'Lektion ID', type: Number })
   @ApiResponse({
@@ -401,6 +318,93 @@ export class LessonController {
       console.error(`Fejl ved sletning af lektion med id ${id}:`, error);
       throw new BadRequestException(
         'Der opstod en fejl ved sletning af lektionen',
+      );
+    }
+  }
+
+  @ApiOperation({ summary: 'Opdater rækkefølgen af lektioner i et modul' })
+  @ApiParam({ name: 'moduleId', description: 'ID for modulet', type: Number })
+  @ApiBody({ type: UpdateLessonsOrderDto })
+  @ApiResponse({
+    status: 200,
+    description: 'Rækkefølgen af lektioner blev opdateret',
+    type: [LessonDto],
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Ugyldig anmodning - Valideringsfejl',
+  })
+  @ApiResponse({ status: 404, description: 'Modulet blev ikke fundet' })
+  @ApiResponse({ status: 500, description: 'Serverfejl' })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Put('update-order/:moduleId')
+  async updateLessonsOrder(
+    @Param('moduleId', ParseIntPipe) moduleId: number,
+    @Body() updateLessonsOrderDto: UpdateLessonsOrderDto,
+  ): Promise<LessonDto[]> {
+    try {
+      // Tjek om modulet eksisterer
+      const module = await this.prisma.module.findUnique({
+        where: { id: moduleId },
+        include: { lessons: true }, // Inkluder lektioner for at tælle dem
+      });
+
+      if (!module) {
+        throw new NotFoundException('Det angivne modul findes ikke');
+      }
+
+      const { lessonIds } = updateLessonsOrderDto; // Ændret fra newOrder til lessonIds
+
+      // Tjek om den nye rækkefølge er gyldig
+      if (lessonIds.length !== module.lessons.length) { // Sammenlign med antallet af faktiske lektioner
+        throw new BadRequestException(
+          'Den nye rækkefølge skal indeholde samme antal lektioner som modulet',
+        );
+      }
+
+      // Tjek om alle lektion ID'er i lessonIds faktisk tilhører modulet
+      const moduleLessonIds = module.lessons.map(lesson => lesson.id);
+      const allLessonIdsBelongToModule = lessonIds.every(id => moduleLessonIds.includes(id));
+      if (!allLessonIdsBelongToModule) {
+        throw new BadRequestException(
+          'En eller flere af de angivne lektions-ID\'er tilhører ikke det specificerede modul.',
+        );
+      }
+      
+      // Tjek for duplikerede ID'er i lessonIds
+      const uniqueLessonIds = new Set(lessonIds);
+      if (uniqueLessonIds.size !== lessonIds.length) {
+        throw new BadRequestException('Lektions-ID\'er i den nye rækkefølge må ikke være duplikerede.');
+      }
+
+      // Opdater rækkefølgen af lektioner
+      const updates = lessonIds.map((lessonId, index) => {
+        return this.prisma.lesson.update({
+          where: { id: lessonId }, 
+          data: { order: index + 1 }, // Sæt rækkefølgen baseret på array-indeks
+        });
+      });
+
+      await this.prisma.$transaction(updates);
+
+      return await this.prisma.lesson.findMany({
+        where: { moduleId },
+        orderBy: { order: 'asc' },
+      });
+    } catch (error) {
+      if (
+        error instanceof NotFoundException ||
+        error instanceof BadRequestException
+      ) {
+        throw error;
+      }
+      console.error(
+        `Fejl ved opdatering af lektioner i modul ${moduleId}:`,
+        error,
+      );
+      throw new BadRequestException(
+        'Der opstod en fejl ved opdatering af lektioner',
       );
     }
   }

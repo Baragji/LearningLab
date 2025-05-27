@@ -2,6 +2,7 @@
 import React, { useState, useRef } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useAuth } from '../src/contexts/AuthContext';
 import ProtectedRoute from '../src/components/auth/ProtectedRoute';
 
@@ -305,38 +306,22 @@ const SettingsPage: React.FC = () => {
           <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-4">Profilbillede</h2>
 
           <div className="flex items-center">
-            <div className="relative">
-              <div 
-                className="w-24 h-24 rounded-full overflow-hidden bg-gray-200 dark:bg-gray-700 flex items-center justify-center cursor-pointer"
-                onClick={handleProfileImageClick}
-              >
-                {profileImage ? (
-                  <img 
-                    src={profileImage} 
-                    alt="Profilbillede" 
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <span className="text-4xl text-gray-500 dark:text-gray-400">
-                    {user?.name?.charAt(0) || user?.email?.charAt(0) || 'U'}
-                  </span>
-                )}
-              </div>
-              <div 
-                className="absolute bottom-0 right-0 bg-blue-600 rounded-full p-1 cursor-pointer"
-                onClick={handleProfileImageClick}
-              >
-                {isUploadingImage ? (
-                  <div className="w-6 h-6 flex items-center justify-center">
-                    <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white"></div>
-                  </div>
-                ) : (
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-                  </svg>
-                )}
-              </div>
+            <div
+              className="w-24 h-24 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-gray-500 dark:text-gray-400 cursor-pointer overflow-hidden relative"
+              onClick={handleProfileImageClick}
+            >
+              {profileImage ? (
+                <Image src={profileImage} alt="Profilbillede" layout="fill" objectFit="cover" />
+              ) : (
+                <svg className="w-12 h-12" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" fillRule="evenodd" />
+                </svg>
+              )}
+              {isUploadingImage && (
+                <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                  <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                </div>
+              )}
             </div>
             <input
               type="file"

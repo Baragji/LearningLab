@@ -1,6 +1,6 @@
 // apps/web/src/screens/common/DashboardPage.tsx
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/router';
 import { 
   Box, 
   Typography, 
@@ -32,7 +32,7 @@ import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import QuizIcon from '@mui/icons-material/Quiz';
 
 const DashboardPage: React.FC = () => {
-  const navigate = useNavigate();
+  const router = useRouter();
   
   const { 
     data: userCoursesData, 
@@ -102,7 +102,7 @@ const DashboardPage: React.FC = () => {
     <Container maxWidth="lg" sx={{ mt: 4, mb: 8 }}>
       <Grid container spacing={4}>
         {/* Welcome Section */}
-        <Grid size={{ xs: 12 }}>
+        <Grid item xs={12}>
           <Paper elevation={2} sx={{ p: 4, mb: 2 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
               <Avatar 
@@ -128,7 +128,7 @@ const DashboardPage: React.FC = () => {
         </Grid>
         
         {/* Stats Cards */}
-        <Grid size={{ xs: 12, md: 4 }}>
+        <Grid item xs={12} md={4}>
           <Card elevation={2} sx={{ height: '100%' }}>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
@@ -147,7 +147,7 @@ const DashboardPage: React.FC = () => {
           </Card>
         </Grid>
         
-        <Grid size={{ xs: 12, md: 4 }}>
+        <Grid item xs={12} md={4}>
           <Card elevation={2} sx={{ height: '100%' }}>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
@@ -166,7 +166,7 @@ const DashboardPage: React.FC = () => {
           </Card>
         </Grid>
         
-        <Grid size={{ xs: 12, md: 4 }}>
+        <Grid item xs={12} md={4}>
           <Card elevation={2} sx={{ height: '100%' }}>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
@@ -186,7 +186,7 @@ const DashboardPage: React.FC = () => {
         </Grid>
         
         {/* My Courses Section */}
-        <Grid size={{ xs: 12, md: 8 }}>
+        <Grid item xs={12} md={8}>
           <Paper elevation={2} sx={{ p: 4, height: '100%' }}>
             <Typography variant="h5" sx={{ mb: 3 }}>
               My Courses
@@ -199,86 +199,56 @@ const DashboardPage: React.FC = () => {
                 </Typography>
                 <Button 
                   variant="contained" 
-                  onClick={() => navigate('/courses')}
+                  color="primary" 
+                  onClick={() => router.push('/courses')}
+                  sx={{ mt: 2 }}
                 >
-                  Browse Courses
+                  Explore Courses
                 </Button>
               </Box>
             ) : (
-              <Grid container spacing={2}>
-                {sortedCourses.map(course => {
+              <List sx={{ width: '100%' }}>
+                {sortedCourses.map((course) => {
                   const progress = userCoursesData?.progress[course.id] || 0;
-                  
                   return (
-                    <Grid key={course.id} size={{ xs: 12, sm: 6 }}>
-                      <Card 
-                        elevation={1}
-                        sx={{
-                          height: '100%',
-                          display: 'flex',
-                          flexDirection: 'column',
-                          ...(progress === 100 && {
-                            borderLeft: '4px solid',
-                            borderColor: 'success.main',
-                          }),
-                        }}
-                      >
-                        <CardActionArea 
-                          sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', alignItems: 'stretch' }}
-                          onClick={() => navigate(`/course/${course.id}`)}
-                        >
-                          <CardContent sx={{ flexGrow: 1 }}>
-                            <Typography variant="h6" component="div" gutterBottom>
-                              {course.title}
+                    <ListItem 
+                      key={course.id}
+                      disablePadding
+                      sx={{ 
+                        mb: 2, 
+                        '&:last-child': { mb: 0 },
+                        border: '1px solid',
+                        borderColor: 'divider',
+                        borderRadius: 1,
+                        overflow: 'hidden'
+                      }}
+                    >
+                      <CardActionArea onClick={() => router.push(`/course/${course.id}`)}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', p: 2 }}>
+                          <SchoolIcon color="primary" sx={{ mr: 2 }} />
+                          <Box sx={{ flexGrow: 1 }}>
+                            <Typography variant="h6" sx={{ mb: 0.5 }}>{course.title}</Typography>
+                            <LinearProgress variant="determinate" value={progress} sx={{ height: 6, borderRadius: 3, mb: 0.5 }} />
+                            <Typography variant="caption" color="text.secondary">
+                              {progress}% Complete
                             </Typography>
-                            
-                            <Box sx={{ mt: 2, mb: 1 }}>
-                              <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
-                                <Typography variant="body2" color="text.secondary">
-                                  Progress
-                                </Typography>
-                                <Typography variant="body2" color="text.secondary">
-                                  {progress}%
-                                </Typography>
-                              </Box>
-                              <LinearProgress 
-                                variant="determinate" 
-                                value={progress} 
-                                sx={{ height: 6, borderRadius: 3 }} 
-                              />
-                            </Box>
-                            
-                            {progress === 100 && (
-                              <Box sx={{ display: 'flex', alignItems: 'center', mt: 1, color: 'success.main' }}>
-                                <CheckCircleIcon fontSize="small" sx={{ mr: 0.5 }} />
-                                <Typography variant="body2" color="success.main">
-                                  Completed
-                                </Typography>
-                              </Box>
-                            )}
-                            
-                            {progress > 0 && progress < 100 && (
-                              <Box sx={{ display: 'flex', alignItems: 'center', mt: 1, color: 'info.main' }}>
-                                <TrendingUpIcon fontSize="small" sx={{ mr: 0.5 }} />
-                                <Typography variant="body2" color="info.main">
-                                  In Progress
-                                </Typography>
-                              </Box>
-                            )}
-                          </CardContent>
-                        </CardActionArea>
-                      </Card>
-                    </Grid>
+                          </Box>
+                          {progress === 100 && (
+                            <CheckCircleIcon color="success" sx={{ ml: 2 }} />
+                          )}
+                        </Box>
+                      </CardActionArea>
+                    </ListItem>
                   );
                 })}
-              </Grid>
+              </List>
             )}
             
             {sortedCourses.length > 0 && (
               <Box sx={{ mt: 3, textAlign: 'center' }}>
                 <Button 
                   variant="outlined" 
-                  onClick={() => navigate('/courses')}
+                  onClick={() => router.push('/courses')}
                 >
                   View All Courses
                 </Button>
@@ -288,7 +258,7 @@ const DashboardPage: React.FC = () => {
         </Grid>
         
         {/* Recent Quiz Results */}
-        <Grid size={{ xs: 12, md: 4 }}>
+        <Grid item xs={12} md={4}>
           <Paper elevation={2} sx={{ p: 4, height: '100%' }}>
             <Typography variant="h5" sx={{ mb: 3 }}>
               Recent Quiz Results

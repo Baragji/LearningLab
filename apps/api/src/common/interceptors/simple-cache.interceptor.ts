@@ -7,8 +7,8 @@ import {
   Inject,
   Logger,
 } from '@nestjs/common';
-import { Observable, of } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { Observable /*, of*/ } from 'rxjs';
+// import { tap } from 'rxjs/operators';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 
@@ -34,7 +34,7 @@ export class SimpleCacheInterceptor implements NestInterceptor {
       return next.handle();
     }
 
-    const cacheKey = `${request.method}_${request.url}`;
+    const _cacheKey = `${request.method}_${request.url}`;
 
     // Midlertidig deaktivering af cache pga. problemer med store
     // Returnerer direkte uden at forsøge at bruge cache

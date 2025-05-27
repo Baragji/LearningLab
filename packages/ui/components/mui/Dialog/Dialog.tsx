@@ -78,7 +78,6 @@ export const Dialog = React.forwardRef<HTMLDivElement, DialogProps>(
         onConfirm();
       }
       if (onClose) {
-        // @ts-ignore - MUI's onClose expects a different signature
         onClose({}, 'backdropClick');
       }
     };

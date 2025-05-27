@@ -1,6 +1,5 @@
 // apps/api/src/controllers/quiz.controller.ts
 
-import { Request, Response } from 'express';
 import { PrismaClient, QuestionType } from '@prisma/client';
 import {
   CreateQuizInput,
@@ -13,10 +12,7 @@ const prisma = new PrismaClient();
 /**
  * Henter alle quizzer
  */
-export const getAllQuizzes = async (
-  req: Request,
-  res: Response,
-): Promise<void> => {
+export const getAllQuizzes = async (_req: any, res: any): Promise<void> => {
   try {
     const quizzes = await prisma.quiz.findMany({
       include: {
@@ -48,10 +44,7 @@ export const getAllQuizzes = async (
 /**
  * Henter quizzer for en specifik lektion
  */
-export const getQuizzesByLesson = async (
-  req: Request,
-  res: Response,
-): Promise<void> => {
+export const getQuizzesByLesson = async (req: any, res: any): Promise<void> => {
   const { lessonId } = req.params;
 
   try {
@@ -87,10 +80,7 @@ export const getQuizzesByLesson = async (
 /**
  * Henter quizzer for et specifikt modul
  */
-export const getQuizzesByModule = async (
-  req: Request,
-  res: Response,
-): Promise<void> => {
+export const getQuizzesByModule = async (req: any, res: any): Promise<void> => {
   const { moduleId } = req.params;
 
   try {
@@ -123,10 +113,7 @@ export const getQuizzesByModule = async (
 /**
  * Henter en specifik quiz ud fra ID
  */
-export const getQuizById = async (
-  req: Request,
-  res: Response,
-): Promise<void> => {
+export const getQuizById = async (req: any, res: any): Promise<void> => {
   const { id } = req.params;
 
   try {
@@ -161,10 +148,7 @@ export const getQuizById = async (
 /**
  * Opretter en ny quiz
  */
-export const createQuiz = async (
-  req: Request,
-  res: Response,
-): Promise<void> => {
+export const createQuiz = async (req: any, res: any): Promise<void> => {
   const { title, description, lessonId, moduleId }: CreateQuizInput = req.body;
 
   try {
@@ -221,10 +205,7 @@ export const createQuiz = async (
 /**
  * Opdaterer en eksisterende quiz
  */
-export const updateQuiz = async (
-  req: Request,
-  res: Response,
-): Promise<void> => {
+export const updateQuiz = async (req: any, res: any): Promise<void> => {
   const { id } = req.params;
   const { title, description, lessonId, moduleId } = req.body;
 
@@ -285,10 +266,7 @@ export const updateQuiz = async (
 /**
  * Sletter en quiz
  */
-export const deleteQuiz = async (
-  req: Request,
-  res: Response,
-): Promise<void> => {
+export const deleteQuiz = async (req: any, res: any): Promise<void> => {
   const { id } = req.params;
 
   try {
@@ -351,10 +329,7 @@ export const deleteQuiz = async (
 /**
  * Opretter et nyt spørgsmål til en quiz
  */
-export const createQuestion = async (
-  req: Request,
-  res: Response,
-): Promise<void> => {
+export const createQuestion = async (req: any, res: any): Promise<void> => {
   const { text, type, quizId, answerOptions }: CreateQuestionInput = req.body;
 
   try {
@@ -416,10 +391,7 @@ export const createQuestion = async (
 /**
  * Opdaterer et eksisterende spørgsmål
  */
-export const updateQuestion = async (
-  req: Request,
-  res: Response,
-): Promise<void> => {
+export const updateQuestion = async (req: any, res: any): Promise<void> => {
   const { id } = req.params;
   const { text, type } = req.body;
 
@@ -463,10 +435,7 @@ export const updateQuestion = async (
 /**
  * Sletter et spørgsmål
  */
-export const deleteQuestion = async (
-  req: Request,
-  res: Response,
-): Promise<void> => {
+export const deleteQuestion = async (req: any, res: any): Promise<void> => {
   const { id } = req.params;
 
   try {
@@ -514,10 +483,7 @@ export const deleteQuestion = async (
 /**
  * Opretter en ny svarmulighed til et spørgsmål
  */
-export const createAnswerOption = async (
-  req: Request,
-  res: Response,
-): Promise<void> => {
+export const createAnswerOption = async (req: any, res: any): Promise<void> => {
   const { questionId } = req.params;
   const { text, isCorrect }: CreateAnswerOptionInput = req.body;
 
@@ -555,10 +521,7 @@ export const createAnswerOption = async (
 /**
  * Opdaterer en eksisterende svarmulighed
  */
-export const updateAnswerOption = async (
-  req: Request,
-  res: Response,
-): Promise<void> => {
+export const updateAnswerOption = async (req: any, res: any): Promise<void> => {
   const { id } = req.params;
   const { text, isCorrect } = req.body;
 
@@ -594,10 +557,7 @@ export const updateAnswerOption = async (
 /**
  * Sletter en svarmulighed
  */
-export const deleteAnswerOption = async (
-  req: Request,
-  res: Response,
-): Promise<void> => {
+export const deleteAnswerOption = async (req: any, res: any): Promise<void> => {
   const { id } = req.params;
 
   try {

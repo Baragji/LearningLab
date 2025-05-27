@@ -4,7 +4,6 @@ import {
   BadRequestException,
   Inject,
   forwardRef,
-  ConflictException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { UsersService } from '../users/users.service';
@@ -13,9 +12,9 @@ import * as bcrypt from 'bcryptjs';
 import { PrismaService } from '../persistence/prisma/prisma.service';
 import { JwtPayload } from './strategies/jwt/jwt';
 import { ResetPasswordDto } from './dto/reset-password.dto';
-import { SocialUserDto } from './dto/social-user.dto';
+import { SocialUserDto } from './dto/social-user.dto'; // Tilføjet import
 import { v4 as uuidv4 } from 'uuid'; // Til generering af unikke tokens
-import { User as CoreUser, Role as CoreRole, AuthProvider } from '@repo/core';
+import { User as CoreUser, Role as CoreRole } from '@repo/core';
 import { User as PrismaUser } from '@prisma/client'; // Typen fra Prisma
 
 @Injectable()
@@ -287,7 +286,7 @@ export class AuthService {
    * Social login er deaktiveret indtil det skal bruges i produktion
    */
   async validateSocialUser(
-    socialUserDto: SocialUserDto,
+    _socialUserDto: SocialUserDto,
   ): Promise<Omit<CoreUser, 'passwordHash'>> {
     throw new BadRequestException(
       'Social login er deaktiveret i denne version af applikationen.',

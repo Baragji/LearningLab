@@ -1,4 +1,6 @@
 {
     "zencoder.enableRepoIndexing": true,
-    "zencoder.shellTool.commandConfirmationPolicy": "doNotAskForSpecified"
+    "zencoder.shellTool.commandConfirmationPolicy": "doNotAskForSpecified",
+    "files.autoSave": "afterDelay",
+    "codium.codeCompletion.enable": true
 }

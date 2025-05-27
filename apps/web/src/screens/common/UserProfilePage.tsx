@@ -279,7 +279,7 @@ const UserProfilePage: React.FC = () => {
         <TabPanel value={tabValue} index={0}>
           <form onSubmit={handleProfileUpdate}>
             <Grid container spacing={3}>
-              <Grid size={{ xs: 12 }}>
+              <Grid item xs={12}>
                 <TextField
                   label="Navn"
                   fullWidth
@@ -289,7 +289,7 @@ const UserProfilePage: React.FC = () => {
                 />
               </Grid>
 
-              <Grid size={{ xs: 12 }}>
+              <Grid item xs={12}>
                 <TextField
                   label="Email"
                   fullWidth
@@ -301,7 +301,7 @@ const UserProfilePage: React.FC = () => {
                 />
               </Grid>
 
-              <Grid size={{ xs: 12 }}>
+              <Grid item xs={12}>
                 <TextField
                   label="Biografi"
                   fullWidth
@@ -314,7 +314,7 @@ const UserProfilePage: React.FC = () => {
                 />
               </Grid>
 
-              <Grid size={{ xs: 12 }}>
+              <Grid item xs={12}>
                 <Button
                   type="submit"
                   variant="contained"
@@ -332,7 +332,7 @@ const UserProfilePage: React.FC = () => {
         <TabPanel value={tabValue} index={1}>
           <form onSubmit={handlePasswordChange}>
             <Grid container spacing={3}>
-              <Grid size={{ xs: 12 }}>
+              <Grid item xs={12}>
                 <TextField
                   label="Nuværende adgangskode"
                   fullWidth
@@ -344,7 +344,7 @@ const UserProfilePage: React.FC = () => {
                 />
               </Grid>
 
-              <Grid size={{ xs: 12 }}>
+              <Grid item xs={12}>
                 <TextField
                   label="Ny adgangskode"
                   fullWidth
@@ -357,7 +357,7 @@ const UserProfilePage: React.FC = () => {
                 />
               </Grid>
 
-              <Grid size={{ xs: 12 }}>
+              <Grid item xs={12}>
                 <TextField
                   label="Bekræft ny adgangskode"
                   fullWidth
@@ -371,7 +371,7 @@ const UserProfilePage: React.FC = () => {
                 />
               </Grid>
 
-              <Grid size={{ xs: 12 }}>
+              <Grid item xs={12}>
                 <Button
                   type="submit"
                   variant="contained"

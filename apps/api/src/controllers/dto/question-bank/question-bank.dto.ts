@@ -9,10 +9,7 @@ import {
   IsArray,
   IsEnum,
   Min,
-  Max,
-  ValidateNested,
 } from 'class-validator';
-import { Type } from 'class-transformer';
 import { QuestionType, Difficulty } from '@prisma/client';
 
 export class QuestionBankDto {

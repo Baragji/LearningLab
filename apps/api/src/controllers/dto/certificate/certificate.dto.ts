@@ -6,9 +6,7 @@ import {
   IsOptional,
   IsPositive,
   IsString,
-  IsDate,
 } from 'class-validator';
-import { Type } from 'class-transformer';
 
 export class CertificateDto {
   @ApiProperty({
