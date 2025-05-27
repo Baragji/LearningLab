@@ -1,46 +1,74 @@
 {
   "$schema": "https://turbo.build/schema.json",
-  "tasks": {
+  "globalDependencies": ["**/.env", "**/.env.*"],
+  "globalEnv": [
+    "NODE_ENV",
+    "CI",
+    "SKIP_ENV_VALIDATION"
+  ],
+  "pipeline": {
     "build": {
       "dependsOn": ["^build"],
       "outputs": [
         ".next/**",
+        "!.next/cache/**",
         "dist/**"
-      ]
+      ],
+      "env": ["NODE_ENV"]
     },
     "ui#build": {
       "outputs": []
     },
     "lint": {
-      "outputs": []
+      "outputs": [],
+      "cache": false
     },
     "dev": {
       "cache": false,
-      "persistent": true
+      "persistent": true,
+      "env": ["NODE_ENV", "PORT"]
     },
     "test": {
       "dependsOn": ["^build"],
-      "outputs": []
+      "outputs": ["coverage/**"],
+      "env": ["NODE_ENV"]
     },
     "test:ci": {
       "dependsOn": ["^build"],
+      "outputs": ["coverage/**"],
+      "env": ["NODE_ENV", "CI"],
       "cache": false
     },
     "test:watch": {
-      "cache": false
+      "cache": false,
+      "persistent": true
     },
     "test:e2e": {
       "dependsOn": ["^build"],
+      "env": ["NODE_ENV"],
       "cache": false
     },
     "test:e2e:ui": {
-      "cache": false
+      "cache": false,
+      "persistent": true
     },
     "test:e2e:debug": {
+      "cache": false,
+      "persistent": true
+    },
+    "clean": {
       "cache": false
+    },
+    "prisma:generate": {
+      "cache": false,
+      "outputs": ["node_modules/@prisma/client/**", "node_modules/.prisma/**"]
+    },
+    "prisma:migrate": {
+      "cache": false
+    },
+    "prisma:studio": {
+      "cache": false,
+      "persistent": true
     }
-  },
-  "globalEnv": [],
-  "globalDependencies": [],
-  "cacheDir": ".turbo/cache"
+  }
 }
