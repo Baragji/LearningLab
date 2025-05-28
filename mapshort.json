@@ -1,0 +1,220 @@
+{
+  "LearningLab": {
+    ".env.example": "file",
+    ".envrc": "file",
+    ".git_backup": {
+      "lost-found": {
+        "commit": {},
+        "other": {}
+      }
+    },
+    ".github": {
+      "workflows": {
+        "ci.yml": "file",
+        "qodana_code_quality.yml": "file"
+      }
+    },
+    ".gitignore": "file",
+    ".junie": {
+      "oldguide.md": "file"
+    },
+    ".qodo": {},
+    ".repomix": {
+      "bundles.json": "file"
+    },
+    ".trae": {
+      ".ignore": "file",
+      "rules": {
+        "project_rules.md": "file"
+      }
+    },
+    ".yarn": {
+      "releases": {
+        "yarn-4.9.1.cjs": "file"
+      }
+    },
+    ".yarnrc.yml": "file",
+    ".zencoder": {},
+    ".zencoder_backup": {},
+    "Dockerfile.api": "file",
+    "Dockerfile.web": "file",
+    "E1-MVP-UI-Plan.md": "file",
+    "Jira style.txt": "file",
+    "LICENSE": "file",
+    "Optimering.txt": "file",
+    "Plan.txt": "file",
+    "README.md": "file",
+    "Seedpensum.txt": "file",
+    "Sprint2.txt": "file",
+    "Vision&brainstom.txt": "file",
+    "api": {
+      "web.txt": "file"
+    },
+    "apps": {
+      "api": {
+        ".env.example": "file",
+        ".eslintrc.js": "file",
+        ".prettierrc": "file",
+        "docs": {
+          "migration-strategy.md": "file"
+        },
+        "nest-cli.json": "file",
+        "package.json": "file",
+        "prisma": {
+          "migrations": {
+            "20220307034109_initial_migrate": {},
+            "20250517073440_add_user_auth_fields": {},
+            "20250517122525_add_password_reset_fields": {},
+            "20250520211803_add_pensum_and_quiz_models": {},
+            "20250523165258_created_by": {},
+            "20250523172339_add_advanced_search_fields": {},
+            "20250523173305_add_user_profile_fields": {},
+            "20250523200842_add_xp_to_user": {},
+            "20250523220919_new": {},
+            "20250524003326_add_content_block_types": {},
+            "20250524220309_add_advanced_quiz_functionality": {},
+            "migration_lock.toml": "file"
+          },
+          "schema.prisma": "file",
+          "seed.ts": "file"
+        },
+        "src": {
+          "README.md": "file",
+          "app.controller.spec.ts": "file",
+          "app.controller.ts": "file",
+          "app.module.ts": "file",
+          "app.service.ts": "file",
+          "auth": {},
+          "common": {},
+          "config": {},
+          "controllers": {},
+          "create-test-data.ts": "file",
+          "docs": {
+            "circular-dependencies.md": "file"
+          },
+          "dto": {
+            "update-lesson-progress.dto.ts": "file"
+          },
+          "main.ts": "file",
+          "middleware": {
+            "auth.middleware.ts": "file"
+          },
+          "modules": {
+            "pensum.module.ts": "file",
+            "quiz.module.ts": "file",
+            "userProgress.module.ts": "file"
+          },
+          "persistence": {
+            "persistence.module.ts": "file",
+            "prisma": {}
+          },
+          "quiz": {
+            "dto": {}
+          },
+          "routes": {
+            "pensum.routes.ts": "file",
+            "questionBank.routes.ts": "file",
+            "quiz.routes.ts": "file"
+          },
+          "search": {
+            "search.controller.ts": "file",
+            "search.module.ts": "file",
+            "search.service.ts": "file"
+          },
+          "services": {
+            "pensum.service.ts": "file",
+            "question-import.service.ts": "file",
+            "quiz.service.ts": "file",
+            "userProgress.service.ts": "file"
+          },
+          "shared": {
+            "shared.module.ts": "file"
+          },
+          "test-content-block-types.ts": "file",
+          "test-json-validation.ts": "file",
+          "test-quiz-fields.ts": "file",
+          "types": {
+            "express.d.ts": "file"
+          },
+          "user-groups": {
+            "dto": {},
+            "user-groups.controller.ts": "file",
+            "user-groups.module.ts": "file",
+            "user-groups.service.ts": "file"
+          },
+          "users": {
+            "dto": {},
+            "schemas": {},
+            "users.controller.spec.ts": "file",
+            "users.controller.ts": "file",
+            "users.module.ts": "file",
+            "users.service.spec.ts": "file",
+            "users.service.ts": "file"
+          }
+        },
+        "test": {
+          "app.e2e-spec.ts": "file",
+          "config": {
+            "node-version.spec.ts": "file"
+          },
+          "jest-e2e.json": "file"
+        },
+        "tsconfig.build.json": "file",
+        "tsconfig.json": "file",
+        "webpack-hmr.config.js": "file"
+      },
+      "web": {
+        ".env.example": "file",
+        ".eslintrc.js": "file",
+        "README.md": "file",
+        "app": {},
+        "e2e": {},
+        "jest.config.js": "file",
+        "jest.setup.js": "file",
+        "next.config.js": "file",
+        "package.json": "file",
+        "pages": {},
+        "playwright.config.ts": "file",
+        "postcss.config.js": "file",
+        "src": {},
+        "tailwind.config.js": "file",
+        "tsconfig.json": "file"
+      }
+    },
+    "backlog.txt": "file",
+    "cleanup.sh": "file",
+    "code-review-issues.md": "file",
+    "debugging-improvement-plan.md": "file",
+    "debugging-plan.md": "file",
+    "docker-compose.yml": "file",
+    "docker-deployment-guide.md": "file",
+    "docs": {},
+    "envfiler.txt": "file",
+    "guidelines-alignment-plan.md": "file",
+    "guidelines.md": "file",
+    "howitsbuild.json": "file",
+    "implementation-plan.md": "file",
+    "implementation-plan.txt": "file",
+    "improvement-plan.md": "file",
+    "interaktivsprint.html": "file",
+    "nginx.conf": "file",
+    "package-scripts.js": "file",
+    "package.json": "file",
+    "packages": {},
+    "planfordeub": "file",
+    "prisma": {},
+    "project-structure-diagram.md": "file",
+    "qodana.yaml": "file",
+    "render.yaml": "file",
+    "respons.txt": "file",
+    "scripts": {},
+    "stackinfo-mismatch-report.md": "file",
+    "stackinfo.txt": "file",
+    "stackudvkiling": "file",
+    "struktur.txt": "file",
+    "tsconfig.json": "file",
+    "turbo.json": "file",
+    "vision.txt": "file",
+    "yarn.lock": "file"
+  }
+}
