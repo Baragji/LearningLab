@@ -1,148 +1,333 @@
 
-Okay, here is the prioritized backlog based on the issues identified in the chunks analyzed so far:
+# LearningLab Project Backlog - Updated
 
-1.  **fix(web): Resolve ESLint warnings for `react-hooks/exhaustive-deps`**
-    *   **How-to**:
-        *   Identify all instances by running `yarn workspace web lint` or by reviewing the `yarn workspace web build` output. Warnings were noted in files like `app/admin/groups/[id]/page.tsx`, `app/admin/users/[id]/page.tsx`, `app/admin/users/page.tsx`, `app/search/page.tsx`, `pages/admin/user-groups/index.tsx`, and `src/contexts/ProgressContext.tsx`.
-        *   For each warning, analyze the `useEffect` dependencies.
-        *   If a function used in `useEffect` is defined within the component and changes on every render, wrap its definition in `useCallback` with its own dependencies.
-        *   Add all true dependencies (including `useCallback`-wrapped functions) to the `useEffect` dependency array.
-        *   Example:
-            ```typescript
-            // Before
-            const fetchData = () => { console.log(someDep); };
-            useEffect(() => {
-              fetchData();
-            }, []); // Warning: missing fetchData or someDep
+## Overview
+This is a comprehensive, prioritized backlog for the LearningLab monorepo project, reflecting the current state of the codebase. Items are categorized by priority (P0-P3) and type.
 
-            // After
-            const fetchData = useCallback(() => { console.log(someDep); }, [someDep]);
-            useEffect(() => {
-              fetchData();
-            }, [fetchData]);
-            ```
-    *   **Success-kriterium**: `yarn workspace web lint` and `yarn workspace web build` show no `react-hooks/exhaustive-deps` warnings.
-    *   **Estimeret tidsforbrug**: 1.5 - 2.5 timer.
+## Priority Levels
+- **P0 (Critical)**: Breaking issues, security vulnerabilities, or major blockers
+- **P1 (High)**: Important fixes and improvements that affect functionality
+- **P2 (Medium)**: Code quality, performance optimizations, and technical debt
+- **P3 (Low)**: Nice-to-have improvements and minor enhancements
 
-2.  **fix(web): Replace `<img>` with `next/image` component**
-    *   **How-to**:
-        *   Identify all instances of `<img />` tags from `yarn workspace web lint` or `yarn workspace web build` output. Warnings were noted in files like `app/admin/groups/[id]/page.tsx`, `app/admin/users/[id]/page.tsx`, `app/admin/users/page.tsx`, `app/search/page.tsx`, and `pages/settings.tsx`.
-        *   Import `Image` from `next/image`.
-        *   Replace `<img src="path/to/image.png" alt="My Image" />` with `<Image src="path/to/image.png" alt="My Image" width={500} height={300} />`.
-        *   You must provide `width` and `height` for local images. For remote images, additionally configure `images.remotePatterns` in `apps/web/next.config.js`.
-        *   Example for `next.config.js` for remote images:
-            ```javascript
-            // apps/web/next.config.js
-            module.exports = {
-              images: {
-                remotePatterns: [
-                  {
-                    protocol: 'https',
-                    hostname: 'example.com', // Replace with actual hostname
-                    // port: '', // Optional
-                    // pathname: '/images/**', // Optional, be specific if possible
-                  },
-                ],
-              },
-            };
-            ```
-    *   **Success-kriterium**: `yarn workspace web lint` and `yarn workspace web build` show no `@next/next/no-img-element` warnings. Images are displayed correctly and are optimized by Next.js.
-    *   **Estimeret tidsforbrug**: 2 - 3 timer.
+---
 
-3.  **fix(api): Resolve ESLint warnings for unused variables**
-    *   **How-to**:
-        *   Run `yarn workspace api lint`. Review output for `'...' is defined but never used` warnings.
-        *   Based on previous logs, affected files include `auth/auth.controller.ts`, `controllers/dto/user-progress/user-progress.dto.ts`, `controllers/error-test.controller.ts`, and many others.
-        *   For each unused variable:
-            *   If truly not needed, remove its definition and import statement.
-            *   If it's part of an interface implementation or intended for future use, and the ESLint rule `no-unused-vars` allows it (check `apps/api/.eslintrc.js`, previous logs suggest `Allowed unused vars must match /^_/u`), prefix the variable name with an underscore (e.g., `_Type`, `_unusedParam`).
-        *   Example:
-            ```diff
-            - import { UnusedType } from 'some-module';
-            - function example(usedParam, unusedParam) {
-            + function example(usedParam, _unusedParam) {
-            -   const unusedLocal = 1;
-                return usedParam;
-              }
-            ```
-    *   **Success-kriterium**: `yarn workspace api lint` shows no warnings for unused variables.
-    *   **Estimeret tidsforbrug**: 2 - 4 timer.
+## P0 - Critical Issues
 
-4.  **chore: Resolve TypeScript version compatibility warning for `@typescript-eslint`**
-    *   **How-to**:
-        *   The warning `WARNING: You are currently running a version of TypeScript which is not officially supported by @typescript-eslint/typescript-estree... YOUR TYPESCRIPT VERSION: 5.3.3` appears when linting or testing in workspaces like `apps/api`, `apps/web`, `packages/ui` (and likely others using `@typescript-eslint`).
-        *   Update `@typescript-eslint/eslint-plugin` and `@typescript-eslint/parser` to their latest versions in the root `package.json` and any workspace `package.json` files that might override them.
-        *   Run `yarn install` in the root directory after updating `package.json` files.
-        *   Example (in `package.json`):
-            ```diff
-            "devDependencies": {
-            -    "@typescript-eslint/eslint-plugin": "^6.2.1", // or other old version
-            -    "@typescript-eslint/parser": "^6.2.1", // or other old version
-            +    "@typescript-eslint/eslint-plugin": "^7.x.x", // Replace x.x with latest
-            +    "@typescript-eslint/parser": "^7.x.x", // Replace x.x with latest
-            }
-            ```
-    *   **Success-kriterium**: Linting (`yarn lint`) and build/test commands (`turbo run build`, `turbo run test`) for all relevant packages complete without the TypeScript version compatibility warning.
-    *   **Estimeret tidsforbrug**: 1 - 2 timer.
+### 1. **fix(security): Update vulnerable dependencies**
+- **Description**: Security vulnerabilities in dependencies need immediate attention
+- **How-to**:
+  - Run `yarn audit` in the root directory
+  - Review security vulnerabilities reported
+  - Update vulnerable packages using `yarn upgrade-interactive`
+  - Test all workspaces after updates
+  - Document any breaking changes
+- **Success Criteria**: 
+  - Zero high/critical vulnerabilities from `yarn audit`
+  - All tests pass after updates
+- **Estimated Time**: 2-4 hours
+- **Dependencies**: None
 
-5.  **refactor(api): Align tsconfig paths with Jest for build consistency**
-    *   **How-to**:
-        *   Jest in `apps/api/package.json` now maps `@repo/core` and `@repo/config` to their `dist` folders using `<rootDir>/../../../packages/...` (resolving from `apps/api/src/`).
-        *   Verify and update `apps/api/tsconfig.json` (and `apps/api/tsconfig.build.json` if it overrides paths) to use equivalent path mappings for the TypeScript compiler.
-        *   Assuming `apps/api/tsconfig.json` is the primary config for path aliases:
-            *   File path: `apps/api/tsconfig.json`
-            *   If `compilerOptions.baseUrl` is `"."` (relative to `tsconfig.json` file):
-                ```json
-                {
-                  "compilerOptions": {
-                    "baseUrl": ".",
-                    "paths": {
-                      "@repo/core/*": ["../packages/core/dist/*"],
-                      "@repo/config/*": ["../packages/config/dist/*"]
-                    }
-                  }
-                }
-                ```
-            *   If `compilerOptions.baseUrl` is `"src"`:
-                ```json
-                {
-                  "compilerOptions": {
-                    "baseUrl": "src", // Or "./src"
-                    "paths": {
-                      "@repo/core/*": ["../../packages/core/dist/*"], // Relative from 'src'
-                      "@repo/config/*": ["../../packages/config/dist/*"] // Relative from 'src'
-                    }
-                  }
-                }
-                ```
-    *   **Success-kriterium**: `yarn workspace api build` completes successfully. Runtime behavior of the built API is consistent with module resolution during tests, particularly for `@repo/core` and `@repo/config` imports.
-    *   **Estimeret tidsforbrug**: 0.5 - 1 hour.
+### 2. **fix(docker): Resolve Docker deployment issues**
+- **Description**: Docker configurations need alignment with current codebase structure
+- **How-to**:
+  - Review `Dockerfile.api` and `Dockerfile.web` for correct build paths
+  - Update `docker-compose.yml` environment variables
+  - Ensure Prisma migrations run correctly in containers
+  - Test full deployment stack locally
+  - Update `docker-deployment-guide.md` with current instructions
+- **Success Criteria**:
+  - `docker-compose up` successfully starts all services
+  - API and web containers communicate properly
+  - Database migrations apply correctly
+- **Estimated Time**: 3-5 hours
+- **Dependencies**: Database configuration
 
-6.  **chore(ui): Add `sideEffects: false` to `package.json` for tree-shaking**
-    *   **How-to**:
-        *   Edit `packages/ui/package.json`.
-        *   Add the `sideEffects: false` field to indicate to bundlers that importing modules from this package has no global side effects, allowing for better tree-shaking.
-        *   File path: `packages/ui/package.json`
-        *   Code diff:
-            ```diff
-            {
-              "name": "@repo/ui",
-              // ... other fields
-            + "sideEffects": false,
-              "version": "0.1.0" // Example, ensure it's placed correctly
-            }
-            ```
-    *   **Success-kriterium**: `sideEffects: false` is present in `packages/ui/package.json`.
-    *   **Estimeret tidsforbrug**: 0.25 hours.
+---
 
-7.  **chore: Audit and remove unnecessary devDependencies**
-    *   **How-to**:
-        *   Review `devDependencies` in the root `package.json` and in each workspace `package.json` (`apps/*`, `packages/*`).
-        *   Identify and remove dependencies that are:
-            *   No longer used.
-            *   Duplicated (e.g., if a tool is globally available from the root and workspaces don't need a specific version).
-            *   Redundant.
-        *   Use `yarn workspace <workspace_name> remove <package_name> --dev` or manually edit `package.json` then run `yarn install` at the root.
-        *   Consider running `yarn dedupe --check` to identify duplicates that can be resolved.
-    *   **Success-kriterium**: Reduced number of `devDependencies` across the monorepo. All builds, tests, and linting still pass successfully.
-    *   **Estimeret tidsforbrug**: 2 - 4 timer.
+## P1 - High Priority
+
+### 3. **fix(web): Resolve ESLint warnings for `react-hooks/exhaustive-deps`**
+- **Description**: Multiple React components have missing dependencies in useEffect hooks
+- **Affected Files**:
+  - `app/admin/groups/[id]/page.tsx`
+  - `app/admin/users/[id]/page.tsx`
+  - `app/admin/users/page.tsx`
+  - `app/search/page.tsx`
+  - `pages/admin/user-groups/index.tsx`
+  - `src/contexts/ProgressContext.tsx`
+- **How-to**:
+  - Run `yarn workspace web lint` to identify all instances
+  - For each warning, analyze the `useEffect` dependencies
+  - Wrap functions in `useCallback` where appropriate
+  - Add all required dependencies to dependency arrays
+- **Success Criteria**: No `react-hooks/exhaustive-deps` warnings
+- **Estimated Time**: 2-3 hours
+- **Dependencies**: None
+
+### 4. **fix(web): Replace `<img>` with Next.js `Image` component**
+- **Description**: Optimize images using Next.js built-in image optimization
+- **Affected Files**:
+  - `app/admin/groups/[id]/page.tsx`
+  - `app/admin/users/[id]/page.tsx`
+  - `app/admin/users/page.tsx`
+  - `app/search/page.tsx`
+  - `pages/settings.tsx`
+- **How-to**:
+  - Import `Image` from `next/image`
+  - Replace all `<img>` tags with `<Image>` components
+  - Add required `width` and `height` props
+  - Configure `remotePatterns` in `next.config.js` for external images
+- **Success Criteria**: 
+  - No `@next/next/no-img-element` warnings
+  - Images load with optimization
+- **Estimated Time**: 2-3 hours
+- **Dependencies**: None
+
+### 5. **fix(api): Resolve ESLint warnings for unused variables**
+- **Description**: Clean up unused variables and imports in API codebase
+- **Affected Files**:
+  - `auth/auth.controller.ts`
+  - `controllers/dto/user-progress/user-progress.dto.ts`
+  - `controllers/error-test.controller.ts`
+  - Multiple other controller and service files
+- **How-to**:
+  - Run `yarn workspace api lint`
+  - Remove truly unused variables and imports
+  - Prefix intentionally unused parameters with underscore
+  - Update ESLint configuration if needed
+- **Success Criteria**: No unused variable warnings
+- **Estimated Time**: 3-4 hours
+- **Dependencies**: None
+
+### 6. **feat(prisma): Implement proper database migration strategy**
+- **Description**: Establish clear database migration workflow and documentation
+- **How-to**:
+  - Review existing migrations in `prisma/migrations`
+  - Create migration rollback procedures
+  - Document migration process in README
+  - Set up migration scripts for different environments
+  - Implement database backup before migrations
+- **Success Criteria**:
+  - Clear migration documentation
+  - Automated migration scripts
+  - Rollback procedures tested
+- **Estimated Time**: 4-6 hours
+- **Dependencies**: DevOps setup
+
+---
+
+## P2 - Medium Priority
+
+### 7. **chore: Resolve TypeScript version compatibility**
+- **Description**: Fix TypeScript and @typescript-eslint version mismatch warnings
+- **How-to**:
+  - Update `@typescript-eslint/eslint-plugin` and `@typescript-eslint/parser` to latest
+  - Ensure TypeScript version is compatible (currently 5.3.3)
+  - Update in root and all workspace `package.json` files
+  - Run `yarn install` and test all linting
+- **Success Criteria**: No version compatibility warnings
+- **Estimated Time**: 1-2 hours
+- **Dependencies**: None
+
+### 8. **refactor(api): Align tsconfig paths with Jest configuration**
+- **Description**: Ensure TypeScript and Jest use consistent module resolution
+- **How-to**:
+  - Review `apps/api/tsconfig.json` path mappings
+  - Align with Jest moduleNameMapper in `package.json`
+  - Test both build and test commands
+  - Update paths for `@repo/core` and `@repo/config`
+- **Success Criteria**: 
+  - Build and tests pass with same module resolution
+  - No runtime module resolution errors
+- **Estimated Time**: 1-2 hours
+- **Dependencies**: None
+
+### 9. **feat(ui): Complete UI component library consolidation**
+- **Description**: Finalize the UI component library migration and documentation
+- **How-to**:
+  - Review `packages/ui` component inventory
+  - Complete migration of remaining components
+  - Add Storybook stories for all components
+  - Update component documentation
+  - Remove duplicate component implementations
+- **Success Criteria**:
+  - All UI components in central library
+  - Full Storybook coverage
+  - No duplicate components
+- **Estimated Time**: 8-12 hours
+- **Dependencies**: UI audit completion
+
+### 10. **feat(testing): Implement comprehensive E2E testing**
+- **Description**: Set up and implement end-to-end testing for critical user flows
+- **How-to**:
+  - Configure Playwright properly in `apps/web`
+  - Identify critical user journeys
+  - Write E2E tests for authentication flow
+  - Write E2E tests for main features
+  - Set up CI/CD integration for E2E tests
+- **Success Criteria**:
+  - E2E tests for all critical paths
+  - Tests run in CI/CD pipeline
+  - Test reports generated
+- **Estimated Time**: 6-8 hours
+- **Dependencies**: CI/CD setup
+
+### 11. **refactor(monorepo): Optimize build and development workflow**
+- **Description**: Improve monorepo build times and developer experience
+- **How-to**:
+  - Review and optimize Turbo configuration
+  - Implement proper build caching
+  - Set up remote caching if needed
+  - Optimize package dependencies
+  - Document build optimization strategies
+- **Success Criteria**:
+  - Reduced build times by 30%+
+  - Proper cache utilization
+  - Clear developer documentation
+- **Estimated Time**: 4-6 hours
+- **Dependencies**: None
+
+---
+
+## P3 - Low Priority
+
+### 12. **chore(ui): Add `sideEffects: false` for tree-shaking**
+- **Description**: Enable better tree-shaking for the UI package
+- **How-to**:
+  - Add `"sideEffects": false` to `packages/ui/package.json`
+  - Test bundle sizes before and after
+  - Ensure no components break due to tree-shaking
+- **Success Criteria**: Reduced bundle sizes with no functionality loss
+- **Estimated Time**: 0.5 hours
+- **Dependencies**: None
+
+### 13. **chore: Audit and remove unnecessary devDependencies**
+- **Description**: Clean up unused development dependencies across monorepo
+- **How-to**:
+  - Audit all `devDependencies` in each workspace
+  - Identify unused or duplicate packages
+  - Remove unnecessary dependencies
+  - Run `yarn dedupe` to optimize
+- **Success Criteria**: 
+  - Reduced node_modules size
+  - No duplicate dependencies
+  - All builds/tests still pass
+- **Estimated Time**: 2-4 hours
+- **Dependencies**: None
+
+### 14. **docs: Update and consolidate documentation**
+- **Description**: Ensure all documentation is current and comprehensive
+- **How-to**:
+  - Review all markdown files in `docs/` directory
+  - Update outdated deployment guides
+  - Consolidate overlapping documents
+  - Create missing API documentation
+  - Add architecture diagrams
+- **Success Criteria**:
+  - All docs reflect current codebase
+  - Clear onboarding guide for new developers
+  - API documentation complete
+- **Estimated Time**: 4-6 hours
+- **Dependencies**: None
+
+### 15. **feat(monitoring): Implement application monitoring**
+- **Description**: Add monitoring and error tracking to production
+- **How-to**:
+  - Choose monitoring solution (Sentry, DataDog, etc.)
+  - Implement error tracking in API
+  - Add performance monitoring to web app
+  - Set up alerts for critical errors
+  - Document monitoring setup
+- **Success Criteria**:
+  - Error tracking active in production
+  - Performance metrics collected
+  - Alert system configured
+- **Estimated Time**: 4-6 hours
+- **Dependencies**: Production environment
+
+### 16. **refactor(api): Implement proper error handling strategy**
+- **Description**: Standardize error handling across the API
+- **How-to**:
+  - Create custom error classes
+  - Implement global error handler
+  - Standardize error response format
+  - Add proper logging for errors
+  - Update API documentation with error codes
+- **Success Criteria**:
+  - Consistent error responses
+  - Proper error logging
+  - Clear error documentation
+- **Estimated Time**: 3-5 hours
+- **Dependencies**: None
+
+---
+
+## Technical Debt Items
+
+### 17. **refactor: Remove deprecated code and features**
+- **Description**: Clean up code marked for removal
+- **Areas to Review**:
+  - Old migration files that can be squashed
+  - Deprecated API endpoints
+  - Unused utility functions
+  - Legacy component implementations
+- **Estimated Time**: 2-3 hours
+
+### 18. **perf: Optimize database queries**
+- **Description**: Review and optimize Prisma queries for performance
+- **Focus Areas**:
+  - Add proper indexes
+  - Optimize N+1 queries
+  - Implement query result caching
+  - Review query complexity
+- **Estimated Time**: 4-6 hours
+
+### 19. **security: Implement proper API rate limiting**
+- **Description**: Add rate limiting to prevent API abuse
+- **Implementation**:
+  - Choose rate limiting strategy
+  - Implement middleware
+  - Configure limits per endpoint
+  - Add monitoring for rate limit hits
+- **Estimated Time**: 3-4 hours
+
+---
+
+## Future Enhancements
+
+### 20. **feat: Implement real-time features**
+- **Description**: Add WebSocket support for real-time updates
+- **Use Cases**:
+  - Live progress tracking
+  - Real-time notifications
+  - Collaborative features
+- **Estimated Time**: 8-12 hours
+
+### 21. **feat: Add internationalization (i18n)**
+- **Description**: Implement multi-language support
+- **Requirements**:
+  - Choose i18n library
+  - Set up translation workflow
+  - Implement language switching
+  - Translate UI content
+- **Estimated Time**: 12-16 hours
+
+### 22. **feat: Implement advanced search functionality**
+- **Description**: Enhance search capabilities
+- **Features**:
+  - Full-text search
+  - Filters and facets
+  - Search suggestions
+  - Search analytics
+- **Estimated Time**: 8-10 hours
+
+---
+
+## Notes
+
+- This backlog should be reviewed and updated weekly
+- Priorities may shift based on business needs
+- Time estimates are for single developer implementation
+- Dependencies should be resolved before starting dependent tasks
+- Each completed task should include tests and documentation
