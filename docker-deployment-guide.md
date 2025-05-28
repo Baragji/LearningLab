@@ -4,27 +4,79 @@ This guide provides step-by-step instructions for deploying the LearningLab appl
 
 ## Prerequisites
 
-- Docker and Docker Compose installed on your system
-- Git repository cloned locally
-- Basic understanding of Docker concepts
+- Docker and Docker Compose installed
+- Git repository cloned
+- Environment variables configured (see `.env.docker` template)
+- Node.js 22+ (for local development)
 
 ## Environment Setup
 
-1. Create environment variables file:
+1. Copy the Docker environment template:
+```bash
+cp .env.docker .env
+```
 
-   ```bash
-   cp .env.example .env
-   ```
+2. Edit the `.env` file with your specific values:
+```bash
+# REQUIRED: JWT Configuration (generate secure 32+ character secrets)
+JWT_SECRET="your-super-secret-jwt-key-here-min-32-chars"
+JWT_EXPIRES_IN="15m"
+JWT_REFRESH_SECRET="your-super-secret-refresh-key-here-min-32-chars"
+JWT_REFRESH_EXPIRES_IN="7d"
+SALT_ROUNDS=12
 
-2. Edit the `.env` file and set the required environment variables:
+# OPTIONAL: Social Authentication
+GOOGLE_CLIENT_ID="your-google-client-id"
+GOOGLE_CLIENT_SECRET="your-google-client-secret"
+GITHUB_CLIENT_ID="your-github-client-id"
+GITHUB_CLIENT_SECRET="your-github-client-secret"
 
-   ```
-   JWT_SECRET=your_jwt_secret
-   JWT_EXPIRES_IN=1d
-   JWT_REFRESH_SECRET=your_refresh_secret
-   JWT_REFRESH_EXPIRES_IN=7d
-   SALT_ROUNDS=10
-   ```
+# Application Configuration
+FRONTEND_URL="http://localhost:80"
+CACHE_TTL=60
+CACHE_MAX_ITEMS=100
+THROTTLE_TTL=60000
+THROTTLE_LIMIT=10
+
+# Next.js Public Variables
+NEXT_PUBLIC_APP_NAME="LearningLab"
+NEXT_PUBLIC_WS_URL="ws://localhost:80/ws"
+NEXT_PUBLIC_ENABLE_NEW_FEATURES=false
+```
+
+**Important Security Notes:**
+- Generate secure JWT secrets (minimum 32 characters)
+- Never commit real secrets to version control
+- Use strong, unique passwords for production
+
+## Quick Start
+
+1. **Set up environment variables:**
+```bash
+cp .env.docker .env
+# Edit .env with your actual values (see Environment Setup section)
+```
+
+2. **Build and start all services:**
+```bash
+docker-compose up --build
+```
+
+3. **Run database migrations (in a new terminal):**
+```bash
+docker-compose exec api npx prisma migrate deploy
+```
+
+4. **Generate Prisma client (if needed):**
+```bash
+docker-compose exec api npx prisma generate
+```
+
+5. **Access the application:**
+- Frontend: http://localhost:80
+- API: http://localhost:80/api
+- API Documentation: http://localhost:80/api/docs
+- Database: localhost:5432 (postgres/test/test)
 
 ## Deployment Steps
 
@@ -117,6 +169,43 @@ docker-compose down -v
 ```
 
 ## Troubleshooting
+
+### Common Issues
+
+1. **Environment variable errors:**
+   - Ensure `.env` file exists and contains all required variables
+   - Check for missing JWT secrets (minimum 32 characters)
+   - Verify social auth credentials if using OAuth
+
+2. **Port conflicts:**
+   - Check if ports 80, 3000, 3001, or 5432 are already in use
+   - Stop conflicting services: `sudo lsof -i :80` and `kill -9 <PID>`
+   - Change ports in docker-compose.yml if needed
+
+3. **Database connection issues:**
+   - Ensure PostgreSQL container is running: `docker-compose ps`
+   - Check DATABASE_URL format: `postgresql://test:test@postgres:5432/learninglab_dev?schema=public`
+   - Verify network connectivity: `docker-compose exec api ping postgres`
+
+4. **Prisma issues:**
+   - Run migrations: `docker-compose exec api npx prisma migrate deploy`
+   - Generate client: `docker-compose exec api npx prisma generate`
+   - Reset database: `docker-compose exec api npx prisma migrate reset`
+
+5. **Next.js build failures:**
+   - Ensure standalone output is configured in next.config.js
+   - Check for missing public environment variables
+   - Clear build cache: `docker-compose build --no-cache web`
+
+6. **Build failures:**
+   - Clear Docker cache: `docker system prune -a`
+   - Rebuild without cache: `docker-compose build --no-cache`
+   - Check Docker disk space: `docker system df`
+
+7. **Permission issues:**
+   - Ensure Docker has proper permissions
+   - Check file ownership in mounted volumes
+   - On macOS: ensure Docker Desktop has file access permissions
 
 ### Connection Issues
 

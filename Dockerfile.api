@@ -8,12 +8,12 @@ WORKDIR /app
 FROM base AS dependencies
 COPY package.json yarn.lock .yarnrc.yml ./
 COPY .yarn ./.yarn
-COPY prisma ./prisma
+COPY apps/api/prisma ./apps/api/prisma
 COPY apps/api/package.json ./apps/api/package.json
 COPY packages ./packages
 
 # Install dependencies
-RUN yarn install --immutable
+RUN yarn install
 
 # Build the application
 FROM dependencies AS build
@@ -24,11 +24,11 @@ RUN yarn workspace api build
 FROM base AS production
 COPY --from=dependencies /app/node_modules ./node_modules
 COPY --from=dependencies /app/package.json ./package.json
-COPY --from=dependencies /app/prisma ./prisma
+COPY --from=dependencies /app/apps/api/prisma ./apps/api/prisma
 COPY --from=build /app/apps/api/dist ./apps/api/dist
 
 # Generate Prisma client
-RUN npx prisma generate
+RUN cd apps/api && npx prisma generate
 
 # Expose port
 EXPOSE 3000
