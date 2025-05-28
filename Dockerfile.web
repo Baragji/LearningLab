@@ -1,56 +1,34 @@
-FROM node:18-alpine AS base
+# Base image
+FROM node:22-alpine AS base
 
-# Install dependencies only when needed
-FROM base AS deps
+# Set working directory
 WORKDIR /app
-
-# Copy package files
-COPY package.json yarn.lock* ./
-COPY .yarnrc.yml ./
-COPY .yarn ./.yarn
-COPY apps/web/package.json ./apps/web/package.json
-COPY packages/config/package.json ./packages/config/package.json
-COPY packages/ui/package.json ./packages/ui/package.json
-COPY packages/tsconfig/package.json ./packages/tsconfig/package.json
 
 # Install dependencies
-RUN yarn install --frozen-lockfile
+FROM base AS dependencies
+COPY package.json yarn.lock .yarnrc.yml ./
+COPY .yarn ./.yarn
+COPY apps/web/package.json ./apps/web/package.json
+COPY packages ./packages
 
-# Rebuild the source code only when needed
-FROM base AS builder
-WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
-COPY --from=deps /app/.yarn ./.yarn
-COPY . .
-
-# Set environment variables
-ENV NEXT_TELEMETRY_DISABLED 1
-ENV NODE_ENV production
+# Install dependencies
+RUN yarn install
 
 # Build the application
+FROM dependencies AS build
+COPY . .
 RUN yarn workspace web build
 
-# Production image, copy all the files and run next
-FROM base AS runner
-WORKDIR /app
+# Production image
+FROM base AS production
 
-ENV NODE_ENV production
-ENV NEXT_TELEMETRY_DISABLED 1
+# Copy the standalone output
+COPY --from=build /app/apps/web/.next/standalone ./
+COPY --from=build /app/apps/web/.next/static ./apps/web/.next/static
+COPY --from=build /app/apps/web/public ./apps/web/public
 
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
-
-# Copy necessary files
-COPY --from=builder /app/apps/web/next.config.js ./
-COPY --from=builder /app/apps/web/package.json ./
-COPY --from=builder /app/apps/web/public ./public
-COPY --from=builder --chown=nextjs:nodejs /app/apps/web/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/apps/web/.next/static ./.next/static
-
-USER nextjs
-
+# Expose port
 EXPOSE 3001
 
-ENV PORT 3001
-
+# Start the application
 CMD ["node", "server.js"]

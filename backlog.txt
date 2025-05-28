@@ -265,6 +265,73 @@ This is a comprehensive, prioritized backlog for the LearningLab monorepo projec
 
 ## Technical Debt Items
 
+### TD-001: NestJS Controller Structure Optimization
+**Priority**: P2
+**Description**: Reorganize the many NestJS controllers currently located in a single directory to improve maintainability and follow domain-driven design principles.
+**How-to**: 
+1. Audit all controllers in apps/api/src/controllers/
+2. Group controllers by domain/feature (auth, content, user, quiz, etc.)
+3. Create feature modules with proper folder structure
+4. Update imports and module declarations
+5. Ensure proper separation of concerns
+**Success Criteria**: 
+- Controllers organized in domain-specific folders
+- Each feature has its own module
+- Reduced coupling between unrelated features
+- Improved code discoverability
+**Estimated Time**: 12 hours
+**Dependencies**: None
+
+### TD-002: Next.js Routing Consolidation
+**Priority**: P2
+**Description**: Consolidate the parallel _pages/ and app/ directory structures in Next 13 to use App Router exclusively and eliminate routing confusion.
+**How-to**: 
+1. Audit all routes in both apps/web/pages/ and apps/web/app/
+2. Migrate remaining pages/ routes to app/ directory
+3. Update all internal links and navigation
+4. Remove legacy pages/ directory
+5. Update Next.js configuration if needed
+**Success Criteria**: 
+- Single app/ directory for all routes
+- No legacy pages/ directory
+- All navigation works correctly
+- Improved developer experience
+**Estimated Time**: 16 hours
+**Dependencies**: None
+
+### TD-003: Content File Deduplication
+**Priority**: P2
+**Description**: Identify and consolidate duplicate curriculum/quiz files to reduce maintenance overhead and ensure content consistency.
+**How-to**: 
+1. Scan all content directories for duplicate files
+2. Compare file contents using checksums
+3. Identify canonical versions of each piece of content
+4. Update all references to point to canonical files
+5. Remove duplicate files
+6. Implement content validation to prevent future duplication
+**Success Criteria**: 
+- No duplicate content files
+- Single source of truth for each piece of content
+- Updated references throughout codebase
+- Content validation in place
+**Estimated Time**: 10 hours
+**Dependencies**: None
+
+### TD-004: Circular Import Resolution
+**Priority**: P2
+**Description**: Resolve circular import dependencies in the API codebase that cause build warnings and potential runtime issues.
+**How-to**: 
+1. Map all circular dependencies using dependency analysis tools
+2. Refactor shared interfaces to separate files
+3. Use dependency injection where appropriate
+4. Implement proper module boundaries
+**Success Criteria**: 
+- Zero circular import warnings in build
+- Clean dependency graph
+- Improved build performance
+**Estimated Time**: 8 hours
+**Dependencies**: None
+
 ### 17. **refactor: Remove deprecated code and features**
 - **Description**: Clean up code marked for removal
 - **Areas to Review**:

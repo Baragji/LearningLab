@@ -5,6 +5,7 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  output: 'standalone',
   transpilePackages: ["ui", "@repo/core", "@repo/config"],
   webpack: (config, { isServer, dev }) => {
     // Tilføj PnP-understøttelse hvis nødvendigt
