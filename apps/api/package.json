@@ -24,7 +24,7 @@
     "prisma:studio": "prisma studio",
     "prisma:migrate:dev": "prisma migrate dev",
     "seed": "ts-node prisma/seed.ts",
-    "clean": "rimraf dist coverage .turbo"
+    "clean": "rimraf dist coverage, .turbo tsconfig.tsbuildinfo"
   },
   "dependencies": {
     "@nestjs/cache-manager": "^2.1.0",

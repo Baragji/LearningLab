@@ -6,8 +6,8 @@
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "scripts": {
-    "build": "tsc --outDir dist --declaration --declarationMap",
-    "clean": "rimraf dist",
+    "build": "tsc -p tsconfig.json",
+    "clean": "rimraf dist tsconfig.tsbuildinfo",
     "prebuild": "yarn clean",
     "lint": "eslint . --ext .ts,.tsx",
     "test": "jest",
