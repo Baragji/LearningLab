@@ -6,10 +6,11 @@
     "declarationMap": true,
     "outDir": "dist",
     "rootDir": "src",
-    "baseUrl": "./src",
+    "baseUrl": ".",
     "skipLibCheck": true,
     "esModuleInterop": true,
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "noEmit": false
   },
   "include": ["src"],
   "exclude": ["node_modules", "dist", "*.js", "*.conf"]

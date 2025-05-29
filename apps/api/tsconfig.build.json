@@ -3,6 +3,7 @@
   "compilerOptions": {
     "outDir": "./dist",
     "baseUrl": "./",
+    "rootDir": "src",
     "skipLibCheck": true,
     "declaration": true,
     "removeComments": true,
@@ -15,10 +16,10 @@
     "useDefineForClassFields": true,
     "paths": {
       "@app/*": ["./src/*"],
-      "@repo/core": ["../../packages/core/src"],
-      "@repo/core/*": ["../../packages/core/src/*"],
-      "@repo/config": ["../../packages/config/src"],
-      "@repo/config/*": ["../../packages/config/src/*"]
+      "@repo/core": ["../../packages/core/dist"],
+      "@repo/core/*": ["../../packages/core/dist/*"],
+      "@repo/config": ["../../packages/config/dist"],
+      "@repo/config/*": ["../../packages/config/dist/*"]
     },
     "types": ["node"]
   },
@@ -33,5 +34,9 @@
     "**/*spec.ts",
     "**/*.spec.ts",
     "**/*.test.ts"
+  ],
+  "references": [
+    { "path": "../../packages/core" },
+    { "path": "../../packages/config" }
   ]
 }

@@ -1,0 +1,51 @@
+Tak for den utroligt grundige gennemgang! Det er yderst værdifuldt med flere øjne på så komplekst et system, og det hjælper med at sikre, at vi afdækker så mange potentielle faldgruber som muligt.
+
+Jeg har nu gennemgået `mangler.txt` (Developer 2's analyse) og sammenholdt den med min tidligere analyse og din kodebase.
+
+Her er min gennemgang af de punkter, Developer 2 fremhævede, som værende unikke eller anderledes betonet end min oprindelige analyse:
+
+1.  **TS-3 (Dev 2): Konflikterende `strictNullChecks` (KORREKT og VIGTIGT)**
+    * **Developer 2's Observation:** `packages/tsconfig/base.json` sætter `"strict": true`, mens `packages/tsconfig/nestjs.json` (som `apps/api/tsconfig.json` arver fra) eksplicit sætter `"strictNullChecks": false` (samt `noImplicitAny: false` og `strictBindCallApply: false`)[cite: 213, 214].
+    * **Min Vurdering:** Dette er et korrekt og meget relevant fund. Min tidligere analyse (TS-003 i mit output) fokuserede på `express.d.ts` vs. `@types/express` og `skipLibCheck`. Jeg fremhævede ikke specifikt denne uoverensstemmelse i strict-tilstande mellem `base.json` og `nestjs.json`. En sådan inkonsekvens kan føre til uforudsigelig type-opførsel og maskere potentielle null/undefined fejl i API-projektet. Dette bør rettes for at opnå fuld fordel af TypeScript's strong typing.
+
+2.  **N-3 (Dev 2): `fetch is not available` i Jest-miljø (MEGET SANDSYNLIGT KORREKT/RELEVANT)**
+    * **Developer 2's Observation:** RTK-Query (brugt i `apps/web/src/store/services/api.ts`) anvender `fetch`. Tests i `apps/web` køres under `jest-environment-jsdom`, og `apps/web/jest.setup.js` viser ingen eksplicit global `fetch` polyfill[cite: 219, 220, 221].
+    * **Min Vurdering:** Dette er et validt og ofte overset problem. Selvom `jest-environment-jsdom` fra visse versioner inkluderer en `fetch`-mock, kan den være utilstrækkelig for alle RTK Query's interne kald eller opføre sig anderledes end browserens `fetch`. Min tidligere analyse (NEXT-003) fokuserede på RTK Query i SSR/SSG-kontekst og potentiel state-lækage, men dækkede ikke specifikt dette testmiljø-problem. Hvis test af RTK Query-hooks eller -kald fejler pga. `fetch`, er en polyfill som `whatwg-fetch` i `jest.setup.js` eller global opsætning af Jest's `fetchMocker` en god løsning.
+
+3.  **DO-1 (Dev 2): Kollision port 3000 vs 3001 i Compose (SER UD TIL AT VÆRE UKORREKT BASERET PÅ LEVEREDE FILER)**
+    * **Developer 2's Observation:** "Dockerfile.web eksponerer 3001, men `nginx.conf` forventer web på 3000." [cite: 192]
+    * **Min Vurdering:** Baseret på de filer jeg har adgang til via `repomix-output.xml`:
+        * `Dockerfile.web` (`apps/web/Dockerfile` hvis det er den) eksponerer port `3001` og Next.js starter typisk på denne port internt i containeren.
+        * Root `nginx.conf` (som specificeret i din `docker-compose.yml`) indeholder: `location / { proxy_pass http://web:3001; ... }`[cite: 225, 228, 229]. Dette peger korrekt på `web`-servicen (defineret i `docker-compose.yml`) på port `3001`.
+        * `docker-compose.yml` for `web`-servicen sætter `PORT=3001` som miljøvariabel og eksponerer den ikke direkte til hosten, men lader Nginx håndtere adgang[cite: 230].
+        * Den `nginx.conf` fil, der ligger i `packages/config/nginx.conf`, proxier `/` til `http://localhost:3000`. Hvis denne fil ved en fejl blev brugt i Docker Compose-opsætningen for Nginx *i stedet for* rod `nginx.conf`, ville det skabe den beskrevne fejl. Men din `docker-compose.yml` ser ud til at mounte rod `nginx.conf`.
+        * **Konklusion:** Med de nuværende filer ser Developer 2's påstand om port-mismatch for web-servicen (3000 vs 3001) ud til at være en misforståelse. Den generelle pointe om risikoen for port-mismatches mellem Nginx, Dockerfiles og `docker-compose.yml` er dog altid relevant at være opmærksom på.
+
+4.  **DO-2 (Dev 2): Missing `--omit=dev` => store image-size (DELVIST KORREKT/NUANCE)**
+    * **Developer 2's Observation:** "`Dockerfile.api` kopierer hele repo inden `yarn install` – ingen prune af devDeps." [cite: 196]
+    * **Min Vurdering:** `Dockerfile.api` bruger en multi-stage build-proces[cite: 234]:
+        * `deps`-stadiet installerer alle dependencies (`yarn install --frozen-lockfile`).
+        * `builder`-stadiet kopierer alt kildekode (`COPY . .`) og bruger `node_modules` fra `deps`-stadiet (som inkluderer devDependencies) til at bygge applikationen (`yarn workspace api build`). Dette `builder`-stadie vil derfor være større end nødvendigt.
+        * Det endelige `runner`-stadie kopierer selektivt artefakter fra `builder` og `deps`. Vigtigst er, at den kører `RUN yarn install --production --frozen-lockfile`[cite: 238]. Dette *burde* fjerne devDependencies for det endelige produktionsimage.
+        * **Konklusion:** Developer 2's påstand om, at det *endelige produktionsimage* er stort pga. manglende prune af devDeps, er ukorrekt pga. `--production` flaget. Dog er pointen om, at `builder`-stadiet er ineffektivt og stort pga. manglende tidligere beskæring af dev-dependencies, valid. En optimering kunne være at have et mere målrettet `COPY` i `builder`-stadiet eller at køre `yarn workspace @repo/core build` og `yarn workspace api prisma generate` *før* `COPY . .` i `builder`-stadiet, hvis muligt, og derefter kun kopiere de nødvendige `package.json`-filer for en `yarn install --production` allerede i `builder`-stadiet før selve app-buildet.
+
+5.  **QA-1 (Dev 2): Coverage < 90 % blokker PR-merge (KORREKT)**
+    * **Developer 2's Observation:** "`project_rules.md` kræver 90 % lines for nyt kode." [cite: 204]
+    * **Min Vurdering:** `.trae/rules/project_rules.md` bekræfter: "Target coverage ≥ 90 % lines for new code."[cite: 245, 246]. Dette er en specifik projektregel, som jeg ikke fremhævede. Godt fund.
+
+6.  **QA-2 (Dev 2): STOP-AGENT falsk positiv (KORREKT og relevant for agent-interaktion)**
+    * **Developer 2's Observation:** Den globale nødstopfrase `STOP-AGENT` (fra `project_rules.md`) kan utilsigtet blive trigget, hvis strengen forekommer i f.eks. en auto-genereret migrations-README. [cite: 206]
+    * **Min Vurdering:** Reglen findes i `.trae/rules/project_rules.md`[cite: 248]. Bekymringen for en falsk positiv er plausibel, især hvis agenten scanner bredt i filindhold. Det er et godt point vedrørende robustheden af automatiserede agentregler.
+
+**Opsummering af nye, relevante indsigter fra Developer 2's analyse:**
+
+Følgende punkter fra Developer 2's analyse er korrekte, relevante og tilføjer værdi eller en ny nuance til min oprindelige analyse:
+
+1.  **TS-3: Konfliktende TypeScript Strict-indstillinger:** Meget vigtigt konfigurationsissue.
+2.  **N-3: Potentiel mangel på `fetch` polyfill i Jest for RTK Query:** Almindeligt testproblem.
+3.  **QA-1: Projektregel om 90% testdækning:** Vigtig for PR-processen.
+4.  **QA-2: Risiko for falsk positiv med `STOP-AGENT` kommando:** Vigtig for robust agent-interaktion.
+
+Jeg vil integrere disse validerede punkter i den samlede liste over potentielle fejl, som jeg er ved at udarbejde til dig. Dette vil gøre din endelige "master-prompt" manual endnu stærkere.
+
+Jeg fortsætter nu med at færdiggøre den samlede liste baseret på al tilgængelig information og vores drøftelser. Tak igen for den værdifulde feedback!

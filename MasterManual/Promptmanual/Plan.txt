@@ -1,0 +1,120 @@
+Plan for Udarbejdelse af Master-Prompt Manual til LearningLab
+Formål: At skabe et omfattende og handlingsorienteret dokument ("Master-Prompt Manual"), der indeholder en kurateret liste over potentielle fejl og problemområder specifikt for LearningLab-monorepoet. For hvert identificeret punkt skal manualen indeholde:
+
+En typisk Trigger-tekst/Fejlkode.
+
+En præcis AI Masterprompt til brug i Cursor/Trae IDE for diagnose og løsningsforslag.
+
+Eksempler på Løsninger (Patch-/Kommando-skabeloner).
+
+Dette dokument skal fungere som en central ressource for AI-assisteret fejlfinding, refaktorering og udvikling.
+
+Fase 1: Fundament og Struktur (Afsluttet)
+Dybdegående Kodebaseanalyse (Udført):
+
+Gennemgang af repomix-output.xml for at forstå den faktiske filstruktur, indhold af nøglefiler (package.json, tsconfig.json, Dockerfiles, CI-workflows, etc.).
+
+Analyse af struktur.txt, stackinfo.txt, guidelines.md, debugging-plan.md, backlog.txt, envfiler.txt og mangler.txt for at identificere eksisterende konfigurationer, kendte problemer og specifikke opsætningsdetaljer.
+
+Research af Generelle Fejlmønstre (Udført):
+
+Undersøgelse af typiske fejl i monorepos, TypeScript-projekter, Next.js, NestJS, Prisma, Docker, Yarn 4, og CI/CD-pipelines.
+
+Udarbejdelse af Bruttoliste over Potentielle Fejl (Udført):
+
+Generering af en omfattende liste over potentielle fejl, skræddersyet til LearningLab, med begrundelser for deres relevans. -> kaldes analyse, udvikler id:2.md
+
+Inkorporering af validerede indsigter fra "Developer 2's analyse" (mangler.txt).
+
+Definition af Master-Prompt Manualens Struktur (Udført):
+
+Fastlæggelse af hvordan manualen skal organiseres (efter fejlkategori).
+
+Definition af formatet for hvert opslag i manualen (dette dokument).
+
+Fase 2: Udarbejdelse af Indhold til Master-Prompt Manualen (Afsluttet)
+For hvert identificeret og valideret fejlpunkt fra bruttolisten (inkl. de nye fra mangler.txt):
+
+Udarbejdelse af Trigger-tekst / Fejlkode:
+
+Beskriv hvordan fejlen typisk manifesterer sig.
+
+Inkluder eksempler på konkrete fejlmeddelelser, log-output eller observerede symptomer.
+
+Eksempel: "Fejlmeddelelse: Error: Cannot find module '@repo/core/utils' under yarn build i apps/web."
+
+Formulering af AI Masterprompt:
+
+Skriv en klar, koncis og kontekstspecifik prompt.
+
+Prompten skal instruere AI'en (Claude 4 / Gemini 2.5 i Cursor/Trae) om at:
+
+Analysere den specifikke fejl i LearningLab-konteksten.
+
+Få adgang til relevante filer (AI'en har adgang via IDE-integrationen).
+
+Identificere rodårsagen.
+
+Foreslå konkrete løsningstrin (kodeændringer, kommandoer, konfigurationsjusteringer).
+
+Overveje best practices og potentielle sideeffekter.
+
+Sørg for at prompten er "plug and play".
+
+Eksempel på del af en masterprompt: "Min Next.js applikation i apps/web kan ikke finde modulet @repo/core/utils under build, selvom @repo/core er bygget og tsconfig.json i apps/web har korrekte path aliases. Analysér apps/web/tsconfig.json, packages/core/package.json (exports), turbo.json (build pipeline) og next.config.js for potentielle årsager til denne modulopløsningsfejl. Foreslå en patch."
+
+Generering af Patch-/Kommando-skabeloner (hvor relevant):
+
+Giv eksempler på, hvordan en løsning kunne se ud.
+
+Dette kan være:
+
+Et diff-udsnit der viser en kodeændring.
+
+Eksempler på terminalkommandoer (yarn add ..., prisma migrate ...).
+
+Udsnit af en opdateret konfigurationsfil.
+
+Disse skabeloner hjælper med at illustrere den type output, AI'en forventes at levere, eller som udvikleren kan bruge som reference.
+
+Iterativ proces: Jeg vil sandsynligvis gruppere relaterede fejl og udarbejde indholdet for disse grupper samlet. (Status: Igangværende - de første kategorier er ved at blive udarbejdet i separate Canvas-dokumenter).
+
+Fase 3: Strukturering og Samling af Manualen (Afsluttet)
+Organisering af Fejlpunkter:
+
+Gruppér de udarbejdede fejl-prompts i logiske kategorier (f.eks. "Afhængigheder & Modulopløsning", "TypeScript & Konfiguration", "Database (Prisma)", "Next.js Specifikke Fejl", "Build & CI/CD", "Docker", "Linting & Kodekvalitet"). Dette følger den struktur, jeg allerede har anvendt i min analyse.
+
+Oprettelse af Selve Dokumentet:
+
+Saml alle dele i et enkelt, navigerbart Markdown-dokument (eller de separate filer du har oprettet).
+
+Sørg for en klar indholdsfortegnelse og nem navigation.
+
+Formater prompts og kodeeksempler, så de er lette at kopiere.
+
+Fase 4: Review og Færdiggørelse (Ikke påbegyndt)
+Din Gennemgang: Du (og evt. din kollega) gennemgår det udarbejdede dokument for:
+
+Nøjagtighed: Er fejlene og løsningerne korrekte for din kodebase?
+
+Fuldstændighed: Mangler der vigtige fejlscenarier?
+
+Klarhed: Er prompts og forklaringer lette at forstå og bruge?
+
+Anvendelighed: Vil dette dokument reelt hjælpe din AI-udvikler og dig selv?
+
+Iteration: Baseret på din feedback vil jeg justere og forbedre dokumentet.
+
+Endelig Leverance: Levering af den færdige Master-Prompt Manual.
+
+Overordnet Tidsestimat for Resterende Faser
+Fase 2 (Udarbejdelse af indhold): Fortsætter - Estimat afhænger af dybden for de resterende kategorier, men sigter mod yderligere 2-4 sessioner/dage.
+
+Fase 3 (Strukturering): 1 session/dag (når alt indhold er genereret).
+
+Fase 4 (Review og Færdiggørelse): Afhænger af din/jeres review-tid og mængden af feedback. Typisk 1-2 sessioner/dage til iteration.
+
+Dette er en plan for, hvordan jeg vil gribe opgaven an med at skabe indholdet til din manual. Selve processen hvor du bruger manualen med din AI-udvikler til at debugge og forbedre din kodebase, vil være en efterfølgende, løbende proces.
+
+Giver denne opdaterede plan mening?
+
