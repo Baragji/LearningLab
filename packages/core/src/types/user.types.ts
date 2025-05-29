@@ -10,15 +10,7 @@ export enum Role {
   ADMIN = 'ADMIN',
 }
 
-/**
- * Definerer de mulige autentificeringsmetoder.
- * Disse matcher værdierne defineret i Prisma schemaet.
- */
-export enum AuthProvider {
-  LOCAL = 'LOCAL',
-  GOOGLE = 'GOOGLE',
-  GITHUB = 'GITHUB',
-}
+
 
 /**
  * Interface for en bruger.
@@ -37,11 +29,7 @@ export interface User {
   socialLinks?: Record<string, string> | null; // Sociale links som et objekt (f.eks. {twitter: "url", linkedin: "url"})
   settings?: Record<string, unknown> | null; // Brugerindstillinger som et objekt
   
-  // Social login felter
-  googleId?: string | null;
-  githubId?: string | null;
-  provider?: AuthProvider | null;
-  lastLogin?: Date | null;
+
   
   // Brugergrupper
   groups?: UserGroup[] | null;

@@ -19,7 +19,6 @@ import {
   User as CoreUser,
   Role as CoreRole,
   Role,
-  AuthProvider,
 } from '@repo/core';
 import { ServerEnv } from '@repo/config';
 
@@ -65,25 +64,7 @@ export class UsersService {
       updatedAt: new Date(user.updatedAt),
     };
 
-    // Tilføj social login felter hvis de findes i Prisma-skemaet
-    // Bemærk: Vi tjekker om felterne eksisterer på user-objektet
-    if ('googleId' in user) {
-      coreUser.googleId = (user as any).googleId ?? undefined;
-    }
 
-    if ('githubId' in user) {
-      coreUser.githubId = (user as any).githubId ?? undefined;
-    }
-
-    if ('provider' in user) {
-      coreUser.provider = (user as any).provider as AuthProvider | undefined;
-    }
-
-    if ('lastLogin' in user) {
-      coreUser.lastLogin = (user as any).lastLogin
-        ? new Date((user as any).lastLogin)
-        : undefined;
-    }
 
     return coreUser as Omit<CoreUser, 'passwordHash'>;
   }
@@ -129,24 +110,13 @@ export class UsersService {
       updatedBy: currentUserId || null,
     };
 
-    // Social login er deaktiveret indtil det skal bruges i produktion
-    // Vi fjerner alle social login felter fra userData for at undgå Prisma-fejl
 
-    // Bemærk: Vi har fjernet følgende felter:
-    // - googleId
-    // - githubId
-    // - provider
-    // - lastLogin
-
-    // Når social login skal aktiveres igen, skal Prisma-skemaet opdateres med disse felter,
-    // og derefter skal Prisma-klienten regenereres.
 
     // Hvis password er angivet, hash det (for normal login)
     if (password) {
       try {
         userData.passwordHash = await bcrypt.hash(password, this.saltRounds);
-        // Social login er deaktiveret, så vi fjerner provider-feltet
-        // userData.provider = AuthProvider.LOCAL;
+
       } catch (error) {
         console.error('Fejl under hashing af password:', error);
         throw new InternalServerErrorException(
@@ -154,7 +124,7 @@ export class UsersService {
         );
       }
     } else {
-      // Password er påkrævet, da social login er deaktiveret
+      // Password er påkrævet
       throw new BadRequestException('Password er påkrævet for login.');
     }
 

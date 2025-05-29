@@ -12,7 +12,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { Role, AuthProvider } from '@repo/core'; // Importer Role og AuthProvider enums fra @repo/core
+import { Role } from '@repo/core'; // Importer Role enum fra @repo/core
 import { Type } from 'class-transformer';
 import { SocialLinks, socialLinksSchema } from '../schemas/social-links.schema';
 import {
@@ -116,9 +116,5 @@ export class CreateUserDto {
   @IsObject({ message: 'Indstillinger skal være et objekt.' })
   settings?: UserSettings;
 
-  // Social login er deaktiveret indtil det skal bruges i produktion
-  // Følgende felter er fjernet:
-  // - googleId
-  // - githubId
-  // - provider
+
 }

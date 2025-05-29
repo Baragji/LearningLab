@@ -12,7 +12,7 @@ import * as bcrypt from 'bcryptjs';
 import { PrismaService } from '../persistence/prisma/prisma.service';
 import { JwtPayload } from './strategies/jwt/jwt';
 import { ResetPasswordDto } from './dto/reset-password.dto';
-import { SocialUserDto } from './dto/social-user.dto'; // Tilføjet import
+
 import { v4 as uuidv4 } from 'uuid'; // Til generering af unikke tokens
 import { User as CoreUser, Role as CoreRole } from '@repo/core';
 import { User as PrismaUser } from '@prisma/client'; // Typen fra Prisma
@@ -83,14 +83,7 @@ export class AuthService {
       settings: settings as Record<string, unknown> | null,
     };
 
-    // Social login er deaktiveret indtil det skal bruges i produktion
-    // Vi har fjernet alle social login felter for at undgå typefejl
 
-    // Bemærk: Vi har fjernet følgende felter:
-    // - googleId
-    // - githubId
-    // - provider
-    // - lastLogin
 
     return coreUser as Omit<CoreUser, 'passwordHash'>;
   }
@@ -278,119 +271,5 @@ export class AuthService {
     return { message: 'Din adgangskode er blevet nulstillet med succes.' };
   }
 
-  /**
-   * Validerer eller opretter en bruger baseret på social login information.
-   * @param socialUserDto Information om brugeren fra social login provider
-   * @returns Bruger uden passwordHash
-   *
-   * Social login er deaktiveret indtil det skal bruges i produktion
-   */
-  async validateSocialUser(
-    _socialUserDto: SocialUserDto,
-  ): Promise<Omit<CoreUser, 'passwordHash'>> {
-    throw new BadRequestException(
-      'Social login er deaktiveret i denne version af applikationen.',
-    );
 
-    /* 
-    const { providerId, provider, email, name, profileImage } = socialUserDto;
-    
-    try {
-      // Tjek først om brugeren allerede eksisterer med denne provider ID
-      let user: PrismaUser | null = null;
-      
-      if (provider === AuthProvider.GOOGLE) {
-        user = await this.prisma.user.findFirst({
-          where: {
-            // Brug Prisma.JsonFilter til at søge efter googleId
-            AND: [
-              { email: { not: null } } // Sikrer at vi får en gyldig bruger
-            ]
-          }
-        });
-        
-        // Filtrer manuelt efter googleId, da Prisma-klienten ikke har det felt endnu
-        const users = await this.prisma.user.findMany();
-        user = users.find(u => (u as any).googleId === providerId) || null;
-        
-      } else if (provider === AuthProvider.GITHUB) {
-        // Filtrer manuelt efter githubId, da Prisma-klienten ikke har det felt endnu
-        const users = await this.prisma.user.findMany();
-        user = users.find(u => (u as any).githubId === providerId) || null;
-      }
-      
-      // Hvis brugeren ikke findes via provider ID, tjek via email
-      if (!user) {
-        user = await this.prisma.user.findUnique({
-          where: { email },
-        });
-        
-        // Hvis brugeren findes via email, opdater med provider ID
-        if (user) {
-          const updateData: any = {
-            provider,
-            lastLogin: new Date(),
-          };
-          
-          if (provider === AuthProvider.GOOGLE) {
-            updateData.googleId = providerId;
-          } else if (provider === AuthProvider.GITHUB) {
-            updateData.githubId = providerId;
-          }
-          
-          user = await this.prisma.user.update({
-            where: { id: user.id },
-            data: updateData,
-          });
-        }
-      }
-      
-      // Hvis brugeren stadig ikke findes, opret en ny bruger
-      if (!user) {
-        const userData: any = {
-          email,
-          name: name || null,
-          profileImage: profileImage || null,
-          provider,
-          role: 'STUDENT', // Default rolle for nye brugere
-          lastLogin: new Date(),
-        };
-        
-        if (provider === AuthProvider.GOOGLE) {
-          userData.googleId = providerId;
-        } else if (provider === AuthProvider.GITHUB) {
-          userData.githubId = providerId;
-        }
-        
-        user = await this.prisma.user.create({
-          data: userData,
-        });
-      } else {
-        // Opdater lastLogin for eksisterende bruger
-        // Vi bruger en generisk data-objekt for at undgå typefejl
-        const updateData: any = {};
-        
-        // Tilføj lastLogin hvis det er understøttet i skemaet
-        if ('lastLogin' in user) {
-          updateData.lastLogin = new Date();
-        }
-        
-        user = await this.prisma.user.update({
-          where: { id: user.id },
-          data: updateData,
-        });
-      }
-      
-      return this.mapToCoreUser(user);
-    } catch (error) {
-      console.error('Fejl under validering af social bruger:', error);
-      if (error instanceof ConflictException) {
-        throw error;
-      }
-      throw new BadRequestException(
-        'Der opstod en fejl under validering af social login.',
-      );
-    }
-    */
-  }
 }
