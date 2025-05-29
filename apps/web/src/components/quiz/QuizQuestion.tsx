@@ -1,5 +1,5 @@
 import React from 'react';
-import { Question, AnswerOption } from '@repo/core/src/types/quiz.types';
+import { Question, AnswerOption } from '@repo/core';
 import { 
   Box, 
   Typography, 

@@ -10,7 +10,13 @@
     "paths": {
       "@/*": [
         "./src/*"
-      ]
+      ],
+      "@repo/core": ["../../packages/core/dist"],
+      "@repo/core/*": ["../../packages/core/dist/*"],
+      "@repo/config": ["../../packages/config/dist"],
+      "@repo/config/*": ["../../packages/config/dist/*"],
+      "@repo/ui": ["../../packages/ui"],
+      "@repo/ui/*": ["../../packages/ui/*"]
     },
     "plugins": [
       {

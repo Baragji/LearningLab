@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { UserProgress } from '@repo/core/src/types/quiz.types';
+import { UserProgress } from '@repo/core';
 import { updateQuizProgress } from '../services/userProgressApi';
 
 interface UseQuizProgressProps {

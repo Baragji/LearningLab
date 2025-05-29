@@ -1,37 +1,86 @@
-# Base image
-FROM node:22-alpine AS base
+# Dockerfile.api
 
-# Set working directory
+# 1. deps: install all dependencies including devDependencies for prisma generate
+FROM node:22-alpine AS deps
 WORKDIR /app
 
-# Install dependencies
-FROM base AS dependencies
-COPY package.json yarn.lock .yarnrc.yml ./
+# Install OpenSSL for Prisma
+RUN apk add --no-cache openssl
+
+# Copy global package.json and yarn.lock
+COPY package.json yarn.lock .yarnrc.yml* ./
+# Copy yarn berry files
 COPY .yarn ./.yarn
-COPY apps/api/prisma ./apps/api/prisma
-COPY apps/api/package.json ./apps/api/package.json
-COPY packages ./packages
 
-# Install dependencies
-RUN yarn install
+# Copy workspace package.json files to ensure all workspaces are recognized
+COPY apps/api/package.json ./apps/api/
+COPY packages/core/package.json ./packages/core/
+# Add other packages if api depends on them, e.g., ui, config, tsconfig
+COPY packages/ui/package.json ./packages/ui/
+COPY packages/config/package.json ./packages/config/
+COPY packages/tsconfig/package.json ./packages/tsconfig/
 
-# Build the application
-FROM dependencies AS build
+# Install ALL dependencies (including dev for Prisma)
+RUN echo "---- Running yarn install in api deps stage ----" && \
+    yarn install --frozen-lockfile && \
+    echo "---- yarn install in api deps stage complete ----"
+
+# 2. builder: build @repo/core and then the api
+FROM deps AS builder
+WORKDIR /app
+
+# Copy all source code over the installed node_modules
 COPY . .
-RUN yarn workspace api build
 
-# Production image
-FROM base AS production
-COPY --from=dependencies /app/node_modules ./node_modules
-COPY --from=dependencies /app/package.json ./package.json
-COPY --from=dependencies /app/apps/api/prisma ./apps/api/prisma
-COPY --from=build /app/apps/api/dist ./apps/api/dist
+# Build @repo/core first as api depends on it
+RUN echo "---- Building @repo/core ----" && \
+    yarn workspace @repo/core build && \
+    echo "---- @repo/core build complete ----"
 
 # Generate Prisma client
-RUN cd apps/api && npx prisma generate
+RUN echo "---- Generating Prisma client ----" && \
+    yarn workspace api prisma generate && \
+    echo "---- Prisma client generation complete ----"
 
-# Expose port
-EXPOSE 3000
+# Build the NestJS application
+RUN echo "---- Building api app ----" && \
+    yarn workspace api build && \
+    echo "---- api app build complete ----"
 
-# Start the application
+# 3. runner: minimal production image
+FROM node:22-alpine AS runner
+WORKDIR /app
+
+# Install OpenSSL for Prisma
+RUN apk add --no-cache openssl
+
+ENV NODE_ENV production
+ENV PORT 3001 # Or your desired API port
+
+# Create a non-root user
+RUN addgroup -S apiuser && adduser -S apiuser -G apiuser
+
+# Copy necessary files from builder
+COPY --chown=apiuser:apiuser --from=builder /app/apps/api/dist ./apps/api/dist
+COPY --chown=apiuser:apiuser --from=builder /app/packages/core/dist ./packages/core/dist
+COPY --chown=apiuser:apiuser --from=builder /app/apps/api/prisma ./apps/api/prisma # Prisma schema
+COPY --chown=apiuser:apiuser --from=builder /app/apps/api/package.json ./apps/api/package.json # For runtime
+COPY --chown=apiuser:apiuser --from=builder /app/package.json ./package.json # Root package.json for yarn workspaces
+COPY --chown=apiuser:apiuser --from=builder /app/yarn.lock ./yarn.lock
+COPY --chown=apiuser:apiuser --from=builder /app/.yarnrc.yml ./.yarnrc.yml
+COPY --chown=apiuser:apiuser --from=builder /app/.yarn ./.yarn
+
+# Copy production node_modules from the 'deps' stage
+# This ensures that only production dependencies are included
+# We copy the entire node_modules from deps, then prune devDependencies
+COPY --chown=apiuser:apiuser --from=deps /app/node_modules ./node_modules
+
+# Prune devDependencies. This requires yarn to be available.
+# We copied .yarn and relevant files above for this purpose.
+RUN yarn install --production --frozen-lockfile && \
+    rm -rf /tmp/.yarn* ~/.yarn/berry/cache ~/.cache/yarn
+
+USER apiuser
+
+EXPOSE 3001
 CMD ["node", "apps/api/dist/main.js"]

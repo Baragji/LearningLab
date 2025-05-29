@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Quiz } from '@repo/core/src/types/quiz.types';
+import { Quiz } from '@repo/core';
 import { useQuiz } from '../../contexts/QuizContext';
 
 // Extended Quiz type for our application
