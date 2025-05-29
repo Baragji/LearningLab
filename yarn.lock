@@ -3170,17 +3170,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/passport-google-oauth20@npm:^2.0.16":
-  version: 2.0.16
-  resolution: "@types/passport-google-oauth20@npm:2.0.16"
-  dependencies:
-    "@types/express": "npm:*"
-    "@types/passport": "npm:*"
-    "@types/passport-oauth2": "npm:*"
-  checksum: 10c0/59b044d4227e5481972ec8734dd826e1cf88673905e14e09fb21e061764796eb543b070e679a2077f69ae3e35ede265b91ae23f9975cad6085b72ae4272ae928
-  languageName: node
-  linkType: hard
-
 "@types/passport-jwt@npm:^4.0.1":
   version: 4.0.1
   resolution: "@types/passport-jwt@npm:4.0.1"
@@ -4088,7 +4077,6 @@ __metadata:
     "@types/joi": "npm:^17.2.3"
     "@types/node": "npm:^20.4.5"
     "@types/passport-github2": "npm:^1.2.9"
-    "@types/passport-google-oauth20": "npm:^2.0.16"
     "@types/passport-jwt": "npm:^4.0.1"
     "@types/passport-local": "npm:^1.0.38"
     "@types/supertest": "npm:^2.0.12"
@@ -4113,7 +4101,6 @@ __metadata:
     jsonwebtoken: "npm:^9.0.2"
     passport: "npm:^0.7.0"
     passport-github2: "npm:^0.1.12"
-    passport-google-oauth20: "npm:^2.0.0"
     passport-jwt: "npm:^4.0.1"
     passport-local: "npm:^1.0.0"
     prettier: "npm:^3.0.0"
@@ -10666,15 +10653,6 @@ __metadata:
   dependencies:
     passport-oauth2: "npm:1.x.x"
   checksum: 10c0/70c763f40392f15509373d43014f4c32af8f4fa0a290c74f4b0125208c7aff5a0d55c16ead5663a964653622c759fa70adbc58e417577b206deb9a5a255b528c
-  languageName: node
-  linkType: hard
-
-"passport-google-oauth20@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "passport-google-oauth20@npm:2.0.0"
-  dependencies:
-    passport-oauth2: "npm:1.x.x"
-  checksum: 10c0/158930bb97a48431aa0dcff453c3b698742ed51e2d590c362cb5d4ae7715cfb4fb1feae31b007aef0bc8435edc8ff678853c044b139da827756f3b5f3b597c7f
   languageName: node
   linkType: hard
 

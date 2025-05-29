@@ -7,8 +7,7 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { LocalStrategy } from './strategies/local/local';
 import { JwtStrategy } from './strategies/jwt/jwt';
-// import { GoogleStrategy } from './strategies/google/google.strategy'; // Removed unused import
-// import { GithubStrategy } from './strategies/github/github.strategy'; // Removed unused import
+
 import {
   ConfigModule as NestConfigModule,
   // ConfigService, // Removed unused import
