@@ -9,7 +9,7 @@ import {
   Snackbar, 
   Alert 
 } from '@mui/material';
-import { Quiz, Question, AnswerOption } from '@repo/core/src/types/quiz.types';
+import { Quiz, Question, AnswerOption } from '@repo/core';
 import QuizQuestion from './QuizQuestion';
 import QuizNavigation from './QuizNavigation';
 import QuizProgress from './QuizProgress';

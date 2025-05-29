@@ -8,6 +8,7 @@
     "target": "ES2020",
     "useDefineForClassFields": true,
     "paths": {
+      "@app/*": ["./src/*"],
       "@repo/core": ["../../packages/core/dist"],
       "@repo/core/*": ["../../packages/core/dist/*"],
       "@repo/config": ["../../packages/config/dist"],

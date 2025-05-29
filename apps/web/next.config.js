@@ -1,3 +1,4 @@
+const path = require('path');
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
 });
@@ -8,6 +9,14 @@ const nextConfig = {
   output: 'standalone',
   transpilePackages: ["ui", "@repo/core", "@repo/config"],
   webpack: (config, { isServer, dev }) => {
+    // Add aliases
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@repo/core': path.resolve(__dirname, '../../packages/core/dist'),
+      '@repo/config': path.resolve(__dirname, '../../packages/config/dist'),
+      '@repo/ui': path.resolve(__dirname, '../../packages/ui'),
+    };
+
     // Tilføj PnP-understøttelse hvis nødvendigt
     if (!isServer && !dev) {
       // Optimer client-side bundling i production

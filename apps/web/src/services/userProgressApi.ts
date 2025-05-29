@@ -1,4 +1,4 @@
-import { UserProgress, QuizResult } from '@repo/core/src/types/quiz.types';
+import { UserProgress, QuizResult } from '@repo/core';
 import { apiClient } from './apiClient';
 
 /**

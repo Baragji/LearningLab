@@ -17,7 +17,6 @@ import {
   ApiBearerAuth,
   ApiBody,
 } from '@nestjs/swagger';
-import { ConfigService } from '@nestjs/config';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
@@ -42,7 +41,6 @@ interface AuthenticatedRequest extends globalThis.Request {
 export class AuthController {
   constructor(
     private authService: AuthService,
-    private configService: ConfigService,
   ) {}
 
   @ApiOperation({ summary: 'Log ind med email og password' })

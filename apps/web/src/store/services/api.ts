@@ -8,17 +8,15 @@ import {
   StartQuizAttemptInput,
   SubmitAnswerInput,
   CompleteQuizAttemptInput,
-  QuizResult
-} from "@repo/core/src/types/quiz.types";
-import {
+  QuizResult,
   Course,
   Module,
   Lesson,
   ContentBlock,
   SubjectArea,
   ContentBlockType
-} from "@repo/core/src/types/pensum.types";
-import { User } from "@repo/core/src/types/user.types";
+} from "@repo/core";
+import { User } from "@repo/core";
 
 // Hent API URL fra miljøvariabler.
 // NEXT_PUBLIC_ foran navnet gør den tilgængelig i browseren for Next.js.

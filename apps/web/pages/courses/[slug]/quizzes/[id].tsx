@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { QuizProvider } from '../../../../src/contexts/QuizContext';
 import QuizContainer from '../../../../src/components/quiz/QuizContainer';
 import OfflineQuizNotification from '../../../../src/components/quiz/OfflineQuizNotification';
-import { Quiz, Question, AnswerOption, QuestionType } from '@repo/core/src/types/quiz.types';
+import { Quiz, Question, AnswerOption, QuestionType } from '@repo/core';
 import useQuizProgress from '../../../../src/hooks/useQuizProgress';
 
 // Mock data for development - will be replaced with API call

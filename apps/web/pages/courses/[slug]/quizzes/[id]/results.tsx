@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import Link from 'next/link';
-import { Quiz, Question, AnswerOption, UserAnswer } from '@repo/core/src/types/quiz.types';
+import { Quiz, Question, AnswerOption, UserAnswer } from '@repo/core';
 import RadialProgress from '../../../../../src/components/quiz/RadialProgress';
 import IncorrectAnswersList from '../../../../../src/components/quiz/IncorrectAnswersList';
 import OfflineQuizNotification from '../../../../../src/components/quiz/OfflineQuizNotification';
