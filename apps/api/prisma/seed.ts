@@ -1,4 +1,4 @@
-import { PrismaClient, FagCategory, QuestionType } from '@prisma/client';
+import { PrismaClient, QuestionType, FagCategory } from '@prisma/client';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -14,7 +14,7 @@ function generateSlug(text: string): string {
 
 // Function to read the Seedpensum.txt file
 function readSeedpensum(): string {
-  const seedpensumPath = path.join(__dirname, '../../../..', 'Seedpensum.txt');
+  const seedpensumPath = path.join(__dirname, '../../..', 'Seedpensum.txt');
   return fs.readFileSync(seedpensumPath, 'utf-8');
 }
 
@@ -148,7 +148,7 @@ async function seed() {
             data: lessonData,
           });
           
-          // Create a content block for the lesson
+          // Create a content block for each lesson
           await prisma.contentBlock.create({
             data: {
               type: 'TEXT',
@@ -162,77 +162,72 @@ async function seed() {
     }
     
     // Create 10 quizzes
-    console.log('Creating quizzes...');
-    const topicsForQuizzes = await prisma.topic.findMany({
-      take: 10,
-    });
-    
-    await Promise.all(
-      topicsForQuizzes.map(async (topic, index) => {
-        const quizData = {
-          title: `Quiz ${index + 1} - ${topic.title}`,
-          description: `Test your knowledge of ${topic.title}`,
-          topicId: topic.id,
-        };
-        
-        const createdQuiz = await prisma.quiz.create({
-          data: quizData,
-        });
-        
-        // Create 3 questions for each quiz
-        for (let i = 0; i < 3; i++) {
-          const questionData = {
-            text: `Question ${i + 1} for ${topic.title}`,
-            type: QuestionType.MULTIPLE_CHOICE,
-            questionType: QuestionType.MULTIPLE_CHOICE,
-            quizId: createdQuiz.id,
-            order: i + 1,
-          };
-          
-          const createdQuestion = await prisma.question.create({
-            data: questionData,
-          });
-          
-          // Create 4 answer options for each question
-          const answerOptions = [
-            {
-              text: 'Answer option 1',
-              isCorrect: i === 0,
-              questionId: createdQuestion.id,
-              order: 1,
-            },
-            {
-              text: 'Answer option 2',
-              isCorrect: i === 1,
-              questionId: createdQuestion.id,
-              order: 2,
-            },
-            {
-              text: 'Answer option 3',
-              isCorrect: i === 2,
-              questionId: createdQuestion.id,
-              order: 3,
-            },
-            {
-              text: 'Answer option 4',
-              isCorrect: false,
-              questionId: createdQuestion.id,
-              order: 4,
-            },
-          ];
-          
-          await Promise.all(
-            answerOptions.map(async (option) => {
-              await prisma.answerOption.create({
-                data: option,
-              });
-            })
-          );
-        }
-      })
-    );
+     console.log('Creating quizzes...');
+     const topicsForQuizzes = await prisma.topic.findMany({
+       take: 10,
+     });
+ 
+     await Promise.all(
+       topicsForQuizzes.map(async (topic, index) => {
+         const quizData = {
+           title: `Quiz ${index + 1} - ${topic.title}`,
+           description: `Test your knowledge of ${topic.title}`,
+           topicId: topic.id,
+         };
+         
+         const createdQuiz = await prisma.quiz.create({
+           data: quizData,
+         });
+         
+         // Create 3 questions for each quiz
+         for (let i = 0; i < 3; i++) {
+           const questionData = {
+             text: `Question ${i + 1} for ${topic.title}`,
+             type: QuestionType.MULTIPLE_CHOICE,
+             quizId: createdQuiz.id,
+           };
+           
+           const createdQuestion = await prisma.question.create({
+             data: questionData,
+           });
+           
+           // Create 4 answer options for each question
+           const answerOptions = [
+             {
+               text: 'Answer option 1',
+               isCorrect: i === 0,
+               questionId: createdQuestion.id,
+             },
+             {
+               text: 'Answer option 2',
+               isCorrect: i === 1,
+               questionId: createdQuestion.id,
+             },
+             {
+               text: 'Answer option 3',
+               isCorrect: i === 2,
+               questionId: createdQuestion.id,
+             },
+             {
+               text: 'Answer option 4',
+               isCorrect: false,
+               questionId: createdQuestion.id,
+             },
+           ];
+           
+           await Promise.all(
+             answerOptions.map(async (option) => {
+               await prisma.answerOption.create({
+                 data: option,
+               });
+             })
+           );
+         }
+       })
+     );
     
     console.log('Seed completed successfully!');
+     console.log('Created education programs, courses, topics, lessons, content blocks, and quizzes.');
   } catch (error) {
     console.error('Error during seed:', error);
     throw error;
