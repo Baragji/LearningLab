@@ -3159,6 +3159,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/multer@npm:^1.4.12":
+  version: 1.4.12
+  resolution: "@types/multer@npm:1.4.12"
+  dependencies:
+    "@types/express": "npm:*"
+  checksum: 10c0/1250a32a66b7c5929cc5b005dae4ad0768ded9b6b52ba6f90931ff39b4ed775b09a0fd9d880f0836bcac16a9a7febed6a479c6bf108a52a244c4c53badb82a7b
+  languageName: node
+  linkType: hard
+
 "@types/node@npm:20.4.5":
   version: 20.4.5
   resolution: "@types/node@npm:20.4.5"
@@ -4232,6 +4241,7 @@ __metadata:
     "@types/express": "npm:^4.17.21"
     "@types/jest": "npm:^29.5.14"
     "@types/joi": "npm:^17.2.3"
+    "@types/multer": "npm:^1.4.12"
     "@types/node": "npm:^20.4.5"
     "@types/passport-github2": "npm:^1.2.9"
     "@types/passport-jwt": "npm:^4.0.1"
@@ -4256,6 +4266,7 @@ __metadata:
     jest: "npm:^29.6.2"
     joi: "npm:^17.13.3"
     jsonwebtoken: "npm:^9.0.2"
+    multer: "npm:^2.0.0"
     passport: "npm:^0.7.0"
     passport-github2: "npm:^0.1.12"
     passport-jwt: "npm:^4.0.1"
@@ -10247,7 +10258,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"multer@npm:2.0.0":
+"multer@npm:2.0.0, multer@npm:^2.0.0":
   version: 2.0.0
   resolution: "multer@npm:2.0.0"
   dependencies:
