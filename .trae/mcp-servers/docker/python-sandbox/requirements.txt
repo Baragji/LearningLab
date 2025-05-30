@@ -1,0 +1,237 @@
+# Python Sandbox MCP Server Requirements
+# Secure execution environment with restricted dependencies
+
+# Core framework and web server
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+pydantic==2.5.0
+starlette==0.27.0
+
+# Security and sandboxing
+restrictedpython==6.2
+seccomp==0.1.0
+psutil==5.9.6
+resource==0.2.1
+
+# Code execution and validation
+ast==3.11.0  # Built-in, but explicit for clarity
+compileall==3.11.0  # Built-in
+tokenize==3.11.0  # Built-in
+
+# Safe data processing (limited set)
+numpy==1.25.2
+pandas==2.1.3
+
+# Basic visualization (safe subset)
+matplotlib==3.8.2
+seaborn==0.13.0
+plotly==5.17.0
+
+# HTTP and API
+requests==2.31.0
+httpx==0.25.2
+
+# Configuration and environment
+python-dotenv==1.0.0
+pyyaml==6.0.1
+
+# Validation and serialization
+jsonschema==4.20.0
+marshmallow==3.20.1
+
+# Logging and monitoring
+loguru==0.7.2
+prometheus-client==0.19.0
+
+# File processing (restricted)
+base64==3.11.0  # Built-in
+json==3.11.0  # Built-in
+csv==3.11.0  # Built-in
+
+# Time and date utilities
+datetime==3.11.0  # Built-in
+time==3.11.0  # Built-in
+
+# Math and statistics (safe subset)
+math==3.11.0  # Built-in
+statistics==3.11.0  # Built-in
+random==3.11.0  # Built-in
+
+# String processing
+re==3.11.0  # Built-in
+string==3.11.0  # Built-in
+
+# Collections and itertools
+collections==3.11.0  # Built-in
+itertools==3.11.0  # Built-in
+functools==3.11.0  # Built-in
+
+# Safe educational libraries
+sympy==1.12  # Mathematical computations
+scipy==1.11.4  # Scientific computing (restricted)
+scikit-learn==1.3.2  # Machine learning (safe subset)
+
+# Text processing (safe)
+nltk==3.8.1
+textblob==0.17.1
+
+# Image processing (restricted)
+pillow==10.1.0
+
+# Async support
+aiofiles==23.2.1
+aiohttp==3.9.1
+
+# Testing framework
+pytest==7.4.3
+
+# Code quality and formatting
+black==23.11.0
+flake8==6.1.0
+
+# Memory and performance monitoring
+memory-profiler==0.61.0
+
+# Timeout and resource management
+signal==3.11.0  # Built-in
+subprocess==3.11.0  # Built-in (restricted usage)
+
+# Safe utilities
+tqdm==4.66.1
+
+# Educational specific
+turtle==3.11.0  # Built-in graphics
+
+# Cryptography (safe subset)
+hashlib==3.11.0  # Built-in
+hmac==3.11.0  # Built-in
+secrets==3.11.0  # Built-in
+
+# Network utilities (restricted)
+urllib==3.11.0  # Built-in
+socket==3.11.0  # Built-in (restricted)
+
+# File system (heavily restricted)
+os==3.11.0  # Built-in (restricted)
+sys==3.11.0  # Built-in (restricted)
+pathlib==3.11.0  # Built-in (restricted)
+
+# Compression (safe)
+zipfile==3.11.0  # Built-in
+gzip==3.11.0  # Built-in
+
+# Encoding and decoding
+codecs==3.11.0  # Built-in
+
+# Safe database access (if needed)
+sqlite3==3.11.0  # Built-in (restricted)
+
+# Educational game development
+pygame==2.5.2  # For educational games
+
+# Safe web scraping
+beautifulsoup4==4.12.2
+
+# Data validation
+cerberus==1.3.5
+
+# Safe serialization
+pickle==3.11.0  # Built-in (heavily restricted)
+
+# Educational plotting
+bokeh==3.3.0
+
+# Safe statistical analysis
+statsmodels==0.14.0
+
+# Educational AI (restricted)
+transformers==4.35.2  # Limited models only
+
+# Safe file formats
+openpyxl==3.1.2
+csv==3.11.0  # Built-in
+
+# Educational robotics simulation
+simpy==4.0.2  # Discrete event simulation
+
+# Safe concurrency
+threading==3.11.0  # Built-in (restricted)
+multiprocessing==3.11.0  # Built-in (heavily restricted)
+
+# Educational data structures
+heapq==3.11.0  # Built-in
+bisect==3.11.0  # Built-in
+
+# Safe regular expressions
+re==3.11.0  # Built-in
+
+# Educational algorithms
+algorithms==0.1.4  # Educational algorithm implementations
+
+# Safe XML processing
+xml==3.11.0  # Built-in (restricted)
+
+# Educational graphics
+turtle==3.11.0  # Built-in
+tkinter==3.11.0  # Built-in (restricted GUI)
+
+# Safe email utilities (for educational purposes)
+email==3.11.0  # Built-in (restricted)
+
+# Educational calendar utilities
+calendar==3.11.0  # Built-in
+
+# Safe UUID generation
+uuid==3.11.0  # Built-in
+
+# Educational decimal arithmetic
+decimal==3.11.0  # Built-in
+fractions==3.11.0  # Built-in
+
+# Safe locale handling
+locale==3.11.0  # Built-in (restricted)
+
+# Educational unit testing
+unittest==3.11.0  # Built-in
+doctest==3.11.0  # Built-in
+
+# Safe argument parsing
+argparse==3.11.0  # Built-in
+
+# Educational configuration
+configparser==3.11.0  # Built-in
+
+# Safe logging
+logging==3.11.0  # Built-in
+
+# Educational debugging
+pdb==3.11.0  # Built-in (restricted)
+trace==3.11.0  # Built-in (restricted)
+
+# Safe warnings
+warnings==3.11.0  # Built-in
+
+# Educational profiling
+cProfile==3.11.0  # Built-in (restricted)
+profile==3.11.0  # Built-in (restricted)
+
+# Safe context management
+contextlib==3.11.0  # Built-in
+
+# Educational weak references
+weakref==3.11.0  # Built-in
+
+# Safe copying
+copy==3.11.0  # Built-in
+
+# Educational operator utilities
+operator==3.11.0  # Built-in
+
+# Safe type checking
+typing==3.11.0  # Built-in
+
+# Educational enum support
+enum==3.11.0  # Built-in
+
+# Safe dataclass support
+dataclasses==3.11.0  # Built-in

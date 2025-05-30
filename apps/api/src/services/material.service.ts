@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
-import { PrismaService } from '../persistence/prisma.service';
+import { PrismaService } from '../persistence/prisma/prisma.service';
 import { ContentBlock, ContentBlockType, File } from '@prisma/client';
 
 export interface CreateMaterialDto {
@@ -32,9 +32,11 @@ export interface MaterialWithFile extends ContentBlock {
   lesson?: {
     id: number;
     title: string;
+    order: number;
     topic: {
       id: number;
       title: string;
+      order: number;
       course: {
         id: number;
         title: string;
@@ -156,7 +158,21 @@ export class MaterialService {
         lesson: {
           select: {
             id: true,
-            title: true
+            title: true,
+            order: true,
+            topic: {
+              select: {
+                id: true,
+                title: true,
+                order: true,
+                course: {
+                  select: {
+                    id: true,
+                    title: true
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -189,9 +205,22 @@ export class MaterialService {
           select: {
             id: true,
             title: true,
-            order: true
-          }
-        }
+            order: true,
+            topic: {
+              select: {
+                id: true,
+                title: true,
+                order: true,
+                course: {
+                  select: {
+                    id: true,
+                    title: true,
+                  },
+                },
+              },
+            },
+          },
+        },
       }
     });
   }
@@ -222,15 +251,24 @@ export class MaterialService {
       include: {
         file: true,
         lesson: {
-          include: {
+          select: {
+            id: true,
+            title: true,
+            order: true,
             topic: {
               select: {
                 id: true,
                 title: true,
-                order: true
-              }
-            }
-          }
+                order: true,
+                course: {
+                  select: {
+                    id: true,
+                    title: true,
+                  },
+                },
+              },
+            },
+          },
         }
       }
     });

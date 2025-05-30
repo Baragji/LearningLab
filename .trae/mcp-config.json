@@ -1,0 +1,176 @@
+{
+  "$schema": "https://schema.anthropic.com/mcp/config.json",
+  "version": "1.0.0",
+  "description": "MCP Server Configuration for LearningLab Platform",
+  "servers": {
+    "filesystem": {
+      "command": "npx",
+      "args": ["@modelcontextprotocol/server-filesystem", "./"],
+      "env": {
+        "MCP_FILESYSTEM_ALLOWED_DIRS": "./apps,./packages,./docs,./scripts"
+      },
+      "description": "File system access for uploads and material management (Phase 1.1)",
+      "phase": "1",
+      "priority": "high"
+    },
+    "git": {
+      "command": "npx",
+      "args": ["@idosal/git-mcp"],
+      "env": {
+        "GIT_REPO_PATH": "./"
+      },
+      "description": "Git operations and version control (All phases)",
+      "phase": "1",
+      "priority": "high"
+    },
+    "python-sandbox": {
+      "command": "python",
+      "args": ["-m", "mcp_run_python"],
+      "env": {
+        "PYTHON_SANDBOX_TIMEOUT": "30",
+        "PYTHON_SANDBOX_MEMORY_LIMIT": "512MB"
+      },
+      "description": "Python code execution for testing and validation (Phase 1.4, 2.x)",
+      "phase": "1",
+      "priority": "high"
+    },
+    "node-sandbox": {
+      "command": "docker",
+      "args": ["run", "--rm", "-i", "node-sandbox-mcp"],
+      "description": "Node.js/TypeScript code execution sandbox (Phase 1.4)",
+      "phase": "1",
+      "priority": "medium"
+    },
+    "jupyter": {
+      "command": "python",
+      "args": ["-m", "jupyter_mcp_server"],
+      "env": {
+        "JUPYTER_CONFIG_DIR": "./jupyter-config",
+        "JUPYTER_DATA_DIR": "./jupyter-data"
+      },
+      "description": "Jupyter notebook management for AI development (Phase 2.1)",
+      "phase": "2",
+      "priority": "high"
+    },
+    "data-analysis": {
+      "command": "python",
+      "args": ["-m", "zaturn_mcp"],
+      "env": {
+        "ZATURN_ALLOWED_SOURCES": "csv,json,sql",
+        "ZATURN_MAX_ROWS": "10000"
+      },
+      "description": "Multi-source data analysis for AI training (Phase 2.2, 2.3)",
+      "phase": "2",
+      "priority": "medium"
+    },
+    "openapi": {
+      "command": "docker",
+      "args": ["run", "--rm", "-p", "3001:3000", "openapi-mcp"],
+      "env": {
+        "OPENAPI_SPEC_URL": "./docs/api-openapi.yaml"
+      },
+      "description": "API testing and integration (Phase 1.1, 2.x)",
+      "phase": "1",
+      "priority": "medium"
+    },
+    "kubernetes": {
+      "command": "kubectl",
+      "args": ["mcp-server"],
+      "env": {
+        "KUBECONFIG": "~/.kube/config",
+        "K8S_NAMESPACE": "learninglab"
+      },
+      "description": "Kubernetes cluster management for deployment (Phase 4.3)",
+      "phase": "4",
+      "priority": "high"
+    },
+    "portainer": {
+      "command": "portainer-mcp",
+      "args": ["--endpoint", "http://localhost:9000"],
+      "env": {
+        "PORTAINER_API_KEY": "${PORTAINER_API_KEY}"
+      },
+      "description": "Container management for CI/CD (Phase 4.3)",
+      "phase": "4",
+      "priority": "medium"
+    },
+    "grafana": {
+      "command": "grafana-mcp",
+      "args": ["--url", "http://localhost:3000"],
+      "env": {
+        "GRAFANA_API_KEY": "${GRAFANA_API_KEY}",
+        "GRAFANA_ORG_ID": "1"
+      },
+      "description": "Monitoring and analytics dashboard (Phase 3.4, 4.3)",
+      "phase": "3",
+      "priority": "medium"
+    },
+    "email": {
+      "command": "agentmail-mcp",
+      "args": ["--provider", "smtp"],
+      "env": {
+        "SMTP_HOST": "${SMTP_HOST}",
+        "SMTP_PORT": "${SMTP_PORT}",
+        "SMTP_USER": "${SMTP_USER}",
+        "SMTP_PASS": "${SMTP_PASS}"
+      },
+      "description": "Email notifications and communication (Phase 1.3)",
+      "phase": "1",
+      "priority": "low"
+    }
+  },
+  "security": {
+    "authentication": {
+      "oauth": {
+        "enabled": true,
+        "providers": ["google", "github"]
+      },
+      "api_keys": {
+        "enabled": true,
+        "rotation_days": 90
+      }
+    },
+    "permissions": {
+      "filesystem": {
+        "read_only_paths": ["./migrations/legacy", "./seed"],
+        "restricted_paths": ["./packages/config"]
+      },
+      "git": {
+        "allowed_operations": ["read", "status", "diff", "log"],
+        "restricted_operations": ["push", "merge", "rebase"]
+      }
+    },
+    "rate_limiting": {
+      "requests_per_minute": 100,
+      "burst_limit": 20
+    }
+  },
+  "monitoring": {
+    "telemetry": {
+      "enabled": true,
+      "endpoint": "http://localhost:3000/api/telemetry"
+    },
+    "logging": {
+      "level": "info",
+      "file": "./logs/mcp-servers.log",
+      "rotation": "daily"
+    },
+    "health_checks": {
+      "interval_seconds": 30,
+      "timeout_seconds": 10
+    }
+  },
+  "deployment": {
+    "phases": {
+      "1": ["filesystem", "git", "python-sandbox", "openapi", "email"],
+      "2": ["jupyter", "data-analysis"],
+      "3": ["grafana"],
+      "4": ["kubernetes", "portainer"]
+    },
+    "auto_start": {
+      "development": ["filesystem", "git", "python-sandbox"],
+      "testing": ["filesystem", "git", "python-sandbox", "openapi"],
+      "production": ["kubernetes", "portainer", "grafana"]
+    }
+  }
+}

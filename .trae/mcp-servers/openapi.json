@@ -1,0 +1,521 @@
+{
+  "name": "openapi",
+  "description": "OpenAPI specification management and API documentation for LearningLab",
+  "version": "1.0.0",
+  "phase": 1,
+  "priority": "medium",
+  "dependencies": {
+    "runtime": "node",
+    "packages": [
+      "@apidevtools/swagger-parser",
+      "openapi-generator-cli",
+      "swagger-ui-express",
+      "redoc-cli",
+      "@stoplight/prism-cli",
+      "openapi-diff",
+      "swagger-jsdoc",
+      "yaml"
+    ],
+    "system": ["node", "npm"]
+  },
+  "configuration": {
+    "command": "node",
+    "args": ["-r", "./mcp-servers/openapi-server.js"],
+    "environment": {
+      "OPENAPI_SPECS_DIR": "./docs/api",
+      "GENERATED_DOCS_DIR": "./docs/generated",
+      "API_BASE_URL": "http://localhost:3000",
+      "MOCK_SERVER_PORT": "3001",
+      "ENABLE_VALIDATION": "true",
+      "AUTO_GENERATE_DOCS": "true"
+    },
+    "security": {
+      "allowed_operations": [
+        "parseSpec",
+        "validateSpec",
+        "generateDocs",
+        "generateClient",
+        "startMockServer",
+        "compareSpecs"
+      ],
+      "restricted_paths": ["/etc", "/usr", "/var"],
+      "max_file_size": "10MB",
+      "timeout": 60
+    }
+  },
+  "capabilities": {
+    "spec_management": {
+      "description": "Manage OpenAPI specifications",
+      "operations": [
+        "parseSpec",
+        "validateSpec",
+        "mergeSpecs",
+        "splitSpec",
+        "convertFormat"
+      ],
+      "supported_formats": ["yaml", "json"],
+      "validation_rules": [
+        "openapi_3.0",
+        "openapi_3.1",
+        "swagger_2.0"
+      ]
+    },
+    "documentation_generation": {
+      "description": "Generate API documentation",
+      "operations": [
+        "generateSwaggerUI",
+        "generateRedoc",
+        "generateMarkdown",
+        "generatePDF",
+        "generatePostmanCollection"
+      ],
+      "output_formats": [
+        "html",
+        "markdown",
+        "pdf",
+        "json"
+      ]
+    },
+    "code_generation": {
+      "description": "Generate client SDKs and server stubs",
+      "operations": [
+        "generateClient",
+        "generateServer",
+        "generateTypes",
+        "generateTests"
+      ],
+      "supported_languages": [
+        "typescript",
+        "javascript",
+        "python",
+        "java",
+        "go",
+        "csharp"
+      ]
+    },
+    "mock_server": {
+      "description": "Run mock API server for testing",
+      "operations": [
+        "startMockServer",
+        "stopMockServer",
+        "configureMocks",
+        "validateRequests"
+      ],
+      "features": [
+        "dynamic_responses",
+        "request_validation",
+        "response_examples",
+        "error_simulation"
+      ]
+    },
+    "api_testing": {
+      "description": "Test API endpoints against specifications",
+      "operations": [
+        "validateEndpoints",
+        "runContractTests",
+        "checkCompatibility",
+        "generateTestCases"
+      ],
+      "test_types": [
+        "contract_testing",
+        "schema_validation",
+        "response_validation",
+        "security_testing"
+      ]
+    }
+  },
+  "api_specifications": {
+    "learninglab_api": {
+      "file": "./docs/api/learninglab-api.yaml",
+      "version": "1.0.0",
+      "description": "Main LearningLab API specification",
+      "endpoints": {
+        "authentication": {
+          "paths": ["/auth/login", "/auth/register", "/auth/refresh"],
+          "security": ["JWT", "OAuth2"]
+        },
+        "courses": {
+          "paths": ["/courses", "/courses/{id}", "/courses/{id}/lessons"],
+          "operations": ["GET", "POST", "PUT", "DELETE"]
+        },
+        "lessons": {
+          "paths": ["/lessons", "/lessons/{id}", "/lessons/{id}/content"],
+          "operations": ["GET", "POST", "PUT", "DELETE"]
+        },
+        "quizzes": {
+          "paths": ["/quizzes", "/quizzes/{id}", "/quizzes/{id}/submit"],
+          "operations": ["GET", "POST", "PUT", "DELETE"]
+        },
+        "users": {
+          "paths": ["/users", "/users/{id}", "/users/{id}/progress"],
+          "operations": ["GET", "POST", "PUT", "DELETE"]
+        },
+        "analytics": {
+          "paths": ["/analytics/performance", "/analytics/engagement"],
+          "operations": ["GET"]
+        }
+      }
+    },
+    "ai_services_api": {
+      "file": "./docs/api/ai-services-api.yaml",
+      "version": "1.0.0",
+      "description": "AI services API for content analysis and generation",
+      "endpoints": {
+        "content_analysis": {
+          "paths": ["/ai/analyze-content", "/ai/extract-topics"],
+          "operations": ["POST"]
+        },
+        "quiz_generation": {
+          "paths": ["/ai/generate-quiz", "/ai/generate-questions"],
+          "operations": ["POST"]
+        },
+        "feedback": {
+          "paths": ["/ai/generate-feedback", "/ai/personalize-content"],
+          "operations": ["POST"]
+        }
+      }
+    },
+    "admin_api": {
+      "file": "./docs/api/admin-api.yaml",
+      "version": "1.0.0",
+      "description": "Administrative API for system management",
+      "endpoints": {
+        "system": {
+          "paths": ["/admin/health", "/admin/metrics", "/admin/logs"],
+          "operations": ["GET"]
+        },
+        "users": {
+          "paths": ["/admin/users", "/admin/users/{id}/roles"],
+          "operations": ["GET", "POST", "PUT", "DELETE"]
+        },
+        "content": {
+          "paths": ["/admin/content/moderate", "/admin/content/approve"],
+          "operations": ["POST", "PUT"]
+        }
+      }
+    }
+  },
+  "use_cases": {
+    "phase_1_1_api_documentation": {
+      "description": "Generate API documentation for Phase 1.1 development",
+      "workflow": [
+        {
+          "step": "parse_existing_code",
+          "operation": "extractApiFromCode",
+          "input": "./src/routes",
+          "output": "api_endpoints"
+        },
+        {
+          "step": "generate_openapi_spec",
+          "operation": "generateSpec",
+          "input": "api_endpoints",
+          "output": "openapi_specification"
+        },
+        {
+          "step": "validate_spec",
+          "operation": "validateSpec",
+          "input": "openapi_specification",
+          "output": "validation_results"
+        },
+        {
+          "step": "generate_docs",
+          "operation": "generateSwaggerUI",
+          "input": "openapi_specification",
+          "output": "api_documentation"
+        }
+      ],
+      "example": {
+        "input_directory": "./src/routes",
+        "output_spec": "./docs/api/learninglab-api.yaml",
+        "output_docs": "./docs/generated/api-docs.html",
+        "validation_level": "strict"
+      }
+    },
+    "api_client_generation": {
+      "description": "Generate client SDKs for frontend development",
+      "workflow": [
+        {
+          "step": "load_spec",
+          "operation": "parseSpec",
+          "input": "./docs/api/learninglab-api.yaml",
+          "output": "parsed_spec"
+        },
+        {
+          "step": "generate_typescript_client",
+          "operation": "generateClient",
+          "input": "parsed_spec",
+          "config": {"language": "typescript", "framework": "axios"},
+          "output": "typescript_client"
+        },
+        {
+          "step": "generate_types",
+          "operation": "generateTypes",
+          "input": "parsed_spec",
+          "output": "typescript_types"
+        }
+      ],
+      "example": {
+        "spec_file": "./docs/api/learninglab-api.yaml",
+        "output_directory": "./src/lib/api-client",
+        "client_config": {
+          "language": "typescript",
+          "framework": "axios",
+          "generate_tests": true
+        }
+      }
+    },
+    "api_testing_setup": {
+      "description": "Set up API testing with mock server",
+      "workflow": [
+        {
+          "step": "start_mock_server",
+          "operation": "startMockServer",
+          "input": "./docs/api/learninglab-api.yaml",
+          "output": "mock_server_url"
+        },
+        {
+          "step": "generate_test_cases",
+          "operation": "generateTestCases",
+          "input": "./docs/api/learninglab-api.yaml",
+          "output": "test_suite"
+        },
+        {
+          "step": "run_contract_tests",
+          "operation": "runContractTests",
+          "input": "test_suite, mock_server_url",
+          "output": "test_results"
+        }
+      ]
+    },
+    "api_versioning": {
+      "description": "Manage API versioning and compatibility",
+      "workflow": [
+        {
+          "step": "compare_versions",
+          "operation": "compareSpecs",
+          "input": "old_spec, new_spec",
+          "output": "compatibility_report"
+        },
+        {
+          "step": "check_breaking_changes",
+          "operation": "analyzeBreakingChanges",
+          "input": "compatibility_report",
+          "output": "breaking_changes"
+        },
+        {
+          "step": "generate_migration_guide",
+          "operation": "generateMigrationGuide",
+          "input": "breaking_changes",
+          "output": "migration_documentation"
+        }
+      ]
+    }
+  },
+  "templates": {
+    "basic_api_spec": {
+      "description": "Basic OpenAPI 3.0 specification template",
+      "file": "./templates/basic-api.yaml",
+      "includes": [
+        "info_section",
+        "servers_section",
+        "security_schemes",
+        "common_responses",
+        "error_schemas"
+      ]
+    },
+    "crud_endpoints": {
+      "description": "Template for CRUD operations",
+      "file": "./templates/crud-endpoints.yaml",
+      "operations": ["create", "read", "update", "delete", "list"],
+      "includes": [
+        "path_parameters",
+        "request_schemas",
+        "response_schemas",
+        "error_responses"
+      ]
+    },
+    "authentication": {
+      "description": "Authentication endpoints template",
+      "file": "./templates/auth-endpoints.yaml",
+      "includes": [
+        "login_endpoint",
+        "register_endpoint",
+        "refresh_endpoint",
+        "logout_endpoint",
+        "jwt_security_scheme"
+      ]
+    }
+  },
+  "tools": {
+    "swagger_ui": {
+      "description": "Interactive API documentation",
+      "url": "http://localhost:3000/api-docs",
+      "features": ["try_it_out", "request_examples", "response_examples"]
+    },
+    "redoc": {
+      "description": "Clean API documentation",
+      "url": "http://localhost:3000/redoc",
+      "features": ["three_panel_layout", "search", "code_samples"]
+    },
+    "prism_mock_server": {
+      "description": "Mock API server for testing",
+      "port": 3001,
+      "features": [
+        "request_validation",
+        "response_examples",
+        "dynamic_responses",
+        "error_simulation"
+      ]
+    },
+    "openapi_generator": {
+      "description": "Code generation tool",
+      "supported_generators": [
+        "typescript-axios",
+        "javascript",
+        "python-client",
+        "java-client",
+        "go-client"
+      ]
+    }
+  },
+  "monitoring": {
+    "health_check": {
+      "command": "node -e 'console.log(\"OpenAPI tools available\")'",
+      "interval": 60,
+      "timeout": 10
+    },
+    "metrics": {
+      "spec_validations_total": "Counter of specification validations",
+      "doc_generations_total": "Counter of documentation generations",
+      "client_generations_total": "Counter of client SDK generations",
+      "mock_server_requests_total": "Counter of mock server requests",
+      "spec_parsing_duration": "Histogram of spec parsing times"
+    },
+    "alerts": {
+      "spec_validation_failure": {
+        "condition": "spec_validation_errors > 0",
+        "duration": "1m",
+        "severity": "warning"
+      },
+      "mock_server_down": {
+        "condition": "mock_server_health_check_failed",
+        "duration": "30s",
+        "severity": "critical"
+      }
+    }
+  },
+  "integration": {
+    "development_workflow": {
+      "pre_commit_hooks": [
+        "validate_api_specs",
+        "generate_client_types",
+        "update_documentation"
+      ],
+      "ci_cd_integration": [
+        "spec_validation",
+        "breaking_change_detection",
+        "documentation_deployment",
+        "client_sdk_publishing"
+      ]
+    },
+    "ide_integration": {
+      "vscode_extensions": [
+        "openapi-lint",
+        "swagger-viewer",
+        "rest-client"
+      ],
+      "features": [
+        "syntax_highlighting",
+        "auto_completion",
+        "validation",
+        "preview"
+      ]
+    },
+    "external_tools": {
+      "postman": {
+        "operation": "generatePostmanCollection",
+        "output": "postman_collection.json"
+      },
+      "insomnia": {
+        "operation": "generateInsomniaWorkspace",
+        "output": "insomnia_workspace.json"
+      }
+    }
+  },
+  "testing": {
+    "unit_tests": [
+      {
+        "name": "test_spec_parsing",
+        "description": "Test OpenAPI specification parsing",
+        "test_specs": [
+          "./test-data/valid-spec.yaml",
+          "./test-data/invalid-spec.yaml"
+        ]
+      },
+      {
+        "name": "test_documentation_generation",
+        "description": "Test documentation generation",
+        "input_spec": "./test-data/sample-api.yaml",
+        "expected_outputs": ["html", "markdown"]
+      },
+      {
+        "name": "test_client_generation",
+        "description": "Test client SDK generation",
+        "languages": ["typescript", "python"],
+        "validation": "compile_and_test"
+      }
+    ],
+    "integration_tests": [
+      {
+        "name": "test_mock_server_workflow",
+        "description": "Test complete mock server workflow",
+        "steps": [
+          "Start mock server with spec",
+          "Make test requests",
+          "Validate responses",
+          "Stop mock server"
+        ]
+      },
+      {
+        "name": "test_api_contract_validation",
+        "description": "Test API contract validation",
+        "steps": [
+          "Deploy API with spec",
+          "Run contract tests",
+          "Validate all endpoints",
+          "Check response schemas"
+        ]
+      }
+    ]
+  },
+  "best_practices": {
+    "specification_design": [
+      "Use consistent naming conventions",
+      "Provide comprehensive examples",
+      "Document all error responses",
+      "Use semantic versioning",
+      "Include detailed descriptions"
+    ],
+    "documentation": [
+      "Keep documentation up to date",
+      "Provide code examples in multiple languages",
+      "Include authentication examples",
+      "Document rate limits and quotas",
+      "Provide troubleshooting guides"
+    ],
+    "testing": [
+      "Validate specs in CI/CD pipeline",
+      "Use contract testing",
+      "Test with real and mock data",
+      "Validate breaking changes",
+      "Monitor API compatibility"
+    ],
+    "versioning": [
+      "Use semantic versioning for APIs",
+      "Maintain backward compatibility",
+      "Provide migration guides",
+      "Deprecate endpoints gracefully",
+      "Communicate changes clearly"
+    ]
+  }
+}

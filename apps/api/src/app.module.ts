@@ -28,13 +28,18 @@ import { UserGroupsModule } from './user-groups/user-groups.module';
 import { SharedModule } from './shared/shared.module';
 import { CommonModule } from './common/common.module';
 import { CacheModule } from '@nestjs/cache-manager';
-import { APP_INTERCEPTOR } from '@nestjs/core';
+import { APP_INTERCEPTOR, APP_FILTER, APP_PIPE } from '@nestjs/core';
 import { SimpleCacheInterceptor } from './common/interceptors/simple-cache.interceptor';
+import { LoggingInterceptor, PerformanceInterceptor } from './interceptors/logging.interceptor';
+import { GlobalExceptionFilter } from './filters/global-exception.filter';
+import { CustomValidationPipe } from './pipes/validation.pipe';
 import { ConfigModule } from './config/config.module';
 // Import ConfigService
 // import { ConfigService } from './config/config.service'; // Removed unused import
 import { JwtService } from '@nestjs/jwt';
 import { SearchModule } from './search/search.module';
+import { FileUploadModule } from './modules/file-upload.module';
+import { MaterialModule } from './modules/material.module';
 // Import social auth config
 import socialAuthConfig from './config/social-auth.config';
 // Midlertidigt deaktiveret pga. problemer med import
@@ -71,6 +76,8 @@ import socialAuthConfig from './config/social-auth.config';
     AuthModule,
     UserGroupsModule, // Tilføj UserGroupsModule
     SearchModule, // Tilføj SearchModule for avanceret søgning
+    FileUploadModule, // Tilføj FileUploadModule for fil-upload
+    MaterialModule, // Tilføj MaterialModule for materiale-styring
     CoursesModule,
     TopicsModule, // Updated from ModulesModule
     LessonsModule,
@@ -88,6 +95,25 @@ import socialAuthConfig from './config/social-auth.config';
     AppService,
     NestConfigService,
     JwtService, // Tilføj JwtService for UserIdentificationMiddleware
+    // Global Exception Filter
+    {
+      provide: APP_FILTER,
+      useClass: GlobalExceptionFilter,
+    },
+    // Global Validation Pipe
+    {
+      provide: APP_PIPE,
+      useClass: CustomValidationPipe,
+    },
+    // Global Interceptors
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: LoggingInterceptor,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: PerformanceInterceptor,
+    },
     // Registrer SimpleCacheInterceptor globalt
     {
       provide: APP_INTERCEPTOR,

@@ -1,0 +1,247 @@
+{
+  "name": "git",
+  "description": "Git operations and version control for monorepo management",
+  "version": "1.0.0",
+  "phase": 1,
+  "priority": "high",
+  "dependencies": {
+    "runtime": "node",
+    "packages": ["@idosal/git-mcp"],
+    "system": ["git"]
+  },
+  "configuration": {
+    "command": "npx",
+    "args": ["@idosal/git-mcp"],
+    "environment": {
+      "GIT_REPO_PATH": "./",
+      "GIT_DEFAULT_BRANCH": "main",
+      "GIT_MAX_DIFF_SIZE": "10MB",
+      "GIT_SAFE_OPERATIONS_ONLY": "true"
+    },
+    "security": {
+      "allowed_operations": ["status", "log", "diff", "show", "branch", "checkout"],
+      "restricted_operations": ["push", "merge", "rebase", "reset --hard"],
+      "protected_branches": ["main", "production", "staging"],
+      "max_commit_size": "50MB",
+      "require_approval_for": ["push", "merge", "delete"]
+    }
+  },
+  "use_cases": {
+    "development": {
+      "description": "Daily development workflow support",
+      "operations": ["status", "diff", "log", "branch", "checkout"],
+      "examples": {
+        "check_status": {
+          "operation": "status",
+          "params": {},
+          "description": "Get current repository status"
+        },
+        "create_feature_branch": {
+          "operation": "checkout",
+          "params": {
+            "branch": "feature/ai-quiz-generation",
+            "create": true
+          },
+          "description": "Create and switch to feature branch"
+        },
+        "view_changes": {
+          "operation": "diff",
+          "params": {
+            "staged": false,
+            "files": ["apps/api/src/modules/quiz/"]
+          },
+          "description": "View unstaged changes in quiz module"
+        }
+      }
+    },
+    "code_review": {
+      "description": "Code review and analysis support",
+      "operations": ["diff", "show", "log"],
+      "examples": {
+        "review_commit": {
+          "operation": "show",
+          "params": {
+            "commit": "HEAD",
+            "format": "full"
+          },
+          "description": "Review latest commit changes"
+        },
+        "compare_branches": {
+          "operation": "diff",
+          "params": {
+            "base": "main",
+            "head": "feature/ai-integration",
+            "stat": true
+          },
+          "description": "Compare feature branch with main"
+        }
+      }
+    },
+    "release_management": {
+      "description": "Release preparation and tracking",
+      "operations": ["log", "tag", "branch"],
+      "examples": {
+        "release_notes": {
+          "operation": "log",
+          "params": {
+            "since": "v1.0.0",
+            "format": "oneline",
+            "grep": "feat|fix|BREAKING"
+          },
+          "description": "Generate release notes"
+        }
+      }
+    }
+  },
+  "workflows": {
+    "feature_development": {
+      "description": "Standard feature development workflow",
+      "steps": [
+        {
+          "step": 1,
+          "action": "status",
+          "description": "Check current repository state"
+        },
+        {
+          "step": 2,
+          "action": "checkout",
+          "params": { "branch": "main" },
+          "description": "Switch to main branch"
+        },
+        {
+          "step": 3,
+          "action": "pull",
+          "description": "Pull latest changes",
+          "requires_approval": true
+        },
+        {
+          "step": 4,
+          "action": "checkout",
+          "params": { "branch": "feature/new-feature", "create": true },
+          "description": "Create feature branch"
+        }
+      ]
+    },
+    "code_analysis": {
+      "description": "Automated code analysis workflow",
+      "steps": [
+        {
+          "step": 1,
+          "action": "diff",
+          "params": { "staged": true },
+          "description": "Get staged changes"
+        },
+        {
+          "step": 2,
+          "action": "analyze_changes",
+          "description": "AI analysis of code changes",
+          "integration": "jupyter"
+        }
+      ]
+    }
+  },
+  "monitoring": {
+    "health_check": {
+      "command": "git status",
+      "interval": 60,
+      "timeout": 10
+    },
+    "metrics": {
+      "git_operations_total": "Counter of git operations",
+      "git_operation_duration": "Histogram of operation durations",
+      "repository_size_bytes": "Gauge of repository size",
+      "active_branches": "Gauge of active branches"
+    },
+    "alerts": {
+      "repository_size_large": {
+        "condition": "repository_size_bytes > 1GB",
+        "duration": "5m",
+        "severity": "warning"
+      },
+      "too_many_branches": {
+        "condition": "active_branches > 50",
+        "duration": "1h",
+        "severity": "info"
+      }
+    }
+  },
+  "integration": {
+    "ci_cd": {
+      "github_actions": {
+        "trigger_on": ["push", "pull_request"],
+        "workflows": [
+          "lint",
+          "test",
+          "build",
+          "security-scan"
+        ]
+      }
+    },
+    "other_servers": {
+      "filesystem": {
+        "use_case": "Track file changes and uploads",
+        "operations": ["add", "commit"]
+      },
+      "jupyter": {
+        "use_case": "Code analysis and quality metrics",
+        "operations": ["diff", "show"]
+      }
+    }
+  },
+  "testing": {
+    "unit_tests": [
+      {
+        "name": "test_git_status",
+        "description": "Test git status operation",
+        "steps": [
+          "Call git status",
+          "Verify response format",
+          "Check for required fields"
+        ]
+      },
+      {
+        "name": "test_branch_operations",
+        "description": "Test branch creation and switching",
+        "steps": [
+          "Create test branch",
+          "Switch to branch",
+          "Verify current branch",
+          "Clean up test branch"
+        ]
+      }
+    ],
+    "integration_tests": [
+      {
+        "name": "test_development_workflow",
+        "description": "Test complete development workflow",
+        "steps": [
+          "Check repository status",
+          "Create feature branch",
+          "Make changes via filesystem server",
+          "Review changes via git diff",
+          "Commit changes"
+        ]
+      }
+    ]
+  },
+  "best_practices": {
+    "security": [
+      "Never expose sensitive git operations without approval",
+      "Always validate branch names and commit messages",
+      "Implement rate limiting for git operations",
+      "Log all git operations for audit trail"
+    ],
+    "performance": [
+      "Cache git status for frequently accessed repositories",
+      "Limit diff size to prevent memory issues",
+      "Use shallow clones for large repositories",
+      "Implement timeout for long-running operations"
+    ],
+    "workflow": [
+      "Always check status before making changes",
+      "Use descriptive branch names",
+      "Keep commits small and focused",
+      "Review changes before committing"
+    ]
+  }
+}

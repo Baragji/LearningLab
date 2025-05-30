@@ -20,7 +20,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { Response } from 'express';
 import { diskStorage } from 'multer';
 import { ApiTags, ApiOperation, ApiResponse, ApiConsumes, ApiBearerAuth } from '@nestjs/swagger';
-import { JwtAuthGuard } from '../middleware/auth.middleware';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { FileUploadService } from '../services/file-upload.service';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -109,7 +109,11 @@ export class FileController {
       size: file.size,
       url: file.url,
       description: file.description,
-      uploader: file.uploader,
+      uploader: file.uploader ? {
+        id: file.uploader.id,
+        name: file.uploader.name,
+        email: file.uploader.email
+      } : null,
       createdAt: file.createdAt,
       updatedAt: file.updatedAt
     };
@@ -181,7 +185,11 @@ export class FileController {
         size: file.size,
         url: file.url,
         description: file.description,
-        uploader: file.uploader,
+        uploader: file.uploader ? {
+          id: file.uploader.id,
+          name: file.uploader.name,
+          email: file.uploader.email
+        } : null,
         createdAt: file.createdAt,
         updatedAt: file.updatedAt
       }))

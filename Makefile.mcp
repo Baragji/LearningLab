@@ -1,0 +1,366 @@
+# LearningLab MCP Servers Management Makefile
+# This Makefile provides convenient commands for managing MCP servers
+
+.PHONY: help setup start stop restart status logs clean build test deploy health backup restore
+
+# Default target
+help: ## Show this help message
+	@echo "LearningLab MCP Servers Management"
+	@echo "=================================="
+	@echo ""
+	@echo "Available commands:"
+	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "  \033[36m%-20s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
+	@echo ""
+	@echo "Phase-specific commands:"
+	@echo "  make phase1          Start Phase 1 services (Core Development)"
+	@echo "  make phase2          Start Phase 2 services (AI & Data Analysis)"
+	@echo "  make phase3          Start Phase 3 services (Monitoring & Communication)"
+	@echo "  make phase4          Start Phase 4 services (Container Management)"
+	@echo ""
+
+# =============================================================================
+# Setup and Configuration
+# =============================================================================
+
+setup: ## Initial setup of MCP servers environment
+	@echo "Setting up LearningLab MCP Servers environment..."
+	@mkdir -p secrets
+	@mkdir -p data/{uploads,exports,models,cache}
+	@mkdir -p logs/{mcp,services}
+	@mkdir -p .trae/mcp-servers/{docker,config,templates}
+	@mkdir -p .trae/mcp-servers/docker/{git,python-sandbox,node-sandbox,jupyter,data-analysis,email}
+	@mkdir -p .trae/mcp-servers/{grafana,prometheus,email}/{dashboards,datasources,templates}
+	@mkdir -p .trae/mcp-servers/postgres/init
+	@if [ ! -f .env.mcp.local ]; then cp .env.mcp .env.mcp.local; fi
+	@echo "Environment setup complete!"
+	@echo "Please edit .env.mcp.local with your configuration"
+
+generate-secrets: ## Generate secure passwords for services
+	@echo "Generating secure passwords..."
+	@openssl rand -base64 32 > secrets/portainer_admin_password.txt
+	@openssl rand -base64 32 > secrets/grafana_admin_password.txt
+	@openssl rand -base64 32 > secrets/postgres_password.txt
+	@openssl rand -base64 32 > secrets/redis_password.txt
+	@openssl rand -base64 32 > secrets/jwt_secret.txt
+	@openssl rand -base64 32 > secrets/session_secret.txt
+	@echo "Secrets generated in ./secrets/ directory"
+	@echo "Please update .env.mcp.local with these values"
+
+validate-config: ## Validate configuration files
+	@echo "Validating configuration..."
+	@docker-compose -f docker-compose.mcp.yml config
+	@echo "Configuration is valid!"
+
+# =============================================================================
+# Service Management
+# =============================================================================
+
+start: ## Start all MCP services
+	@echo "Starting all LearningLab MCP services..."
+	@docker-compose -f docker-compose.mcp.yml --env-file .env.mcp.local up -d
+	@echo "All services started!"
+	@make status
+
+stop: ## Stop all MCP services
+	@echo "Stopping all LearningLab MCP services..."
+	@docker-compose -f docker-compose.mcp.yml down
+	@echo "All services stopped!"
+
+restart: ## Restart all MCP services
+	@echo "Restarting all LearningLab MCP services..."
+	@docker-compose -f docker-compose.mcp.yml --env-file .env.mcp.local restart
+	@echo "All services restarted!"
+
+status: ## Show status of all services
+	@echo "LearningLab MCP Services Status:"
+	@echo "==============================="
+	@docker-compose -f docker-compose.mcp.yml ps
+
+health: ## Check health of all services
+	@echo "Checking health of all services..."
+	@docker-compose -f docker-compose.mcp.yml ps --format "table {{.Name}}\t{{.Status}}\t{{.Ports}}"
+	@echo ""
+	@echo "Detailed health checks:"
+	@docker ps --filter "label=mcp.service" --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
+
+# =============================================================================
+# Phase-specific Management
+# =============================================================================
+
+phase1: ## Start Phase 1 services (Core Development Tools)
+	@echo "Starting Phase 1 services (Core Development Tools)..."
+	@docker-compose -f docker-compose.mcp.yml --env-file .env.mcp.local up -d git-mcp python-sandbox node-sandbox
+	@echo "Phase 1 services started!"
+
+phase2: ## Start Phase 2 services (AI & Data Analysis)
+	@echo "Starting Phase 2 services (AI & Data Analysis)..."
+	@docker-compose -f docker-compose.mcp.yml --env-file .env.mcp.local up -d jupyter-mcp data-analysis-mcp postgres redis
+	@echo "Phase 2 services started!"
+	@echo "Jupyter Lab available at: http://localhost:8888"
+
+phase3: ## Start Phase 3 services (Monitoring & Communication)
+	@echo "Starting Phase 3 services (Monitoring & Communication)..."
+	@docker-compose -f docker-compose.mcp.yml --env-file .env.mcp.local up -d grafana prometheus node-exporter email-service traefik
+	@echo "Phase 3 services started!"
+	@echo "Grafana available at: http://localhost:3000"
+	@echo "Prometheus available at: http://localhost:9090"
+	@echo "Traefik dashboard available at: http://localhost:8080"
+
+phase4: ## Start Phase 4 services (Container Management)
+	@echo "Starting Phase 4 services (Container Management)..."
+	@docker-compose -f docker-compose.mcp.yml --env-file .env.mcp.local up -d portainer
+	@echo "Phase 4 services started!"
+	@echo "Portainer available at: http://localhost:9000"
+
+# =============================================================================
+# Individual Service Management
+# =============================================================================
+
+start-git: ## Start Git MCP server
+	@docker-compose -f docker-compose.mcp.yml --env-file .env.mcp.local up -d git-mcp
+
+start-jupyter: ## Start Jupyter MCP server
+	@docker-compose -f docker-compose.mcp.yml --env-file .env.mcp.local up -d jupyter-mcp postgres redis
+	@echo "Jupyter Lab available at: http://localhost:8888"
+
+start-monitoring: ## Start monitoring stack (Grafana + Prometheus)
+	@docker-compose -f docker-compose.mcp.yml --env-file .env.mcp.local up -d grafana prometheus node-exporter
+	@echo "Grafana available at: http://localhost:3000"
+	@echo "Prometheus available at: http://localhost:9090"
+
+start-portainer: ## Start Portainer container management
+	@docker-compose -f docker-compose.mcp.yml --env-file .env.mcp.local up -d portainer
+	@echo "Portainer available at: http://localhost:9000"
+
+# =============================================================================
+# Development and Building
+# =============================================================================
+
+build: ## Build all custom Docker images
+	@echo "Building all custom Docker images..."
+	@docker-compose -f docker-compose.mcp.yml build
+	@echo "All images built successfully!"
+
+build-git: ## Build Git MCP server image
+	@docker-compose -f docker-compose.mcp.yml build git-mcp
+
+build-jupyter: ## Build Jupyter MCP server image
+	@docker-compose -f docker-compose.mcp.yml build jupyter-mcp
+
+build-data-analysis: ## Build Data Analysis MCP server image
+	@docker-compose -f docker-compose.mcp.yml build data-analysis-mcp
+
+build-email: ## Build Email service image
+	@docker-compose -f docker-compose.mcp.yml build email-service
+
+rebuild: ## Rebuild all images without cache
+	@echo "Rebuilding all images without cache..."
+	@docker-compose -f docker-compose.mcp.yml build --no-cache
+	@echo "All images rebuilt successfully!"
+
+# =============================================================================
+# Logs and Debugging
+# =============================================================================
+
+logs: ## Show logs from all services
+	@docker-compose -f docker-compose.mcp.yml logs -f
+
+logs-git: ## Show Git MCP server logs
+	@docker-compose -f docker-compose.mcp.yml logs -f git-mcp
+
+logs-jupyter: ## Show Jupyter MCP server logs
+	@docker-compose -f docker-compose.mcp.yml logs -f jupyter-mcp
+
+logs-grafana: ## Show Grafana logs
+	@docker-compose -f docker-compose.mcp.yml logs -f grafana
+
+logs-email: ## Show Email service logs
+	@docker-compose -f docker-compose.mcp.yml logs -f email-service
+
+logs-errors: ## Show only error logs from all services
+	@docker-compose -f docker-compose.mcp.yml logs | grep -i error
+
+debug: ## Enter debug mode with verbose logging
+	@echo "Starting services in debug mode..."
+	@DEBUG=true docker-compose -f docker-compose.mcp.yml --env-file .env.mcp.local up
+
+# =============================================================================
+# Testing
+# =============================================================================
+
+test: ## Run all tests
+	@echo "Running MCP server tests..."
+	@make test-connectivity
+	@make test-health
+	@make test-apis
+
+test-connectivity: ## Test service connectivity
+	@echo "Testing service connectivity..."
+	@curl -f http://localhost:8888/api || echo "Jupyter not accessible"
+	@curl -f http://localhost:3000/api/health || echo "Grafana not accessible"
+	@curl -f http://localhost:9090/-/healthy || echo "Prometheus not accessible"
+	@curl -f http://localhost:9000/api/status || echo "Portainer not accessible"
+
+test-health: ## Test service health endpoints
+	@echo "Testing service health endpoints..."
+	@docker-compose -f docker-compose.mcp.yml ps --services | xargs -I {} docker-compose -f docker-compose.mcp.yml exec -T {} echo "Health check for {}"
+
+test-apis: ## Test API endpoints
+	@echo "Testing API endpoints..."
+	@curl -s http://localhost:8888/api | jq . || echo "Jupyter API test failed"
+	@curl -s http://localhost:9090/api/v1/status/config | jq . || echo "Prometheus API test failed"
+
+test-load: ## Run load tests
+	@echo "Running load tests..."
+	@ab -n 100 -c 10 http://localhost:8888/api/
+
+# =============================================================================
+# Maintenance and Cleanup
+# =============================================================================
+
+clean: ## Clean up containers, networks, and volumes
+	@echo "Cleaning up MCP environment..."
+	@docker-compose -f docker-compose.mcp.yml down -v --remove-orphans
+	@docker system prune -f
+	@echo "Cleanup complete!"
+
+clean-volumes: ## Remove all volumes (WARNING: This will delete all data!)
+	@echo "WARNING: This will delete all data in volumes!"
+	@read -p "Are you sure? (y/N): " confirm && [ "$$confirm" = "y" ] || exit 1
+	@docker-compose -f docker-compose.mcp.yml down -v
+	@docker volume prune -f
+
+clean-images: ## Remove all custom images
+	@echo "Removing custom MCP images..."
+	@docker images | grep learninglab | awk '{print $$3}' | xargs -r docker rmi -f
+
+reset: ## Complete reset (stop, clean, rebuild)
+	@echo "Performing complete reset..."
+	@make stop
+	@make clean
+	@make build
+	@echo "Reset complete!"
+
+# =============================================================================
+# Backup and Restore
+# =============================================================================
+
+backup: ## Create backup of all data
+	@echo "Creating backup..."
+	@mkdir -p backups/$(shell date +%Y%m%d_%H%M%S)
+	@docker-compose -f docker-compose.mcp.yml exec postgres pg_dump -U postgres learninglab > backups/$(shell date +%Y%m%d_%H%M%S)/postgres.sql
+	@docker run --rm -v learninglab_redis-data:/data -v $(PWD)/backups/$(shell date +%Y%m%d_%H%M%S):/backup alpine tar czf /backup/redis.tar.gz -C /data .
+	@docker run --rm -v learninglab_jupyter-notebooks:/data -v $(PWD)/backups/$(shell date +%Y%m%d_%H%M%S):/backup alpine tar czf /backup/jupyter.tar.gz -C /data .
+	@docker run --rm -v learninglab_grafana-data:/data -v $(PWD)/backups/$(shell date +%Y%m%d_%H%M%S):/backup alpine tar czf /backup/grafana.tar.gz -C /data .
+	@echo "Backup created in backups/$(shell date +%Y%m%d_%H%M%S)/"
+
+restore: ## Restore from backup (specify BACKUP_DIR=path)
+	@if [ -z "$(BACKUP_DIR)" ]; then echo "Please specify BACKUP_DIR=path"; exit 1; fi
+	@echo "Restoring from $(BACKUP_DIR)..."
+	@docker-compose -f docker-compose.mcp.yml exec postgres psql -U postgres -c "DROP DATABASE IF EXISTS learninglab;"
+	@docker-compose -f docker-compose.mcp.yml exec postgres psql -U postgres -c "CREATE DATABASE learninglab;"
+	@docker-compose -f docker-compose.mcp.yml exec -T postgres psql -U postgres learninglab < $(BACKUP_DIR)/postgres.sql
+	@docker run --rm -v learninglab_redis-data:/data -v $(PWD)/$(BACKUP_DIR):/backup alpine tar xzf /backup/redis.tar.gz -C /data
+	@docker run --rm -v learninglab_jupyter-notebooks:/data -v $(PWD)/$(BACKUP_DIR):/backup alpine tar xzf /backup/jupyter.tar.gz -C /data
+	@docker run --rm -v learninglab_grafana-data:/data -v $(PWD)/$(BACKUP_DIR):/backup alpine tar xzf /backup/grafana.tar.gz -C /data
+	@echo "Restore complete!"
+
+list-backups: ## List available backups
+	@echo "Available backups:"
+	@ls -la backups/
+
+# =============================================================================
+# Monitoring and Analytics
+# =============================================================================
+
+monitor: ## Open monitoring dashboard
+	@echo "Opening monitoring dashboards..."
+	@open http://localhost:3000 # Grafana
+	@open http://localhost:9090 # Prometheus
+	@open http://localhost:8080 # Traefik
+
+metrics: ## Show current metrics
+	@echo "Current system metrics:"
+	@docker stats --no-stream --format "table {{.Container}}\t{{.CPUPerc}}\t{{.MemUsage}}\t{{.NetIO}}\t{{.BlockIO}}"
+
+resources: ## Show resource usage
+	@echo "Resource usage by service:"
+	@docker-compose -f docker-compose.mcp.yml ps --format "table {{.Name}}\t{{.Status}}"
+	@echo ""
+	@docker system df
+
+# =============================================================================
+# Security
+# =============================================================================
+
+security-scan: ## Run security scan on containers
+	@echo "Running security scan..."
+	@docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image learninglab-git-mcp
+	@docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image learninglab-jupyter-mcp
+
+update-secrets: ## Update all secrets
+	@echo "Updating secrets..."
+	@make generate-secrets
+	@echo "Please restart services to apply new secrets"
+
+check-permissions: ## Check file permissions
+	@echo "Checking file permissions..."
+	@ls -la secrets/
+	@ls -la .env.mcp*
+
+# =============================================================================
+# Documentation and Help
+# =============================================================================
+
+info: ## Show system information
+	@echo "LearningLab MCP Servers Information"
+	@echo "==================================="
+	@echo "Docker version: $(shell docker --version)"
+	@echo "Docker Compose version: $(shell docker-compose --version)"
+	@echo "System: $(shell uname -a)"
+	@echo "Available memory: $(shell free -h | grep Mem | awk '{print $$2}' 2>/dev/null || echo 'N/A')"
+	@echo "Available disk space: $(shell df -h . | tail -1 | awk '{print $$4}')"
+	@echo ""
+	@echo "Service URLs:"
+	@echo "  Jupyter Lab: http://localhost:8888"
+	@echo "  Grafana: http://localhost:3000"
+	@echo "  Prometheus: http://localhost:9090"
+	@echo "  Portainer: http://localhost:9000"
+	@echo "  Traefik Dashboard: http://localhost:8080"
+
+ports: ## Show all exposed ports
+	@echo "Exposed ports:"
+	@docker-compose -f docker-compose.mcp.yml ps --format "table {{.Name}}\t{{.Ports}}"
+
+envs: ## Show environment variables
+	@echo "Environment variables from .env.mcp.local:"
+	@grep -v '^#' .env.mcp.local | grep -v '^$$' | sort
+
+# =============================================================================
+# Development Shortcuts
+# =============================================================================
+
+dev: ## Start development environment (Phase 1 + 2)
+	@echo "Starting development environment..."
+	@make phase1
+	@make phase2
+	@echo "Development environment ready!"
+
+prod: ## Start production environment (all phases)
+	@echo "Starting production environment..."
+	@make start
+	@echo "Production environment ready!"
+
+quick-start: ## Quick start with essential services
+	@echo "Quick starting essential services..."
+	@docker-compose -f docker-compose.mcp.yml --env-file .env.mcp.local up -d postgres redis jupyter-mcp
+	@echo "Essential services started!"
+
+# =============================================================================
+# Aliases for common commands
+# =============================================================================
+
+up: start ## Alias for start
+down: stop ## Alias for stop
+ps: status ## Alias for status
+tail: logs ## Alias for logs

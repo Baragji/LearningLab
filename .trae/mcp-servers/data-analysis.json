@@ -1,0 +1,508 @@
+{
+  "name": "data-analysis",
+  "description": "Advanced data analysis and machine learning for educational insights",
+  "version": "1.0.0",
+  "phase": 2,
+  "priority": "medium",
+  "dependencies": {
+    "runtime": "python",
+    "packages": [
+      "pandas",
+      "numpy",
+      "scikit-learn",
+      "scipy",
+      "matplotlib",
+      "seaborn",
+      "plotly",
+      "statsmodels",
+      "xgboost",
+      "lightgbm",
+      "tensorflow",
+      "torch",
+      "transformers",
+      "nltk",
+      "spacy",
+      "textblob"
+    ],
+    "system": ["python3", "pip3"]
+  },
+  "configuration": {
+    "command": "python",
+    "args": ["-m", "data_analysis_mcp_server"],
+    "environment": {
+      "DATA_ANALYSIS_WORKSPACE": "./data-analysis",
+      "MODEL_CACHE_DIR": "./models",
+      "DATA_CACHE_DIR": "./data-cache",
+      "MAX_MEMORY_USAGE": "8GB",
+      "MAX_PROCESSING_TIME": "600",
+      "ENABLE_GPU": "false",
+      "PARALLEL_JOBS": "4"
+    },
+    "security": {
+      "allowed_data_sources": ["./data", "./uploads", "./exports"],
+      "restricted_operations": ["system_calls", "network_requests"],
+      "max_file_size": "500MB",
+      "max_processing_time": 600,
+      "sandbox_mode": true,
+      "data_privacy": "strict"
+    }
+  },
+  "capabilities": {
+    "student_performance_analysis": {
+      "description": "Analyze student learning patterns and performance",
+      "operations": [
+        "loadStudentData",
+        "performanceMetrics",
+        "learningPatterns",
+        "predictiveAnalysis",
+        "visualizeInsights"
+      ],
+      "algorithms": [
+        "clustering",
+        "classification",
+        "regression",
+        "time_series_analysis",
+        "anomaly_detection"
+      ],
+      "outputs": [
+        "performance_reports",
+        "learning_recommendations",
+        "risk_assessments",
+        "progress_predictions"
+      ]
+    },
+    "content_analysis": {
+      "description": "Analyze educational content for quality and effectiveness",
+      "operations": [
+        "textAnalysis",
+        "difficultyAssessment",
+        "topicExtraction",
+        "readabilityAnalysis",
+        "conceptMapping"
+      ],
+      "algorithms": [
+        "nlp_processing",
+        "topic_modeling",
+        "sentiment_analysis",
+        "text_classification",
+        "entity_recognition"
+      ],
+      "outputs": [
+        "content_quality_scores",
+        "difficulty_levels",
+        "topic_hierarchies",
+        "improvement_suggestions"
+      ]
+    },
+    "adaptive_learning": {
+      "description": "Implement adaptive learning algorithms",
+      "operations": [
+        "knowledgeTracing",
+        "skillAssessment",
+        "pathRecommendation",
+        "difficultyAdjustment",
+        "personalizedContent"
+      ],
+      "algorithms": [
+        "bayesian_knowledge_tracing",
+        "item_response_theory",
+        "collaborative_filtering",
+        "reinforcement_learning",
+        "deep_knowledge_tracing"
+      ],
+      "outputs": [
+        "knowledge_states",
+        "learning_paths",
+        "content_recommendations",
+        "mastery_predictions"
+      ]
+    },
+    "assessment_analytics": {
+      "description": "Advanced analytics for assessments and quizzes",
+      "operations": [
+        "itemAnalysis",
+        "reliabilityAnalysis",
+        "validityAnalysis",
+        "biasDetection",
+        "fairnessAssessment"
+      ],
+      "algorithms": [
+        "classical_test_theory",
+        "item_response_theory",
+        "differential_item_functioning",
+        "rasch_modeling",
+        "factor_analysis"
+      ],
+      "outputs": [
+        "item_statistics",
+        "reliability_coefficients",
+        "validity_evidence",
+        "bias_reports"
+      ]
+    },
+    "predictive_modeling": {
+      "description": "Predictive models for educational outcomes",
+      "operations": [
+        "dropoutPrediction",
+        "performancePrediction",
+        "engagementPrediction",
+        "interventionRecommendation",
+        "resourceAllocation"
+      ],
+      "algorithms": [
+        "random_forest",
+        "gradient_boosting",
+        "neural_networks",
+        "support_vector_machines",
+        "ensemble_methods"
+      ],
+      "outputs": [
+        "risk_scores",
+        "prediction_intervals",
+        "feature_importance",
+        "intervention_recommendations"
+      ]
+    }
+  },
+  "use_cases": {
+    "phase_2_2_ai_content_analysis": {
+      "description": "AI-powered content analysis for Phase 2.2",
+      "workflow": [
+        {
+          "step": "load_content",
+          "operation": "loadStudentData",
+          "input": "course_materials",
+          "output": "structured_content"
+        },
+        {
+          "step": "analyze_difficulty",
+          "operation": "difficultyAssessment",
+          "input": "structured_content",
+          "output": "difficulty_scores"
+        },
+        {
+          "step": "extract_topics",
+          "operation": "topicExtraction",
+          "input": "structured_content",
+          "output": "topic_hierarchy"
+        },
+        {
+          "step": "generate_insights",
+          "operation": "visualizeInsights",
+          "input": "difficulty_scores, topic_hierarchy",
+          "output": "content_analysis_report"
+        }
+      ],
+      "example": {
+        "input_data": "./uploads/course-materials/",
+        "analysis_type": "comprehensive",
+        "output_format": "json_report",
+        "expected_output": {
+          "difficulty_distribution": "histogram",
+          "topic_map": "network_graph",
+          "readability_scores": "metrics",
+          "improvement_suggestions": "text_recommendations"
+        }
+      }
+    },
+    "phase_2_3_adaptive_learning": {
+      "description": "Adaptive learning implementation for Phase 2.3",
+      "workflow": [
+        {
+          "step": "assess_knowledge",
+          "operation": "knowledgeTracing",
+          "input": "student_responses",
+          "output": "knowledge_state"
+        },
+        {
+          "step": "recommend_path",
+          "operation": "pathRecommendation",
+          "input": "knowledge_state, learning_objectives",
+          "output": "personalized_path"
+        },
+        {
+          "step": "adjust_difficulty",
+          "operation": "difficultyAdjustment",
+          "input": "performance_data, knowledge_state",
+          "output": "adjusted_content"
+        }
+      ],
+      "example": {
+        "student_id": "student_123",
+        "current_topic": "algebra_basics",
+        "performance_history": "./data/student_123_history.json",
+        "expected_output": {
+          "next_lesson": "lesson_id",
+          "difficulty_level": "0.7",
+          "estimated_mastery_time": "45_minutes",
+          "prerequisite_review": "boolean"
+        }
+      }
+    },
+    "learning_analytics_dashboard": {
+      "description": "Generate data for learning analytics dashboard",
+      "workflow": [
+        {
+          "step": "aggregate_data",
+          "operation": "loadStudentData",
+          "input": "multiple_data_sources",
+          "output": "aggregated_dataset"
+        },
+        {
+          "step": "compute_metrics",
+          "operation": "performanceMetrics",
+          "input": "aggregated_dataset",
+          "output": "key_metrics"
+        },
+        {
+          "step": "detect_patterns",
+          "operation": "learningPatterns",
+          "input": "aggregated_dataset",
+          "output": "pattern_insights"
+        },
+        {
+          "step": "create_visualizations",
+          "operation": "visualizeInsights",
+          "input": "key_metrics, pattern_insights",
+          "output": "dashboard_data"
+        }
+      ]
+    }
+  },
+  "models": {
+    "student_performance_predictor": {
+      "type": "gradient_boosting",
+      "features": [
+        "quiz_scores",
+        "time_spent",
+        "help_requests",
+        "login_frequency",
+        "assignment_completion"
+      ],
+      "target": "final_grade",
+      "performance": {
+        "accuracy": 0.85,
+        "precision": 0.83,
+        "recall": 0.87,
+        "f1_score": 0.85
+      }
+    },
+    "content_difficulty_classifier": {
+      "type": "neural_network",
+      "features": [
+        "text_complexity",
+        "vocabulary_level",
+        "concept_density",
+        "prerequisite_count"
+      ],
+      "target": "difficulty_level",
+      "performance": {
+        "accuracy": 0.78,
+        "mae": 0.15,
+        "rmse": 0.22
+      }
+    },
+    "knowledge_tracer": {
+      "type": "bayesian_knowledge_tracing",
+      "parameters": {
+        "prior_knowledge": 0.1,
+        "learning_rate": 0.3,
+        "guess_rate": 0.2,
+        "slip_rate": 0.1
+      },
+      "skills_tracked": [
+        "algebra_basics",
+        "geometry_fundamentals",
+        "calculus_derivatives",
+        "statistics_basics"
+      ]
+    }
+  },
+  "data_pipelines": {
+    "student_data_pipeline": {
+      "description": "Process and analyze student interaction data",
+      "steps": [
+        {
+          "name": "data_ingestion",
+          "operation": "load_raw_data",
+          "input_sources": ["quiz_responses", "clickstream", "assignments"],
+          "output": "raw_dataset"
+        },
+        {
+          "name": "data_cleaning",
+          "operation": "clean_and_validate",
+          "transformations": ["remove_duplicates", "handle_missing", "validate_types"],
+          "output": "clean_dataset"
+        },
+        {
+          "name": "feature_engineering",
+          "operation": "create_features",
+          "features": ["engagement_score", "learning_velocity", "help_seeking_behavior"],
+          "output": "feature_dataset"
+        },
+        {
+          "name": "analysis",
+          "operation": "run_analysis",
+          "analyses": ["performance_trends", "learning_patterns", "risk_assessment"],
+          "output": "analysis_results"
+        }
+      ],
+      "schedule": "daily",
+      "retention": "90_days"
+    },
+    "content_analysis_pipeline": {
+      "description": "Analyze and categorize educational content",
+      "steps": [
+        {
+          "name": "content_extraction",
+          "operation": "extract_text_and_metadata",
+          "input_formats": ["pdf", "html", "docx", "txt"],
+          "output": "extracted_content"
+        },
+        {
+          "name": "nlp_processing",
+          "operation": "process_natural_language",
+          "tasks": ["tokenization", "pos_tagging", "named_entity_recognition"],
+          "output": "processed_text"
+        },
+        {
+          "name": "content_analysis",
+          "operation": "analyze_educational_content",
+          "analyses": ["difficulty_assessment", "topic_modeling", "concept_extraction"],
+          "output": "content_insights"
+        }
+      ],
+      "schedule": "on_upload",
+      "retention": "indefinite"
+    }
+  },
+  "monitoring": {
+    "health_check": {
+      "command": "python -c 'import pandas, numpy, sklearn; print(\"OK\")';",
+      "interval": 60,
+      "timeout": 15
+    },
+    "metrics": {
+      "analysis_jobs_total": "Counter of analysis jobs executed",
+      "analysis_duration_seconds": "Histogram of analysis execution times",
+      "model_predictions_total": "Counter of model predictions made",
+      "data_processing_errors_total": "Counter of data processing errors",
+      "memory_usage_bytes": "Gauge of memory usage",
+      "active_pipelines": "Gauge of active data pipelines"
+    },
+    "alerts": {
+      "high_memory_usage": {
+        "condition": "memory_usage_bytes > 7GB",
+        "duration": "5m",
+        "severity": "warning"
+      },
+      "long_running_analysis": {
+        "condition": "analysis_duration_seconds > 600",
+        "duration": "1m",
+        "severity": "warning"
+      },
+      "high_error_rate": {
+        "condition": "rate(data_processing_errors_total[5m]) > 0.1",
+        "duration": "2m",
+        "severity": "critical"
+      }
+    }
+  },
+  "integration": {
+    "data_sources": {
+      "filesystem": {
+        "operations": ["readFile", "listFiles", "writeFile"],
+        "use_cases": ["load_datasets", "save_models", "export_results"]
+      },
+      "jupyter": {
+        "operations": ["executeNotebook", "getResults"],
+        "use_cases": ["interactive_analysis", "model_development"]
+      },
+      "database": {
+        "operations": ["query", "insert", "update"],
+        "use_cases": ["student_data", "course_data", "analytics_storage"]
+      }
+    },
+    "output_formats": {
+      "json": "Structured data for API consumption",
+      "csv": "Tabular data for spreadsheet analysis",
+      "html": "Interactive reports and visualizations",
+      "pdf": "Formatted reports for stakeholders",
+      "png/svg": "Charts and visualizations"
+    }
+  },
+  "testing": {
+    "unit_tests": [
+      {
+        "name": "test_data_loading",
+        "description": "Test data loading and validation",
+        "test_data": "./test-data/sample-student-data.csv",
+        "expected_output": "validated_dataframe"
+      },
+      {
+        "name": "test_performance_analysis",
+        "description": "Test student performance analysis",
+        "test_data": "./test-data/performance-sample.json",
+        "expected_metrics": ["accuracy", "completion_rate", "engagement_score"]
+      },
+      {
+        "name": "test_content_analysis",
+        "description": "Test content difficulty assessment",
+        "test_data": "./test-data/sample-content.txt",
+        "expected_output": "difficulty_score_between_0_and_1"
+      }
+    ],
+    "integration_tests": [
+      {
+        "name": "test_adaptive_learning_workflow",
+        "description": "Test complete adaptive learning workflow",
+        "steps": [
+          "Load student performance data",
+          "Run knowledge tracing",
+          "Generate learning path recommendations",
+          "Validate recommendations quality"
+        ]
+      },
+      {
+        "name": "test_analytics_pipeline",
+        "description": "Test end-to-end analytics pipeline",
+        "steps": [
+          "Ingest sample data",
+          "Run data processing pipeline",
+          "Generate analytics insights",
+          "Export results in multiple formats"
+        ]
+      }
+    ]
+  },
+  "best_practices": {
+    "data_privacy": [
+      "Anonymize student data before analysis",
+      "Implement data retention policies",
+      "Use differential privacy for sensitive analyses",
+      "Audit data access and usage",
+      "Comply with GDPR and FERPA requirements"
+    ],
+    "model_development": [
+      "Use cross-validation for model evaluation",
+      "Monitor for model drift and bias",
+      "Implement A/B testing for model updates",
+      "Document model assumptions and limitations",
+      "Regularly retrain models with new data"
+    ],
+    "performance": [
+      "Use efficient data structures and algorithms",
+      "Implement caching for expensive computations",
+      "Monitor memory usage and optimize accordingly",
+      "Use parallel processing for large datasets",
+      "Profile code to identify bottlenecks"
+    ],
+    "reliability": [
+      "Implement robust error handling",
+      "Use data validation and quality checks",
+      "Create comprehensive test suites",
+      "Monitor system health and performance",
+      "Implement graceful degradation strategies"
+    ]
+  }
+}

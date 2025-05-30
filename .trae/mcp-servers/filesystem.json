@@ -1,0 +1,113 @@
+{
+  "name": "filesystem",
+  "description": "File system access for uploads and material management",
+  "version": "1.0.0",
+  "phase": 1,
+  "priority": "high",
+  "dependencies": {
+    "runtime": "node",
+    "packages": ["@modelcontextprotocol/server-filesystem"]
+  },
+  "configuration": {
+    "command": "npx",
+    "args": ["@modelcontextprotocol/server-filesystem", "./"],
+    "environment": {
+      "MCP_FILESYSTEM_ALLOWED_DIRS": "./apps,./packages,./docs,./scripts,./uploads",
+      "MCP_FILESYSTEM_DENIED_DIRS": "./node_modules,./.git,./logs",
+      "MCP_FILESYSTEM_MAX_FILE_SIZE": "100MB",
+      "MCP_FILESYSTEM_ALLOWED_EXTENSIONS": ".pdf,.doc,.docx,.txt,.md,.json,.csv,.xlsx"
+    },
+    "security": {
+      "read_only_paths": ["./migrations/legacy", "./seed"],
+      "restricted_paths": ["./packages/config", "./.env*"],
+      "max_file_size": "100MB",
+      "allowed_operations": ["read", "write", "list", "stat"],
+      "denied_operations": ["delete", "move"]
+    }
+  },
+  "use_cases": {
+    "phase_1_1": {
+      "description": "File upload system for PDF, video, images",
+      "operations": ["writeFile", "readFile", "listFiles"],
+      "example": {
+        "upload_material": {
+          "operation": "writeFile",
+          "params": {
+            "path": "./uploads/materials/lesson1.pdf",
+            "content": "<buffer>",
+            "encoding": "binary"
+          }
+        },
+        "list_materials": {
+          "operation": "readDir",
+          "params": {
+            "path": "./uploads/materials"
+          }
+        }
+      }
+    },
+    "general": {
+      "description": "General file operations for development",
+      "operations": ["readFile", "writeFile", "readDir", "stat"],
+      "example": {
+        "read_config": {
+          "operation": "readFile",
+          "params": {
+            "path": "./package.json",
+            "encoding": "utf8"
+          }
+        }
+      }
+    }
+  },
+  "monitoring": {
+    "health_check": {
+      "endpoint": "/health",
+      "interval": 30,
+      "timeout": 5
+    },
+    "metrics": {
+      "file_operations_total": "Counter of file operations",
+      "file_operation_duration": "Histogram of operation durations",
+      "active_file_handles": "Gauge of open file handles"
+    },
+    "alerts": {
+      "high_error_rate": {
+        "condition": "error_rate > 0.05",
+        "duration": "5m",
+        "severity": "warning"
+      },
+      "disk_space_low": {
+        "condition": "disk_free_bytes < 1GB",
+        "duration": "1m",
+        "severity": "critical"
+      }
+    }
+  },
+  "testing": {
+    "unit_tests": [
+      {
+        "name": "test_file_upload",
+        "description": "Test file upload functionality",
+        "steps": [
+          "Create test file",
+          "Upload via filesystem server",
+          "Verify file exists",
+          "Clean up test file"
+        ]
+      }
+    ],
+    "integration_tests": [
+      {
+        "name": "test_material_workflow",
+        "description": "Test complete material upload workflow",
+        "steps": [
+          "Upload PDF material",
+          "Process with AI",
+          "Generate quiz questions",
+          "Save to database"
+        ]
+      }
+    ]
+  }
+}
