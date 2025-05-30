@@ -43,7 +43,7 @@ export class SearchController {
   @ApiQuery({
     name: 'type',
     required: false,
-    enum: ['course', 'topic', 'lesson', 'all'],
+    enum: ['course', 'topic', 'lesson', 'material', 'file', 'all'],
     description: 'Type af indhold at søge i',
   })
   @ApiQuery({
@@ -180,7 +180,7 @@ export class SearchController {
   @Get()
   async search(
     @Query('query') query?: string,
-    @Query('type') type: 'course' | 'topic' | 'lesson' | 'all' = 'all',
+    @Query('type') type: 'course' | 'topic' | 'lesson' | 'material' | 'file' | 'all' = 'all',
     @Query('tags') tags?: string,
     @Query('difficulty') difficulty?: Difficulty,
     @Query('status') status?: CourseStatus,

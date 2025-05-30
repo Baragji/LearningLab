@@ -1,5 +1,5 @@
 import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
-import { PrismaService } from '../persistence/prisma.service';
+import { PrismaService } from '../persistence/prisma/prisma.service';
 import * as fs from 'fs';
 import * as path from 'path';
 import { promisify } from 'util';
@@ -106,7 +106,7 @@ export class FileUploadService {
     }
   }
 
-  async getFile(id: number): Promise<File> {
+  async getFile(id: number): Promise<File & { uploader: { id: number; name: string; email: string } | null }> {
     const file = await this.prisma.file.findUnique({
       where: { id },
       include: {
@@ -207,7 +207,7 @@ export class FileUploadService {
     return path.join(this.uploadPath, filename);
   }
 
-  async searchFiles(query: string, userId?: number): Promise<File[]> {
+  async searchFiles(query: string, userId?: number): Promise<(File & { uploader: { id: number; name: string; email: string } | null })[]> {
     const whereClause: any = {
       OR: [
         { originalName: { contains: query, mode: 'insensitive' } },

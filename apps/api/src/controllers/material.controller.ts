@@ -13,7 +13,7 @@ import {
   BadRequestException
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
-import { JwtAuthGuard } from '../middleware/auth.middleware';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import {
   MaterialService,
   CreateMaterialDto,

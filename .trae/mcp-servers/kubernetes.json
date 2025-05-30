@@ -1,0 +1,639 @@
+{
+  "name": "kubernetes",
+  "description": "Kubernetes deployment and orchestration for LearningLab platform",
+  "version": "1.0.0",
+  "phase": 4,
+  "priority": "high",
+  "dependencies": {
+    "runtime": "kubectl",
+    "tools": [
+      "kubectl",
+      "helm",
+      "kustomize",
+      "docker",
+      "k9s"
+    ],
+    "system": ["kubernetes-cli", "helm"]
+  },
+  "configuration": {
+    "command": "kubectl",
+    "args": ["version", "--client"],
+    "environment": {
+      "KUBECONFIG": "${HOME}/.kube/config",
+      "KUBERNETES_NAMESPACE": "learninglab",
+      "HELM_CHART_VERSION": "1.0.0",
+      "DOCKER_REGISTRY": "ghcr.io/learninglab",
+      "DEPLOYMENT_ENVIRONMENT": "production",
+      "KUBECTL_TIMEOUT": "300s"
+    },
+    "security": {
+      "rbac_enabled": true,
+      "network_policies": true,
+      "pod_security_standards": "restricted",
+      "service_mesh": "istio",
+      "secrets_management": "sealed-secrets"
+    }
+  },
+  "cluster_configuration": {
+    "namespaces": [
+      {
+        "name": "learninglab-prod",
+        "labels": {
+          "environment": "production",
+          "app": "learninglab"
+        },
+        "resource_quotas": {
+          "cpu": "10",
+          "memory": "20Gi",
+          "storage": "100Gi",
+          "pods": "50"
+        }
+      },
+      {
+        "name": "learninglab-staging",
+        "labels": {
+          "environment": "staging",
+          "app": "learninglab"
+        },
+        "resource_quotas": {
+          "cpu": "5",
+          "memory": "10Gi",
+          "storage": "50Gi",
+          "pods": "25"
+        }
+      },
+      {
+        "name": "learninglab-dev",
+        "labels": {
+          "environment": "development",
+          "app": "learninglab"
+        },
+        "resource_quotas": {
+          "cpu": "2",
+          "memory": "4Gi",
+          "storage": "20Gi",
+          "pods": "10"
+        }
+      }
+    ],
+    "network_policies": [
+      {
+        "name": "deny-all-ingress",
+        "spec": {
+          "podSelector": {},
+          "policyTypes": ["Ingress"]
+        }
+      },
+      {
+        "name": "allow-frontend-to-api",
+        "spec": {
+          "podSelector": {
+            "matchLabels": {"app": "learninglab-api"}
+          },
+          "ingress": [
+            {
+              "from": [
+                {
+                  "podSelector": {
+                    "matchLabels": {"app": "learninglab-frontend"}
+                  }
+                }
+              ],
+              "ports": [{"protocol": "TCP", "port": 8000}]
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "applications": {
+    "learninglab_frontend": {
+      "deployment": {
+        "name": "learninglab-frontend",
+        "replicas": 3,
+        "image": "ghcr.io/learninglab/frontend:latest",
+        "ports": [{"containerPort": 3000, "name": "http"}],
+        "resources": {
+          "requests": {"cpu": "100m", "memory": "128Mi"},
+          "limits": {"cpu": "500m", "memory": "512Mi"}
+        },
+        "env": [
+          {"name": "NODE_ENV", "value": "production"},
+          {"name": "API_URL", "value": "http://learninglab-api:8000"},
+          {"name": "REDIS_URL", "valueFrom": {"secretKeyRef": {"name": "redis-secret", "key": "url"}}}
+        ],
+        "health_checks": {
+          "liveness": {
+            "httpGet": {"path": "/health", "port": 3000},
+            "initialDelaySeconds": 30,
+            "periodSeconds": 10
+          },
+          "readiness": {
+            "httpGet": {"path": "/ready", "port": 3000},
+            "initialDelaySeconds": 5,
+            "periodSeconds": 5
+          }
+        }
+      },
+      "service": {
+        "name": "learninglab-frontend",
+        "type": "ClusterIP",
+        "ports": [{"port": 80, "targetPort": 3000}],
+        "selector": {"app": "learninglab-frontend"}
+      },
+      "hpa": {
+        "name": "learninglab-frontend-hpa",
+        "minReplicas": 2,
+        "maxReplicas": 10,
+        "targetCPUUtilizationPercentage": 70,
+        "targetMemoryUtilizationPercentage": 80
+      }
+    },
+    "learninglab_api": {
+      "deployment": {
+        "name": "learninglab-api",
+        "replicas": 3,
+        "image": "ghcr.io/learninglab/api:latest",
+        "ports": [{"containerPort": 8000, "name": "http"}],
+        "resources": {
+          "requests": {"cpu": "200m", "memory": "256Mi"},
+          "limits": {"cpu": "1000m", "memory": "1Gi"}
+        },
+        "env": [
+          {"name": "NODE_ENV", "value": "production"},
+          {"name": "DATABASE_URL", "valueFrom": {"secretKeyRef": {"name": "db-secret", "key": "url"}}},
+          {"name": "REDIS_URL", "valueFrom": {"secretKeyRef": {"name": "redis-secret", "key": "url"}}},
+          {"name": "JWT_SECRET", "valueFrom": {"secretKeyRef": {"name": "jwt-secret", "key": "secret"}}}
+        ],
+        "health_checks": {
+          "liveness": {
+            "httpGet": {"path": "/api/health", "port": 8000},
+            "initialDelaySeconds": 60,
+            "periodSeconds": 10
+          },
+          "readiness": {
+            "httpGet": {"path": "/api/ready", "port": 8000},
+            "initialDelaySeconds": 10,
+            "periodSeconds": 5
+          }
+        }
+      },
+      "service": {
+        "name": "learninglab-api",
+        "type": "ClusterIP",
+        "ports": [{"port": 8000, "targetPort": 8000}],
+        "selector": {"app": "learninglab-api"}
+      },
+      "hpa": {
+        "name": "learninglab-api-hpa",
+        "minReplicas": 2,
+        "maxReplicas": 15,
+        "targetCPUUtilizationPercentage": 70,
+        "targetMemoryUtilizationPercentage": 80
+      }
+    },
+    "postgresql": {
+      "statefulset": {
+        "name": "postgresql",
+        "replicas": 1,
+        "image": "postgres:15-alpine",
+        "ports": [{"containerPort": 5432, "name": "postgres"}],
+        "resources": {
+          "requests": {"cpu": "500m", "memory": "1Gi"},
+          "limits": {"cpu": "2000m", "memory": "4Gi"}
+        },
+        "env": [
+          {"name": "POSTGRES_DB", "value": "learninglab"},
+          {"name": "POSTGRES_USER", "valueFrom": {"secretKeyRef": {"name": "db-secret", "key": "username"}}},
+          {"name": "POSTGRES_PASSWORD", "valueFrom": {"secretKeyRef": {"name": "db-secret", "key": "password"}}}
+        ],
+        "volume_mounts": [
+          {"name": "postgres-data", "mountPath": "/var/lib/postgresql/data"}
+        ],
+        "volume_claim_templates": [
+          {
+            "metadata": {"name": "postgres-data"},
+            "spec": {
+              "accessModes": ["ReadWriteOnce"],
+              "resources": {"requests": {"storage": "50Gi"}}
+            }
+          }
+        ]
+      },
+      "service": {
+        "name": "postgresql",
+        "type": "ClusterIP",
+        "ports": [{"port": 5432, "targetPort": 5432}],
+        "selector": {"app": "postgresql"}
+      }
+    },
+    "redis": {
+      "deployment": {
+        "name": "redis",
+        "replicas": 1,
+        "image": "redis:7-alpine",
+        "ports": [{"containerPort": 6379, "name": "redis"}],
+        "resources": {
+          "requests": {"cpu": "100m", "memory": "128Mi"},
+          "limits": {"cpu": "500m", "memory": "512Mi"}
+        },
+        "args": ["redis-server", "--appendonly", "yes"],
+        "volume_mounts": [
+          {"name": "redis-data", "mountPath": "/data"}
+        ]
+      },
+      "service": {
+        "name": "redis",
+        "type": "ClusterIP",
+        "ports": [{"port": 6379, "targetPort": 6379}],
+        "selector": {"app": "redis"}
+      },
+      "persistent_volume_claim": {
+        "name": "redis-data",
+        "accessModes": ["ReadWriteOnce"],
+        "resources": {"requests": {"storage": "10Gi"}}
+      }
+    }
+  },
+  "ingress": {
+    "nginx_ingress": {
+      "name": "learninglab-ingress",
+      "class": "nginx",
+      "annotations": {
+        "cert-manager.io/cluster-issuer": "letsencrypt-prod",
+        "nginx.ingress.kubernetes.io/ssl-redirect": "true",
+        "nginx.ingress.kubernetes.io/rate-limit": "100",
+        "nginx.ingress.kubernetes.io/rate-limit-window": "1m"
+      },
+      "tls": [
+        {
+          "hosts": ["learninglab.example.com"],
+          "secretName": "learninglab-tls"
+        }
+      ],
+      "rules": [
+        {
+          "host": "learninglab.example.com",
+          "http": {
+            "paths": [
+              {
+                "path": "/api",
+                "pathType": "Prefix",
+                "backend": {
+                  "service": {
+                    "name": "learninglab-api",
+                    "port": {"number": 8000}
+                  }
+                }
+              },
+              {
+                "path": "/",
+                "pathType": "Prefix",
+                "backend": {
+                  "service": {
+                    "name": "learninglab-frontend",
+                    "port": {"number": 80}
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "monitoring": {
+    "prometheus": {
+      "deployment": {
+        "name": "prometheus",
+        "image": "prom/prometheus:latest",
+        "ports": [{"containerPort": 9090, "name": "web"}],
+        "resources": {
+          "requests": {"cpu": "200m", "memory": "512Mi"},
+          "limits": {"cpu": "1000m", "memory": "2Gi"}
+        },
+        "volume_mounts": [
+          {"name": "prometheus-config", "mountPath": "/etc/prometheus"},
+          {"name": "prometheus-data", "mountPath": "/prometheus"}
+        ]
+      },
+      "service": {
+        "name": "prometheus",
+        "type": "ClusterIP",
+        "ports": [{"port": 9090, "targetPort": 9090}]
+      },
+      "config_map": {
+        "name": "prometheus-config",
+        "data": {
+          "prometheus.yml": "# Prometheus configuration\nglobal:\n  scrape_interval: 15s\nscrape_configs:\n  - job_name: 'kubernetes-pods'\n    kubernetes_sd_configs:\n      - role: pod"
+        }
+      }
+    },
+    "grafana": {
+      "deployment": {
+        "name": "grafana",
+        "image": "grafana/grafana:latest",
+        "ports": [{"containerPort": 3000, "name": "web"}],
+        "resources": {
+          "requests": {"cpu": "100m", "memory": "256Mi"},
+          "limits": {"cpu": "500m", "memory": "1Gi"}
+        },
+        "env": [
+          {"name": "GF_SECURITY_ADMIN_PASSWORD", "valueFrom": {"secretKeyRef": {"name": "grafana-secret", "key": "admin-password"}}}
+        ]
+      },
+      "service": {
+        "name": "grafana",
+        "type": "ClusterIP",
+        "ports": [{"port": 3000, "targetPort": 3000}]
+      }
+    }
+  },
+  "use_cases": {
+    "phase_4_1_production_deployment": {
+      "description": "Deploy LearningLab to production Kubernetes cluster",
+      "workflow": [
+        {
+          "step": "prepare_cluster",
+          "operations": ["createNamespace", "applyNetworkPolicies", "setupRBAC"],
+          "resources": ["namespace", "network-policies", "rbac"]
+        },
+        {
+          "step": "deploy_infrastructure",
+          "operations": ["deployDatabase", "deployRedis", "deployMonitoring"],
+          "resources": ["postgresql", "redis", "prometheus", "grafana"]
+        },
+        {
+          "step": "deploy_applications",
+          "operations": ["deployAPI", "deployFrontend", "configureIngress"],
+          "resources": ["api-deployment", "frontend-deployment", "ingress"]
+        },
+        {
+          "step": "configure_scaling",
+          "operations": ["setupHPA", "configureVPA", "setupPodDisruptionBudgets"],
+          "resources": ["hpa", "vpa", "pdb"]
+        }
+      ],
+      "validation": [
+        "health_checks_passing",
+        "ingress_accessible",
+        "monitoring_active",
+        "scaling_functional"
+      ]
+    },
+    "phase_4_2_template_deployment": {
+      "description": "Create reusable deployment templates",
+      "templates": [
+        {
+          "name": "helm-chart",
+          "type": "helm",
+          "location": "./k8s/helm/learninglab",
+          "values": ["production.yaml", "staging.yaml", "development.yaml"]
+        },
+        {
+          "name": "kustomize-overlays",
+          "type": "kustomize",
+          "location": "./k8s/kustomize",
+          "overlays": ["production", "staging", "development"]
+        },
+        {
+          "name": "terraform-modules",
+          "type": "terraform",
+          "location": "./infrastructure/terraform",
+          "modules": ["cluster", "applications", "monitoring"]
+        }
+      ]
+    },
+    "automated_deployment_pipeline": {
+      "description": "CI/CD pipeline for automated deployments",
+      "stages": [
+        {
+          "name": "build",
+          "operations": ["buildImages", "runTests", "securityScan"],
+          "tools": ["docker", "jest", "trivy"]
+        },
+        {
+          "name": "deploy_staging",
+          "operations": ["deployToStaging", "runIntegrationTests", "performanceTests"],
+          "environment": "staging"
+        },
+        {
+          "name": "deploy_production",
+          "operations": ["blueGreenDeployment", "healthChecks", "rollbackOnFailure"],
+          "environment": "production",
+          "approval_required": true
+        }
+      ]
+    },
+    "disaster_recovery": {
+      "description": "Disaster recovery and backup procedures",
+      "backup_strategy": {
+        "database": {
+          "schedule": "0 2 * * *",
+          "retention": "30d",
+          "location": "s3://learninglab-backups/db"
+        },
+        "persistent_volumes": {
+          "schedule": "0 3 * * *",
+          "retention": "7d",
+          "tool": "velero"
+        },
+        "application_state": {
+          "schedule": "0 4 * * *",
+          "retention": "14d",
+          "includes": ["configmaps", "secrets", "deployments"]
+        }
+      },
+      "recovery_procedures": [
+        "Assess damage and determine recovery scope",
+        "Restore cluster infrastructure if needed",
+        "Restore persistent volumes from backups",
+        "Restore database from latest backup",
+        "Redeploy applications using stored manifests",
+        "Verify system functionality and data integrity"
+      ]
+    }
+  },
+  "helm_charts": {
+    "learninglab": {
+      "chart_version": "1.0.0",
+      "app_version": "1.0.0",
+      "description": "LearningLab platform Helm chart",
+      "values": {
+        "global": {
+          "imageRegistry": "ghcr.io/learninglab",
+          "imagePullSecrets": ["regcred"],
+          "storageClass": "fast-ssd"
+        },
+        "frontend": {
+          "enabled": true,
+          "replicaCount": 3,
+          "image": {
+            "repository": "frontend",
+            "tag": "latest",
+            "pullPolicy": "IfNotPresent"
+          },
+          "service": {
+            "type": "ClusterIP",
+            "port": 80
+          },
+          "ingress": {
+            "enabled": true,
+            "className": "nginx",
+            "hosts": [{"host": "learninglab.example.com", "paths": [{"path": "/", "pathType": "Prefix"}]}]
+          }
+        },
+        "api": {
+          "enabled": true,
+          "replicaCount": 3,
+          "image": {
+            "repository": "api",
+            "tag": "latest",
+            "pullPolicy": "IfNotPresent"
+          },
+          "service": {
+            "type": "ClusterIP",
+            "port": 8000
+          }
+        },
+        "postgresql": {
+          "enabled": true,
+          "auth": {
+            "postgresPassword": "changeme",
+            "database": "learninglab"
+          },
+          "primary": {
+            "persistence": {
+              "enabled": true,
+              "size": "50Gi"
+            }
+          }
+        },
+        "redis": {
+          "enabled": true,
+          "auth": {
+            "enabled": false
+          },
+          "master": {
+            "persistence": {
+              "enabled": true,
+              "size": "10Gi"
+            }
+          }
+        }
+      }
+    }
+  },
+  "security": {
+    "pod_security_policies": {
+      "restricted": {
+        "allowPrivilegeEscalation": false,
+        "runAsNonRoot": true,
+        "seccompProfile": {"type": "RuntimeDefault"},
+        "capabilities": {"drop": ["ALL"]}
+      }
+    },
+    "network_security": {
+      "service_mesh": "istio",
+      "mtls": "strict",
+      "ingress_gateway": "istio-gateway",
+      "egress_policies": ["allow-dns", "allow-external-apis"]
+    },
+    "secrets_management": {
+      "tool": "sealed-secrets",
+      "encryption": "age",
+      "rotation_policy": "90d",
+      "backup_encrypted": true
+    }
+  },
+  "monitoring": {
+    "health_check": {
+      "command": "kubectl cluster-info",
+      "interval": 60,
+      "timeout": 30
+    },
+    "metrics": {
+      "kubernetes_deployments_ready": "Gauge of ready deployments",
+      "kubernetes_pods_running": "Gauge of running pods",
+      "kubernetes_resource_usage": "Gauge of resource utilization",
+      "kubernetes_events_total": "Counter of cluster events"
+    },
+    "cluster_monitoring": {
+      "node_health": "Monitor node status and resource usage",
+      "pod_health": "Monitor pod status and restarts",
+      "service_health": "Monitor service endpoints and connectivity",
+      "storage_health": "Monitor persistent volume status"
+    }
+  },
+  "testing": {
+    "deployment_tests": [
+      {
+        "name": "test_application_deployment",
+        "description": "Test complete application deployment",
+        "steps": [
+          "Deploy to test namespace",
+          "Wait for all pods to be ready",
+          "Test service connectivity",
+          "Verify ingress accessibility",
+          "Clean up test resources"
+        ]
+      },
+      {
+        "name": "test_scaling",
+        "description": "Test horizontal pod autoscaling",
+        "steps": [
+          "Deploy application with HPA",
+          "Generate load to trigger scaling",
+          "Verify pods scale up",
+          "Remove load and verify scale down"
+        ]
+      }
+    ],
+    "chaos_engineering": [
+      {
+        "name": "pod_failure_test",
+        "description": "Test application resilience to pod failures",
+        "tool": "chaos-monkey",
+        "target": "random_pods",
+        "duration": "10m"
+      },
+      {
+        "name": "network_partition_test",
+        "description": "Test application behavior during network issues",
+        "tool": "litmus",
+        "experiment": "pod-network-partition",
+        "duration": "5m"
+      }
+    ]
+  },
+  "best_practices": {
+    "resource_management": [
+      "Set appropriate resource requests and limits",
+      "Use horizontal pod autoscaling",
+      "Implement pod disruption budgets",
+      "Monitor resource utilization",
+      "Use node affinity and anti-affinity rules"
+    ],
+    "security": [
+      "Use least privilege RBAC policies",
+      "Implement network policies",
+      "Scan images for vulnerabilities",
+      "Use pod security standards",
+      "Encrypt secrets and sensitive data"
+    ],
+    "reliability": [
+      "Implement proper health checks",
+      "Use rolling updates for deployments",
+      "Test disaster recovery procedures",
+      "Monitor application and infrastructure",
+      "Implement circuit breakers and retries"
+    ],
+    "operations": [
+      "Use GitOps for deployment management",
+      "Implement comprehensive logging",
+      "Automate backup and recovery",
+      "Document runbooks and procedures",
+      "Regular cluster maintenance and updates"
+    ]
+  }
+}
