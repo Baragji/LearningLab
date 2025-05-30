@@ -15,5 +15,8 @@ export * from './types/pensum.types';
 // Quiz types
 export * from './types/quiz.types';
 
+// EducationProgram types
+export * from './types/educationProgram.types';
+
 // Utility functions
 export * from './utils/validation';

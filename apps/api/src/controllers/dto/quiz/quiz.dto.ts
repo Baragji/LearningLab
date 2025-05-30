@@ -45,12 +45,12 @@ export class QuizDto {
 
   @ApiPropertyOptional({
     description:
-      'ID for det modul, quizzen tilhører (hvis tilknyttet et modul)',
+      'ID for det emne, quizzen tilhører (hvis tilknyttet et emne)',
     type: Number,
     example: 1,
     nullable: true,
   })
-  moduleId?: number | null;
+  topicId?: number | null;
 
   @ApiPropertyOptional({
     description: 'Tidsbegrænsning for quizzen i sekunder',
@@ -152,7 +152,7 @@ export class QuizDto {
   lesson?: any | null;
 
   @ApiPropertyOptional({
-    description: 'Modulet som quizzen tilhører',
+    description: 'Emnet som quizzen tilhører',
     type: 'object',
     properties: {
       id: { type: 'number', example: 1 },
@@ -160,7 +160,7 @@ export class QuizDto {
     },
     nullable: true,
   })
-  module?: any | null;
+  topic?: any | null;
 
   @ApiPropertyOptional({
     description: 'Certifikater udstedt for denne quiz',
@@ -215,15 +215,15 @@ export class CreateQuizDto {
 
   @ApiPropertyOptional({
     description:
-      'ID for det modul, quizzen tilhører (hvis tilknyttet et modul)',
+      'ID for det emne, quizzen tilhører (hvis tilknyttet et emne)',
     type: Number,
     example: 1,
     nullable: true,
   })
   @IsOptional()
-  @IsNumber({}, { message: 'Modul-ID skal være et tal' })
-  @IsPositive({ message: 'Modul-ID skal være et positivt tal' })
-  moduleId?: number | null;
+  @IsNumber({}, { message: 'Emne-ID skal være et tal' })
+  @IsPositive({ message: 'Emne-ID skal være et positivt tal' })
+  topicId?: number | null;
 
   @ApiPropertyOptional({
     description: 'Tidsbegrænsning for quizzen i sekunder',
@@ -347,15 +347,15 @@ export class UpdateQuizDto {
 
   @ApiPropertyOptional({
     description:
-      'ID for det modul, quizzen tilhører (hvis tilknyttet et modul)',
+      'ID for det emne, quizzen tilhører (hvis tilknyttet et emne)',
     type: Number,
     example: 2,
     nullable: true,
   })
   @IsOptional()
-  @IsNumber({}, { message: 'Modul-ID skal være et tal' })
-  @IsPositive({ message: 'Modul-ID skal være et positivt tal' })
-  moduleId?: number | null;
+  @IsNumber({}, { message: 'Emne-ID skal være et tal' })
+  @IsPositive({ message: 'Emne-ID skal være et positivt tal' })
+  topicId?: number | null;
 
   @ApiPropertyOptional({
     description: 'Tidsbegrænsning for quizzen i sekunder',

@@ -26,11 +26,11 @@ export const getUserProgress = async (
       include: {
         lesson: {
           include: {
-            module: {
+            topic: {
               include: {
                 course: {
                   include: {
-                    subjectArea: true,
+                    educationProgram: true,
                   },
                 },
               },
@@ -84,11 +84,11 @@ export const getUserProgressById = async (
       include: {
         lesson: {
           include: {
-            module: {
+            topic: {
               include: {
                 course: {
                   include: {
-                    subjectArea: true,
+                    educationProgram: true,
                   },
                 },
               },
@@ -359,7 +359,7 @@ export const getCourseProgress = async (
     const course = await prisma.course.findUnique({
       where: { id: Number(courseId) },
       include: {
-        modules: {
+        topics: {
           include: {
             lessons: true,
             quizzes: true,
@@ -377,9 +377,9 @@ export const getCourseProgress = async (
     const lessonIds: number[] = [];
     const quizIds: number[] = [];
 
-    course.modules.forEach((module) => {
-      module.lessons.forEach((lesson) => lessonIds.push(lesson.id));
-      module.quizzes.forEach((quiz) => quizIds.push(quiz.id));
+    course.topics.forEach((topic) => {
+      topic.lessons.forEach((lesson) => lessonIds.push(lesson.id));
+      topic.quizzes.forEach((quiz) => quizIds.push(quiz.id));
     });
 
     // Hent fremskridt for alle lektioner og quizzer i kurset

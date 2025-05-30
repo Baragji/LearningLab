@@ -5,11 +5,11 @@ import { Difficulty, CourseStatus, Prisma } from '@prisma/client';
 
 interface SearchParams {
   query?: string;
-  type?: 'course' | 'module' | 'lesson' | 'all';
+  type?: 'course' | 'topic' | 'lesson' | 'all';
   tags?: string[];
   difficulty?: Difficulty;
   status?: CourseStatus | CourseStatus[];
-  subjectAreaId?: number;
+  educationProgramId?: number;
   page: number;
   limit: number;
 }
@@ -27,7 +27,7 @@ export class SearchService {
       tags,
       difficulty,
       status,
-      subjectAreaId,
+      educationProgramId,
       page,
       limit,
     } = params;
@@ -37,9 +37,10 @@ export class SearchService {
 
     // Initialiser resultater
     let courses = [];
-    let modules = [];
+    let topics = [];
     let lessons = [];
     let total = 0;
+    let lessonWhere: Prisma.LessonWhereInput | undefined = undefined;
 
     // Opbyg base where-betingelser for kurser
     const courseWhereBase: Prisma.CourseWhereInput = {
@@ -58,7 +59,7 @@ export class SearchService {
       ...(status && {
         status: Array.isArray(status) ? { in: status } : status,
       }),
-      ...(subjectAreaId && { subjectAreaId }),
+      ...(educationProgramId && { educationProgramId }),
     };
 
     // Søg efter kurser hvis type er 'course' eller 'all'
@@ -66,7 +67,7 @@ export class SearchService {
       courses = await this.prisma.course.findMany({
         where: courseWhereBase,
         include: {
-          subjectArea: {
+          educationProgram: {
             select: {
               id: true,
               name: true,
@@ -97,10 +98,10 @@ export class SearchService {
       }
     }
 
-    // Søg efter moduler hvis type er 'module' eller 'all'
-    if (type === 'module' || type === 'all') {
-      // Opbyg where-betingelser for moduler
-      const moduleWhere: Prisma.ModuleWhereInput = {
+    // Søg efter topics hvis type er 'topic' eller 'all'
+    if (type === 'topic' || type === 'all') {
+      // Opbyg where-betingelser for topics
+      const topicWhere: Prisma.TopicWhereInput = {
         deletedAt: null,
         ...(query && {
           OR: [
@@ -117,20 +118,20 @@ export class SearchService {
           ...(status && {
             status: Array.isArray(status) ? { in: status } : status,
           }),
-          ...(subjectAreaId && { subjectAreaId }),
+          ...(educationProgramId && { educationProgramId }),
           deletedAt: null,
         },
       };
 
-      modules = await this.prisma.module.findMany({
-        where: moduleWhere,
+      topics = await this.prisma.topic.findMany({
+        where: topicWhere,
         include: {
           course: {
             select: {
               id: true,
               title: true,
               slug: true,
-              subjectArea: {
+              educationProgram: {
                 select: {
                   id: true,
                   name: true,
@@ -149,16 +150,16 @@ export class SearchService {
         take: type === 'all' ? Math.floor(limit / 3) : limit,
       });
 
-      // Tilføj relevance score til hvert modul
-      modules = modules.map((module) => ({
-        ...module,
-        relevanceScore: this.calculateRelevanceScore(module, query),
+      // Tilføj relevance score til hvert topic
+      topics = topics.map((topic) => ({
+        ...topic,
+        relevanceScore: this.calculateRelevanceScore(topic, query),
       }));
 
-      // Tæl totale antal moduler der matcher søgningen
-      if (type === 'module') {
-        total = await this.prisma.module.count({
-          where: moduleWhere,
+      // Tæl totale antal topics der matcher søgningen
+      if (type === 'topic') {
+        total = await this.prisma.topic.count({
+          where: topicWhere,
         });
       }
     }
@@ -166,7 +167,7 @@ export class SearchService {
     // Søg efter lektioner hvis type er 'lesson' eller 'all'
     if (type === 'lesson' || type === 'all') {
       // Opbyg where-betingelser for lektioner
-      const lessonWhere: Prisma.LessonWhereInput = {
+      lessonWhere = {
         deletedAt: null,
         ...(query && {
           OR: [
@@ -182,7 +183,7 @@ export class SearchService {
             },
           ],
         }),
-        module: {
+        topic: {
           course: {
             ...(tags &&
               tags.length > 0 && {
@@ -192,7 +193,7 @@ export class SearchService {
             ...(status && {
               status: Array.isArray(status) ? { in: status } : status,
             }),
-            ...(subjectAreaId && { subjectAreaId }),
+            ...(educationProgramId && { educationProgramId }),
             deletedAt: null,
           },
           deletedAt: null,
@@ -202,7 +203,7 @@ export class SearchService {
       lessons = await this.prisma.lesson.findMany({
         where: lessonWhere,
         include: {
-          module: {
+          topic: {
             select: {
               id: true,
               title: true,
@@ -212,7 +213,7 @@ export class SearchService {
                   id: true,
                   title: true,
                   slug: true,
-                  subjectArea: {
+                  educationProgram: {
                     select: {
                       id: true,
                       name: true,
@@ -249,11 +250,8 @@ export class SearchService {
 
     // Hvis type er 'all', beregn det samlede antal resultater
     if (type === 'all') {
-      const coursesCount = await this.prisma.course.count({
-        where: courseWhereBase,
-      });
-
-      const moduleWhere: Prisma.ModuleWhereInput = {
+      const courseCount = await this.prisma.course.count({ where: courseWhereBase });
+      const topicWhereFull: Prisma.TopicWhereInput = {
         deletedAt: null,
         ...(query && {
           OR: [
@@ -262,70 +260,34 @@ export class SearchService {
           ],
         }),
         course: {
-          ...(tags &&
-            tags.length > 0 && {
-              tags: { hasSome: tags },
-            }),
+          ...(tags && tags.length > 0 && { tags: { hasSome: tags } }),
           ...(difficulty && { difficulty }),
-          ...(status && {
-            status: Array.isArray(status) ? { in: status } : status,
-          }),
-          ...(subjectAreaId && { subjectAreaId }),
+          ...(status && { status: Array.isArray(status) ? { in: status } : status }),
+          ...(educationProgramId && { educationProgramId }),
           deletedAt: null,
         },
       };
-
-      const modulesCount = await this.prisma.module.count({
-        where: moduleWhere,
-      });
-
-      const lessonWhere: Prisma.LessonWhereInput = {
-        deletedAt: null,
-        ...(query && {
-          OR: [
-            { title: { contains: query, mode: 'insensitive' } },
-            { description: { contains: query, mode: 'insensitive' } },
-            {
-              contentBlocks: {
-                some: {
-                  content: { contains: query, mode: 'insensitive' },
-                  deletedAt: null,
-                },
-              },
-            },
-          ],
-        }),
-        module: {
-          course: {
-            ...(tags &&
-              tags.length > 0 && {
-                tags: { hasSome: tags },
-              }),
-            ...(difficulty && { difficulty }),
-            ...(status && {
-              status: Array.isArray(status) ? { in: status } : status,
-            }),
-            ...(subjectAreaId && { subjectAreaId }),
-            deletedAt: null,
-          },
-          deletedAt: null,
-        },
-      };
-
-      const lessonsCount = await this.prisma.lesson.count({
-        where: lessonWhere,
-      });
-
-      total = coursesCount + modulesCount + lessonsCount;
+      const topicCount = await this.prisma.topic.count({ where: topicWhereFull });
+      const lessonCount = await this.prisma.lesson.count({ where: lessonWhere });
+      total = courseCount + topicCount + lessonCount;
     }
 
     // Beregn totale antal sider
     const totalPages = Math.ceil(total / limit);
 
+    const responseData: any = {};
+    if (courses.length > 0) {
+      responseData.courses = courses;
+    }
+    if (topics.length > 0) {
+      responseData.topics = topics;
+    }
+    if (lessons.length > 0) {
+      responseData.lessons = lessons;
+    }
+
     return {
-      courses,
-      modules,
-      lessons,
+      data: responseData,
       total,
       page,
       limit,

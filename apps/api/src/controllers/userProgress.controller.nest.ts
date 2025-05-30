@@ -62,11 +62,11 @@ export class UserProgressController {
         include: {
           lesson: {
             include: {
-              module: {
+              topic: {
                 include: {
                   course: {
                     include: {
-                      subjectArea: true,
+                      educationProgram: true,
                     },
                   },
                 },
@@ -131,11 +131,11 @@ export class UserProgressController {
         include: {
           lesson: {
             include: {
-              module: {
+              topic: {
                 include: {
                   course: {
                     include: {
-                      subjectArea: true,
+                      educationProgram: true,
                     },
                   },
                 },
@@ -446,11 +446,12 @@ export class UserProgressController {
     }
 
     try {
-      // Tjek om kurset eksisterer
       const course = await this.prisma.course.findUnique({
         where: { id: courseId },
         include: {
-          modules: {
+          educationProgram: true,
+          topics: {
+            orderBy: { order: 'asc' },
             include: {
               lessons: true,
               quizzes: true,
@@ -463,51 +464,74 @@ export class UserProgressController {
         throw new NotFoundException('Kurset blev ikke fundet');
       }
 
-      // Hent alle lektioner og quizzer i kurset
-      const lessonIds: number[] = [];
-      const quizIds: number[] = [];
+      const progressPromises = course.topics.flatMap((topic) => [
+        ...topic.lessons.map((lesson) =>
+          this.prisma.userProgress.findFirst({
+            where: { userId, lessonId: lesson.id },
+          }),
+        ),
+        ...topic.quizzes.map((quiz) =>
+          this.prisma.userProgress.findFirst({
+            where: { userId, quizId: quiz.id },
+          }),
+        ),
+      ]);
+      
+      const progressResults = await Promise.all(progressPromises);
 
-      course.modules.forEach((module) => {
-        module.lessons.forEach((lesson) => lessonIds.push(lesson.id));
-        module.quizzes.forEach((quiz) => quizIds.push(quiz.id));
+      let totalLessons = 0;
+      let completedLessons = 0;
+      let inProgressLessons = 0;
+      let totalQuizzes = 0;
+      let completedQuizzes = 0;
+      let inProgressQuizzes = 0;
+
+      course.topics.forEach((topic) => {
+        totalLessons += topic.lessons.length;
+        totalQuizzes += topic.quizzes.length;
+
+        topic.lessons.forEach((lesson) => {
+          const lessonProgress = progressResults.find(
+            (p) => p?.lessonId === lesson.id,
+          );
+          if (lessonProgress?.status === ProgressStatus.COMPLETED) {
+            completedLessons++;
+          } else if (lessonProgress?.status === ProgressStatus.IN_PROGRESS) {
+            inProgressLessons++;
+          }
+        });
+
+        topic.quizzes.forEach((quiz) => {
+          const quizProgress = progressResults.find((p) => p?.quizId === quiz.id);
+          if (quizProgress?.status === ProgressStatus.COMPLETED) {
+            completedQuizzes++;
+          } else if (quizProgress?.status === ProgressStatus.IN_PROGRESS) {
+            inProgressQuizzes++;
+          }
+        });
       });
+      
+      const totalItems = totalLessons + totalQuizzes;
+      const completedItems = completedLessons + completedQuizzes;
+      const inProgressItems = inProgressLessons + inProgressQuizzes;
+      
+      const percentageComplete = (totalItems === 0) ? 0 : 
+        (completedItems / totalItems) * 100;
 
-      // Hent fremskridt for alle lektioner og quizzer i kurset
-      const progress = await this.prisma.userProgress.findMany({
-        where: {
-          userId,
-          OR: [
-            { lessonId: { in: lessonIds.length > 0 ? lessonIds : undefined } },
-            { quizId: { in: quizIds.length > 0 ? quizIds : undefined } },
-          ],
-        },
-      });
-
-      // Beregn samlet fremskridt for kurset
-      const totalItems = lessonIds.length + quizIds.length;
-      const completedItems = progress.filter(
-        (p) => p.status === ProgressStatus.COMPLETED,
-      ).length;
-      const inProgressItems = progress.filter(
-        (p) => p.status === ProgressStatus.IN_PROGRESS,
-      ).length;
-
-      const percentageComplete =
-        totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 0;
+      let currentStatus: ProgressStatus = ProgressStatus.NOT_STARTED;
+      if (percentageComplete === 100) {
+        currentStatus = ProgressStatus.COMPLETED;
+      } else if (percentageComplete > 0 || inProgressItems > 0) {
+        currentStatus = ProgressStatus.IN_PROGRESS;
+      }
 
       return {
-        courseId,
+        courseId: course.id,
         totalItems,
         completedItems,
         inProgressItems,
         percentageComplete,
-        status:
-          percentageComplete === 100
-            ? ProgressStatus.COMPLETED
-            : percentageComplete > 0
-              ? ProgressStatus.IN_PROGRESS
-              : ProgressStatus.NOT_STARTED,
-        detailedProgress: progress,
+        status: currentStatus,
       };
     } catch (error) {
       if (error instanceof NotFoundException) {
@@ -544,70 +568,92 @@ export class UserProgressController {
     }
 
     try {
-      // Hent alle kurser
       const courses = await this.prisma.course.findMany({
         include: {
-          modules: {
+          educationProgram: true,
+          topics: {
+            orderBy: { order: 'asc' },
             include: {
               lessons: true,
               quizzes: true,
             },
           },
         },
+        orderBy: { title: 'asc' },
       });
 
-      // Hent brugerens fremskridt
-      const userProgress = await this.prisma.userProgress.findMany({
-        where: { userId },
-      });
+      const courseProgressPromises = courses.map(async (course) => {
+        let totalLessons = 0;
+        let completedLessons = 0;
+        let inProgressLessons = 0;
+        let totalQuizzes = 0;
+        let completedQuizzes = 0;
+        let inProgressQuizzes = 0;
 
-      // Beregn fremskridt for hvert kursus
-      const coursesProgress: CourseProgressDto[] = [];
+        const progressPromises = course.topics.flatMap((topic) => [
+          ...topic.lessons.map((lesson) =>
+            this.prisma.userProgress.findFirst({
+              where: { userId, lessonId: lesson.id },
+            }),
+          ),
+          ...topic.quizzes.map((quiz) =>
+            this.prisma.userProgress.findFirst({
+              where: { userId, quizId: quiz.id },
+            }),
+          ),
+        ]);
+        const progressResults = await Promise.all(progressPromises);
 
-      for (const course of courses) {
-        const lessonIds: number[] = [];
-        const quizIds: number[] = [];
-
-        course.modules.forEach((module) => {
-          module.lessons.forEach((lesson) => lessonIds.push(lesson.id));
-          module.quizzes.forEach((quiz) => quizIds.push(quiz.id));
+        course.topics.forEach((topic) => {
+          totalLessons += topic.lessons.length;
+          totalQuizzes += topic.quizzes.length;
+          topic.lessons.forEach((lesson) => {
+            const lessonProgress = progressResults.find(
+              (p) => p?.lessonId === lesson.id,
+            );
+            if (lessonProgress?.status === ProgressStatus.COMPLETED) {
+              completedLessons++;
+            } else if (lessonProgress?.status === ProgressStatus.IN_PROGRESS) {
+              inProgressLessons++;
+            }
+          });
+          topic.quizzes.forEach((quiz) => {
+            const quizProgress = progressResults.find(
+              (p) => p?.quizId === quiz.id,
+            );
+            if (quizProgress?.status === ProgressStatus.COMPLETED) {
+              completedQuizzes++;
+            } else if (quizProgress?.status === ProgressStatus.IN_PROGRESS) {
+              inProgressQuizzes++;
+            }
+          });
         });
+        
+        const totalItems = totalLessons + totalQuizzes;
+        const completedItems = completedLessons + completedQuizzes;
+        const inProgressItems = inProgressLessons + inProgressQuizzes;
+        
+        const percentageComplete = (totalItems === 0) ? 0 :
+          (completedItems / totalItems) * 100;
 
-        // Find fremskridt for dette kursus
-        const courseProgress = userProgress.filter(
-          (p) =>
-            (p.lessonId && lessonIds.includes(p.lessonId)) ||
-            (p.quizId && quizIds.includes(p.quizId)),
-        );
+        let currentStatus: ProgressStatus = ProgressStatus.NOT_STARTED;
+        if (percentageComplete === 100) {
+          currentStatus = ProgressStatus.COMPLETED;
+        } else if (percentageComplete > 0 || inProgressItems > 0) {
+          currentStatus = ProgressStatus.IN_PROGRESS;
+        }
 
-        const totalItems = lessonIds.length + quizIds.length;
-        const completedItems = courseProgress.filter(
-          (p) => p.status === ProgressStatus.COMPLETED,
-        ).length;
-        const inProgressItems = courseProgress.filter(
-          (p) => p.status === ProgressStatus.IN_PROGRESS,
-        ).length;
-
-        const percentageComplete =
-          totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 0;
-
-        coursesProgress.push({
+        return {
           courseId: course.id,
           totalItems,
           completedItems,
           inProgressItems,
           percentageComplete,
-          status:
-            percentageComplete === 100
-              ? ProgressStatus.COMPLETED
-              : percentageComplete > 0
-                ? ProgressStatus.IN_PROGRESS
-                : ProgressStatus.NOT_STARTED,
-          detailedProgress: courseProgress,
-        });
-      }
+          status: currentStatus,
+        };
+      });
 
-      return coursesProgress;
+      return Promise.all(courseProgressPromises);
     } catch (error) {
       console.error(`Fejl ved hentning af fremskridt for alle kurser:`, error);
       throw new BadRequestException(

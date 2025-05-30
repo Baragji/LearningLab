@@ -44,12 +44,12 @@ model User {
   updatedUsers    User[]  @relation("UpdatedByUser")
 
   // Relations for created and updated entities
-  createdSubjectAreas   SubjectArea[]  @relation("SubjectAreaCreatedByUser")
-  updatedSubjectAreas   SubjectArea[]  @relation("SubjectAreaUpdatedByUser")
+  createdEducationPrograms   EducationProgram[]  @relation("EducationProgramCreatedByUser")
+  updatedEducationPrograms   EducationProgram[]  @relation("EducationProgramUpdatedByUser")
   createdCourses        Course[]       @relation("CourseCreatedByUser")
   updatedCourses        Course[]       @relation("CourseUpdatedByUser")
-  createdModules        Module[]       @relation("ModuleCreatedByUser")
-  updatedModules        Module[]       @relation("ModuleUpdatedByUser")
+  createdTopics        Topic[]       @relation("TopicCreatedByUser")
+  updatedTopics        Topic[]       @relation("TopicUpdatedByUser")
   createdLessons        Lesson[]       @relation("LessonCreatedByUser")
   updatedLessons        Lesson[]       @relation("LessonUpdatedByUser")
   createdContentBlocks  ContentBlock[] @relation("ContentBlockCreatedByUser")
@@ -72,7 +72,7 @@ model User {
   updatedQuestionBankItems QuestionBankItem[] @relation("QuestionBankItemUpdatedByUser")
 }
 
-model SubjectArea {
+model EducationProgram {
   id          Int      @id @default(autoincrement())
   name        String
   slug        String   @unique
@@ -87,9 +87,9 @@ model SubjectArea {
   courses     Course[]
 
   // Relations for createdBy and updatedBy
-  createdByUser   User?   @relation("SubjectAreaCreatedByUser", fields: [createdBy], references: [id])
+  createdByUser   User?   @relation("EducationProgramCreatedByUser", fields: [createdBy], references: [id])
   createdBy       Int?
-  updatedByUser   User?   @relation("SubjectAreaUpdatedByUser", fields: [updatedBy], references: [id])
+  updatedByUser   User?   @relation("EducationProgramUpdatedByUser", fields: [updatedBy], references: [id])
   updatedBy       Int?
 }
 
@@ -98,7 +98,8 @@ model Course {
   title         String
   description   String
   slug          String      @unique
-  subjectAreaId Int
+  educationProgramId Int // Changed from subjectAreaId
+  semesterNumber Int? // Ensuring this field is present // Temporary comment to force re-evaluation
   tags          String[]    @default([])
   difficulty    Difficulty  @default(BEGINNER)
   estimatedHours Int?
@@ -108,8 +109,8 @@ model Course {
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
   deletedAt     DateTime?
-  subjectArea   SubjectArea @relation(fields: [subjectAreaId], references: [id])
-  modules       Module[]
+  educationProgram   EducationProgram @relation(fields: [educationProgramId], references: [id]) // Changed from subjectArea
+  topics       Topic[] // Changed from modules
 
   // Relations for createdBy and updatedBy
   createdByUser   User?   @relation("CourseCreatedByUser", fields: [createdBy], references: [id])
@@ -118,23 +119,24 @@ model Course {
   updatedBy       Int?
 }
 
-model Module {
+model Topic {
   id          Int      @id @default(autoincrement())
   title       String
   description String
   order       Int
   courseId    Int
+  subjectCategory FagCategory? // Ensuring this field is present
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   deletedAt   DateTime?
   lessons     Lesson[]
   course      Course   @relation(fields: [courseId], references: [id])
-  quizzes     Quiz[]   @relation("ModuleQuizzes")
+  quizzes     Quiz[]   @relation("TopicQuizzes")
 
   // Relations for createdBy and updatedBy
-  createdByUser   User?   @relation("ModuleCreatedByUser", fields: [createdBy], references: [id])
+  createdByUser   User?   @relation("TopicCreatedByUser", fields: [createdBy], references: [id])
   createdBy       Int?
-  updatedByUser   User?   @relation("ModuleUpdatedByUser", fields: [updatedBy], references: [id])
+  updatedByUser   User?   @relation("TopicUpdatedByUser", fields: [updatedBy], references: [id])
   updatedBy       Int?
 }
 
@@ -143,12 +145,12 @@ model Lesson {
   title         String
   description   String
   order         Int
-  moduleId      Int
+  topicId      Int // Changed from moduleId
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
   deletedAt     DateTime?
   contentBlocks ContentBlock[]
-  module        Module         @relation(fields: [moduleId], references: [id])
+  topic        Topic         @relation(fields: [topicId], references: [id]) // Changed from module
   quizzes       Quiz[]         @relation("LessonQuizzes")
   userProgress  UserProgress[] @relation("LessonProgress")
 
@@ -182,7 +184,7 @@ model Quiz {
   title              String
   description        String
   lessonId           Int?
-  moduleId           Int?
+  topicId           Int? // Changed from moduleId
   timeLimit          Int?           // in seconds
   maxAttempts        Int?
   randomizeQuestions Boolean        @default(false)
@@ -196,7 +198,7 @@ model Quiz {
   deletedAt          DateTime?
   questions          Question[]
   lesson             Lesson?        @relation("LessonQuizzes", fields: [lessonId], references: [id])
-  module             Module?        @relation("ModuleQuizzes", fields: [moduleId], references: [id])
+  topic             Topic?        @relation("TopicQuizzes", fields: [topicId], references: [id])
   attempts           QuizAttempt[]
   userProgress       UserProgress[] @relation("QuizProgress")
   certificates       Certificate[]
@@ -428,4 +430,11 @@ model UserGroup {
   createdBy       Int?
   updatedByUser   User?   @relation("UserGroupUpdatedByUser", fields: [updatedBy], references: [id])
   updatedBy       Int?
+}
+
+enum FagCategory {
+  KEMI
+  BIOLOGI
+  DATABEHANDLING
+  ANDET
 }

@@ -31,18 +31,18 @@ export class LessonDto {
   description: string;
 
   @ApiProperty({
-    description: 'Lektionens rækkefølge i modulet',
+    description: 'Lektionens rækkefølge i emnet',
     type: Number,
     example: 1,
   })
   order: number;
 
   @ApiProperty({
-    description: 'ID for det modul, lektionen tilhører',
+    description: 'ID for det emne, lektionen tilhører',
     type: Number,
     example: 1,
   })
-  moduleId: number;
+  topicId: number;
 
   @ApiPropertyOptional({
     description: 'Dato for oprettelse af lektionen',
@@ -94,7 +94,7 @@ export class LessonDto {
   quizzes?: any[];
 
   @ApiPropertyOptional({
-    description: 'Modulet som lektionen tilhører',
+    description: 'Emnet som lektionen tilhører',
     type: 'object',
     properties: {
       id: { type: 'number', example: 1 },
@@ -102,7 +102,7 @@ export class LessonDto {
       description: { type: 'string', example: 'Lær grundlæggende TypeScript' },
     },
   })
-  module?: any;
+  topic?: any;
 }
 
 export class CreateLessonDto {
@@ -126,7 +126,7 @@ export class CreateLessonDto {
 
   @ApiPropertyOptional({
     description:
-      'Lektionens rækkefølge i modulet (valgfri, auto-genereres hvis ikke angivet)',
+      'Lektionens rækkefølge i emnet (valgfri, auto-genereres hvis ikke angivet)',
     type: Number,
     example: 1,
   })
@@ -136,13 +136,13 @@ export class CreateLessonDto {
   order?: number;
 
   @ApiProperty({
-    description: 'ID for det modul, lektionen tilhører',
+    description: 'ID for det emne, lektionen tilhører',
     type: Number,
     example: 1,
   })
-  @IsNumber({}, { message: 'Modul-ID skal være et tal' })
-  @IsPositive({ message: 'Modul-ID skal være et positivt tal' })
-  moduleId: number;
+  @IsNumber({}, { message: 'Emne-ID skal være et tal' })
+  @IsPositive({ message: 'Emne-ID skal være et positivt tal' })
+  topicId: number;
 }
 
 export class UpdateLessonDto {
@@ -167,7 +167,7 @@ export class UpdateLessonDto {
   description?: string;
 
   @ApiPropertyOptional({
-    description: 'Lektionens rækkefølge i modulet',
+    description: 'Lektionens rækkefølge i emnet',
     type: Number,
     example: 1,
   })
@@ -177,14 +177,14 @@ export class UpdateLessonDto {
   order?: number;
 
   @ApiPropertyOptional({
-    description: 'ID for det modul, lektionen tilhører',
+    description: 'ID for det emne, lektionen tilhører',
     type: Number,
     example: 1,
   })
   @IsOptional()
-  @IsNumber({}, { message: 'Modul-ID skal være et tal' })
-  @IsPositive({ message: 'Modul-ID skal være et positivt tal' })
-  moduleId?: number;
+  @IsNumber({}, { message: 'Emne-ID skal være et tal' })
+  @IsPositive({ message: 'Emne-ID skal være et positivt tal' })
+  topicId?: number;
 }
 
 export class UpdateLessonsOrderDto {

@@ -48,32 +48,50 @@ export class CourseController {
     this.logger.log('Cache miss for all_courses - henter data fra databasen');
     return this.prisma.course.findMany({
       include: {
-        subjectArea: true,
+        educationProgram: true,
       },
       orderBy: { title: 'asc' },
     });
   }
 
-  @ApiOperation({ summary: 'Hent kurser for et specifikt fagområde' })
+  @ApiOperation({ summary: 'Hent kurser for et specifikt uddannelsesprogram' })
   @ApiParam({
-    name: 'subjectAreaId',
-    description: 'ID for fagområdet',
+    name: 'educationProgramId',
+    description: 'ID for uddannelsesprogrammet',
     type: Number,
   })
   @ApiResponse({
     status: 200,
-    description: 'Liste af kurser for det angivne fagområde',
+    description: 'Liste af kurser for det angivne uddannelsesprogram',
     type: [CourseDto],
   })
-  @Get('by-subject/:subjectAreaId')
-  async getCoursesBySubjectArea(
-    @Param('subjectAreaId', ParseIntPipe) subjectAreaId: number,
+  @Get('by-education-program/:educationProgramId')
+  @ApiOperation({
+    summary: 'Hent alle kurser for et specifikt uddannelsesprogram',
+    description: 'Returnerer en liste over kurser tilknyttet et givent uddannelsesprogram-ID.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'En liste over kurser for det angivne uddannelsesprogram.',
+    type: [CourseDto],
+  })
+  @ApiResponse({ status: 404, description: 'Uddannelsesprogram ikke fundet.' })
+  async getCoursesByEducationProgram(
+    @Param('educationProgramId', ParseIntPipe) educationProgramId: number,
   ): Promise<CourseDto[]> {
     this.logger.log(
-      `Cache miss for courses_by_subject_${subjectAreaId} - henter data fra databasen`,
+      `Cache miss for GET_/api/courses/by-education-program/${educationProgramId} - henter data fra databasen`,
     );
+    const educationProgram = await this.prisma.educationProgram.findUnique({
+      where: { id: educationProgramId },
+    });
+
+    if (!educationProgram) {
+      throw new NotFoundException('Uddannelsesprogram ikke fundet');
+    }
+
     return this.prisma.course.findMany({
-      where: { subjectAreaId },
+      where: { educationProgramId },
       orderBy: { title: 'asc' },
     });
   }
@@ -94,9 +112,15 @@ export class CourseController {
     const course = await this.prisma.course.findUnique({
       where: { id },
       include: {
-        subjectArea: true,
-        modules: {
+        educationProgram: true,
+        topics: {
           orderBy: { order: 'asc' },
+          include: {
+            lessons: {
+              orderBy: { order: 'asc' },
+            },
+            // quizzes: true, // Fjernet da det ikke er en direkte relation her, quizzes er på Lesson eller Topic niveau
+          }
         },
       },
     });
@@ -124,9 +148,15 @@ export class CourseController {
     const course = await this.prisma.course.findUnique({
       where: { slug },
       include: {
-        subjectArea: true,
-        modules: {
+        educationProgram: true,
+        topics: {
           orderBy: { order: 'asc' },
+          include: {
+            lessons: {
+              orderBy: { order: 'asc' },
+            },
+            // quizzes: true, // Fjernet da det ikke er en direkte relation her, quizzes er på Lesson eller Topic niveau
+          }
         },
       },
     });
@@ -148,22 +178,20 @@ export class CourseController {
     status: 400,
     description: 'Ugyldig anmodning - Valideringsfejl',
   })
-  @ApiResponse({ status: 404, description: 'Fagområdet blev ikke fundet' })
+  @ApiResponse({ status: 404, description: 'Uddannelsesprogrammet blev ikke fundet' })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Post()
-  async createCourse(
-    @Body() createCourseDto: CreateCourseDto,
-  ): Promise<CourseDto> {
-    const { title, description, slug, subjectAreaId } = createCourseDto;
+  async createCourse(@Body() createCourseDto: CreateCourseDto): Promise<CourseDto> {
+    const { title, description, slug, educationProgramId } = createCourseDto;
 
-    // Tjek om fagområdet eksisterer
-    const subjectArea = await this.prisma.subjectArea.findUnique({
-      where: { id: subjectAreaId },
+    // Tjek om uddannelsesprogrammet eksisterer
+    const educationProgram = await this.prisma.educationProgram.findUnique({
+      where: { id: educationProgramId },
     });
 
-    if (!subjectArea) {
-      throw new NotFoundException('Det angivne fagområde findes ikke');
+    if (!educationProgram) {
+      throw new NotFoundException('Det angivne uddannelsesprogram findes ikke');
     }
 
     // Tjek om slug allerede eksisterer
@@ -182,13 +210,13 @@ export class CourseController {
         title,
         description,
         slug,
-        subjectAreaId,
+        educationProgramId,
       },
     });
 
-    // Invalider cachen for alle kurser og kurser efter fagområde
+    // Invalider cachen for alle kurser og kurser for det pågældende uddannelsesprogram
     await this.cacheManager.del('GET_/api/courses');
-    await this.cacheManager.del(`GET_/api/courses/by-subject/${subjectAreaId}`);
+    await this.cacheManager.del(`GET_/api/courses/by-education-program/${educationProgramId}`);
 
     return newCourse;
   }
@@ -215,7 +243,7 @@ export class CourseController {
     @Param('id', ParseIntPipe) id: number,
     @Body() updateCourseDto: UpdateCourseDto,
   ): Promise<CourseDto> {
-    const { title, description, slug, subjectAreaId } = updateCourseDto;
+    const { title, description, slug, educationProgramId } = updateCourseDto;
 
     // Tjek om kurset eksisterer
     const existingCourse = await this.prisma.course.findUnique({
@@ -226,14 +254,14 @@ export class CourseController {
       throw new NotFoundException('Kurset blev ikke fundet');
     }
 
-    // Hvis subjectAreaId ændres, tjek om det nye fagområde eksisterer
-    if (subjectAreaId && subjectAreaId !== existingCourse.subjectAreaId) {
-      const subjectArea = await this.prisma.subjectArea.findUnique({
-        where: { id: subjectAreaId },
+    // Hvis educationProgramId ændres, tjek om det nye uddannelsesprogram eksisterer
+    if (educationProgramId && educationProgramId !== existingCourse.educationProgramId) {
+      const educationProgram = await this.prisma.educationProgram.findUnique({
+        where: { id: educationProgramId },
       });
 
-      if (!subjectArea) {
-        throw new NotFoundException('Det angivne fagområde findes ikke');
+      if (!educationProgram) {
+        throw new NotFoundException('Det angivne uddannelsesprogram findes ikke');
       }
     }
 
@@ -256,7 +284,7 @@ export class CourseController {
         title: title || existingCourse.title,
         description: description || existingCourse.description,
         slug: slug || existingCourse.slug,
-        subjectAreaId: subjectAreaId || existingCourse.subjectAreaId,
+        educationProgramId: educationProgramId || existingCourse.educationProgramId,
       },
     });
 
@@ -270,11 +298,11 @@ export class CourseController {
     }
     await this.cacheManager.del('GET_/api/courses');
     await this.cacheManager.del(
-      `GET_/api/courses/by-subject/${existingCourse.subjectAreaId}`,
+      `GET_/api/courses/by-education-program/${existingCourse.educationProgramId}`,
     );
-    if (subjectAreaId && subjectAreaId !== existingCourse.subjectAreaId) {
+    if (educationProgramId && educationProgramId !== existingCourse.educationProgramId) {
       await this.cacheManager.del(
-        `GET_/api/courses/by-subject/${subjectAreaId}`,
+        `GET_/api/courses/by-education-program/${educationProgramId}`,
       );
     }
 
@@ -295,7 +323,16 @@ export class CourseController {
   })
   @ApiResponse({
     status: 400,
-    description: 'Kurset kan ikke slettes, da der er moduler tilknyttet',
+    description: 'Kurset kan ikke slettes, da der er emner tilknyttet',
+    schema: {
+      type: 'object',
+      properties: {
+        message: {
+          type: 'string',
+          example: 'Kurset kan ikke slettes, da der er emner tilknyttet',
+        },
+      },
+    },
   })
   @ApiResponse({ status: 404, description: 'Kurset blev ikke fundet' })
   @ApiBearerAuth()
@@ -304,37 +341,68 @@ export class CourseController {
   async deleteCourse(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<{ message: string }> {
-    // Tjek om kurset eksisterer
-    const existingCourse = await this.prisma.course.findUnique({
+    const courseWithDetails = await this.prisma.course.findUnique({
       where: { id },
-      include: { modules: true },
+      include: {
+        educationProgram: true,
+        topics: { // Rettet fra modules til topics
+          orderBy: { order: 'asc' },
+          include: {
+            lessons: {
+              orderBy: { order: 'asc' },
+              include: {
+                contentBlocks: {
+                  orderBy: { order: 'asc' },
+                },
+              },
+            },
+          },
+        },
+      },
     });
 
-    if (!existingCourse) {
-      throw new NotFoundException('Kurset blev ikke fundet');
+    if (!courseWithDetails) {
+      this.logger.warn(`Course with id ${id} not found for deletion`);
+      throw new NotFoundException(`Kursus med id ${id} blev ikke fundet`);
     }
 
-    // Tjek om der er moduler tilknyttet kurset
-    if (existingCourse.modules.length > 0) {
-      throw new BadRequestException(
-        'Kurset kan ikke slettes, da der er moduler tilknyttet. Slet venligst modulerne først.',
+    // Slet tilknyttede quizzer, lektioner, emner osv. (afhængig af kaskadesletningsregler)
+    // Dette er et eksempel og skal muligvis justeres baseret på din datamodel og forretningslogik
+
+    // Slet selve kurset
+    await this.prisma.course.delete({ where: { id } });
+
+    // Invalider cachen for det slettede kursus og listen over alle kurser
+    await this.cacheManager.del(`course_${id}`);
+    await this.cacheManager.del(`course_slug_${courseWithDetails.slug}`);
+    await this.cacheManager.del('all_courses');
+    if (courseWithDetails.educationProgramId) {
+      await this.cacheManager.del(
+        `GET_/api/courses/by-education-program/${courseWithDetails.educationProgramId}`,
       );
     }
+    if (courseWithDetails.topics) { // Rettet fra modules til topics
+      // Yderligere cache-invalidering for relaterede data, hvis nødvendigt
+    }
 
-    await this.prisma.course.delete({
-      where: { id },
-    });
-
-    // Invalider cachen for det slettede kursus og relaterede cacher
-    await this.cacheManager.del(`GET_/api/courses/${id}`);
-    await this.cacheManager.del(
-      `GET_/api/courses/by-slug/${existingCourse.slug}`,
-    );
-    await this.cacheManager.del('GET_/api/courses');
-    await this.cacheManager.del(
-      `GET_/api/courses/by-subject/${existingCourse.subjectAreaId}`,
-    );
-
-    return { message: 'Kurset blev slettet' };
+    this.logger.log(`Course with id ${id} deleted successfully`);
+    return { message: `Kursus med id ${id} blev slettet` };
   }
+
+  private generateSlug(title: string): string {
+    return title
+      .toLowerCase()
+      .replace(/\s+/g, '-') // Erstat mellemrum med bindestreger
+      .replace(/[^\w-]+/g, ''); // Fjern specialtegn
+  }
+
+  // Helper til at mappe Prisma Course model til CourseDto
+  // private toCourseDto(course: Course & { educationProgram?: EducationProgram, topics?: (Topic & { lessons?: Lesson[] })[] }): CourseDto {
+  //   return {
+  //     ...course,
+  //     educationProgramName: course.educationProgram?.name,
+  //     // Sørg for at subjectAreaId er inkluderet hvis det er en del af din DTO og model
+  //     // subjectAreaId: course.subjectAreaId, // Denne linje vil give fejl hvis subjectAreaId ikke findes på Course. Fjernet da det ikke er en del af Course modellen.
+  //   };
+  // }
 }

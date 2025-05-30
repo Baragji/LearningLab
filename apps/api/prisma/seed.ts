@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, FagCategory, QuestionType } from '@prisma/client';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -24,7 +24,7 @@ function parseSeedpensum(content: string): Record<string, string[]> {
   const semesters: Record<string, string[]> = {};
   
   let currentSemester = '';
-  let currentModule = '';
+  let currentTopicName = '';
   
   for (const line of lines) {
     const trimmedLine = line.trim();
@@ -36,20 +36,20 @@ function parseSeedpensum(content: string): Record<string, string[]> {
     if (trimmedLine.match(/^\d+\.\s*semester$/)) {
       currentSemester = trimmedLine;
       semesters[currentSemester] = [];
-      currentModule = '';
+      currentTopicName = '';
     } 
-    // Check if line is a module header
+    // Check if line is a topic header
     else if (trimmedLine.match(/^[A-Za-zæøåÆØÅ\s]+$/) && !trimmedLine.startsWith('•')) {
-      currentModule = trimmedLine;
+      currentTopicName = trimmedLine;
       if (currentSemester) {
-        if (!semesters[currentSemester].includes(currentModule)) {
-          semesters[currentSemester].push(currentModule);
+        if (!semesters[currentSemester].includes(currentTopicName)) {
+          semesters[currentSemester].push(currentTopicName);
         }
       }
     }
     // Check if line is a lesson (bullet point)
     else if (trimmedLine.startsWith('•')) {
-      // We don't need to store lessons here, just modules
+      // We don't need to store lessons here, just topics
       continue;
     }
   }
@@ -64,10 +64,10 @@ async function seed() {
     
     // Read and parse Seedpensum.txt
     const seedpensumContent = readSeedpensum();
-    const semesters = parseSeedpensum(seedpensumContent);
+    const semestersAndTopics = parseSeedpensum(seedpensumContent);
     
-    // Create 2 subject areas
-    const subjectAreas = [
+    // Create 2 education programs
+    const educationProgramsData = [
       {
         name: 'Laborant Uddannelse',
         slug: 'laborant-uddannelse',
@@ -78,30 +78,33 @@ async function seed() {
       },
     ];
     
-    console.log('Creating subject areas...');
-    const createdSubjectAreas = await Promise.all(
-      subjectAreas.map(async (subjectArea) => {
-        return prisma.subjectArea.upsert({
-          where: { slug: subjectArea.slug },
-          update: subjectArea,
-          create: subjectArea,
+    console.log('Creating education programs...');
+    const createdEducationPrograms = await Promise.all(
+      educationProgramsData.map(async (programData) => {
+        return prisma.educationProgram.upsert({
+          where: { slug: programData.slug },
+          update: programData,
+          create: programData,
         });
       })
     );
     
     // Create 3 courses (one for each semester)
-    const semesterKeys = Object.keys(semesters).slice(0, 3); // Get first 3 semesters
+    const semesterKeys = Object.keys(semestersAndTopics).slice(0, 3); // Get first 3 semesters
     
     console.log('Creating courses...');
     const createdCourses = await Promise.all(
       semesterKeys.map(async (semesterKey, index) => {
-        const subjectAreaId = createdSubjectAreas[index % 2].id; // Alternate between subject areas
-        
+        const educationProgramId = createdEducationPrograms[index % 2].id;
+        const semesterNumberMatch = semesterKey.match(/^(\d+)/);
+        const semesterNumber = semesterNumberMatch ? parseInt(semesterNumberMatch[1]) : index + 1;
+
         const course = {
           title: semesterKey,
           description: `Course for ${semesterKey}`,
           slug: generateSlug(semesterKey),
-          subjectAreaId,
+          educationProgramId,
+          semesterNumber,
         };
         
         return prisma.course.upsert({
@@ -112,60 +115,44 @@ async function seed() {
       })
     );
     
-    // Create modules for each course
-    console.log('Creating modules...');
+    // Create topics for each course
+    console.log('Creating topics...');
     for (let i = 0; i < createdCourses.length; i++) {
       const course = createdCourses[i];
       const semesterKey = semesterKeys[i];
-      const modules = semesters[semesterKey];
+      const topicNames = semestersAndTopics[semesterKey];
       
       await Promise.all(
-        modules.map(async (moduleName, moduleIndex) => {
-          const moduleData = {
-            title: moduleName,
-            description: `Module for ${moduleName}`,
-            order: moduleIndex + 1,
+        topicNames.map(async (topicName, topicIndex) => {
+          const topicData = {
+            title: topicName,
+            description: `Topic for ${topicName}`,
+            order: topicIndex + 1,
             courseId: course.id,
+            subjectCategory: FagCategory.ANDET,
           };
           
-          const createdModule = await prisma.module.upsert({
-            where: {
-              id: -1, // This will always fail, forcing an insert
-            },
-            update: moduleData,
-            create: moduleData,
+          const createdTopic = await prisma.topic.create({
+            data: topicData,
           });
           
-          // Create a lesson for each module
+          // Create a lesson for each topic
           const lessonData = {
-            title: `Introduction to ${moduleName}`,
-            description: `Lesson for ${moduleName}`,
+            title: `Introduction to ${topicName}`,
+            description: `Lesson for ${topicName}`,
             order: 1,
-            moduleId: createdModule.id,
+            topicId: createdTopic.id,
           };
           
-          const createdLesson = await prisma.lesson.upsert({
-            where: {
-              id: -1, // This will always fail, forcing an insert
-            },
-            update: lessonData,
-            create: lessonData,
+          const createdLesson = await prisma.lesson.create({
+            data: lessonData,
           });
           
           // Create a content block for the lesson
-          await prisma.contentBlock.upsert({
-            where: {
-              id: -1, // This will always fail, forcing an insert
-            },
-            update: {
+          await prisma.contentBlock.create({
+            data: {
               type: 'TEXT',
-              content: `This is an introduction to ${moduleName}. The content is based on the curriculum from Seedpensum.txt.`,
-              order: 1,
-              lessonId: createdLesson.id,
-            },
-            create: {
-              type: 'TEXT',
-              content: `This is an introduction to ${moduleName}. The content is based on the curriculum from Seedpensum.txt.`,
+              content: `This is an introduction to ${topicName}. The content is based on the curriculum from Seedpensum.txt.`,
               order: 1,
               lessonId: createdLesson.id,
             },
@@ -176,74 +163,68 @@ async function seed() {
     
     // Create 10 quizzes
     console.log('Creating quizzes...');
-    const modules = await prisma.module.findMany({
+    const topicsForQuizzes = await prisma.topic.findMany({
       take: 10,
     });
     
     await Promise.all(
-      modules.map(async (module, index) => {
+      topicsForQuizzes.map(async (topic, index) => {
         const quizData = {
-          title: `Quiz ${index + 1} - ${module.title}`,
-          description: `Test your knowledge of ${module.title}`,
-          moduleId: module.id,
+          title: `Quiz ${index + 1} - ${topic.title}`,
+          description: `Test your knowledge of ${topic.title}`,
+          topicId: topic.id,
         };
         
-        const createdQuiz = await prisma.quiz.upsert({
-          where: {
-            id: -1, // This will always fail, forcing an insert
-          },
-          update: quizData,
-          create: quizData,
+        const createdQuiz = await prisma.quiz.create({
+          data: quizData,
         });
         
         // Create 3 questions for each quiz
         for (let i = 0; i < 3; i++) {
           const questionData = {
-            text: `Question ${i + 1} for ${module.title}`,
-            type: 'MULTIPLE_CHOICE',
+            text: `Question ${i + 1} for ${topic.title}`,
+            type: QuestionType.MULTIPLE_CHOICE,
+            questionType: QuestionType.MULTIPLE_CHOICE,
             quizId: createdQuiz.id,
+            order: i + 1,
           };
           
-          const createdQuestion = await prisma.question.upsert({
-            where: {
-              id: -1, // This will always fail, forcing an insert
-            },
-            update: questionData,
-            create: questionData,
+          const createdQuestion = await prisma.question.create({
+            data: questionData,
           });
           
           // Create 4 answer options for each question
           const answerOptions = [
             {
               text: 'Answer option 1',
-              isCorrect: i === 0, // First option is correct for first question
+              isCorrect: i === 0,
               questionId: createdQuestion.id,
+              order: 1,
             },
             {
               text: 'Answer option 2',
-              isCorrect: i === 1, // Second option is correct for second question
+              isCorrect: i === 1,
               questionId: createdQuestion.id,
+              order: 2,
             },
             {
               text: 'Answer option 3',
-              isCorrect: i === 2, // Third option is correct for third question
+              isCorrect: i === 2,
               questionId: createdQuestion.id,
+              order: 3,
             },
             {
               text: 'Answer option 4',
               isCorrect: false,
               questionId: createdQuestion.id,
+              order: 4,
             },
           ];
           
           await Promise.all(
             answerOptions.map(async (option) => {
-              await prisma.answerOption.upsert({
-                where: {
-                  id: -1, // This will always fail, forcing an insert
-                },
-                update: option,
-                create: option,
+              await prisma.answerOption.create({
+                data: option,
               });
             })
           );

@@ -14,13 +14,13 @@ import { ThrottlerModule } from '@nestjs/throttler';
 // Import Middlewares
 import { UserIdentificationMiddleware } from './common/middleware/user-identification.middleware';
 import { CoursesModule } from './controllers/courses.module';
-import { ModulesModule } from './controllers/modules.module';
+import { TopicsModule } from './controllers/topics.module';
 import { LessonsModule } from './controllers/lessons.module';
 import { ContentBlocksModule } from './controllers/contentBlocks.module';
 import { QuizzesModule } from './controllers/quizzes.module';
 import { QuizAttemptsModule } from './controllers/quizAttempts.module';
 import { UserProgressModule } from './controllers/userProgress.module';
-import { SubjectAreasModule } from './controllers/subjectAreas.module';
+import { EducationProgramsModule } from './controllers/educationPrograms.module';
 import { PensumModule } from './controllers/pensum.module';
 import { QuestionBankModule } from './controllers/question-bank.module';
 import { CertificateModule } from './controllers/certificate.module';
@@ -72,13 +72,13 @@ import socialAuthConfig from './config/social-auth.config';
     UserGroupsModule, // Tilføj UserGroupsModule
     SearchModule, // Tilføj SearchModule for avanceret søgning
     CoursesModule,
-    ModulesModule,
+    TopicsModule, // Updated from ModulesModule
     LessonsModule,
     ContentBlocksModule,
     QuizzesModule,
     QuizAttemptsModule,
     UserProgressModule,
-    SubjectAreasModule,
+    EducationProgramsModule, // Updated from SubjectAreasModule
     PensumModule,
     QuestionBankModule,
     CertificateModule,

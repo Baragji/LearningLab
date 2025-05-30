@@ -31,31 +31,31 @@ import {
   UpdateLessonsOrderDto,
 } from './dto/lesson/lesson.dto';
 
-@ApiTags('Lessons')
+@ApiTags('Lektioner')
 @Controller('lessons')
 export class LessonController {
   constructor(private readonly prisma: PrismaService) {}
 
-  @ApiOperation({ summary: 'Hent alle lektioner for et specifikt modul' })
-  @ApiParam({ name: 'moduleId', description: 'ID for modulet', type: Number })
+  @ApiOperation({ summary: 'Hent alle lektioner for et specifikt emne' })
+  @ApiParam({ name: 'topicId', description: 'ID for emnet', type: Number })
   @ApiResponse({
     status: 200,
-    description: 'Liste af lektioner for det angivne modul',
+    description: 'Liste af lektioner for det angivne emne',
     type: [LessonDto],
   })
   @ApiResponse({ status: 500, description: 'Serverfejl' })
-  @Get('module/:moduleId')
-  async getLessonsByModule(
-    @Param('moduleId', ParseIntPipe) moduleId: number,
+  @Get('topic/:topicId')
+  async getLessonsByTopic(
+    @Param('topicId', ParseIntPipe) topicId: number,
   ): Promise<LessonDto[]> {
     try {
       return await this.prisma.lesson.findMany({
-        where: { moduleId },
+        where: { topicId },
         orderBy: { order: 'asc' },
       });
     } catch (error) {
       console.error(
-        `Fejl ved hentning af lektioner for modul ${moduleId}:`,
+        `Fejl ved hentning af lektioner for emne ${topicId}:`,
         error,
       );
       throw new BadRequestException(
@@ -81,11 +81,11 @@ export class LessonController {
       const lesson = await this.prisma.lesson.findUnique({
         where: { id },
         include: {
-          module: {
+          topic: {
             include: {
               course: {
                 include: {
-                  subjectArea: true,
+                  educationProgram: true,
                 },
               },
             },
@@ -124,7 +124,7 @@ export class LessonController {
     status: 400,
     description: 'Ugyldig anmodning - Valideringsfejl',
   })
-  @ApiResponse({ status: 404, description: 'Modulet blev ikke fundet' })
+  @ApiResponse({ status: 404, description: 'Emnet blev ikke fundet' })
   @ApiResponse({ status: 500, description: 'Serverfejl' })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
@@ -133,23 +133,23 @@ export class LessonController {
   async createLesson(
     @Body() createLessonDto: CreateLessonDto,
   ): Promise<LessonDto> {
-    const { title, description, order, moduleId } = createLessonDto;
+    const { title, description, order, topicId } = createLessonDto;
 
     try {
-      // Tjek om modulet eksisterer
-      const module = await this.prisma.module.findUnique({
-        where: { id: moduleId },
+      // Tjek om emnet eksisterer
+      const topic = await this.prisma.topic.findUnique({
+        where: { id: topicId },
       });
 
-      if (!module) {
-        throw new NotFoundException('Det angivne modul findes ikke');
+      if (!topic) {
+        throw new NotFoundException('Det angivne emne findes ikke');
       }
 
       // Hvis der ikke er angivet en rækkefølge, sæt den til at være efter den sidste lektion
       let lessonOrder = order;
       if (lessonOrder === undefined) {
         const lastLesson = await this.prisma.lesson.findFirst({
-          where: { moduleId },
+          where: { topicId },
           orderBy: { order: 'desc' },
         });
 
@@ -161,7 +161,7 @@ export class LessonController {
           title,
           description,
           order: lessonOrder,
-          moduleId,
+          topicId,
         },
       });
     } catch (error) {
@@ -189,7 +189,7 @@ export class LessonController {
   })
   @ApiResponse({
     status: 404,
-    description: 'Lektionen eller modulet blev ikke fundet',
+    description: 'Lektionen eller emnet blev ikke fundet',
   })
   @ApiResponse({ status: 500, description: 'Serverfejl' })
   @ApiBearerAuth()
@@ -199,7 +199,7 @@ export class LessonController {
     @Param('id', ParseIntPipe) id: number,
     @Body() updateLessonDto: UpdateLessonDto,
   ): Promise<LessonDto> {
-    const { title, description, order, moduleId } = updateLessonDto;
+    const { title, description, order, topicId } = updateLessonDto;
 
     try {
       // Tjek om lektionen eksisterer
@@ -211,14 +211,14 @@ export class LessonController {
         throw new NotFoundException('Lektionen blev ikke fundet');
       }
 
-      // Hvis moduleId ændres, tjek om det nye modul eksisterer
-      if (moduleId && moduleId !== existingLesson.moduleId) {
-        const module = await this.prisma.module.findUnique({
-          where: { id: moduleId },
+      // Hvis topicId ændres, tjek om det nye emne eksisterer
+      if (topicId && topicId !== existingLesson.topicId) {
+        const topic = await this.prisma.topic.findUnique({
+          where: { id: topicId },
         });
 
-        if (!module) {
-          throw new NotFoundException('Det angivne modul findes ikke');
+        if (!topic) {
+          throw new NotFoundException('Det angivne emne findes ikke');
         }
       }
 
@@ -228,7 +228,7 @@ export class LessonController {
           title: title || existingLesson.title,
           description: description || existingLesson.description,
           order: order !== undefined ? order : existingLesson.order,
-          moduleId: moduleId || existingLesson.moduleId,
+          topicId: topicId || existingLesson.topicId,
         },
       });
     } catch (error) {
@@ -271,20 +271,20 @@ export class LessonController {
       // Tjek om lektionen eksisterer
       const existingLesson = await this.prisma.lesson.findUnique({
         where: { id },
-        include: { contentBlocks: true, quizzes: true },
+        include: { contentBlocks: true }, // quizzes er ikke en direkte relation
       });
 
       if (!existingLesson) {
         throw new NotFoundException('Lektionen blev ikke fundet');
       }
 
-      // Tjek om der er indholdsblokke eller quizzer tilknyttet lektionen
-      if (
-        existingLesson.contentBlocks.length > 0 ||
-        existingLesson.quizzes.length > 0
-      ) {
+      // Tjek om der er indholdsblokke tilknyttet lektionen
+      // Tjek for quizzer skal ske ved at iterere over contentBlocks og se efter QUIZ_REF type
+      const hasQuizReferences = existingLesson.contentBlocks.some(cb => cb.type === 'QUIZ_REF');
+
+      if (existingLesson.contentBlocks.length > 0 || hasQuizReferences) {
         throw new BadRequestException(
-          'Lektionen kan ikke slettes, da der er indholdsblokke eller quizzer tilknyttet. Slet venligst disse først.',
+          'Lektionen kan ikke slettes, da der er indholdsblokke eller quiz-referencer tilknyttet. Slet venligst disse først eller fjern referencerne.',
         );
       }
 
@@ -294,7 +294,7 @@ export class LessonController {
 
       // Opdater rækkefølgen af de resterende lektioner
       const remainingLessons = await this.prisma.lesson.findMany({
-        where: { moduleId: existingLesson.moduleId },
+        where: { topicId: existingLesson.topicId },
         orderBy: { order: 'asc' },
       });
 
@@ -322,8 +322,8 @@ export class LessonController {
     }
   }
 
-  @ApiOperation({ summary: 'Opdater rækkefølgen af lektioner i et modul' })
-  @ApiParam({ name: 'moduleId', description: 'ID for modulet', type: Number })
+  @ApiOperation({ summary: 'Opdater rækkefølgen af lektioner i et emne' })
+  @ApiParam({ name: 'topicId', description: 'ID for emnet', type: Number })
   @ApiBody({ type: UpdateLessonsOrderDto })
   @ApiResponse({
     status: 200,
@@ -334,41 +334,41 @@ export class LessonController {
     status: 400,
     description: 'Ugyldig anmodning - Valideringsfejl',
   })
-  @ApiResponse({ status: 404, description: 'Modulet blev ikke fundet' })
+  @ApiResponse({ status: 404, description: 'Emnet blev ikke fundet' })
   @ApiResponse({ status: 500, description: 'Serverfejl' })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
-  @Put('update-order/:moduleId')
+  @Put('update-order/:topicId')
   async updateLessonsOrder(
-    @Param('moduleId', ParseIntPipe) moduleId: number,
+    @Param('topicId', ParseIntPipe) topicId: number,
     @Body() updateLessonsOrderDto: UpdateLessonsOrderDto,
   ): Promise<LessonDto[]> {
     try {
-      // Tjek om modulet eksisterer
-      const module = await this.prisma.module.findUnique({
-        where: { id: moduleId },
+      // Tjek om emnet eksisterer
+      const topic = await this.prisma.topic.findUnique({
+        where: { id: topicId },
         include: { lessons: true }, // Inkluder lektioner for at tælle dem
       });
 
-      if (!module) {
-        throw new NotFoundException('Det angivne modul findes ikke');
+      if (!topic) {
+        throw new NotFoundException('Det angivne emne findes ikke');
       }
 
       const { lessonIds } = updateLessonsOrderDto; // Ændret fra newOrder til lessonIds
 
       // Tjek om den nye rækkefølge er gyldig
-      if (lessonIds.length !== module.lessons.length) { // Sammenlign med antallet af faktiske lektioner
+      if (lessonIds.length !== topic.lessons.length) { // Sammenlign med antallet af faktiske lektioner
         throw new BadRequestException(
-          'Den nye rækkefølge skal indeholde samme antal lektioner som modulet',
+          'Den nye rækkefølge skal indeholde samme antal lektioner som emnet',
         );
       }
 
-      // Tjek om alle lektion ID'er i lessonIds faktisk tilhører modulet
-      const moduleLessonIds = module.lessons.map(lesson => lesson.id);
-      const allLessonIdsBelongToModule = lessonIds.every(id => moduleLessonIds.includes(id));
-      if (!allLessonIdsBelongToModule) {
+      // Tjek om alle lektion ID'er i lessonIds faktisk tilhører emnet
+      const topicLessonIds = topic.lessons.map(lesson => lesson.id);
+      const allLessonIdsBelongToTopic = lessonIds.every(id => topicLessonIds.includes(id));
+      if (!allLessonIdsBelongToTopic) {
         throw new BadRequestException(
-          'En eller flere af de angivne lektions-ID\'er tilhører ikke det specificerede modul.',
+          'En eller flere af de angivne lektions-ID\'er tilhører ikke det specificerede emne.',
         );
       }
       
@@ -389,7 +389,7 @@ export class LessonController {
       await this.prisma.$transaction(updates);
 
       return await this.prisma.lesson.findMany({
-        where: { moduleId },
+        where: { topicId },
         orderBy: { order: 'asc' },
       });
     } catch (error) {
@@ -400,7 +400,7 @@ export class LessonController {
         throw error;
       }
       console.error(
-        `Fejl ved opdatering af lektioner i modul ${moduleId}:`,
+        `Fejl ved opdatering af lektioner i emne ${topicId}:`,
         error,
       );
       throw new BadRequestException(

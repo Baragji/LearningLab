@@ -46,7 +46,7 @@ export class CourseDto {
     type: Number,
     example: 1,
   })
-  subjectAreaId: number;
+  educationProgramId: number;
 
   @ApiPropertyOptional({
     description: 'Dato for oprettelse af kurset',
@@ -106,10 +106,10 @@ export class CreateCourseDto {
     type: Number,
     example: 1,
   })
-  @IsNumber({}, { message: 'Fagområde-ID skal være et tal' })
-  @IsPositive({ message: 'Fagområde-ID skal være et positivt tal' })
+  @IsNumber({}, { message: 'Uddannelsesprogram-ID skal være et tal' })
+  @IsPositive({ message: 'Uddannelsesprogram-ID skal være et positivt tal' })
   @Type(() => Number)
-  subjectAreaId: number;
+  educationProgramId: number;
 }
 
 export class UpdateCourseDto {
@@ -159,8 +159,8 @@ export class UpdateCourseDto {
     example: 1,
   })
   @IsOptional()
-  @IsNumber({}, { message: 'Fagområde-ID skal være et tal' })
-  @IsPositive({ message: 'Fagområde-ID skal være et positivt tal' })
+  @IsNumber({}, { message: 'Uddannelsesprogram-ID skal være et tal' })
+  @IsPositive({ message: 'Uddannelsesprogram-ID skal være et positivt tal' })
   @Type(() => Number)
-  subjectAreaId?: number;
+  educationProgramId?: number;
 }

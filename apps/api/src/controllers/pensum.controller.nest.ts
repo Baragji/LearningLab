@@ -20,8 +20,8 @@ import {
   PensumStructureDto,
   CompletePensumStructureDto,
   SemesterDto,
-  SubjectDto,
-  TopicDto,
+  // SubjectDto, // Removed as it's not exported/used directly
+  // TopicDto, // Removed as it's not exported/used directly
 } from './dto/pensum/pensum.dto';
 
 @ApiTags('Pensum')
@@ -33,18 +33,18 @@ export class PensumController {
   @ApiResponse({
     status: 200,
     description:
-      'Den komplette pensum-struktur med fagområder, kurser, moduler og lektioner',
+      'Den komplette pensum-struktur med uddannelsesprogrammer, kurser, emner og lektioner',
     type: PensumStructureDto,
   })
   @ApiResponse({ status: 500, description: 'Serverfejl' })
   @Get()
   async getPensumStructure(): Promise<PensumStructureDto> {
     try {
-      const subjectAreas = await this.prisma.subjectArea.findMany({
+      const educationPrograms = await this.prisma.educationProgram.findMany({
         include: {
           courses: {
             include: {
-              modules: {
+              topics: {
                 orderBy: { order: 'asc' },
                 include: {
                   lessons: {
@@ -62,7 +62,7 @@ export class PensumController {
         },
       });
 
-      return { subjectAreas };
+      return { educationPrograms };
     } catch (error) {
       console.error('Fejl ved hentning af pensum-struktur:', error);
       throw new NotFoundException(
@@ -71,30 +71,30 @@ export class PensumController {
     }
   }
 
-  @ApiOperation({ summary: 'Hent pensum-struktur for et specifikt fagområde' })
+  @ApiOperation({ summary: 'Hent pensum-struktur for et specifikt uddannelsesprogram' })
   @ApiParam({
-    name: 'subjectAreaId',
-    description: 'Fagområde ID',
+    name: 'educationProgramId',
+    description: 'Uddannelsesprogram ID',
     type: Number,
   })
   @ApiResponse({
     status: 200,
-    description: 'Pensum-struktur for det angivne fagområde',
+    description: 'Pensum-struktur for det angivne uddannelsesprogram',
     type: PensumStructureDto,
   })
-  @ApiResponse({ status: 404, description: 'Fagområdet blev ikke fundet' })
+  @ApiResponse({ status: 404, description: 'Uddannelsesprogrammet blev ikke fundet' })
   @ApiResponse({ status: 500, description: 'Serverfejl' })
-  @Get('subject-area/:subjectAreaId')
-  async getPensumBySubjectArea(
-    @Param('subjectAreaId', ParseIntPipe) subjectAreaId: number,
+  @Get('education-program/:educationProgramId')
+  async getPensumByEducationProgram(
+    @Param('educationProgramId', ParseIntPipe) educationProgramId: number,
   ): Promise<PensumStructureDto> {
     try {
-      const subjectAreas = await this.prisma.subjectArea.findMany({
-        where: { id: subjectAreaId },
+      const educationPrograms = await this.prisma.educationProgram.findMany({
+        where: { id: educationProgramId },
         include: {
           courses: {
             include: {
-              modules: {
+              topics: {
                 orderBy: { order: 'asc' },
                 include: {
                   lessons: {
@@ -112,17 +112,17 @@ export class PensumController {
         },
       });
 
-      if (subjectAreas.length === 0) {
-        throw new NotFoundException('Fagområdet blev ikke fundet');
+      if (educationPrograms.length === 0) {
+        throw new NotFoundException('Uddannelsesprogrammet blev ikke fundet');
       }
 
-      return { subjectAreas };
+      return { educationPrograms };
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw error;
       }
       console.error(
-        `Fejl ved hentning af pensum for fagområde ${subjectAreaId}:`,
+        `Fejl ved hentning af pensum for uddannelsesprogram ${educationProgramId}:`,
         error,
       );
       throw new NotFoundException(
@@ -148,8 +148,8 @@ export class PensumController {
       const course = await this.prisma.course.findUnique({
         where: { id: courseId },
         include: {
-          subjectArea: true,
-          modules: {
+          educationProgram: true,
+          topics: {
             orderBy: { order: 'asc' },
             include: {
               lessons: {
@@ -184,26 +184,26 @@ export class PensumController {
     }
   }
 
-  @ApiOperation({ summary: 'Hent pensum-struktur for et specifikt modul' })
-  @ApiParam({ name: 'moduleId', description: 'Modul ID', type: Number })
+  @ApiOperation({ summary: 'Hent pensum-struktur for et specifikt emne' })
+  @ApiParam({ name: 'topicId', description: 'Emne ID', type: Number })
   @ApiResponse({
     status: 200,
-    description: 'Pensum-struktur for det angivne modul',
+    description: 'Pensum-struktur for det angivne emne',
     type: PensumStructureDto,
   })
-  @ApiResponse({ status: 404, description: 'Modulet blev ikke fundet' })
+  @ApiResponse({ status: 404, description: 'Emnet blev ikke fundet' })
   @ApiResponse({ status: 500, description: 'Serverfejl' })
-  @Get('module/:moduleId')
-  async getPensumByModule(
-    @Param('moduleId', ParseIntPipe) moduleId: number,
+  @Get('topic/:topicId')
+  async getPensumByTopic(
+    @Param('topicId', ParseIntPipe) topicId: number,
   ): Promise<any> {
     try {
-      const module = await this.prisma.module.findUnique({
-        where: { id: moduleId },
+      const topic = await this.prisma.topic.findUnique({
+        where: { id: topicId },
         include: {
           course: {
             include: {
-              subjectArea: true,
+              educationProgram: true,
             },
           },
           lessons: {
@@ -217,17 +217,17 @@ export class PensumController {
         },
       });
 
-      if (!module) {
-        throw new NotFoundException('Modulet blev ikke fundet');
+      if (!topic) {
+        throw new NotFoundException('Emnet blev ikke fundet');
       }
 
-      return module;
+      return topic;
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw error;
       }
       console.error(
-        `Fejl ved hentning af pensum for modul ${moduleId}:`,
+        `Fejl ved hentning af pensum for emne ${topicId}:`,
         error,
       );
       throw new NotFoundException(
