@@ -1,0 +1,66 @@
+# Test Report: API Actions 3.4, 3.5, 3.6
+Date: 2024-05-30
+Tester: Gemini AI Assistant
+API Base URL: http://localhost:5002/api
+Authentication: JWT Token (Provided) - User: testadmin@example.com (ID 2)
+
+---
+## Action 3.4: Test CRUD Operations
+---
+
+### Entity: EducationProgram
+Controller: `apps/api/src/controllers/educationProgram.controller.nest.ts`
+Base Path: `/education-programs`
+
+**1. CREATE EducationProgram (with all fields)**
+   - **Description:** Test creating an EducationProgram with all optional fields.
+   - **Payload (`CreateEducationProgramDto`):**
+     ```json
+     {
+       "name": "Test Education Program Gemini",
+       "slug": "test-edu-program-gemini",
+       "description": "A comprehensive program created by Gemini for testing.",
+       "tags": ["test", "gemini", "api"],
+       "categories": ["testing", "ai-generated"],
+       "image": "http://example.com/test-image.png",
+       "banner": "http://example.com/test-banner.png"
+     }
+     ```
+   - **Command:**
+     ```bash
+     curl -X POST -H "Content-Type: application/json" -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RhZG1pbkBleGFtcGxlLmNvbSIsInN1YiI6MiwiaWF0IjoxNzQ4NjE2MDE1LCJleHAiOjE3NDg3MDI0MTV9.sFc4BSLyM12nzoDaLwLWkkXxVZnZSRcaiLLmXSUSS4Y" \
+     -d '{"name": "Test Education Program Gemini", "slug": "test-edu-program-gemini", "description": "A comprehensive program created by Gemini for testing.", "tags": ["test", "gemini", "api"], "categories": ["testing", "ai-generated"], "image": "http://example.com/test-image.png", "banner": "http://example.com/test-banner.png"}' \
+     http://localhost:5002/api/education-programs -w '\nHTTP_STATUS_CODE:%{http_code}\n' | cat
+     ```
+   - **Expected Status:** 201 Created
+   - **Expected Response Body:** Contains the created EducationProgram with an `id`, `createdAt`, `updatedAt`, and all fields from the payload.
+   - **Actual Status:** 403 Forbidden
+   - **Actual Response Body:**
+     ```json
+     {
+       "statusCode": 403,
+       "errorCode": "FORBIDDEN",
+       "message": "Forbidden resource",
+       "timestamp": "2025-05-30T14:42:39.444Z", 
+       "path": "/api/education-programs",
+       "details": {
+         "message": "Forbidden resource",
+         "error": "Forbidden",
+         "statusCode": 403
+       }
+     }
+     ```
+   - **Result:** FAIL
+   - **Notes:** The user `testadmin@example.com` (ID 2) associated with the provided JWT token does not have the required `Role.ADMIN` to perform this action. The endpoint `POST /education-programs` is guarded by `@Roles(Role.ADMIN)`. Testing cannot proceed for most write operations (CREATE, UPDATE, DELETE) until this permission issue is resolved.
+
+**(Further tests for EducationProgram and other entities are PENDING resolution of the 403 Forbidden issue.)**
+
+---
+## Action 3.5: Verificer relationer (PENDING)
+---
+**(PENDING resolution of the 403 Forbidden issue for prerequisite CREATE operations)**
+
+---
+## Action 3.6: Test søgefunktionaliteten (PENDING)
+---
+**(PENDING resolution of the 403 Forbidden issue for prerequisite CREATE operations that might populate data for searching, though some GET operations might be testable if data exists or if they do not require auth/specific roles.)** 
