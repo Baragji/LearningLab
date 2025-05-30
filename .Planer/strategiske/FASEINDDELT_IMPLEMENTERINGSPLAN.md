@@ -14,7 +14,6 @@ Denne plan tager udgangspunkt i den nuværende status (45% færdig) og definerer
 ### 1.1 Database & Backend Færdiggørelse (2 uger)
 
 **Opgaver:**
-- [ ] Fix navngivning: EducationProgram → Fag (hvis ønsket)
 - [ ] Implementer file upload system (PDF, video, billeder)
 - [ ] Tilføj materiale management til Topics/Lessons
 - [ ] Implementer basic search funktionalitet
