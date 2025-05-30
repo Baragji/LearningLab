@@ -140,14 +140,10 @@ export class EducationProgramService extends BaseService<EducationProgram> {
         name: name !== undefined ? name : existingEducationProgram.name,
         slug: slug !== undefined ? slug : existingEducationProgram.slug,
         description: description, // Prisma handles undefined: if description is undefined, it won't be updated
-        // Følgende felter findes ikke på Prisma modellen EducationProgram pt.
-        // tags: tags !== undefined ? tags : existingEducationProgram.tags,
-        // categories:
-        //   categories !== undefined
-        //     ? categories
-        //     : existingEducationProgram.categories,
-        // image: image !== undefined ? image : existingEducationProgram.image,
-        // banner: banner !== undefined ? banner : existingEducationProgram.banner,
+        tags: tags !== undefined ? tags : existingEducationProgram.tags,
+        categories: categories !== undefined ? categories : existingEducationProgram.categories,
+        image: image !== undefined ? image : existingEducationProgram.image,
+        banner: banner !== undefined ? banner : existingEducationProgram.banner,
       },
       userId,
     );
