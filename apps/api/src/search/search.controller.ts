@@ -43,7 +43,7 @@ export class SearchController {
   @ApiQuery({
     name: 'type',
     required: false,
-    enum: ['course', 'module', 'lesson', 'all'],
+    enum: ['course', 'topic', 'lesson', 'all'],
     description: 'Type af indhold at søge i',
   })
   @ApiQuery({
@@ -65,10 +65,10 @@ export class SearchController {
     description: 'Status at filtrere efter',
   })
   @ApiQuery({
-    name: 'subjectAreaId',
+    name: 'educationProgramId',
     required: false,
     type: Number,
-    description: 'Fagområde ID at filtrere efter',
+    description: 'Uddannelsesprogram ID at filtrere efter',
   })
   @ApiQuery({
     name: 'page',
@@ -107,7 +107,7 @@ export class SearchController {
               },
               tags: { type: 'array', items: { type: 'string' } },
               image: { type: 'string', nullable: true },
-              subjectArea: {
+              educationProgram: {
                 type: 'object',
                 properties: {
                   id: { type: 'number' },
@@ -119,7 +119,7 @@ export class SearchController {
             },
           },
         },
-        modules: {
+        topics: {
           type: 'array',
           items: {
             type: 'object',
@@ -148,8 +148,8 @@ export class SearchController {
               id: { type: 'number' },
               title: { type: 'string' },
               description: { type: 'string' },
-              moduleId: { type: 'number' },
-              module: {
+              topicId: { type: 'number' },
+              topic: {
                 type: 'object',
                 properties: {
                   id: { type: 'number' },
@@ -180,12 +180,12 @@ export class SearchController {
   @Get()
   async search(
     @Query('query') query?: string,
-    @Query('type') type: 'course' | 'module' | 'lesson' | 'all' = 'all',
+    @Query('type') type: 'course' | 'topic' | 'lesson' | 'all' = 'all',
     @Query('tags') tags?: string,
     @Query('difficulty') difficulty?: Difficulty,
     @Query('status') status?: CourseStatus,
-    @Query('subjectAreaId', new DefaultValuePipe(0), ParseIntPipe)
-    subjectAreaId?: number,
+    @Query('educationProgramId', new DefaultValuePipe(0), ParseIntPipe)
+    educationProgramId?: number,
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit = 10,
     @CurrentUser() currentUser?: Omit<CoreUser, 'passwordHash'>,
@@ -194,12 +194,10 @@ export class SearchController {
       `Udfører avanceret søgning: ${query}, type: ${type}, tags: ${tags}`,
     );
 
-    // Konverter tags fra kommasepareret streng til array
     const tagArray = tags
       ? tags.split(',').map((tag) => tag.trim())
       : undefined;
 
-    // Hvis brugeren ikke er admin eller lærer, vis kun publicerede kurser
     const allowedStatuses =
       currentUser &&
       (currentUser.role === Role.ADMIN || currentUser.role === Role.TEACHER)
@@ -212,7 +210,7 @@ export class SearchController {
       tags: tagArray,
       difficulty,
       status: status || allowedStatuses,
-      subjectAreaId: subjectAreaId || undefined,
+      educationProgramId: educationProgramId || undefined,
       page,
       limit,
     });

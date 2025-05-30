@@ -7,14 +7,14 @@ async function testQuizFields() {
   const prisma = new PrismaClient();
 
   try {
-    // Find a module to attach the quiz to
-    const module = await prisma.module.findFirst({
+    // Find a topic to attach the quiz to (formerly module)
+    const topic = await prisma.topic.findFirst({
       where: { deletedAt: null },
     });
 
-    if (!module) {
+    if (!topic) {
       console.log(
-        'No modules found to test with. Please create a module first.',
+        'No topics found to test with. Please create a topic first.',
       );
       return;
     }
@@ -25,7 +25,7 @@ async function testQuizFields() {
         title: 'Test Quiz with New Fields',
         description:
           'Testing timeLimit, maxAttempts, randomizeQuestions, and showAnswers fields',
-        moduleId: module.id,
+        topicId: topic.id,
         timeLimit: 600, // 10 minutes in seconds
         maxAttempts: 3,
         randomizeQuestions: true,

@@ -18,17 +18,17 @@ async function createTestData() {
 
     console.log('Created test user:', user.id);
 
-    // Create a test subject area
-    const subjectArea = await prisma.subjectArea.create({
+    // Create a test education program
+    const educationProgram = await prisma.educationProgram.create({
       data: {
-        name: 'Test Subject Area',
-        slug: 'test-subject-area',
-        description: 'A test subject area for testing purposes',
+        name: 'Test Education Program',
+        slug: 'test-education-program',
+        description: 'A test education program for testing purposes',
         createdBy: user.id,
       },
     });
 
-    console.log('Created test subject area:', subjectArea.id);
+    console.log('Created test education program:', educationProgram.id);
 
     // Create a test course
     const course = await prisma.course.create({
@@ -36,25 +36,25 @@ async function createTestData() {
         title: 'Test Course',
         description: 'A test course for testing purposes',
         slug: 'test-course',
-        subjectAreaId: subjectArea.id,
+        educationProgramId: educationProgram.id,
         createdBy: user.id,
       },
     });
 
     console.log('Created test course:', course.id);
 
-    // Create a test module
-    const module = await prisma.module.create({
+    // Create a test topic
+    const topic = await prisma.topic.create({
       data: {
-        title: 'Test Module',
-        description: 'A test module for testing purposes',
+        title: 'Test Topic',
+        description: 'A test topic for testing purposes',
         order: 1,
         courseId: course.id,
         createdBy: user.id,
       },
     });
 
-    console.log('Created test module:', module.id);
+    console.log('Created test topic:', topic.id);
 
     // Create a test lesson
     const lesson = await prisma.lesson.create({
@@ -62,7 +62,7 @@ async function createTestData() {
         title: 'Test Lesson',
         description: 'A test lesson for testing purposes',
         order: 1,
-        moduleId: module.id,
+        topicId: topic.id,
         createdBy: user.id,
       },
     });

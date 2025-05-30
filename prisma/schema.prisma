@@ -10,7 +10,7 @@ datasource db {
 model User {
   id                   Int       @id @default(autoincrement())
   email                String    @unique
-  passwordHash         String?   // Gjort valgfri for social login
+  passwordHash         String? // Gjort valgfri for social login
   name                 String?
   role                 Role      @default(STUDENT)
   createdAt            DateTime  @default(now())
@@ -29,31 +29,44 @@ model User {
   settings     Json?
 
   // Social login fields
-  googleId     String?  @unique
-  githubId     String?  @unique
-  provider     AuthProvider?
-  lastLogin    DateTime?
+  googleId  String?       @unique
+  githubId  String?       @unique
+  provider  AuthProvider?
+  lastLogin DateTime?
 
   // User groups
-  groups       UserGroup[] @relation("UserToGroup")
+  groups UserGroup[] @relation("UserToGroup")
 
-  createdContentBlocks ContentBlock[] @relation("ContentBlockCreatedByUser")
-  updatedContentBlocks ContentBlock[] @relation("ContentBlockUpdatedByUser")
-  createdCourses       Course[]       @relation("CourseCreatedByUser")
-  updatedCourses       Course[]       @relation("CourseUpdatedByUser")
-  createdLessons       Lesson[]       @relation("LessonCreatedByUser")
-  updatedLessons       Lesson[]       @relation("LessonUpdatedByUser")
-  createdModules       Module[]       @relation("ModuleCreatedByUser")
-  updatedModules       Module[]       @relation("ModuleUpdatedByUser")
-  createdSubjectAreas  SubjectArea[]  @relation("SubjectAreaCreatedByUser")
-  updatedSubjectAreas  SubjectArea[]  @relation("SubjectAreaUpdatedByUser")
-  createdByUser        User?          @relation("CreatedByUser", fields: [createdBy], references: [id])
-  createdUsers         User[]         @relation("CreatedByUser")
-  updatedByUser        User?          @relation("UpdatedByUser", fields: [updatedBy], references: [id])
-  updatedUsers         User[]         @relation("UpdatedByUser")
+  createdContentBlocks     ContentBlock[]     @relation("ContentBlockCreatedByUser")
+  updatedContentBlocks     ContentBlock[]     @relation("ContentBlockUpdatedByUser")
+  createdCourses           Course[]           @relation("CourseCreatedByUser")
+  updatedCourses           Course[]           @relation("CourseUpdatedByUser")
+  createdLessons           Lesson[]           @relation("LessonCreatedByUser")
+  updatedLessons           Lesson[]           @relation("LessonUpdatedByUser")
+  createdTopics            Topic[]            @relation("TopicCreatedByUser")
+  updatedTopics            Topic[]            @relation("TopicUpdatedByUser")
+  createdEducationPrograms EducationProgram[] @relation("EducationProgramCreatedByUser")
+  updatedEducationPrograms EducationProgram[] @relation("EducationProgramUpdatedByUser")
+
+  createdQuizzes          Quiz[]            @relation(name: "QuizCreatedByUser")
+  updatedQuizzes          Quiz[]            @relation(name: "QuizUpdatedByUser")
+  createdQuestions        Question[]        @relation(name: "QuestionCreatedByUser")
+  updatedQuestions        Question[]        @relation(name: "QuestionUpdatedByUser")
+  createdAnswerOptions    AnswerOption[]    @relation(name: "AnswerOptionCreatedByUser")
+  updatedAnswerOptions    AnswerOption[]    @relation(name: "AnswerOptionUpdatedByUser")
+  createdUserQuizAttempts UserQuizAttempt[] @relation(name: "UserQuizAttemptCreatedByUser")
+  updatedUserQuizAttempts UserQuizAttempt[] @relation(name: "UserQuizAttemptUpdatedByUser")
+  createdUserAnswers      UserAnswer[]      @relation(name: "UserAnswerCreatedByUser")
+  updatedUserAnswers      UserAnswer[]      @relation(name: "UserAnswerUpdatedByUser")
+  attempts                UserQuizAttempt[] // Tilføjet manglende relation
+
+  createdByUser User?  @relation("CreatedByUser", fields: [createdBy], references: [id])
+  createdUsers  User[] @relation("CreatedByUser")
+  updatedByUser User?  @relation("UpdatedByUser", fields: [updatedBy], references: [id])
+  updatedUsers  User[] @relation("UpdatedByUser")
 }
 
-model SubjectArea {
+model EducationProgram {
   id            Int       @id @default(autoincrement())
   name          String
   slug          String    @unique
@@ -63,42 +76,45 @@ model SubjectArea {
   createdBy     Int?
   updatedBy     Int?
   courses       Course[]
-  createdByUser User?     @relation("SubjectAreaCreatedByUser", fields: [createdBy], references: [id])
-  updatedByUser User?     @relation("SubjectAreaUpdatedByUser", fields: [updatedBy], references: [id])
+  createdByUser User?     @relation("EducationProgramCreatedByUser", fields: [createdBy], references: [id])
+  updatedByUser User?     @relation("EducationProgramUpdatedByUser", fields: [updatedBy], references: [id])
 }
 
 model Course {
-  id            Int         @id @default(autoincrement())
-  title         String
-  description   String
-  slug          String      @unique
-  subjectAreaId Int
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
-  deletedAt     DateTime?
-  createdBy     Int?
-  updatedBy     Int?
-  createdByUser User?       @relation("CourseCreatedByUser", fields: [createdBy], references: [id])
-  subjectArea   SubjectArea @relation(fields: [subjectAreaId], references: [id])
-  updatedByUser User?       @relation("CourseUpdatedByUser", fields: [updatedBy], references: [id])
-  modules       Module[]
+  id                 Int              @id @default(autoincrement())
+  title              String
+  description        String
+  slug               String           @unique
+  educationProgramId Int
+  semesterNumber     Int?
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+  deletedAt          DateTime?
+  createdBy          Int?
+  updatedBy          Int?
+  createdByUser      User?            @relation("CourseCreatedByUser", fields: [createdBy], references: [id])
+  educationProgram   EducationProgram @relation(fields: [educationProgramId], references: [id])
+  updatedByUser      User?            @relation("CourseUpdatedByUser", fields: [updatedBy], references: [id])
+  topics             Topic[]
 }
 
-model Module {
-  id            Int       @id @default(autoincrement())
-  title         String
-  description   String
-  order         Int
-  courseId      Int
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  deletedAt     DateTime?
-  createdBy     Int?
-  updatedBy     Int?
-  lessons       Lesson[]
-  course        Course    @relation(fields: [courseId], references: [id])
-  createdByUser User?     @relation("ModuleCreatedByUser", fields: [createdBy], references: [id])
-  updatedByUser User?     @relation("ModuleUpdatedByUser", fields: [updatedBy], references: [id])
+model Topic {
+  id              Int          @id @default(autoincrement())
+  title           String
+  description     String
+  order           Int
+  courseId        Int
+  subjectCategory FagCategory?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  deletedAt       DateTime?
+  createdBy       Int?
+  updatedBy       Int?
+  lessons         Lesson[]
+  quizzes         Quiz[] // Tilføjet manglende relation
+  course          Course       @relation(fields: [courseId], references: [id])
+  createdByUser   User?        @relation("TopicCreatedByUser", fields: [createdBy], references: [id])
+  updatedByUser   User?        @relation("TopicUpdatedByUser", fields: [updatedBy], references: [id])
 }
 
 model Lesson {
@@ -106,15 +122,16 @@ model Lesson {
   title         String
   description   String
   order         Int
-  moduleId      Int
+  topicId       Int
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
   deletedAt     DateTime?
   createdBy     Int?
   updatedBy     Int?
   contentBlocks ContentBlock[]
+  quizzes       Quiz[] // Tilføjet manglende relation
   createdByUser User?          @relation("LessonCreatedByUser", fields: [createdBy], references: [id])
-  module        Module         @relation(fields: [moduleId], references: [id])
+  topic         Topic          @relation(fields: [topicId], references: [id])
   updatedByUser User?          @relation("LessonUpdatedByUser", fields: [updatedBy], references: [id])
 }
 
@@ -157,6 +174,152 @@ enum AuthProvider {
   GITHUB
 }
 
+enum FagCategory {
+  KEMI
+  BIOLOGI
+  DATABEHANDLING
+  ANDET
+}
+
+enum QuestionType {
+  MULTIPLE_CHOICE
+  SINGLE_CHOICE
+  TRUE_FALSE
+  FILL_IN_BLANK
+  MATCHING
+  ORDERING
+  SHORT_ANSWER
+  ESSAY
+}
+
+model Quiz {
+  id                 Int       @id @default(autoincrement())
+  title              String
+  description        String?
+  lessonId           Int? // Kan være tilknyttet en lektion
+  topicId            Int? // Eller direkte til et emne
+  order              Int? // Rækkefølge indenfor lektion/emne
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  deletedAt          DateTime?
+  createdBy          Int?
+  updatedBy          Int?
+  timeLimit          Int? // i minutter
+  passingScore       Float? // Procentdel, f.eks. 0.75 for 75%
+  maxAttempts        Int? // Max antal forsøg, null for ubegrænset
+  showCorrectAnswers Boolean?  @default(true)
+  randomizeQuestions Boolean?  @default(false)
+
+  lesson    Lesson?           @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  topic     Topic?            @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  questions Question[]
+  attempts  UserQuizAttempt[]
+
+  createdByUser User? @relation(name: "QuizCreatedByUser", fields: [createdBy], references: [id])
+  updatedByUser User? @relation(name: "QuizUpdatedByUser", fields: [updatedBy], references: [id])
+
+  @@index([lessonId])
+  @@index([topicId])
+}
+
+model Question {
+  id           Int          @id @default(autoincrement())
+  quizId       Int
+  text         String
+  questionType QuestionType
+  order        Int
+  points       Int          @default(1)
+  explanation  String? // Forklaring til svaret
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  deletedAt    DateTime?
+  createdBy    Int?
+  updatedBy    Int?
+
+  quiz          Quiz           @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  answerOptions AnswerOption[]
+  userAnswers   UserAnswer[]
+
+  createdByUser User? @relation(name: "QuestionCreatedByUser", fields: [createdBy], references: [id])
+  updatedByUser User? @relation(name: "QuestionUpdatedByUser", fields: [updatedBy], references: [id])
+
+  @@index([quizId])
+}
+
+model AnswerOption {
+  id          Int          @id @default(autoincrement())
+  questionId  Int
+  text        String
+  isCorrect   Boolean
+  order       Int
+  explanation String? // Specifik forklaring for dette svarvalg
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  deletedAt   DateTime?
+  createdBy   Int?
+  updatedBy   Int?
+  userAnswers UserAnswer[] // Tilføjet manglende relation
+
+  question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  createdByUser User? @relation(name: "AnswerOptionCreatedByUser", fields: [createdBy], references: [id])
+  updatedByUser User? @relation(name: "AnswerOptionUpdatedByUser", fields: [updatedBy], references: [id])
+
+  @@index([questionId])
+}
+
+model UserQuizAttempt {
+  id              Int       @id @default(autoincrement())
+  userId          Int
+  quizId          Int
+  startedAt       DateTime  @default(now())
+  completedAt     DateTime?
+  score           Float? // Opnået score
+  passed          Boolean? // Bestået eller ej
+  timeSpent       Int? // Tid brugt i sekunder
+  detailedAnswers Json? // Gemmer brugerens svar for hvert spørgsmål
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  deletedAt       DateTime?
+  createdBy       Int?
+  updatedBy       Int?
+
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  quiz        Quiz         @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  userAnswers UserAnswer[]
+
+  createdByUser User? @relation(name: "UserQuizAttemptCreatedByUser", fields: [createdBy], references: [id])
+  updatedByUser User? @relation(name: "UserQuizAttemptUpdatedByUser", fields: [updatedBy], references: [id])
+
+  @@index([userId])
+  @@index([quizId])
+}
+
+model UserAnswer {
+  id                Int             @id @default(autoincrement())
+  userQuizAttemptId Int
+  userQuizAttempt   UserQuizAttempt @relation(fields: [userQuizAttemptId], references: [id], onDelete: Cascade)
+  questionId        Int
+  question          Question        @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  answerOptionId    Int?
+  answerOption      AnswerOption?   @relation(fields: [answerOptionId], references: [id], onDelete: SetNull) // onDelete: SetNull hvis et svarvalg slettes, men brugerens svar skal bevares
+  answerText        String? // For fill in the blank / short answer / essay
+  isCorrect         Boolean? // Blev svaret markeret som korrekt?
+  pointsAwarded     Float? // Point opnået for dette svar
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  deletedAt         DateTime?
+  createdBy         Int?
+  updatedBy         Int?
+
+  createdByUser User? @relation(name: "UserAnswerCreatedByUser", fields: [createdBy], references: [id])
+  updatedByUser User? @relation(name: "UserAnswerUpdatedByUser", fields: [updatedBy], references: [id])
+
+  @@index([userQuizAttemptId])
+  @@index([questionId])
+  @@index([answerOptionId])
+}
+
 model UserGroup {
   id          Int       @id @default(autoincrement())
   name        String    @unique
@@ -167,6 +330,6 @@ model UserGroup {
   deletedAt   DateTime?
   createdBy   Int?
   updatedBy   Int?
-  
-  users       User[]    @relation("UserToGroup")
+
+  users User[] @relation("UserToGroup")
 }

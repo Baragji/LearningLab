@@ -1,6 +1,6 @@
 // apps/api/src/controllers/dto/pensum/pensum.dto.ts
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { SubjectAreaDto } from '../subject-area/subject-area.dto';
+import { EducationProgramDto } from '../education-program/education-program.dto';
 import {
   IsArray,
   IsNotEmpty,
@@ -20,13 +20,13 @@ import { Type } from 'class-transformer';
 export class PensumStructureDto {
   @ApiProperty({
     description:
-      'Liste af alle fagområder med deres kurser, moduler og lektioner',
-    type: [SubjectAreaDto],
+      'Liste af alle uddannelsesprogrammer med deres kurser, emner og lektioner',
+    type: [EducationProgramDto],
   })
-  @IsArray({ message: 'subjectAreas skal være et array' })
+  @IsArray({ message: 'educationPrograms skal være et array' })
   @ValidateNested({ each: true })
-  @Type(() => SubjectAreaDto)
-  subjectAreas: SubjectAreaDto[];
+  @Type(() => EducationProgramDto)
+  educationPrograms: EducationProgramDto[];
 }
 
 /**
@@ -154,39 +154,39 @@ export class UpdateSemesterDto {
 }
 
 /**
- * DTO for representing a subject within a course
+ * DTO for representing a topic within a course (in pensum context)
  */
-export class SubjectDto {
+export class PensumTopicDto {
   @ApiProperty({
-    description: 'Unik ID for faget',
+    description: 'Unik ID for lektionen (i pensum)',
     type: Number,
     example: 1,
   })
   id: number;
 
   @ApiProperty({
-    description: 'Navn på faget',
+    description: 'Navn på emnet (i pensum)',
     type: String,
     example: 'Biologi',
   })
   name: string;
 
   @ApiProperty({
-    description: 'Beskrivelse af faget',
+    description: 'Beskrivelse af lektionen (i pensum)',
     type: String,
     example: 'Grundlæggende biologiske principper og teknikker',
   })
   description: string;
 
   @ApiProperty({
-    description: 'Kursus ID som faget tilhører',
+    description: 'Kursus ID som emnet (i pensum) tilhører',
     type: Number,
     example: 1,
   })
   courseId: number;
 
   @ApiPropertyOptional({
-    description: 'Emner tilknyttet dette fag',
+    description: 'Lektioner tilknyttet dette emne (i pensum)',
     type: 'array',
     items: {
       type: 'object',
@@ -200,15 +200,15 @@ export class SubjectDto {
       },
     },
   })
-  topics?: any[];
+  lessons?: any[];
 }
 
 /**
- * DTO for creating a new subject
+ * DTO for creating a new pensum topic
  */
-export class CreateSubjectDto {
+export class CreatePensumTopicDto {
   @ApiProperty({
-    description: 'Navn på faget',
+    description: 'Navn på emnet (i pensum)',
     type: String,
     example: 'Biologi',
   })
@@ -218,7 +218,7 @@ export class CreateSubjectDto {
   name: string;
 
   @ApiProperty({
-    description: 'Beskrivelse af faget',
+    description: 'Beskrivelse af lektionen (i pensum)',
     type: String,
     example: 'Grundlæggende biologiske principper og teknikker',
   })
@@ -229,7 +229,7 @@ export class CreateSubjectDto {
   description: string;
 
   @ApiProperty({
-    description: 'Kursus ID som faget tilhører',
+    description: 'Kursus ID som emnet (i pensum) tilhører',
     type: Number,
     example: 1,
   })
@@ -239,11 +239,11 @@ export class CreateSubjectDto {
 }
 
 /**
- * DTO for updating a subject
+ * DTO for updating a pensum topic
  */
-export class UpdateSubjectDto {
+export class UpdatePensumTopicDto {
   @ApiPropertyOptional({
-    description: 'Navn på faget',
+    description: 'Navn på emnet (i pensum)',
     type: String,
     example: 'Biologi',
   })
@@ -254,7 +254,7 @@ export class UpdateSubjectDto {
   name?: string;
 
   @ApiPropertyOptional({
-    description: 'Beskrivelse af faget',
+    description: 'Beskrivelse af lektionen (i pensum)',
     type: String,
     example: 'Grundlæggende biologiske principper og teknikker',
   })
@@ -266,7 +266,7 @@ export class UpdateSubjectDto {
   description?: string;
 
   @ApiPropertyOptional({
-    description: 'Kursus ID som faget tilhører',
+    description: 'Kursus ID som emnet (i pensum) tilhører',
     type: Number,
     example: 1,
   })
@@ -277,36 +277,36 @@ export class UpdateSubjectDto {
 }
 
 /**
- * DTO for representing a topic within a subject
+ * DTO for representing a lesson within a pensum topic
  */
-export class TopicDto {
+export class LessonDto {
   @ApiProperty({
-    description: 'Unik ID for emnet',
+    description: 'Unik ID for lektionen',
     type: Number,
     example: 1,
   })
   id: number;
 
   @ApiProperty({
-    description: 'Titel på emnet',
+    description: 'Titel på lektionen',
     type: String,
     example: 'Bakteriepodning',
   })
   title: string;
 
   @ApiProperty({
-    description: 'Beskrivelse af emnet',
+    description: 'Beskrivelse af lektionen',
     type: String,
     example: 'Teknikker til podning og dyrkning af bakterier',
   })
   description: string;
 
   @ApiProperty({
-    description: 'Fag ID som emnet tilhører',
+    description: 'Emne (i pensum) ID som lektionen tilhører',
     type: Number,
     example: 1,
   })
-  subjectId: number;
+  pensumTopicId: number;
 
   @ApiPropertyOptional({
     description: 'Lektioner tilknyttet dette emne',
@@ -327,11 +327,11 @@ export class TopicDto {
 }
 
 /**
- * DTO for creating a new topic
+ * DTO for creating a new lesson
  */
-export class CreateTopicDto {
+export class CreateLessonDto {
   @ApiProperty({
-    description: 'Titel på emnet',
+    description: 'Titel på lektionen',
     type: String,
     example: 'Bakteriepodning',
   })
@@ -341,7 +341,7 @@ export class CreateTopicDto {
   title: string;
 
   @ApiProperty({
-    description: 'Beskrivelse af emnet',
+    description: 'Beskrivelse af lektionen',
     type: String,
     example: 'Teknikker til podning og dyrkning af bakterier',
   })
@@ -352,21 +352,21 @@ export class CreateTopicDto {
   description: string;
 
   @ApiProperty({
-    description: 'Fag ID som emnet tilhører',
+    description: 'Emne (i pensum) ID som lektionen tilhører',
     type: Number,
     example: 1,
   })
-  @IsNumber({}, { message: 'Fag-ID skal være et tal' })
-  @IsPositive({ message: 'Fag-ID skal være et positivt tal' })
-  subjectId: number;
+  @IsNumber({}, { message: 'Emne (i pensum) ID skal være et tal' })
+  @IsPositive({ message: 'Emne (i pensum) ID skal være et positivt tal' })
+  pensumTopicId: number;
 }
 
 /**
- * DTO for updating a topic
+ * DTO for updating a lesson
  */
-export class UpdateTopicDto {
+export class UpdateLessonDto {
   @ApiPropertyOptional({
-    description: 'Titel på emnet',
+    description: 'Titel på lektionen',
     type: String,
     example: 'Bakteriepodning',
   })
@@ -377,7 +377,7 @@ export class UpdateTopicDto {
   title?: string;
 
   @ApiPropertyOptional({
-    description: 'Beskrivelse af emnet',
+    description: 'Beskrivelse af lektionen',
     type: String,
     example: 'Teknikker til podning og dyrkning af bakterier',
   })
@@ -389,14 +389,14 @@ export class UpdateTopicDto {
   description?: string;
 
   @ApiPropertyOptional({
-    description: 'Fag ID som emnet tilhører',
+    description: 'Emne (i pensum) ID som lektionen tilhører',
     type: Number,
     example: 1,
   })
   @IsOptional()
-  @IsNumber({}, { message: 'Fag-ID skal være et tal' })
-  @IsPositive({ message: 'Fag-ID skal være et positivt tal' })
-  subjectId?: number;
+  @IsNumber({}, { message: 'Emne (i pensum) ID skal være et tal' })
+  @IsPositive({ message: 'Emne (i pensum) ID skal være et positivt tal' })
+  pensumTopicId?: number;
 }
 
 /**

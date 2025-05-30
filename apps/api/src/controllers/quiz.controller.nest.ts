@@ -13,7 +13,12 @@ import {
   ParseIntPipe,
   HttpStatus,
   HttpCode,
+  Request,
+  Query,
+  DefaultValuePipe,
+  ParseBoolPipe,
 } from '@nestjs/common';
+import { Request as ExpressRequest } from 'express';
 import {
   ApiTags,
   ApiOperation,
@@ -23,7 +28,10 @@ import {
   ApiBody,
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { PrismaService } from '../persistence/prisma/prisma.service';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { Role } from '@repo/core';
+import { QuizService } from './services/quiz.service';
 import { QuestionType } from '@prisma/client';
 import { QuizDto, CreateQuizDto, UpdateQuizDto } from './dto/quiz/quiz.dto';
 import {
@@ -36,11 +44,20 @@ import {
   CreateAnswerOptionDto,
   UpdateAnswerOptionDto,
 } from './dto/quiz/answerOption.dto';
+import { PrismaService } from '../persistence/prisma/prisma.service';
+
+// Udvid Express Request interface til at inkludere userId
+interface RequestWithUser extends ExpressRequest {
+  userId?: number;
+}
 
 @ApiTags('Quizzes')
 @Controller('quizzes')
 export class QuizController {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly quizService: QuizService,
+    private readonly prisma: PrismaService
+  ) {}
 
   @ApiOperation({ summary: 'Hent alle quizzer' })
   @ApiResponse({
@@ -55,7 +72,7 @@ export class QuizController {
       return await this.prisma.quiz.findMany({
         include: {
           lesson: true,
-          module: true,
+          topic: true,
           questions: {
             include: {
               _count: {
@@ -117,21 +134,21 @@ export class QuizController {
     }
   }
 
-  @ApiOperation({ summary: 'Hent quizzer for et specifikt modul' })
-  @ApiParam({ name: 'moduleId', description: 'ID for modulet', type: Number })
+  @ApiOperation({ summary: 'Hent quizzer for et specifikt emne' })
+  @ApiParam({ name: 'topicId', description: 'ID for emnet', type: Number })
   @ApiResponse({
     status: 200,
-    description: 'Liste af quizzer for det angivne modul',
+    description: 'Liste af quizzer for det angivne emne',
     type: [QuizDto],
   })
   @ApiResponse({ status: 500, description: 'Serverfejl' })
-  @Get('module/:moduleId')
-  async getQuizzesByModule(
-    @Param('moduleId', ParseIntPipe) moduleId: number,
+  @Get('topic/:topicId')
+  async getQuizzesByTopic(
+    @Param('topicId', ParseIntPipe) topicId: number,
   ): Promise<QuizDto[]> {
     try {
       return await this.prisma.quiz.findMany({
-        where: { moduleId },
+        where: { topicId },
         include: {
           questions: {
             include: {
@@ -148,7 +165,7 @@ export class QuizController {
       });
     } catch (error) {
       console.error(
-        `Fejl ved hentning af quizzer for modul ${moduleId}:`,
+        `Fejl ved hentning af quizzer for emne ${topicId}:`,
         error,
       );
       throw new BadRequestException(
@@ -173,7 +190,7 @@ export class QuizController {
         where: { id },
         include: {
           lesson: true,
-          module: true,
+          topic: true,
           questions: {
             include: {
               answerOptions: true,
@@ -212,7 +229,7 @@ export class QuizController {
   })
   @ApiResponse({
     status: 404,
-    description: 'Lektionen eller modulet blev ikke fundet',
+    description: 'Lektionen eller emnet blev ikke fundet',
   })
   @ApiResponse({ status: 500, description: 'Serverfejl' })
   @ApiBearerAuth()
@@ -220,13 +237,13 @@ export class QuizController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async createQuiz(@Body() createQuizDto: CreateQuizDto): Promise<QuizDto> {
-    const { title, description, lessonId, moduleId } = createQuizDto;
+    const { title, description, lessonId, topicId } = createQuizDto;
 
     try {
-      // Tjek om enten lektion eller modul er angivet
-      if (!lessonId && !moduleId) {
+      // Tjek om enten lektion eller topic er angivet
+      if (!lessonId && !topicId) {
         throw new BadRequestException(
-          'Enten lessonId eller moduleId skal angives',
+          'Enten lessonId eller topicId skal angives',
         );
       }
 
@@ -241,14 +258,14 @@ export class QuizController {
         }
       }
 
-      // Tjek om modulet eksisterer, hvis angivet
-      if (moduleId) {
-        const module = await this.prisma.module.findUnique({
-          where: { id: moduleId },
+      // Tjek om emnet eksisterer, hvis angivet
+      if (topicId) {
+        const topic = await this.prisma.topic.findUnique({
+          where: { id: topicId },
         });
 
-        if (!module) {
-          throw new NotFoundException('Det angivne modul findes ikke');
+        if (!topic) {
+          throw new NotFoundException('Det angivne emne findes ikke');
         }
       }
 
@@ -257,7 +274,7 @@ export class QuizController {
           title,
           description,
           lessonId: lessonId || null,
-          moduleId: moduleId || null,
+          topicId: topicId || null,
           timeLimit: createQuizDto.timeLimit || null,
           maxAttempts: createQuizDto.maxAttempts || null,
           randomizeQuestions: createQuizDto.randomizeQuestions || false,
@@ -295,7 +312,7 @@ export class QuizController {
   })
   @ApiResponse({
     status: 404,
-    description: 'Quizzen, lektionen eller modulet blev ikke fundet',
+    description: 'Quizzen, lektionen eller emnet blev ikke fundet',
   })
   @ApiResponse({ status: 500, description: 'Serverfejl' })
   @ApiBearerAuth()
@@ -305,7 +322,7 @@ export class QuizController {
     @Param('id', ParseIntPipe) id: number,
     @Body() updateQuizDto: UpdateQuizDto,
   ): Promise<QuizDto> {
-    const { title, description, lessonId, moduleId } = updateQuizDto;
+    const { title, description, lessonId, topicId } = updateQuizDto;
 
     try {
       // Tjek om quizzen eksisterer
@@ -328,14 +345,14 @@ export class QuizController {
         }
       }
 
-      // Tjek om modulet eksisterer, hvis angivet
-      if (moduleId !== undefined && moduleId !== null) {
-        const module = await this.prisma.module.findUnique({
-          where: { id: moduleId },
+      // Tjek om emnet eksisterer, hvis angivet
+      if (topicId !== undefined && topicId !== null) {
+        const topic = await this.prisma.topic.findUnique({
+          where: { id: topicId },
         });
 
-        if (!module) {
-          throw new NotFoundException('Det angivne modul findes ikke');
+        if (!topic) {
+          throw new NotFoundException('Det angivne emne findes ikke');
         }
       }
 
@@ -345,7 +362,7 @@ export class QuizController {
           title: title || existingQuiz.title,
           description: description || existingQuiz.description,
           lessonId: lessonId !== undefined ? lessonId : existingQuiz.lessonId,
-          moduleId: moduleId !== undefined ? moduleId : existingQuiz.moduleId,
+          topicId: topicId !== undefined ? topicId : existingQuiz.topicId,
           timeLimit:
             updateQuizDto.timeLimit !== undefined
               ? updateQuizDto.timeLimit
