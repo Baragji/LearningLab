@@ -8,39 +8,41 @@ Denne mappe indeholder arkiverede planer og dokumenter fra LearningLab projektet
 
 ## Arkiverede Filer
 
-### 📁 gamle-planer/
+### Gamle Implementeringsplaner
+- `Fase1.md` - Oprindelig Fase 1 plan, erstattet af ny faseinddelt struktur
+- `revisedplan.txt` - Revideret plan fra tidligere iteration
+- `Prismaopdatering.txt` - Gammel Prisma opdateringsplan
+- `test-report-action-3-4-and-3-5-and-3-6.txt` - Gammel test rapport
+- `Learninglab.md` - Oprindelig vision analyse, erstattet af `KOMPLET_VISION_ANALYSE.md`
+- `implementation-plan.md` - Gammel implementeringsplan (markdown)
+- `implementation-plan.txt` - Gammel implementeringsplan (tekst)
+- `improvement-plan.md` - Gammel forbedringsplan
+- `E1-MVP-UI-Plan.md` - Gammel MVP UI plan
 
-Indeholder forældede planer og rapporter der er erstattet af nye, opdaterede versioner:
+### Gamle Retningslinjer og Guidelines
+- `guidelines.md` - Gamle projektretningslinjer
+- `guidelines-alignment-plan.md` - Gammel retningslinje alignment plan
+- `Jira style.txt` - Gammel Jira formatering guide
 
-#### 📋 Fase1.md
-- **Arkiveret:** Januar 2025
-- **Grund:** Erstattet af `FASEINDDELT_IMPLEMENTERINGSPLAN.md`
-- **Beskrivelse:** Detaljeret Fase 1 plan baseret på gammel struktur
-- **Status:** Forældet - ny plan er mere omfattende og opdateret
+### Gamle Debug og Code Review
+- `debugging-plan.md` - Gammel debugging plan
+- `debugging-improvement-plan.md` - Gammel debugging forbedringsplan
+- `code-review-issues.md` - Gamle code review problemer
 
-#### 📋 Learninglab.md
-- **Arkiveret:** Januar 2025
-- **Grund:** Erstattet af `KOMPLET_VISION_ANALYSE.md`
-- **Beskrivelse:** Detaljeret punkt-for-punkt analyse af vision vs. implementering
-- **Status:** Værdifuld historisk reference, men erstattet af ny komplet analyse
+### Gamle Backlogs og Sprints
+- `backlog.txt` - Gammel backlog
+- `Sprint2.txt` - Gammel sprint 2 plan
+- `Plan.txt` - Generel gammel plan
 
-#### 📋 revisedplan.txt
-- **Arkiveret:** Januar 2025
-- **Grund:** Erstattet af nye strukturerede planer
-- **Beskrivelse:** Gammel revideret plan i tekstformat
-- **Status:** Forældet - erstattet af ny komplet plan
+### Gamle Vision og Brainstorm
+- `vision.txt` - Gammel vision beskrivelse
+- `Vision&brainstom.txt` - Gammel vision og brainstorm
 
-#### 📋 Prismaopdatering.txt
-- **Arkiveret:** Januar 2025
-- **Grund:** Information sandsynligvis implementeret
-- **Beskrivelse:** Teknisk opdatering relateret til Prisma
-- **Status:** Forældet - ændringer sandsynligvis allerede implementeret
-
-#### 📋 test-report-action-3-4-and-3-5-and-3-6.txt
-- **Arkiveret:** Januar 2025
-- **Grund:** Historisk test rapport
-- **Beskrivelse:** Gammel test rapport for specifikke aktioner
-- **Status:** Historisk værdi kun
+### Gamle Stack og Status Rapporter
+- `stackinfo.txt` - Gammel stack information
+- `stackinfo-mismatch-report.md` - Gammel stack mismatch rapport
+- `stackudvkiling` - Gammel stack udvikling info
+- `project-structure-diagram.md` - Gammel projekt struktur diagram
 
 ---
 
