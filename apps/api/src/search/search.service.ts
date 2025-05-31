@@ -301,10 +301,7 @@ export class SearchService {
           },
         },
         ...(query && {
-          OR: [
-            { content: { contains: query, mode: 'insensitive' } },
-            { type: { equals: query.toUpperCase() as any } }, // Indexed field
-          ],
+          content: { contains: query, mode: 'insensitive' },
         }),
       };
 
@@ -456,10 +453,7 @@ export class SearchService {
           },
         },
         ...(query && {
-          OR: [
-            { content: { contains: query, mode: 'insensitive' } },
-            { type: { equals: query.toUpperCase() as any } },
-          ],
+          content: { contains: query, mode: 'insensitive' },
         }),
       };
       const materialCount = await this.prisma.contentBlock.count({ where: materialWhereFull });
