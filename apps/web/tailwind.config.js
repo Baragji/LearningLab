@@ -58,7 +58,11 @@ module.exports = {
         menuAppear: 'menuAppear 0.2s ease-out forwards',
         // Notification specific animations
         'notification-enter': 'notification-enter 0.3s cubic-bezier(0.21, 1.02, 0.73, 1) forwards',
-        'notification-exit': 'notification-exit 0.3s cubic-bezier(0.06, 0.71, 0.55, 1) forwards',
+         'notification-exit': 'notification-exit 0.3s cubic-bezier(0.06, 0.71, 0.55, 1) forwards',
+         'enter': 'enter 200ms ease-out',
+         'leave': 'leave 150ms ease-in forwards',
+         'progress': 'progress 2s ease-in-out',
+         'fadeInDown': 'fadeInDown 0.8s ease-out forwards',
       },
       keyframes: {
         fadeIn: {
@@ -102,16 +106,20 @@ module.exports = {
           '100%': { opacity: '1', transform: 'scale(1) translateY(0)' },
         },
         'notification-enter': {
-          '0%': { transform: 'translateY(16px)', opacity: '0' },
-          '100%': { transform: 'translateY(0)', opacity: '1' },
+          '0%': { opacity: '0', transform: 'translateY(-100%) scale(0.95)' },
+          '100%': { opacity: '1', transform: 'translateY(0) scale(1)' },
         },
         'notification-exit': {
-          '0%': { transform: 'translateY(0)', opacity: '1' },
-          '100%': { transform: 'translateY(-16px)', opacity: '0' },
+          '0%': { opacity: '1', transform: 'translateY(0) scale(1)' },
+          '100%': { opacity: '0', transform: 'translateY(-100%) scale(0.95)' },
         },
-        progress: {
-          '0%': { width: '100%' },
-          '100%': { width: '0%' },
+        'progress': {
+          '0%': { width: '0%' },
+          '100%': { width: '100%' },
+        },
+        'fadeInDown': {
+          '0%': { opacity: '0', transform: 'translateY(-30px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
         },
       },
     },
