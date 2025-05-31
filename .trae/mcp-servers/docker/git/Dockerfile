@@ -23,12 +23,11 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install Node.js dependencies
-RUN npm ci --only=production && \
+RUN npm install --production && \
     npm cache clean --force
 
 # Copy application code
 COPY src/ ./src/
-COPY config/ ./config/
 
 # Create necessary directories
 RUN mkdir -p /workspace /data /logs && \

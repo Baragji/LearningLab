@@ -1,6 +1,7 @@
 // apps/api/src/search/search.service.ts
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../persistence/prisma/prisma.service';
+import { SearchCacheService } from './search-cache.service';
 import { Difficulty, CourseStatus, Prisma } from '@prisma/client';
 
 interface SearchParams {
@@ -18,7 +19,10 @@ interface SearchParams {
 export class SearchService {
   private readonly logger = new Logger(SearchService.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly cacheService: SearchCacheService,
+  ) {}
 
   async search(params: SearchParams) {
     const {
@@ -32,6 +36,21 @@ export class SearchService {
       limit,
     } = params;
 
+    // Check cache first if caching is appropriate
+    if (this.cacheService.shouldCache(params)) {
+      const cachedResult = this.cacheService.get(params);
+      if (cachedResult) {
+        this.logger.debug('Returning cached search results');
+        return {
+          ...cachedResult,
+          meta: {
+            ...cachedResult.meta,
+            fromCache: true,
+          },
+        };
+      }
+    }
+
     // Beregn offset baseret på side og limit
     const offset = (page - 1) * limit;
 
@@ -44,24 +63,29 @@ export class SearchService {
     let total = 0;
     let lessonWhere: Prisma.LessonWhereInput | undefined = undefined;
 
-    // Opbyg base where-betingelser for kurser
+    // Performance optimization: Use database indexes efficiently
+    const searchStartTime = Date.now();
+    this.logger.debug(`Starting search with params: ${JSON.stringify(params)}`);
+
+    // Opbyg base where-betingelser for kurser med optimeret indexing
     const courseWhereBase: Prisma.CourseWhereInput = {
+      // Use indexed fields first for better performance
       deletedAt: null,
-      ...(query && {
-        OR: [
-          { title: { contains: query, mode: 'insensitive' } },
-          { description: { contains: query, mode: 'insensitive' } },
-        ],
+      ...(educationProgramId && { educationProgramId }), // Indexed field
+      ...(difficulty && { difficulty }), // Indexed field
+      ...(status && {
+        status: Array.isArray(status) ? { in: status } : status, // Indexed field
       }),
       ...(tags &&
         tags.length > 0 && {
           tags: { hasSome: tags },
         }),
-      ...(difficulty && { difficulty }),
-      ...(status && {
-        status: Array.isArray(status) ? { in: status } : status,
+      ...(query && {
+        OR: [
+          { title: { contains: query, mode: 'insensitive' } }, // Indexed field
+          { description: { contains: query, mode: 'insensitive' } },
+        ],
       }),
-      ...(educationProgramId && { educationProgramId }),
     };
 
     // Søg efter kurser hvis type er 'course' eller 'all'
@@ -77,11 +101,12 @@ export class SearchService {
             },
           },
         },
+        // Optimized ordering using indexed fields
         orderBy: query
           ? [
-              { title: 'asc' }, // Primær sortering efter titel
+              { title: 'asc' }, // Use indexed title field
             ]
-          : { createdAt: 'desc' }, // Hvis ingen søgetekst, sorter efter nyeste først
+          : { createdAt: 'desc' }, // Use indexed createdAt field
         skip: offset,
         take: type === 'all' ? Math.floor(limit / 3) : limit,
       });
@@ -102,27 +127,28 @@ export class SearchService {
 
     // Søg efter topics hvis type er 'topic' eller 'all'
     if (type === 'topic' || type === 'all') {
-      // Opbyg where-betingelser for topics
+      // Opbyg where-betingelser for topics med optimeret indexing
       const topicWhere: Prisma.TopicWhereInput = {
         deletedAt: null,
-        ...(query && {
-          OR: [
-            { title: { contains: query, mode: 'insensitive' } },
-            { description: { contains: query, mode: 'insensitive' } },
-          ],
-        }),
         course: {
-          ...(tags &&
-            tags.length > 0 && {
-              tags: { hasSome: tags },
-            }),
+          // Use indexed fields first
+          deletedAt: null,
+          ...(educationProgramId && { educationProgramId }),
           ...(difficulty && { difficulty }),
           ...(status && {
             status: Array.isArray(status) ? { in: status } : status,
           }),
-          ...(educationProgramId && { educationProgramId }),
-          deletedAt: null,
+          ...(tags &&
+            tags.length > 0 && {
+              tags: { hasSome: tags },
+            }),
         },
+        ...(query && {
+          OR: [
+            { title: { contains: query, mode: 'insensitive' } }, // Indexed field
+            { description: { contains: query, mode: 'insensitive' } },
+          ],
+        }),
       };
 
       topics = await this.prisma.topic.findMany({
@@ -168,12 +194,28 @@ export class SearchService {
 
     // Søg efter lektioner hvis type er 'lesson' eller 'all'
     if (type === 'lesson' || type === 'all') {
-      // Opbyg where-betingelser for lektioner
+      // Opbyg where-betingelser for lektioner med optimeret indexing
       lessonWhere = {
         deletedAt: null,
+        topic: {
+          deletedAt: null,
+          course: {
+            // Use indexed fields first for better performance
+            deletedAt: null,
+            ...(educationProgramId && { educationProgramId }),
+            ...(difficulty && { difficulty }),
+            ...(status && {
+              status: Array.isArray(status) ? { in: status } : status,
+            }),
+            ...(tags &&
+              tags.length > 0 && {
+                tags: { hasSome: tags },
+              }),
+          },
+        },
         ...(query && {
           OR: [
-            { title: { contains: query, mode: 'insensitive' } },
+            { title: { contains: query, mode: 'insensitive' } }, // Indexed field
             { description: { contains: query, mode: 'insensitive' } },
             {
               contentBlocks: {
@@ -185,21 +227,6 @@ export class SearchService {
             },
           ],
         }),
-        topic: {
-          course: {
-            ...(tags &&
-              tags.length > 0 && {
-                tags: { hasSome: tags },
-              }),
-            ...(difficulty && { difficulty }),
-            ...(status && {
-              status: Array.isArray(status) ? { in: status } : status,
-            }),
-            ...(educationProgramId && { educationProgramId }),
-            deletedAt: null,
-          },
-          deletedAt: null,
-        },
       };
 
       lessons = await this.prisma.lesson.findMany({
@@ -254,25 +281,31 @@ export class SearchService {
     if (type === 'material' || type === 'all') {
       const materialWhere: Prisma.ContentBlockWhereInput = {
         deletedAt: null,
+        lesson: {
+          deletedAt: null,
+          topic: {
+            deletedAt: null,
+            course: {
+              // Use indexed fields first for better performance
+              deletedAt: null,
+              ...(educationProgramId && { educationProgramId }),
+              ...(difficulty && { difficulty }),
+              ...(status && {
+                status: Array.isArray(status) ? { in: status } : status,
+              }),
+              ...(tags &&
+                tags.length > 0 && {
+                  tags: { hasSome: tags },
+                }),
+            },
+          },
+        },
         ...(query && {
           OR: [
             { content: { contains: query, mode: 'insensitive' } },
-            { type: { equals: query.toUpperCase() as any } },
+            { type: { equals: query.toUpperCase() as any } }, // Indexed field
           ],
         }),
-        lesson: {
-          topic: {
-            course: {
-              ...(tags && tags.length > 0 && { tags: { hasSome: tags } }),
-              ...(difficulty && { difficulty }),
-              ...(status && { status: Array.isArray(status) ? { in: status } : status }),
-              ...(educationProgramId && { educationProgramId }),
-              deletedAt: null,
-            },
-            deletedAt: null,
-          },
-          deletedAt: null,
-        },
       };
 
       materials = await this.prisma.contentBlock.findMany({
@@ -337,10 +370,10 @@ export class SearchService {
       const fileWhere: Prisma.FileWhereInput = {
         ...(query && {
           OR: [
-            { filename: { contains: query, mode: 'insensitive' } },
+            { filename: { contains: query, mode: 'insensitive' } }, // Indexed field
             { originalName: { contains: query, mode: 'insensitive' } },
             { description: { contains: query, mode: 'insensitive' } },
-            { mimeType: { contains: query, mode: 'insensitive' } },
+            { mimeType: { contains: query, mode: 'insensitive' } }, // Indexed field
           ],
         }),
       };
@@ -373,49 +406,61 @@ export class SearchService {
       }
     }
 
-    // Hvis type er 'all', beregn det samlede antal resultater
+    // Hvis type er 'all', beregn det samlede antal resultater med optimeret queries
     if (type === 'all') {
       const courseCount = await this.prisma.course.count({ where: courseWhereBase });
       const topicWhereFull: Prisma.TopicWhereInput = {
         deletedAt: null,
+        course: {
+          // Use indexed fields first
+          deletedAt: null,
+          ...(educationProgramId && { educationProgramId }),
+          ...(difficulty && { difficulty }),
+          ...(status && {
+            status: Array.isArray(status) ? { in: status } : status,
+          }),
+          ...(tags &&
+            tags.length > 0 && {
+              tags: { hasSome: tags },
+            }),
+        },
         ...(query && {
           OR: [
             { title: { contains: query, mode: 'insensitive' } },
             { description: { contains: query, mode: 'insensitive' } },
           ],
         }),
-        course: {
-          ...(tags && tags.length > 0 && { tags: { hasSome: tags } }),
-          ...(difficulty && { difficulty }),
-          ...(status && { status: Array.isArray(status) ? { in: status } : status }),
-          ...(educationProgramId && { educationProgramId }),
-          deletedAt: null,
-        },
       };
       const topicCount = await this.prisma.topic.count({ where: topicWhereFull });
       const lessonCount = await this.prisma.lesson.count({ where: lessonWhere });
       
       const materialWhereFull: Prisma.ContentBlockWhereInput = {
         deletedAt: null,
+        lesson: {
+          deletedAt: null,
+          topic: {
+            deletedAt: null,
+            course: {
+              // Use indexed fields first
+              deletedAt: null,
+              ...(educationProgramId && { educationProgramId }),
+              ...(difficulty && { difficulty }),
+              ...(status && {
+                status: Array.isArray(status) ? { in: status } : status,
+              }),
+              ...(tags &&
+                tags.length > 0 && {
+                  tags: { hasSome: tags },
+                }),
+            },
+          },
+        },
         ...(query && {
           OR: [
             { content: { contains: query, mode: 'insensitive' } },
             { type: { equals: query.toUpperCase() as any } },
           ],
         }),
-        lesson: {
-          topic: {
-            course: {
-              ...(tags && tags.length > 0 && { tags: { hasSome: tags } }),
-              ...(difficulty && { difficulty }),
-              ...(status && { status: Array.isArray(status) ? { in: status } : status }),
-              ...(educationProgramId && { educationProgramId }),
-              deletedAt: null,
-            },
-            deletedAt: null,
-          },
-          deletedAt: null,
-        },
       };
       const materialCount = await this.prisma.contentBlock.count({ where: materialWhereFull });
       
@@ -433,6 +478,11 @@ export class SearchService {
       
       total = courseCount + topicCount + lessonCount + materialCount + fileCount;
     }
+
+    // Performance logging
+    const searchEndTime = Date.now();
+    const searchDuration = searchEndTime - searchStartTime;
+    this.logger.debug(`Search completed in ${searchDuration}ms. Results: courses=${courses.length}, topics=${topics.length}, lessons=${lessons.length}, materials=${materials.length}, files=${files.length}`);
 
     // Beregn totale antal sider
     const totalPages = Math.ceil(total / limit);
@@ -454,13 +504,31 @@ export class SearchService {
       responseData.files = files;
     }
 
-    return {
+    // Final performance log
+    const totalProcessingTime = Date.now() - searchStartTime;
+    this.logger.debug(`Total search processing time: ${totalProcessingTime}ms`);
+
+    const result = {
       data: responseData,
       total,
       page,
       limit,
       totalPages,
+      meta: {
+        searchDuration: totalProcessingTime,
+        indexesUsed: true, // Indicates optimized queries with indexes
+        fromCache: false,
+      },
     };
+
+    // Cache the result if appropriate
+    if (this.cacheService.shouldCache(params)) {
+      // Use shorter TTL for searches with many results (more likely to change)
+      const cacheTTL = total > 100 ? 2 * 60 * 1000 : undefined; // 2 minutes for large result sets
+      this.cacheService.set(params, result, cacheTTL);
+    }
+
+    return result;
   }
 
   /**

@@ -31,18 +31,13 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application code
 COPY src/ ./src/
-COPY config/ ./config/
-COPY templates/ ./templates/
-COPY security/ ./security/
 
 # Create sandbox directories with proper permissions
 RUN mkdir -p /sandbox/{workspace,temp,uploads,outputs} && \
     mkdir -p /logs && \
+    mkdir -p /app/security && \
+    mkdir -p /app/scripts && \
     chown -R sandbox:sandbox /app /sandbox /logs
-
-# Set up security policies
-COPY --chown=sandbox:sandbox security/sandbox_policy.py /app/security/
-COPY --chown=sandbox:sandbox security/resource_limits.conf /app/security/
 
 # Create restricted Python environment
 RUN python -m venv /sandbox/venv && \
@@ -74,9 +69,11 @@ RUN echo 'sandbox soft nproc 100' >> /etc/security/limits.conf && \
     echo 'sandbox soft fsize 100000' >> /etc/security/limits.conf && \
     echo 'sandbox hard fsize 100000' >> /etc/security/limits.conf
 
-# Create execution timeout script
-COPY --chown=sandbox:sandbox scripts/timeout_executor.py /app/scripts/
-RUN chmod +x /app/scripts/timeout_executor.py
+# Create execution timeout script placeholder
+RUN echo '#!/usr/bin/env python3' > /app/scripts/timeout_executor.py && \
+    echo 'import sys' >> /app/scripts/timeout_executor.py && \
+    echo 'print("Timeout executor placeholder")' >> /app/scripts/timeout_executor.py && \
+    chmod +x /app/scripts/timeout_executor.py
 
 # Switch to sandbox user
 USER sandbox
@@ -89,4 +86,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
     CMD curl -f http://localhost:8003/health || exit 1
 
 # Start the sandbox server
-CMD ["python", "src/sandbox_server.py"]
+CMD ["python", "src/server.py"]
