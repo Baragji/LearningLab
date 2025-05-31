@@ -239,6 +239,13 @@ model Quiz {
   createdBy     Int?
   updatedByUser User? @relation("QuizUpdatedByUser", fields: [updatedBy], references: [id])
   updatedBy     Int?
+
+  @@index([lessonId])
+  @@index([topicId])
+  @@index([title])
+  @@index([questionBankCategory])
+  @@index([createdAt])
+  @@index([deletedAt])
 }
 
 model Question {
@@ -265,6 +272,10 @@ model Question {
   createdBy     Int?
   updatedByUser User? @relation("QuestionUpdatedByUser", fields: [updatedBy], references: [id])
   updatedBy     Int?
+
+  @@index([quizId])
+  @@index([type])
+  @@index([deletedAt])
 }
 
 model AnswerOption {
@@ -283,6 +294,9 @@ model AnswerOption {
   createdBy     Int?
   updatedByUser User? @relation("AnswerOptionUpdatedByUser", fields: [updatedBy], references: [id])
   updatedBy     Int?
+
+  @@index([questionId])
+  @@index([isCorrect])
 }
 
 model QuizAttempt {
@@ -298,6 +312,12 @@ model QuizAttempt {
   quiz        Quiz           @relation(fields: [quizId], references: [id])
   user        User           @relation(fields: [userId], references: [id])
   userAnswers UserAnswer[]
+
+  @@index([userId])
+  @@index([quizId])
+  @@index([userId, quizId])
+  @@index([completedAt])
+  @@index([score])
   progress    UserProgress[]
 }
 
@@ -318,6 +338,10 @@ model UserAnswer {
   question               Question      @relation(fields: [questionId], references: [id])
   quizAttempt            QuizAttempt   @relation(fields: [quizAttemptId], references: [id])
   selectedAnswerOption   AnswerOption? @relation(fields: [selectedAnswerOptionId], references: [id])
+
+  @@index([quizAttemptId])
+  @@index([questionId])
+  @@index([isCorrect])
 }
 
 model UserProgress {
@@ -335,6 +359,13 @@ model UserProgress {
   quizAttempt   QuizAttempt?   @relation(fields: [quizAttemptId], references: [id])
   quiz          Quiz?          @relation("QuizProgress", fields: [quizId], references: [id])
   user          User           @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([lessonId])
+  @@index([quizId])
+  @@index([status])
+  @@index([userId, lessonId])
+  @@index([userId, quizId])
 }
 
 model Certificate {
@@ -352,6 +383,11 @@ model Certificate {
 
   user User @relation(fields: [userId], references: [id])
   quiz Quiz @relation(fields: [quizId], references: [id])
+
+  @@index([userId])
+  @@index([quizId])
+  @@index([issueDate])
+  @@index([certificateId])
 }
 
 model QuestionBank {
@@ -371,6 +407,10 @@ model QuestionBank {
   createdBy     Int?
   updatedByUser User? @relation("QuestionBankUpdatedByUser", fields: [updatedBy], references: [id])
   updatedBy     Int?
+
+  @@index([name])
+  @@index([category])
+  @@index([deletedAt])
 }
 
 model QuestionBankItem {
@@ -398,6 +438,11 @@ model QuestionBankItem {
   createdBy     Int?
   updatedByUser User? @relation("QuestionBankItemUpdatedByUser", fields: [updatedBy], references: [id])
   updatedBy     Int?
+
+  @@index([questionBankId])
+  @@index([type])
+  @@index([difficulty])
+  @@index([deletedAt])
 }
 
 model File {
@@ -482,6 +527,9 @@ model UserGroup {
   createdBy     Int?
   updatedByUser User? @relation("UserGroupUpdatedByUser", fields: [updatedBy], references: [id])
   updatedBy     Int?
+
+  @@index([name])
+  @@index([deletedAt])
 }
 
 enum FagCategory {

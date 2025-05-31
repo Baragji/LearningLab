@@ -1,7 +1,7 @@
 {
-  "name": "learninglab-git-mcp",
+  "name": "learninglab-nodejs-sandbox-mcp",
   "version": "1.0.0",
-  "description": "Git MCP Server for LearningLab - Provides secure Git operations and repository management",
+  "description": "Node.js Sandbox MCP Server for LearningLab - Provides secure JavaScript/Node.js code execution environment",
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
@@ -13,12 +13,13 @@
     "lint:fix": "eslint src/ --fix",
     "format": "prettier --write src/",
     "build": "echo 'No build step required'",
-    "health": "curl -f http://localhost:8001/health"
+    "health": "curl -f http://localhost:8004/health"
   },
   "keywords": [
     "mcp",
-    "git",
-    "version-control",
+    "nodejs",
+    "javascript",
+    "sandbox",
     "learninglab",
     "education",
     "ai"
@@ -28,34 +29,19 @@
   "dependencies": {
     "express": "^4.18.2",
     "cors": "^2.8.5",
-    "helmet": "^7.1.0",
-    "morgan": "^1.10.0",
-    "compression": "^1.7.4",
-    "rate-limiter-flexible": "^2.4.2",
-    "simple-git": "^3.20.0",
-    "joi": "^17.11.0",
+    "vm2": "^3.9.19",
     "winston": "^3.11.0",
-    "winston-daily-rotate-file": "^4.7.1",
+    "fs-extra": "^11.1.1",
+    "joi": "^17.11.0",
     "dotenv": "^16.3.1",
     "uuid": "^9.0.1",
-    "jsonwebtoken": "^9.0.2",
-    "bcryptjs": "^2.4.3",
-    "multer": "^1.4.5-lts.1",
-    "archiver": "^6.0.1",
-    "tar": "^6.2.0",
-    "node-cron": "^3.0.3",
-    "ioredis": "^5.3.2",
-    "pg": "^8.11.3",
-    "@octokit/rest": "^20.0.2",
-    "nodemailer": "^6.9.7",
-    "handlebars": "^4.7.8",
-    "moment": "^2.29.4",
     "lodash": "^4.17.21",
-    "async": "^3.2.4",
-    "fs-extra": "^11.1.1",
-    "mime-types": "^2.1.35",
+    "moment": "^2.29.4",
+    "axios": "^1.6.0",
+    "cheerio": "^1.0.0-rc.12",
+    "validator": "^13.11.0",
     "sanitize-filename": "^1.6.3",
-    "validator": "^13.11.0"
+    "mime-types": "^2.1.35"
   },
   "devDependencies": {
     "nodemon": "^3.0.1",
@@ -66,7 +52,7 @@
     "eslint-plugin-node": "^11.1.0",
     "prettier": "^3.0.3",
     "@types/jest": "^29.5.7",
-    "@types/node": "^20.8.9"
+    "@types/node": "^20.8.7"
   },
   "engines": {
     "node": ">=18.0.0",
@@ -79,51 +65,43 @@
   "bugs": {
     "url": "https://github.com/learninglab/mcp-servers/issues"
   },
-  "homepage": "https://github.com/learninglab/mcp-servers#readme",
   "jest": {
     "testEnvironment": "node",
     "collectCoverageFrom": [
       "src/**/*.js",
-      "!src/server.js",
-      "!src/config/*.js"
+      "!src/**/*.test.js"
     ],
     "coverageDirectory": "coverage",
     "coverageReporters": [
       "text",
       "lcov",
       "html"
-    ],
-    "testMatch": [
-      "**/__tests__/**/*.js",
-      "**/?(*.)+(spec|test).js"
     ]
   },
   "eslintConfig": {
-    "env": {
-      "node": true,
-      "es2021": true,
-      "jest": true
-    },
     "extends": [
       "eslint:recommended",
+      "plugin:node/recommended",
       "prettier"
     ],
+    "env": {
+      "node": true,
+      "es2022": true,
+      "jest": true
+    },
     "parserOptions": {
-      "ecmaVersion": "latest",
+      "ecmaVersion": 2022,
       "sourceType": "module"
     },
     "rules": {
-      "no-console": "warn",
-      "no-unused-vars": "error",
-      "prefer-const": "error",
-      "no-var": "error"
+      "no-console": "off",
+      "node/no-unpublished-require": "off"
     }
   },
   "prettier": {
     "semi": true,
-    "trailingComma": "es5",
     "singleQuote": true,
-    "printWidth": 80,
-    "tabWidth": 2
+    "tabWidth": 2,
+    "trailingComma": "es5"
   }
 }

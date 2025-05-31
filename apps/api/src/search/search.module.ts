@@ -1,14 +1,16 @@
 // apps/api/src/search/search.module.ts
 import { Module } from '@nestjs/common';
-import { SearchController } from './search.controller';
 import { SearchService } from './search.service';
-import { PrismaModule } from '../persistence/prisma/prisma.module';
-import { AuthModule } from '../auth/auth.module';
+import { SearchController } from './search.controller';
+import { SearchCacheService } from './search-cache.service';
+import { SearchCacheInvalidationService } from './search-cache-invalidation.service';
+import { PersistenceModule } from '../persistence/persistence.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [PrismaModule, AuthModule],
+  imports: [PersistenceModule, ConfigModule],
   controllers: [SearchController],
-  providers: [SearchService],
-  exports: [SearchService],
+  providers: [SearchService, SearchCacheService, SearchCacheInvalidationService],
+  exports: [SearchService, SearchCacheService, SearchCacheInvalidationService],
 })
 export class SearchModule {}

@@ -14,11 +14,11 @@ Denne plan tager udgangspunkt i den nuværende status (45% færdig) og definerer
 ### 1.1 Database & Backend Færdiggørelse (2 uger)
 
 **Opgaver:**
-- [ ] Implementer file upload system (PDF, video, billeder)
-- [ ] Tilføj materiale management til Topics/Lessons
-- [ ] Implementer basic search funktionalitet
-- [ ] Optimér database queries og tilføj indexering
-- [ ] Tilføj data validation og error handling
+- [x] Implementer file upload system (PDF, video, billeder)
+- [x] Tilføj materiale management til Topics/Lessons
+- [x] Implementer basic search funktionalitet
+- [x] Optimér database queries og tilføj indexering
+- [x] Tilføj data validation og error handling
 
 **Leverancer:**
 - Komplet backend API med file upload
