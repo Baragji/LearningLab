@@ -48,6 +48,13 @@
       "phase": "1",
       "priority": "high"
     },
+    "code-lens": {
+      "command": "python3",
+      "args": ["./scripts/code_lens_server.py"],
+      "description": "Code lens server for kontekstuelle kodeforslag (kører på port 5008)",
+      "phase": "1",
+      "priority": "medium"
+    },
     "node-sandbox": {
       "command": "docker",
       "args": ["run", "--rm", "-i", "node-sandbox-mcp"],
