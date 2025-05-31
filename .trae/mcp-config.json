@@ -34,6 +34,20 @@
       "phase": "1",
       "priority": "high"
     },
+    "prompt-history": {
+      "command": "python3",
+      "args": ["./scripts/prompt_history_server.py"],
+      "description": "API til at gemme/hente prompt-historik (kører på port 5007)",
+      "phase": "1",
+      "priority": "medium"
+    },
+    "vector-search": {
+      "command": "python3",
+      "args": ["./scripts/vector_search_server.py"],
+      "description": "Lokal ChromaDB vektor-søgemotor til RAG (kører på port 5004)",
+      "phase": "1",
+      "priority": "high"
+    },
     "node-sandbox": {
       "command": "docker",
       "args": ["run", "--rm", "-i", "node-sandbox-mcp"],
@@ -162,15 +176,15 @@
   },
   "deployment": {
     "phases": {
-      "1": ["filesystem", "git", "python-sandbox", "openapi", "email"],
+      "1": ["filesystem", "git", "python-sandbox", "openapi", "email", "prompt-history", "vector-search"],
       "2": ["jupyter", "data-analysis"],
       "3": ["grafana"],
       "4": ["kubernetes", "portainer"]
     },
     "auto_start": {
-      "development": ["filesystem", "git", "python-sandbox"],
-      "testing": ["filesystem", "git", "python-sandbox", "openapi"],
-      "production": ["kubernetes", "portainer", "grafana"]
+      "development": ["filesystem", "git", "python-sandbox", "prompt-history", "vector-search"],
+      "testing": ["filesystem", "git", "python-sandbox", "openapi", "vector-search"],
+      "production": ["kubernetes", "portainer", "grafana", "vector-search"]
     }
   }
 }

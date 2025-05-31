@@ -1,613 +1,1021 @@
+match-bundle.js.map                     utils.d.ts
+next-server.d.ts                        utils.js
+next-server.js                          utils.js.map
+next-server.js.map                      web
+next-typescript.d.ts                    web-server.d.ts
+next-typescript.js                      web-server.js
+next-typescript.js.map                  web-server.js.map
 
-```
-LearningLab
-├─ .idea
-│  ├─ LearningLab.iml
-│  ├─ caches
-│  ├─ dictionaries
-│  │  └─ project.xml
-│  ├─ inspectionProfiles
-│  │  └─ Project_Default.xml
-│  ├─ jsLibraryMappings.xml
-│  ├─ misc.xml
-│  ├─ modules.xml
-│  ├─ prettier.xml
-│  ├─ runConfigurations
-│  │  ├─ Jest.xml
-│  │  ├─ Playwright.xml
-│  │  └─ Turborepo_dev.xml
-│  ├─ vcs.xml
-│  ├─ webResources.xml
-│  └─ workspace.xml
-├─ .node-version
-├─ .trae
-│  └─ .ignore
-├─ .yarn
-│  ├─ install-state.gz
-│  └─ releases
-│     └─ yarn-4.9.1.cjs
-├─ .yarnrc.yml
-├─ Dockerfile.api
-├─ Dockerfile.web
-├─ E1-MVP-UI-Plan.md
-├─ Jira style.txt
-├─ LICENSE
-├─ Optimering.txt
-├─ Plan.txt
-├─ README.md
-├─ Seedpensum.txt
-├─ Vision&brainstom.txt
-├─ api
-│  └─ web.txt
-├─ apps
-│  ├─ api
-│  │  ├─ .eslintrc.js
-│  │  ├─ .prettierrc
-│  │  ├─ docs
-│  │  │  └─ migration-strategy.md
-│  │  ├─ nest-cli.json
-│  │  ├─ package.json
-│  │  ├─ prisma
-│  │  │  ├─ migrations
-│  │  │  │  ├─ 20220307034109_initial_migrate
-│  │  │  │  │  └─ migration.sql
-│  │  │  │  ├─ 20250517073440_add_user_auth_fields
-│  │  │  │  │  └─ migration.sql
-│  │  │  │  ├─ 20250517122525_add_password_reset_fields
-│  │  │  │  │  └─ migration.sql
-│  │  │  │  ├─ 20250520211803_add_pensum_and_quiz_models
-│  │  │  │  │  └─ migration.sql
-│  │  │  │  ├─ 20250523165258_created_by
-│  │  │  │  │  └─ migration.sql
-│  │  │  │  ├─ 20250523172339_add_advanced_search_fields
-│  │  │  │  │  └─ migration.sql
-│  │  │  │  ├─ 20250523173305_add_user_profile_fields
-│  │  │  │  │  └─ migration.sql
-│  │  │  │  ├─ 20250523200842_add_xp_to_user
-│  │  │  │  │  └─ migration.sql
-│  │  │  │  ├─ 20250523220919_new
-│  │  │  │  │  └─ migration.sql
-│  │  │  │  ├─ 20250524003326_add_content_block_types
-│  │  │  │  │  └─ migration.sql
-│  │  │  │  ├─ 20250524220309_add_advanced_quiz_functionality
-│  │  │  │  │  └─ migration.sql
-│  │  │  │  └─ migration_lock.toml
-│  │  │  ├─ schema.prisma
-│  │  │  └─ seed.ts
-│  │  ├─ src
-│  │  │  ├─ README.md
-│  │  │  ├─ app.controller.spec.ts
-│  │  │  ├─ app.controller.ts
-│  │  │  ├─ app.module.ts
-│  │  │  ├─ app.service.ts
-│  │  │  ├─ auth
-│  │  │  │  ├─ auth.controller.ts
-│  │  │  │  ├─ auth.module.ts
-│  │  │  │  ├─ auth.service.ts
-│  │  │  │  ├─ decorators
-│  │  │  │  │  ├─ current-user.decorator.ts
-│  │  │  │  │  └─ roles.decorator.ts
-│  │  │  │  ├─ dto
-│  │  │  │  │  ├─ forgot-password.dto.ts
-│  │  │  │  │  ├─ login.dto.ts
-│  │  │  │  │  ├─ refresh-token.dto.ts
-│  │  │  │  │  ├─ reset-password.dto.ts
-│  │  │  │  │  └─ social-user.dto.ts
-│  │  │  │  ├─ guards
-│  │  │  │  │  ├─ github-auth.guard.ts
-│  │  │  │  │  ├─ google-auth.guard.ts
-│  │  │  │  │  ├─ jwt-auth.guard.ts
-│  │  │  │  │  ├─ local-auth.guard.ts
-│  │  │  │  │  ├─ login-throttler.guard.ts
-│  │  │  │  │  ├─ optional-jwt-auth.guard.ts
-│  │  │  │  │  └─ roles.guard.ts
-│  │  │  │  └─ strategies
-│  │  │  │     ├─ github
-│  │  │  │     │  └─ github.strategy.ts
-│  │  │  │     ├─ google
-│  │  │  │     │  └─ google.strategy.ts
-│  │  │  │     ├─ jwt
-│  │  │  │     │  └─ jwt.ts
-│  │  │  │     └─ local
-│  │  │  │        └─ local.ts
-│  │  │  ├─ common
-│  │  │  │  ├─ common.module.ts
-│  │  │  │  ├─ filters
-│  │  │  │  │  └─ global-exception.filter.ts
-│  │  │  │  ├─ interceptors
-│  │  │  │  │  ├─ custom-cache.interceptor.ts
-│  │  │  │  │  └─ simple-cache.interceptor.ts
-│  │  │  │  ├─ middleware
-│  │  │  │  │  ├─ cache-logger.middleware.ts
-│  │  │  │  │  ├─ csrf.middleware.ts
-│  │  │  │  │  └─ user-identification.middleware.ts
-│  │  │  │  ├─ pipes
-│  │  │  │  │  └─ zod-validation.pipe.ts
-│  │  │  │  └─ services
-│  │  │  │     ├─ base.service.ts
-│  │  │  │     └─ logger.service.ts
-│  │  │  ├─ config
-│  │  │  │  ├─ app.config.ts
-│  │  │  │  ├─ auth.config.ts
-│  │  │  │  ├─ cache.config.ts
-│  │  │  │  ├─ config.module.ts
-│  │  │  │  ├─ config.service.ts
-│  │  │  │  ├─ cors.config.ts
-│  │  │  │  ├─ environment-variables.ts
-│  │  │  │  ├─ error-handling.config.ts
-│  │  │  │  ├─ node-version.spec.ts
-│  │  │  │  ├─ social-auth.config.ts
-│  │  │  │  └─ throttle.config.ts
-│  │  │  ├─ controllers
-│  │  │  │  ├─ certificate.controller.ts
-│  │  │  │  ├─ certificate.module.ts
-│  │  │  │  ├─ contentBlock.controller.nest.ts
-│  │  │  │  ├─ contentBlock.controller.ts
-│  │  │  │  ├─ contentBlocks.module.ts
-│  │  │  │  ├─ course.controller.nest.ts
-│  │  │  │  ├─ course.controller.ts
-│  │  │  │  ├─ courses.module.ts
-│  │  │  │  ├─ dto
-│  │  │  │  │  ├─ certificate
-│  │  │  │  │  │  └─ certificate.dto.ts
-│  │  │  │  │  ├─ contentBlock
-│  │  │  │  │  │  └─ contentBlock.dto.ts
-│  │  │  │  │  ├─ course.dto.ts
-│  │  │  │  │  ├─ lesson
-│  │  │  │  │  │  └─ lesson.dto.ts
-│  │  │  │  │  ├─ module
-│  │  │  │  │  │  └─ module.dto.ts
-│  │  │  │  │  ├─ pensum
-│  │  │  │  │  │  └─ pensum.dto.ts
-│  │  │  │  │  ├─ question-bank
-│  │  │  │  │  │  └─ question-bank.dto.ts
-│  │  │  │  │  ├─ quiz
-│  │  │  │  │  │  ├─ answerOption.dto.ts
-│  │  │  │  │  │  ├─ question.dto.ts
-│  │  │  │  │  │  └─ quiz.dto.ts
-│  │  │  │  │  ├─ quiz-attempt
-│  │  │  │  │  │  └─ quiz-attempt.dto.ts
-│  │  │  │  │  ├─ subject-area
-│  │  │  │  │  │  └─ subject-area.dto.ts
-│  │  │  │  │  └─ user-progress
-│  │  │  │  │     └─ user-progress.dto.ts
-│  │  │  │  ├─ error-test.controller.ts
-│  │  │  │  ├─ lesson.controller.nest.ts
-│  │  │  │  ├─ lesson.controller.ts
-│  │  │  │  ├─ lessons.module.ts
-│  │  │  │  ├─ module.controller.nest.ts
-│  │  │  │  ├─ module.controller.ts
-│  │  │  │  ├─ modules.module.ts
-│  │  │  │  ├─ pensum.controller.nest.ts
-│  │  │  │  ├─ pensum.controller.ts
-│  │  │  │  ├─ pensum.module.ts
-│  │  │  │  ├─ question-bank.controller.ts
-│  │  │  │  ├─ question-bank.module.ts
-│  │  │  │  ├─ questionBank.controller.ts
-│  │  │  │  ├─ quiz.controller.nest.ts
-│  │  │  │  ├─ quiz.controller.ts
-│  │  │  │  ├─ quizAttempt.controller.nest.ts
-│  │  │  │  ├─ quizAttempt.controller.ts
-│  │  │  │  ├─ quizAttempts.module.ts
-│  │  │  │  ├─ quizzes.module.ts
-│  │  │  │  ├─ services
-│  │  │  │  │  └─ subject-area.service.ts
-│  │  │  │  ├─ subjectArea.controller.nest.ts
-│  │  │  │  ├─ subjectArea.controller.nest.updated.ts
-│  │  │  │  ├─ subjectArea.controller.ts
-│  │  │  │  ├─ subjectAreas.module.ts
-│  │  │  │  ├─ userProgress.controller.nest.ts
-│  │  │  │  ├─ userProgress.controller.ts
-│  │  │  │  └─ userProgress.module.ts
-│  │  │  ├─ create-test-data.ts
-│  │  │  ├─ docs
-│  │  │  │  └─ circular-dependencies.md
-│  │  │  ├─ dto
-│  │  │  │  └─ update-lesson-progress.dto.ts
-│  │  │  ├─ main.ts
-│  │  │  ├─ middleware
-│  │  │  │  └─ auth.middleware.ts
-│  │  │  ├─ modules
-│  │  │  │  ├─ pensum.module.ts
-│  │  │  │  ├─ quiz.module.ts
-│  │  │  │  └─ userProgress.module.ts
-│  │  │  ├─ persistence
-│  │  │  │  ├─ persistence.module.ts
-│  │  │  │  └─ prisma
-│  │  │  │     ├─ prisma.module.ts
-│  │  │  │     ├─ prisma.service.spec.ts
-│  │  │  │     └─ prisma.service.ts
-│  │  │  ├─ quiz
-│  │  │  │  └─ dto
-│  │  │  │     └─ update-quiz-progress.dto.ts
-│  │  │  ├─ search
-│  │  │  │  ├─ search.controller.ts
-│  │  │  │  ├─ search.module.ts
-│  │  │  │  └─ search.service.ts
-│  │  │  ├─ services
-│  │  │  │  ├─ pensum.service.ts
-│  │  │  │  ├─ question-import.service.ts
-│  │  │  │  ├─ quiz.service.ts
-│  │  │  │  └─ userProgress.service.ts
-│  │  │  ├─ shared
-│  │  │  │  └─ shared.module.ts
-│  │  │  ├─ test-content-block-types.ts
-│  │  │  ├─ test-json-validation.ts
-│  │  │  ├─ test-quiz-fields.ts
-│  │  │  ├─ types
-│  │  │  │  └─ express.d.ts
-│  │  │  ├─ user-groups
-│  │  │  │  ├─ dto
-│  │  │  │  │  ├─ add-users-to-group.dto.ts
-│  │  │  │  │  ├─ create-user-group.dto.ts
-│  │  │  │  │  └─ update-user-group.dto.ts
-│  │  │  │  ├─ user-groups.controller.ts
-│  │  │  │  ├─ user-groups.module.ts
-│  │  │  │  └─ user-groups.service.ts
-│  │  │  └─ users
-│  │  │     ├─ dto
-│  │  │     │  ├─ bulk-delete-users.dto.ts
-│  │  │     │  ├─ bulk-get-users.dto.ts
-│  │  │     │  ├─ bulk-invite-users.dto.ts
-│  │  │     │  ├─ create-user.dto.ts
-│  │  │     │  └─ update-user.dto.ts
-│  │  │     ├─ schemas
-│  │  │     │  ├─ social-links.schema.ts
-│  │  │     │  └─ user-settings.schema.ts
-│  │  │     ├─ users.controller.spec.ts
-│  │  │     ├─ users.controller.ts
-│  │  │     ├─ users.module.ts
-│  │  │     ├─ users.service.spec.ts
-│  │  │     └─ users.service.ts
-│  │  ├─ test
-│  │  │  ├─ app.e2e-spec.ts
-│  │  │  ├─ config
-│  │  │  │  └─ node-version.spec.ts
-│  │  │  └─ jest-e2e.json
-│  │  ├─ tsconfig.json
-│  │  └─ webpack-hmr.config.js
-│  └─ web
-│     ├─ .eslintrc.js
-│     ├─ .swc
-│     │  └─ plugins
-│     │     └─ v7_macos_aarch64_0.98.5
-│     ├─ README.md
-│     ├─ app
-│     │  ├─ admin
-│     │  │  ├─ groups
-│     │  │  │  └─ [id]
-│     │  │  │     └─ page.tsx
-│     │  │  └─ users
-│     │  │     ├─ [id]
-│     │  │     │  └─ page.tsx
-│     │  │     └─ page.tsx
-│     │  └─ search
-│     │     └─ page.tsx
-│     ├─ e2e
-│     │  ├─ login.spec.ts
-│     │  └─ register.spec.ts
-│     ├─ jest.config.js
-│     ├─ jest.setup.js
-│     ├─ next-env.d.ts
-│     ├─ next.config.js
-│     ├─ package.json
-│     ├─ pages
-│     │  ├─ _app.tsx
-│     │  ├─ admin
-│     │  │  ├─ courses
-│     │  │  │  ├─ create.tsx
-│     │  │  │  ├─ edit
-│     │  │  │  │  └─ [id].tsx
-│     │  │  │  └─ index.tsx
-│     │  │  ├─ index.tsx
-│     │  │  ├─ modules
-│     │  │  │  ├─ create.tsx
-│     │  │  │  ├─ edit
-│     │  │  │  │  └─ [id].tsx
-│     │  │  │  └─ index.tsx
-│     │  │  ├─ user-groups
-│     │  │  │  └─ index.tsx
-│     │  │  └─ users
-│     │  │     ├─ assign-to-course.tsx
-│     │  │     ├─ edit
-│     │  │     │  └─ [id].tsx
-│     │  │     └─ invite.tsx
-│     │  ├─ courses
-│     │  │  ├─ [slug]
-│     │  │  │  └─ quizzes
-│     │  │  │     ├─ [id]
-│     │  │  │     │  └─ results.tsx
-│     │  │  │     └─ [id].tsx
-│     │  │  ├─ [slug].tsx
-│     │  │  └─ index.tsx
-│     │  ├─ dashboard.tsx
-│     │  ├─ forgot-password.tsx
-│     │  ├─ index.tsx
-│     │  ├─ lessons
-│     │  │  └─ [id].tsx
-│     │  ├─ login.tsx
-│     │  ├─ my-courses.tsx
-│     │  ├─ profile.tsx
-│     │  ├─ quiz
-│     │  │  └─ [id].tsx
-│     │  ├─ reset-password.tsx
-│     │  ├─ settings.tsx
-│     │  ├─ signup.tsx
-│     │  ├─ statistics.tsx
-│     │  └─ ui-examples.tsx
-│     ├─ playwright-report
-│     │  └─ index.html
-│     ├─ playwright.config.ts
-│     ├─ postcss.config.js
-│     ├─ src
-│     │  ├─ common
-│     │  ├─ components
-│     │  │  ├─ auth
-│     │  │  ├─ common
-│     │  │  │  ├─ OfflineIndicator.tsx
-│     │  │  │  └─ UIExamples.tsx
-│     │  │  ├─ content
-│     │  │  │  └─ ContentBlockRenderer.tsx
-│     │  │  ├─ quiz
-│     │  │  │  ├─ IncorrectAnswersList.tsx
-│     │  │  │  ├─ OfflineQuizNotification.tsx
-│     │  │  │  ├─ QuizContainer.tsx
-│     │  │  │  ├─ QuizNavigation.tsx
-│     │  │  │  ├─ QuizProgress.tsx
-│     │  │  │  ├─ QuizQuestion.tsx
-│     │  │  │  ├─ RadialProgress.tsx
-│     │  │  │  └─ ScoreToast.tsx
-│     │  │  └─ ui
-│     │  │     ├─ AppButton.tsx
-│     │  │     ├─ badge.tsx
-│     │  │     ├─ card.tsx
-│     │  │     ├─ checkbox.tsx
-│     │  │     ├─ dialog.tsx
-│     │  │     ├─ input.tsx
-│     │  │     ├─ label.tsx
-│     │  │     ├─ select.tsx
-│     │  │     ├─ separator.tsx
-│     │  │     ├─ table.tsx
-│     │  │     ├─ tabs.tsx
-│     │  │     └─ textarea.tsx
-│     │  ├─ contexts
-│     │  │  ├─ AuthContext.tsx
-│     │  │  ├─ ProgressContext.tsx
-│     │  │  ├─ QuizContext.tsx
-│     │  │  ├─ ThemeContext.tsx
-│     │  │  └─ useAuth.ts
-│     │  ├─ hooks
-│     │  │  ├─ useOfflineStatus.ts
-│     │  │  └─ useQuizProgress.ts
-│     │  ├─ lib
-│     │  │  └─ utils.ts
-│     │  ├─ screens
-│     │  │  ├─ admin
-│     │  │  ├─ auth
-│     │  │  │  ├─ forgot-password
-│     │  │  │  │  └─ forgot-password.tsx
-│     │  │  │  ├─ login
-│     │  │  │  │  ├─ login.test.tsx
-│     │  │  │  │  └─ login.tsx
-│     │  │  │  ├─ reset-password
-│     │  │  │  │  └─ reset-password.tsx
-│     │  │  │  └─ signup
-│     │  │  │     └─ signup.tsx
-│     │  │  ├─ common
-│     │  │  │  ├─ CoursePage.tsx
-│     │  │  │  ├─ DashboardPage.tsx
-│     │  │  │  ├─ LessonPage.tsx
-│     │  │  │  ├─ ModulePage.tsx
-│     │  │  │  ├─ QuizPage.tsx
-│     │  │  │  ├─ UserProfilePage.tsx
-│     │  │  │  └─ index.ts
-│     │  │  └─ employee
-│     │  ├─ services
-│     │  │  ├─ apiClient.ts
-│     │  │  └─ userProgressApi.ts
-│     │  ├─ store
-│     │  │  ├─ index.ts
-│     │  │  └─ services
-│     │  │     └─ api.ts
-│     │  ├─ styles
-│     │  │  └─ global.css
-│     │  └─ utils
-│     │     └─ offlineSync.ts
-│     ├─ tailwind.config.js
-│     ├─ test-results
-│     │  └─ .last-run.json
-│     └─ tsconfig.json
-├─ cleanup.sh
-├─ code-review-issues.md
-├─ debugging-plan.md
-├─ docker-compose.yml
-├─ docker-deployment-guide.md
-├─ docs
-│  ├─ Overiew.md
-│  ├─ deployment
-│  │  ├─ README.md
-│  │  ├─ ci-cd-secrets-guide.md
-│  │  ├─ ci-cd-troubleshooting-guide.md
-│  │  ├─ deployment-alignment-guide.md
-│  │  └─ environment-deployment-guide.md
-│  ├─ mui-theme-documentation.md
-│  ├─ ui-audit.md
-│  ├─ ui-component-library.md
-│  ├─ ui-konsolidering-fase1-opsummering.md
-│  ├─ ui-konsolidering-fase2-plan.md
-│  ├─ ui-konsolidering-plan.md
-│  └─ ui-migration-guide.md
-├─ envfiler.txt
-├─ guidelines-alignment-plan.md
-├─ guidelines.md
-├─ implementation-plan.md
-├─ implementation-plan.txt
-├─ improvement-plan.md
-├─ interaktivsprint.html
-├─ milesten.txt
-├─ nginx.conf
-├─ package-scripts.js
-├─ package.json
-├─ packages
-│  ├─ config
-│  │  ├─ .eslintrc.js
-│  │  ├─ eslint-preset.js
-│  │  ├─ nginx.conf
-│  │  ├─ package.json
-│  │  ├─ postcss.config.js
-│  │  ├─ src
-│  │  │  ├─ env.d.ts
-│  │  │  ├─ env.d.ts.map
-│  │  │  ├─ env.js
-│  │  │  ├─ env.js.map
-│  │  │  ├─ env.ts
-│  │  │  ├─ index.d.ts
-│  │  │  ├─ index.d.ts.map
-│  │  │  ├─ index.js
-│  │  │  ├─ index.js.map
-│  │  │  └─ index.ts
-│  │  ├─ tailwind.config.js
-│  │  └─ tsconfig.json
-│  ├─ core
-│  │  ├─ .eslintrc.js
-│  │  ├─ jest.config.js
-│  │  ├─ package.json
-│  │  ├─ src
-│  │  │  ├─ index.d.ts
-│  │  │  ├─ index.d.ts.map
-│  │  │  ├─ index.js
-│  │  │  ├─ index.js.map
-│  │  │  ├─ index.ts
-│  │  │  ├─ types
-│  │  │  │  ├─ pensum.types.d.ts
-│  │  │  │  ├─ pensum.types.d.ts.map
-│  │  │  │  ├─ pensum.types.js
-│  │  │  │  ├─ pensum.types.js.map
-│  │  │  │  ├─ pensum.types.ts
-│  │  │  │  ├─ quiz.types.d.ts
-│  │  │  │  ├─ quiz.types.d.ts.map
-│  │  │  │  ├─ quiz.types.js
-│  │  │  │  ├─ quiz.types.js.map
-│  │  │  │  ├─ quiz.types.ts
-│  │  │  │  ├─ user.types.d.ts
-│  │  │  │  ├─ user.types.d.ts.map
-│  │  │  │  ├─ user.types.js
-│  │  │  │  ├─ user.types.js.map
-│  │  │  │  ├─ user.types.test.ts
-│  │  │  │  └─ user.types.ts
-│  │  │  └─ utils
-│  │  │     ├─ validation.test.ts
-│  │  │     └─ validation.ts
-│  │  └─ tsconfig.json
-│  ├─ create-solid-wow
-│  │  ├─ .eslintrc.js
-│  │  ├─ package.json
-│  │  ├─ src
-│  │  │  └─ index.ts
-│  │  └─ tsconfig.json
-│  ├─ tsconfig
-│  │  ├─ README.md
-│  │  ├─ base.json
-│  │  ├─ nestjs.json
-│  │  ├─ nextjs.json
-│  │  ├─ package.json
-│  │  └─ react-library.json
-│  └─ ui
-│     ├─ .eslintrc.js
-│     ├─ components
-│     │  ├─ Button
-│     │  ├─ Notification
-│     │  │  ├─ Notification.test.tsx
-│     │  │  ├─ Notification.tsx
-│     │  │  ├─ NotificationProvider.test.tsx
-│     │  │  └─ NotificationProvider.tsx
-│     │  ├─ Skeleton
-│     │  │  ├─ Skeleton.test.tsx
-│     │  │  └─ Skeleton.tsx
-│     │  └─ mui
-│     │     ├─ Alert
-│     │     ├─ Button
-│     │     │  ├─ Button.test.tsx
-│     │     │  ├─ Button.tsx
-│     │     │  └─ index.ts
-│     │     ├─ Card
-│     │     │  ├─ Card.test.tsx
-│     │     │  ├─ Card.tsx
-│     │     │  └─ index.ts
-│     │     ├─ Checkbox
-│     │     │  ├─ Checkbox.test.tsx
-│     │     │  ├─ Checkbox.tsx
-│     │     │  ├─ README.md
-│     │     │  └─ index.ts
-│     │     ├─ Dialog
-│     │     │  ├─ Dialog.test.tsx
-│     │     │  ├─ Dialog.tsx
-│     │     │  └─ index.ts
-│     │     ├─ Paper
-│     │     │  ├─ Paper.test.tsx
-│     │     │  ├─ Paper.tsx
-│     │     │  └─ index.ts
-│     │     ├─ Select
-│     │     │  ├─ README.md
-│     │     │  ├─ Select.test.tsx
-│     │     │  ├─ Select.tsx
-│     │     │  └─ index.ts
-│     │     ├─ Table
-│     │     ├─ Tabs
-│     │     │  ├─ Tabs.test.tsx
-│     │     │  ├─ Tabs.tsx
-│     │     │  └─ index.ts
-│     │     ├─ TextField
-│     │     │  ├─ README.md
-│     │     │  ├─ TextField.test.tsx
-│     │     │  ├─ TextField.tsx
-│     │     │  └─ index.ts
-│     │     ├─ index.ts
-│     │     └─ test-utils.tsx
-│     ├─ index.tsx
-│     ├─ jest.config.js
-│     ├─ jest.setup.js
-│     ├─ package.json
-│     ├─ theme
-│     │  └─ index.ts
-│     ├─ tsconfig.json
-│     └─ utils
-│        └─ cn.ts
-├─ planfordeub
-├─ prisma
-│  ├─ migrations
-│  │  ├─ 20250520183549_new
-│  │  │  └─ migration.sql
-│  │  ├─ 20250523181331_add_xp_to_user
-│  │  │  └─ migration.sql
-│  │  ├─ 20250523185914_add_social_login
-│  │  │  └─ migration.sql
-│  │  ├─ 20250524003134_add_content_block_types
-│  │  │  └─ migration.sql
-│  │  └─ migration_lock.toml
-│  └─ schema.prisma
-├─ project-structure-diagram.md
-├─ qodana.yaml
-├─ render.yaml
-├─ respons.txt
-├─ scripts
-│  ├─ ensure-db.sh
-│  ├─ find-component-usage.js
-│  └─ prisma-commands.sh
-├─ stackinfo-mismatch-report.md
-├─ stackinfo.txt
-├─ stackudvkiling
-├─ tsconfig.json
-├─ turbo.json
-├─ vision.txt
-└─ yarn.lock
+./packages/ui/node_modules/next/dist/server/api-utils:
+get-cookie-parser.d.ts          index.js                        web.js
+get-cookie-parser.js            index.js.map                    web.js.map
+get-cookie-parser.js.map        node
+index.d.ts                      web.d.ts
 
-```
-```
-LearningLab
+./packages/ui/node_modules/next/dist/server/api-utils/node:
+api-resolver.d.ts               parse-body.d.ts                 try-get-preview-data.d.ts
+api-resolver.js                 parse-body.js                   try-get-preview-data.js
+api-resolver.js.map             parse-body.js.map               try-get-preview-data.js.map
 
-```
-```
-LearningLab
+./packages/ui/node_modules/next/dist/server/app-render:
+action-handler.d.ts
+action-handler.js
+action-handler.js.map
+app-render.d.ts
+app-render.js
+app-render.js.map
+create-component-and-styles.d.ts
+create-component-and-styles.js
+create-component-and-styles.js.map
+create-component-tree.d.ts
+create-component-tree.js
+create-component-tree.js.map
+create-error-handler.d.ts
+create-error-handler.js
+create-error-handler.js.map
+create-flight-router-state-from-loader-tree.d.ts
+create-flight-router-state-from-loader-tree.js
+create-flight-router-state-from-loader-tree.js.map
+create-server-components-renderer.d.ts
+create-server-components-renderer.js
+create-server-components-renderer.js.map
+entry-base.d.ts
+entry-base.js
+entry-base.js.map
+flight-render-result.d.ts
+flight-render-result.js
+flight-render-result.js.map
+flight-response-ref.d.ts
+flight-response-ref.js
+flight-response-ref.js.map
+get-asset-query-string.d.ts
+get-asset-query-string.js
+get-asset-query-string.js.map
+get-css-inlined-link-tags.d.ts
+get-css-inlined-link-tags.js
+get-css-inlined-link-tags.js.map
+get-layer-assets.d.ts
+get-layer-assets.js
+get-layer-assets.js.map
+get-preloadable-fonts.d.ts
+get-preloadable-fonts.js
+get-preloadable-fonts.js.map
+get-script-nonce-from-header.d.ts
+get-script-nonce-from-header.js
+get-script-nonce-from-header.js.map
+get-segment-param.d.ts
+get-segment-param.js
+get-segment-param.js.map
+get-short-dynamic-param-type.d.ts
+get-short-dynamic-param-type.js
+get-short-dynamic-param-type.js.map
+has-loading-component-in-tree.d.ts
+has-loading-component-in-tree.js
+has-loading-component-in-tree.js.map
+interop-default.d.ts
+interop-default.js
+interop-default.js.map
+make-get-server-inserted-html.d.ts
+make-get-server-inserted-html.js
+make-get-server-inserted-html.js.map
+parse-and-validate-flight-router-state.d.ts
+parse-and-validate-flight-router-state.js
+parse-and-validate-flight-router-state.js.map
+parse-loader-tree.d.ts
+parse-loader-tree.js
+parse-loader-tree.js.map
+preload-component.d.ts
+preload-component.js
+preload-component.js.map
+react-server.node.d.ts
+react-server.node.js
+react-server.node.js.map
+render-to-string.d.ts
+render-to-string.js
+render-to-string.js.map
+required-scripts.d.ts
+required-scripts.js
+required-scripts.js.map
+rsc
+server-inserted-html.d.ts
+server-inserted-html.js
+server-inserted-html.js.map
+types.d.ts
+types.js
+types.js.map
+types.test.d.ts
+use-flight-response.d.ts
+use-flight-response.js
+use-flight-response.js.map
+validate-url.d.ts
+validate-url.js
+validate-url.js.map
+walk-tree-with-flight-router-state.d.ts
+walk-tree-with-flight-router-state.js
+walk-tree-with-flight-router-state.js.map
 
-```
+./packages/ui/node_modules/next/dist/server/app-render/rsc:
+preloads.d.ts   preloads.js     preloads.js.map
+
+./packages/ui/node_modules/next/dist/server/async-storage:
+async-storage-wrapper.d.ts                      request-async-storage-wrapper.d.ts
+async-storage-wrapper.js                        request-async-storage-wrapper.js
+async-storage-wrapper.js.map                    request-async-storage-wrapper.js.map
+draft-mode-provider.d.ts                        static-generation-async-storage-wrapper.d.ts
+draft-mode-provider.js                          static-generation-async-storage-wrapper.js
+draft-mode-provider.js.map                      static-generation-async-storage-wrapper.js.map
+
+./packages/ui/node_modules/next/dist/server/base-http:
+index.d.ts      index.js.map    node.js         web.d.ts        web.js.map
+index.js        node.d.ts       node.js.map     web.js
+
+./packages/ui/node_modules/next/dist/server/dev:
+hot-middleware.d.ts             log-app-dir-error.d.ts          parse-version-info.d.ts
+hot-middleware.js               log-app-dir-error.js            parse-version-info.js
+hot-middleware.js.map           log-app-dir-error.js.map        parse-version-info.js.map
+hot-reloader-types.d.ts         next-dev-server.d.ts            parse-version-info.test.d.ts
+hot-reloader-types.js           next-dev-server.js              static-paths-worker.d.ts
+hot-reloader-types.js.map       next-dev-server.js.map          static-paths-worker.js
+hot-reloader-webpack.d.ts       on-demand-entry-handler.d.ts    static-paths-worker.js.map
+hot-reloader-webpack.js         on-demand-entry-handler.js
+hot-reloader-webpack.js.map     on-demand-entry-handler.js.map
+
+./packages/ui/node_modules/next/dist/server/future:
+helpers                 route-kind.d.ts         route-matcher-managers  route-matches
+normalizers             route-kind.js           route-matcher-providers route-modules
+route-definitions       route-kind.js.map       route-matchers
+
+./packages/ui/node_modules/next/dist/server/future/helpers:
+i18n-provider.d.ts              i18n-provider.test.d.ts         interception-routes.js.map
+i18n-provider.js                interception-routes.d.ts        interception-routes.test.d.ts
+i18n-provider.js.map            interception-routes.js          module-loader
+
+./packages/ui/node_modules/next/dist/server/future/helpers/module-loader:
+module-loader.d.ts              node-module-loader.d.ts         route-module-loader.d.ts
+module-loader.js                node-module-loader.js           route-module-loader.js
+module-loader.js.map            node-module-loader.js.map       route-module-loader.js.map
+
+./packages/ui/node_modules/next/dist/server/future/normalizers:
+absolute-filename-normalizer.d.ts       normalizers.js
+absolute-filename-normalizer.js         normalizers.js.map
+absolute-filename-normalizer.js.map     prefixing-normalizer.d.ts
+absolute-filename-normalizer.test.d.ts  prefixing-normalizer.js
+built                                   prefixing-normalizer.js.map
+locale-route-normalizer.d.ts            underscore-normalizer.d.ts
+locale-route-normalizer.js              underscore-normalizer.js
+locale-route-normalizer.js.map          underscore-normalizer.js.map
+normalizer.d.ts                         wrap-normalizer-fn.d.ts
+normalizer.js                           wrap-normalizer-fn.js
+normalizer.js.map                       wrap-normalizer-fn.js.map
+normalizers.d.ts
+
+./packages/ui/node_modules/next/dist/server/future/normalizers/built:
+app     pages
+
+./packages/ui/node_modules/next/dist/server/future/normalizers/built/app:
+app-bundle-path-normalizer.d.ts         app-page-normalizer.js.map
+app-bundle-path-normalizer.js           app-pathname-normalizer.d.ts
+app-bundle-path-normalizer.js.map       app-pathname-normalizer.js
+app-filename-normalizer.d.ts            app-pathname-normalizer.js.map
+app-filename-normalizer.js              index.d.ts
+app-filename-normalizer.js.map          index.js
+app-page-normalizer.d.ts                index.js.map
+app-page-normalizer.js
+
+./packages/ui/node_modules/next/dist/server/future/normalizers/built/pages:
+index.d.ts                              pages-filename-normalizer.js.map
+index.js                                pages-page-normalizer.d.ts
+index.js.map                            pages-page-normalizer.js
+pages-bundle-path-normalizer.d.ts       pages-page-normalizer.js.map
+pages-bundle-path-normalizer.js         pages-pathname-normalizer.d.ts
+pages-bundle-path-normalizer.js.map     pages-pathname-normalizer.js
+pages-filename-normalizer.d.ts          pages-pathname-normalizer.js.map
+pages-filename-normalizer.js
+
+./packages/ui/node_modules/next/dist/server/future/route-definitions:
+app-page-route-definition.d.ts          pages-api-route-definition.d.ts
+app-page-route-definition.js            pages-api-route-definition.js
+app-page-route-definition.js.map        pages-api-route-definition.js.map
+app-route-route-definition.d.ts         pages-route-definition.d.ts
+app-route-route-definition.js           pages-route-definition.js
+app-route-route-definition.js.map       pages-route-definition.js.map
+locale-route-definition.d.ts            route-definition.d.ts
+locale-route-definition.js              route-definition.js
+locale-route-definition.js.map          route-definition.js.map
+
+./packages/ui/node_modules/next/dist/server/future/route-matcher-managers:
+default-route-matcher-manager.d.ts      dev-route-matcher-manager.js
+default-route-matcher-manager.js        dev-route-matcher-manager.js.map
+default-route-matcher-manager.js.map    route-matcher-manager.d.ts
+default-route-matcher-manager.test.d.ts route-matcher-manager.js
+dev-route-matcher-manager.d.ts          route-matcher-manager.js.map
+
+./packages/ui/node_modules/next/dist/server/future/route-matcher-providers:
+app-page-route-matcher-provider.d.ts            manifest-route-matcher-provider.js.map
+app-page-route-matcher-provider.js              pages-api-route-matcher-provider.d.ts
+app-page-route-matcher-provider.js.map          pages-api-route-matcher-provider.js
+app-page-route-matcher-provider.test.d.ts       pages-api-route-matcher-provider.js.map
+app-route-route-matcher-provider.d.ts           pages-api-route-matcher-provider.test.d.ts
+app-route-route-matcher-provider.js             pages-route-matcher-provider.d.ts
+app-route-route-matcher-provider.js.map         pages-route-matcher-provider.js
+app-route-route-matcher-provider.test.d.ts      pages-route-matcher-provider.js.map
+dev                                             pages-route-matcher-provider.test.d.ts
+helpers                                         route-matcher-provider.d.ts
+manifest-route-matcher-provider.d.ts            route-matcher-provider.js
+manifest-route-matcher-provider.js              route-matcher-provider.js.map
+
+./packages/ui/node_modules/next/dist/server/future/route-matcher-providers/dev:
+dev-app-page-route-matcher-provider.d.ts        dev-pages-api-route-matcher-provider.js.map
+dev-app-page-route-matcher-provider.js          dev-pages-api-route-matcher-provider.test.d.ts
+dev-app-page-route-matcher-provider.js.map      dev-pages-route-matcher-provider.d.ts
+dev-app-page-route-matcher-provider.test.d.ts   dev-pages-route-matcher-provider.js
+dev-app-route-route-matcher-provider.d.ts       dev-pages-route-matcher-provider.js.map
+dev-app-route-route-matcher-provider.js         dev-pages-route-matcher-provider.test.d.ts
+dev-app-route-route-matcher-provider.js.map     file-cache-route-matcher-provider.d.ts
+dev-app-route-route-matcher-provider.test.d.ts  file-cache-route-matcher-provider.js
+dev-pages-api-route-matcher-provider.d.ts       file-cache-route-matcher-provider.js.map
+dev-pages-api-route-matcher-provider.js         helpers
+
+./packages/ui/node_modules/next/dist/server/future/route-matcher-providers/dev/helpers:
+file-reader
+
+./packages/ui/node_modules/next/dist/server/future/route-matcher-providers/dev/helpers/file-reader:
+batched-file-reader.d.ts        default-file-reader.d.ts        file-reader.js
+batched-file-reader.js          default-file-reader.js          file-reader.js.map
+batched-file-reader.js.map      default-file-reader.js.map
+batched-file-reader.test.d.ts   file-reader.d.ts
+
+./packages/ui/node_modules/next/dist/server/future/route-matcher-providers/helpers:
+cached-route-matcher-provider.d.ts      cached-route-matcher-provider.js.map
+cached-route-matcher-provider.js        manifest-loaders
+
+./packages/ui/node_modules/next/dist/server/future/route-matcher-providers/helpers/manifest-loaders:
+manifest-loader.d.ts            node-manifest-loader.d.ts       server-manifest-loader.d.ts
+manifest-loader.js              node-manifest-loader.js         server-manifest-loader.js
+manifest-loader.js.map          node-manifest-loader.js.map     server-manifest-loader.js.map
+
+./packages/ui/node_modules/next/dist/server/future/route-matchers:
+app-page-route-matcher.d.ts     locale-route-matcher.d.ts       pages-route-matcher.d.ts
+app-page-route-matcher.js       locale-route-matcher.js         pages-route-matcher.js
+app-page-route-matcher.js.map   locale-route-matcher.js.map     pages-route-matcher.js.map
+app-route-route-matcher.d.ts    pages-api-route-matcher.d.ts    route-matcher.d.ts
+app-route-route-matcher.js      pages-api-route-matcher.js      route-matcher.js
+app-route-route-matcher.js.map  pages-api-route-matcher.js.map  route-matcher.js.map
+
+./packages/ui/node_modules/next/dist/server/future/route-matches:
+app-page-route-match.d.ts       locale-route-match.d.ts         pages-route-match.d.ts
+app-page-route-match.js         locale-route-match.js           pages-route-match.js
+app-page-route-match.js.map     locale-route-match.js.map       pages-route-match.js.map
+app-route-route-match.d.ts      pages-api-route-match.d.ts      route-match.d.ts
+app-route-route-match.js        pages-api-route-match.js        route-match.js
+app-route-route-match.js.map    pages-api-route-match.js.map    route-match.js.map
+
+./packages/ui/node_modules/next/dist/server/future/route-modules:
+app-page                helpers                 pages-api               route-module.js
+app-route               pages                   route-module.d.ts       route-module.js.map
+
+./packages/ui/node_modules/next/dist/server/future/route-modules/app-page:
+module.compiled.d.ts    module.d.ts             module.render.d.ts      vendored
+module.compiled.js      module.js               module.render.js
+module.compiled.js.map  module.js.map           module.render.js.map
+
+./packages/ui/node_modules/next/dist/server/future/route-modules/app-page/vendored:
+contexts        rsc             ssr
+
+./packages/ui/node_modules/next/dist/server/future/route-modules/app-page/vendored/contexts:
+amp-context.d.ts                head-manager-context.js.map     loadable-context.js
+amp-context.js                  hooks-client-context.d.ts       loadable-context.js.map
+amp-context.js.map              hooks-client-context.js         loadable.d.ts
+app-router-context.d.ts         hooks-client-context.js.map     loadable.js
+app-router-context.js           html-context.d.ts               loadable.js.map
+app-router-context.js.map       html-context.js                 router-context.d.ts
+entrypoints.d.ts                html-context.js.map             router-context.js
+entrypoints.js                  image-config-context.d.ts       router-context.js.map
+entrypoints.js.map              image-config-context.js         server-inserted-html.d.ts
+head-manager-context.d.ts       image-config-context.js.map     server-inserted-html.js
+head-manager-context.js         loadable-context.d.ts           server-inserted-html.js.map
+
+./packages/ui/node_modules/next/dist/server/future/route-modules/app-page/vendored/rsc:
+entrypoints.d.ts                                react-server-dom-turbopack-server-edge.js.map
+entrypoints.js                                  react-server-dom-turbopack-server-node.d.ts
+entrypoints.js.map                              react-server-dom-turbopack-server-node.js
+react-dom.d.ts                                  react-server-dom-turbopack-server-node.js.map
+react-dom.js                                    react-server-dom-webpack-server-edge.d.ts
+react-dom.js.map                                react-server-dom-webpack-server-edge.js
+react-jsx-dev-runtime.d.ts                      react-server-dom-webpack-server-edge.js.map
+react-jsx-dev-runtime.js                        react-server-dom-webpack-server-node.d.ts
+react-jsx-dev-runtime.js.map                    react-server-dom-webpack-server-node.js
+react-jsx-runtime.d.ts                          react-server-dom-webpack-server-node.js.map
+react-jsx-runtime.js                            react.d.ts
+react-jsx-runtime.js.map                        react.js
+react-server-dom-turbopack-server-edge.d.ts     react.js.map
+react-server-dom-turbopack-server-edge.js
+
+./packages/ui/node_modules/next/dist/server/future/route-modules/app-page/vendored/ssr:
+entrypoints.d.ts                                react-jsx-runtime.d.ts
+entrypoints.js                                  react-jsx-runtime.js
+entrypoints.js.map                              react-jsx-runtime.js.map
+react-dom-server-edge.d.ts                      react-server-dom-turbopack-client-edge.d.ts
+react-dom-server-edge.js                        react-server-dom-turbopack-client-edge.js
+react-dom-server-edge.js.map                    react-server-dom-turbopack-client-edge.js.map
+react-dom.d.ts                                  react-server-dom-webpack-client-edge.d.ts
+react-dom.js                                    react-server-dom-webpack-client-edge.js
+react-dom.js.map                                react-server-dom-webpack-client-edge.js.map
+react-jsx-dev-runtime.d.ts                      react.d.ts
+react-jsx-dev-runtime.js                        react.js
+react-jsx-dev-runtime.js.map                    react.js.map
+
+./packages/ui/node_modules/next/dist/server/future/route-modules/app-route:
+helpers                 module.compiled.js.map  module.js.map           shared-modules.js.map
+module.compiled.d.ts    module.d.ts             shared-modules.d.ts
+module.compiled.js      module.js               shared-modules.js
+
+./packages/ui/node_modules/next/dist/server/future/route-modules/app-route/helpers:
+auto-implement-methods.d.ts             get-pathname-from-absolute-path.js.map
+auto-implement-methods.js               parsed-url-query-to-params.d.ts
+auto-implement-methods.js.map           parsed-url-query-to-params.js
+clean-url.d.ts                          parsed-url-query-to-params.js.map
+clean-url.js                            proxy-request.d.ts
+clean-url.js.map                        proxy-request.js
+get-non-static-methods.d.ts             proxy-request.js.map
+get-non-static-methods.js               resolve-handler-error.d.ts
+get-non-static-methods.js.map           resolve-handler-error.js
+get-pathname-from-absolute-path.d.ts    resolve-handler-error.js.map
+get-pathname-from-absolute-path.js
+
+./packages/ui/node_modules/next/dist/server/future/route-modules/helpers:
+response-handlers.d.ts          response-handlers.js            response-handlers.js.map
+
+./packages/ui/node_modules/next/dist/server/future/route-modules/pages:
+builtin                 module.compiled.js.map  module.js.map           module.render.js.map
+module.compiled.d.ts    module.d.ts             module.render.d.ts      vendored
+module.compiled.js      module.js               module.render.js
+
+./packages/ui/node_modules/next/dist/server/future/route-modules/pages/builtin:
+_error.d.ts     _error.js       _error.js.map
+
+./packages/ui/node_modules/next/dist/server/future/route-modules/pages/vendored:
+contexts
+
+./packages/ui/node_modules/next/dist/server/future/route-modules/pages/vendored/contexts:
+amp-context.d.ts                head-manager-context.js.map     loadable-context.js
+amp-context.js                  hooks-client-context.d.ts       loadable-context.js.map
+amp-context.js.map              hooks-client-context.js         loadable.d.ts
+app-router-context.d.ts         hooks-client-context.js.map     loadable.js
+app-router-context.js           html-context.d.ts               loadable.js.map
+app-router-context.js.map       html-context.js                 router-context.d.ts
+entrypoints.d.ts                html-context.js.map             router-context.js
+entrypoints.js                  image-config-context.d.ts       router-context.js.map
+entrypoints.js.map              image-config-context.js         server-inserted-html.d.ts
+head-manager-context.d.ts       image-config-context.js.map     server-inserted-html.js
+head-manager-context.js         loadable-context.d.ts           server-inserted-html.js.map
+
+./packages/ui/node_modules/next/dist/server/future/route-modules/pages-api:
+module.compiled.d.ts    module.compiled.js.map  module.js
+module.compiled.js      module.d.ts             module.js.map
+
+./packages/ui/node_modules/next/dist/server/lib:
+app-dir-module.d.ts             is-node-debugging.js            router-server.js.map
+app-dir-module.js               is-node-debugging.js.map        router-utils
+app-dir-module.js.map           match-next-data-pathname.d.ts   schedule-on-next-tick.d.ts
+cpu-profile.d.ts                match-next-data-pathname.js     schedule-on-next-tick.js
+cpu-profile.js                  match-next-data-pathname.js.map schedule-on-next-tick.js.map
+cpu-profile.js.map              mock-request.d.ts               server-ipc
+dev-bundler-service.d.ts        mock-request.js                 squoosh
+dev-bundler-service.js          mock-request.js.map             start-server.d.ts
+dev-bundler-service.js.map      mock-request.test.d.ts          start-server.js
+etag.d.ts                       node-fs-methods.d.ts            start-server.js.map
+etag.js                         node-fs-methods.js              to-route.d.ts
+etag.js.map                     node-fs-methods.js.map          to-route.js
+find-page-file.d.ts             patch-fetch.d.ts                to-route.js.map
+find-page-file.js               patch-fetch.js                  to-route.test.d.ts
+find-page-file.js.map           patch-fetch.js.map              trace
+format-hostname.d.ts            render-server.d.ts              types.d.ts
+format-hostname.js              render-server.js                types.js
+format-hostname.js.map          render-server.js.map            types.js.map
+incremental-cache               revalidate.d.ts                 utils.d.ts
+incremental-cache-server.d.ts   revalidate.js                   utils.js
+incremental-cache-server.js     revalidate.js.map               utils.js.map
+incremental-cache-server.js.map route-resolver.d.ts             worker-utils.d.ts
+is-ipv6.d.ts                    route-resolver.js               worker-utils.js
+is-ipv6.js                      route-resolver.js.map           worker-utils.js.map
+is-ipv6.js.map                  router-server.d.ts
+is-node-debugging.d.ts          router-server.js
+
+./packages/ui/node_modules/next/dist/server/lib/incremental-cache:
+fetch-cache.d.ts                        index.js
+fetch-cache.js                          index.js.map
+fetch-cache.js.map                      shared-revalidate-timings.d.ts
+file-system-cache.d.ts                  shared-revalidate-timings.js
+file-system-cache.js                    shared-revalidate-timings.js.map
+file-system-cache.js.map                shared-revalidate-timings.test.d.ts
+index.d.ts
+
+./packages/ui/node_modules/next/dist/server/lib/router-utils:
+build-data-route.d.ts           proxy-request.d.ts              setup-dev-bundler.d.ts
+build-data-route.js             proxy-request.js                setup-dev-bundler.js
+build-data-route.js.map         proxy-request.js.map            setup-dev-bundler.js.map
+filesystem.d.ts                 resolve-routes.d.ts             types.d.ts
+filesystem.js                   resolve-routes.js               types.js
+filesystem.js.map               resolve-routes.js.map           types.js.map
+
+./packages/ui/node_modules/next/dist/server/lib/server-ipc:
+index.d.ts              invoke-request.d.ts     request-utils.d.ts      utils.d.ts
+index.js                invoke-request.js       request-utils.js        utils.js
+index.js.map            invoke-request.js.map   request-utils.js.map    utils.js.map
+
+./packages/ui/node_modules/next/dist/server/lib/squoosh:
+avif                    emscripten-utils.js     impl.js                 png
+codecs.d.ts             emscripten-utils.js.map impl.js.map             resize
+codecs.js               image_data.d.ts         main.d.ts               rotate
+codecs.js.map           image_data.js           main.js                 webp
+emscripten-types.d.ts   image_data.js.map       main.js.map
+emscripten-utils.d.ts   impl.d.ts               mozjpeg
+
+./packages/ui/node_modules/next/dist/server/lib/squoosh/avif:
+avif_enc.d.ts           avif_node_dec.js.map    avif_node_enc.js        avif_node_enc.wasm
+avif_node_dec.js        avif_node_dec.wasm      avif_node_enc.js.map
+
+./packages/ui/node_modules/next/dist/server/lib/squoosh/mozjpeg:
+mozjpeg_enc.d.ts        mozjpeg_node_dec.js.map mozjpeg_node_enc.js     mozjpeg_node_enc.wasm
+mozjpeg_node_dec.js     mozjpeg_node_dec.wasm   mozjpeg_node_enc.js.map
+
+./packages/ui/node_modules/next/dist/server/lib/squoosh/png:
+squoosh_oxipng_bg.wasm  squoosh_oxipng.js.map   squoosh_png.js
+squoosh_oxipng.js       squoosh_png_bg.wasm     squoosh_png.js.map
+
+./packages/ui/node_modules/next/dist/server/lib/squoosh/resize:
+squoosh_resize_bg.wasm  squoosh_resize.js       squoosh_resize.js.map
+
+./packages/ui/node_modules/next/dist/server/lib/squoosh/rotate:
+rotate.wasm
+
+./packages/ui/node_modules/next/dist/server/lib/squoosh/webp:
+webp_enc.d.ts           webp_node_dec.js.map    webp_node_enc.js        webp_node_enc.wasm
+webp_node_dec.js        webp_node_dec.wasm      webp_node_enc.js.map
+
+./packages/ui/node_modules/next/dist/server/lib/trace:
+constants.d.ts          constants.js.map        tracer.js
+constants.js            tracer.d.ts             tracer.js.map
+
+./packages/ui/node_modules/next/dist/server/response-cache:
+index.d.ts      index.js.map    types.js        web.d.ts        web.js.map
+index.js        types.d.ts      types.js.map    web.js
+
+./packages/ui/node_modules/next/dist/server/send-payload:
+index.d.ts                      index.js.map                    revalidate-headers.js
+index.js                        revalidate-headers.d.ts         revalidate-headers.js.map
+
+./packages/ui/node_modules/next/dist/server/stream-utils:
+encode-decode.d.ts              encode-decode.js.map            node-web-streams-helper.js
+encode-decode.js                node-web-streams-helper.d.ts    node-web-streams-helper.js.map
+
+./packages/ui/node_modules/next/dist/server/typescript:
+constant.d.ts   constant.js.map index.js        rules           utils.js
+constant.js     index.d.ts      index.js.map    utils.d.ts      utils.js.map
+
+./packages/ui/node_modules/next/dist/server/typescript/rules:
+client-boundary.d.ts    config.js.map           error.js                server.d.ts
+client-boundary.js      entry.d.ts              error.js.map            server.js
+client-boundary.js.map  entry.js                metadata.d.ts           server.js.map
+config.d.ts             entry.js.map            metadata.js
+config.js               error.d.ts              metadata.js.map
+
+./packages/ui/node_modules/next/dist/server/web:
+adapter.d.ts                            internal-edge-wait-until.d.ts
+adapter.js                              internal-edge-wait-until.js
+adapter.js.map                          internal-edge-wait-until.js.map
+edge-route-module-wrapper.d.ts          next-url.d.ts
+edge-route-module-wrapper.js            next-url.js
+edge-route-module-wrapper.js.map        next-url.js.map
+error.d.ts                              sandbox
+error.js                                spec-extension
+error.js.map                            types.d.ts
+exports                                 types.js
+globals.d.ts                            types.js.map
+globals.js                              utils.d.ts
+globals.js.map                          utils.js
+http.d.ts                               utils.js.map
+http.js                                 utils.test.d.ts
+http.js.map
+
+./packages/ui/node_modules/next/dist/server/web/exports:
+image-response.d.ts             next-response.js                unstable-cache.js.map
+image-response.js               next-response.js.map            url-pattern.d.ts
+image-response.js.map           revalidate-path.d.ts            url-pattern.js
+index.d.ts                      revalidate-path.js              url-pattern.js.map
+index.js                        revalidate-path.js.map          user-agent-from-string.d.ts
+index.js.map                    revalidate-tag.d.ts             user-agent-from-string.js
+next-request.d.ts               revalidate-tag.js               user-agent-from-string.js.map
+next-request.js                 revalidate-tag.js.map           user-agent.d.ts
+next-request.js.map             unstable-cache.d.ts             user-agent.js
+next-response.d.ts              unstable-cache.js               user-agent.js.map
+
+./packages/ui/node_modules/next/dist/server/web/sandbox:
+context.d.ts                    fetch-inline-assets.js          index.js.map
+context.js                      fetch-inline-assets.js.map      sandbox.d.ts
+context.js.map                  index.d.ts                      sandbox.js
+fetch-inline-assets.d.ts        index.js                        sandbox.js.map
+
+./packages/ui/node_modules/next/dist/server/web/spec-extension:
+adapters                image-response.d.ts     response.js             revalidate-tag.js.map
+cookies.d.ts            image-response.js       response.js.map         unstable-cache.d.ts
+cookies.js              image-response.js.map   revalidate-path.d.ts    unstable-cache.js
+cookies.js.map          request.d.ts            revalidate-path.js      unstable-cache.js.map
+fetch-event.d.ts        request.js              revalidate-path.js.map  user-agent.d.ts
+fetch-event.js          request.js.map          revalidate-tag.d.ts     user-agent.js
+fetch-event.js.map      response.d.ts           revalidate-tag.js       user-agent.js.map
+
+./packages/ui/node_modules/next/dist/server/web/spec-extension/adapters:
+headers.d.ts                    next-request.js                 request-cookies.d.ts
+headers.js                      next-request.js.map             request-cookies.js
+headers.js.map                  reflect.d.ts                    request-cookies.js.map
+headers.test.d.ts               reflect.js                      request-cookies.test.d.ts
+next-request.d.ts               reflect.js.map
+
+./packages/ui/node_modules/next/dist/shared:
+lib
+
+./packages/ui/node_modules/next/dist/shared/lib:
+amp-context.shared-runtime.d.ts                 image-blur-svg.js.map
+amp-context.shared-runtime.js                   image-config-context.shared-runtime.d.ts
+amp-context.shared-runtime.js.map               image-config-context.shared-runtime.js
+amp-mode.d.ts                                   image-config-context.shared-runtime.js.map
+amp-mode.js                                     image-config.d.ts
+amp-mode.js.map                                 image-config.js
+amp.d.ts                                        image-config.js.map
+amp.js                                          image-external.d.ts
+amp.js.map                                      image-external.js
+app-dynamic.d.ts                                image-external.js.map
+app-dynamic.js                                  image-loader.d.ts
+app-dynamic.js.map                              image-loader.js
+app-router-context.shared-runtime.d.ts          image-loader.js.map
+app-router-context.shared-runtime.js            is-plain-object.d.ts
+app-router-context.shared-runtime.js.map        is-plain-object.js
+base64-arraybuffer.d.ts                         is-plain-object.js.map
+base64-arraybuffer.js                           isomorphic
+base64-arraybuffer.js.map                       lazy-dynamic
+bloom-filter.d.ts                               loadable-context.shared-runtime.d.ts
+bloom-filter.js                                 loadable-context.shared-runtime.js
+bloom-filter.js.map                             loadable-context.shared-runtime.js.map
+constants.d.ts                                  loadable.shared-runtime.d.ts
+constants.js                                    loadable.shared-runtime.js
+constants.js.map                                loadable.shared-runtime.js.map
+dynamic.d.ts                                    match-remote-pattern.d.ts
+dynamic.js                                      match-remote-pattern.js
+dynamic.js.map                                  match-remote-pattern.js.map
+escape-regexp.d.ts                              mitt.d.ts
+escape-regexp.js                                mitt.js
+escape-regexp.js.map                            mitt.js.map
+fnv1a.d.ts                                      modern-browserslist-target.d.ts
+fnv1a.js                                        modern-browserslist-target.js
+fnv1a.js.map                                    modern-browserslist-target.js.map
+get-hostname.d.ts                               page-path
+get-hostname.js                                 router
+get-hostname.js.map                             router-context.shared-runtime.d.ts
+get-hostname.test.d.ts                          router-context.shared-runtime.js
+get-img-props.d.ts                              router-context.shared-runtime.js.map
+get-img-props.js                                runtime-config.external.d.ts
+get-img-props.js.map                            runtime-config.external.js
+hash.d.ts                                       runtime-config.external.js.map
+hash.js                                         segment.d.ts
+hash.js.map                                     segment.js
+head-manager-context.shared-runtime.d.ts        segment.js.map
+head-manager-context.shared-runtime.js          server-inserted-html.shared-runtime.d.ts
+head-manager-context.shared-runtime.js.map      server-inserted-html.shared-runtime.js
+head.d.ts                                       server-inserted-html.shared-runtime.js.map
+head.js                                         side-effect.d.ts
+head.js.map                                     side-effect.js
+hooks-client-context.shared-runtime.d.ts        side-effect.js.map
+hooks-client-context.shared-runtime.js          styled-jsx.d.ts
+hooks-client-context.shared-runtime.js.map      styled-jsx.js
+html-context.shared-runtime.d.ts                styled-jsx.js.map
+html-context.shared-runtime.js                  utils
+html-context.shared-runtime.js.map              utils.d.ts
+i18n                                            utils.js
+image-blur-svg.d.ts                             utils.js.map
+image-blur-svg.js
+
+./packages/ui/node_modules/next/dist/shared/lib/i18n:
+detect-domain-locale.d.ts       get-locale-redirect.d.ts        normalize-locale-path.d.ts
+detect-domain-locale.js         get-locale-redirect.js          normalize-locale-path.js
+detect-domain-locale.js.map     get-locale-redirect.js.map      normalize-locale-path.js.map
+
+./packages/ui/node_modules/next/dist/shared/lib/isomorphic:
+path.d.ts       path.js         path.js.map
+
+./packages/ui/node_modules/next/dist/shared/lib/lazy-dynamic:
+dynamic-no-ssr.d.ts     loadable.d.ts           no-ssr-error.d.ts
+dynamic-no-ssr.js       loadable.js             no-ssr-error.js
+dynamic-no-ssr.js.map   loadable.js.map         no-ssr-error.js.map
+
+./packages/ui/node_modules/next/dist/shared/lib/page-path:
+absolute-path-to-page.d.ts      denormalize-page-path.js.map    normalize-page-path.js
+absolute-path-to-page.js        ensure-leading-slash.d.ts       normalize-page-path.js.map
+absolute-path-to-page.js.map    ensure-leading-slash.js         normalize-path-sep.d.ts
+denormalize-app-path.d.ts       ensure-leading-slash.js.map     normalize-path-sep.js
+denormalize-app-path.js         get-page-paths.d.ts             normalize-path-sep.js.map
+denormalize-app-path.js.map     get-page-paths.js               remove-page-path-tail.d.ts
+denormalize-page-path.d.ts      get-page-paths.js.map           remove-page-path-tail.js
+denormalize-page-path.js        normalize-page-path.d.ts        remove-page-path-tail.js.map
+
+./packages/ui/node_modules/next/dist/shared/lib/router:
+adapters.d.ts           adapters.js.map         router.d.ts             router.js.map
+adapters.js             adapters.test.d.ts      router.js               utils
+
+./packages/ui/node_modules/next/dist/shared/lib/router/utils:
+add-locale.d.ts                         is-local-url.d.ts
+add-locale.js                           is-local-url.js
+add-locale.js.map                       is-local-url.js.map
+add-path-prefix.d.ts                    middleware-route-matcher.d.ts
+add-path-prefix.js                      middleware-route-matcher.js
+add-path-prefix.js.map                  middleware-route-matcher.js.map
+add-path-suffix.d.ts                    omit.d.ts
+add-path-suffix.js                      omit.js
+add-path-suffix.js.map                  omit.js.map
+app-paths.d.ts                          parse-path.d.ts
+app-paths.js                            parse-path.js
+app-paths.js.map                        parse-path.js.map
+app-paths.test.d.ts                     parse-relative-url.d.ts
+as-path-to-search-params.d.ts           parse-relative-url.js
+as-path-to-search-params.js             parse-relative-url.js.map
+as-path-to-search-params.js.map         parse-url.d.ts
+compare-states.d.ts                     parse-url.js
+compare-states.js                       parse-url.js.map
+compare-states.js.map                   path-has-prefix.d.ts
+escape-path-delimiters.d.ts             path-has-prefix.js
+escape-path-delimiters.js               path-has-prefix.js.map
+escape-path-delimiters.js.map           path-match.d.ts
+format-next-pathname-info.d.ts          path-match.js
+format-next-pathname-info.js            path-match.js.map
+format-next-pathname-info.js.map        prepare-destination.d.ts
+format-url.d.ts                         prepare-destination.js
+format-url.js                           prepare-destination.js.map
+format-url.js.map                       querystring.d.ts
+get-asset-path-from-route.d.ts          querystring.js
+get-asset-path-from-route.js            querystring.js.map
+get-asset-path-from-route.js.map        relativize-url.d.ts
+get-next-pathname-info.d.ts             relativize-url.js
+get-next-pathname-info.js               relativize-url.js.map
+get-next-pathname-info.js.map           remove-path-prefix.d.ts
+get-route-from-asset-path.d.ts          remove-path-prefix.js
+get-route-from-asset-path.js            remove-path-prefix.js.map
+get-route-from-asset-path.js.map        remove-trailing-slash.d.ts
+handle-smooth-scroll.d.ts               remove-trailing-slash.js
+handle-smooth-scroll.js                 remove-trailing-slash.js.map
+handle-smooth-scroll.js.map             resolve-rewrites.d.ts
+index.d.ts                              resolve-rewrites.js
+index.js                                resolve-rewrites.js.map
+index.js.map                            route-matcher.d.ts
+interpolate-as.d.ts                     route-matcher.js
+interpolate-as.js                       route-matcher.js.map
+interpolate-as.js.map                   route-regex.d.ts
+is-bot.d.ts                             route-regex.js
+is-bot.js                               route-regex.js.map
+is-bot.js.map                           route-regex.test.d.ts
+is-dynamic.d.ts                         sorted-routes.d.ts
+is-dynamic.js                           sorted-routes.js
+is-dynamic.js.map                       sorted-routes.js.map
+
+./packages/ui/node_modules/next/dist/shared/lib/utils:
+warn-once.d.ts          warn-once.js            warn-once.js.map
+
+./packages/ui/node_modules/next/dist/src:
+compiled
+
+./packages/ui/node_modules/next/dist/src/compiled:
+@ampproject     @next
+
+./packages/ui/node_modules/next/dist/src/compiled/@ampproject:
+toolbox-optimizer
+
+./packages/ui/node_modules/next/dist/src/compiled/@ampproject/toolbox-optimizer:
+LICENSE         package.json
+
+./packages/ui/node_modules/next/dist/src/compiled/@next:
+react-dev-overlay
+
+./packages/ui/node_modules/next/dist/src/compiled/@next/react-dev-overlay:
+package.json
+
+./packages/ui/node_modules/next/dist/styled-jsx:
+types
+
+./packages/ui/node_modules/next/dist/styled-jsx/types:
+css.d.ts        global.d.ts     index.d.ts      macro.d.ts      style.d.ts
+
+./packages/ui/node_modules/next/dist/telemetry:
+anonymous-meta.d.ts     detached-flush.d.ts     flush-and-exit.js.map   project-id.js.map
+anonymous-meta.js       detached-flush.js       post-payload.d.ts       storage.d.ts
+anonymous-meta.js.map   detached-flush.js.map   post-payload.js         storage.js
+ci-info.d.ts            events                  post-payload.js.map     storage.js.map
+ci-info.js              flush-and-exit.d.ts     project-id.d.ts
+ci-info.js.map          flush-and-exit.js       project-id.js
+
+./packages/ui/node_modules/next/dist/telemetry/events:
+build.d.ts              plugins.d.ts            swc-load-failure.d.ts   version.d.ts
+build.js                plugins.js              swc-load-failure.js     version.js
+build.js.map            plugins.js.map          swc-load-failure.js.map version.js.map
+index.d.ts              session-stopped.d.ts    swc-plugins.d.ts
+index.js                session-stopped.js      swc-plugins.js
+index.js.map            session-stopped.js.map  swc-plugins.js.map
+
+./packages/ui/node_modules/next/dist/trace:
+index.d.ts              shared.d.ts             trace-uploader.js       trace.js.map
+index.js                shared.js               trace-uploader.js.map   upload-trace.d.ts
+index.js.map            shared.js.map           trace.d.ts              upload-trace.js
+report                  trace-uploader.d.ts     trace.js                upload-trace.js.map
+
+./packages/ui/node_modules/next/dist/trace/report:
+index.d.ts              to-json.d.ts            to-telemetry.d.ts
+index.js                to-json.js              to-telemetry.js
+index.js.map            to-json.js.map          to-telemetry.js.map
+
+./packages/ui/node_modules/next/experimental:
+testmode
+
+./packages/ui/node_modules/next/experimental/testmode:
+playwright      playwright.d.ts playwright.js   proxy.d.ts      proxy.js
+
+./packages/ui/node_modules/next/experimental/testmode/playwright:
+msw.d.ts        msw.js
+
+./packages/ui/node_modules/next/font:
+google          index.d.ts      local
+
+./packages/ui/node_modules/next/font/google:
+index.d.ts      index.js        target.css
+
+./packages/ui/node_modules/next/font/local:
+index.d.ts      index.js        target.css
+
+./packages/ui/node_modules/next/image-types:
+global.d.ts
+
+./packages/ui/node_modules/next/legacy:
+image.d.ts      image.js
+
+./packages/ui/node_modules/next/navigation-types:
+compat
+
+./packages/ui/node_modules/next/navigation-types/compat:
+navigation.d.ts
+
+./packages/ui/node_modules/next/types:
+compiled.d.ts   global.d.ts     index.d.ts
+
+./packages/ui/node_modules/postcss:
+lib             LICENSE         package.json    README.md
+
+./packages/ui/node_modules/postcss/lib:
+at-rule.d.ts            fromJSON.js             parse.js                root.js
+at-rule.js              input.d.ts              parser.js               rule.d.ts
+comment.d.ts            input.js                postcss.d.mts           rule.js
+comment.js              lazy-result.d.ts        postcss.d.ts            stringifier.d.ts
+container.d.ts          lazy-result.js          postcss.js              stringifier.js
+container.js            list.d.ts               postcss.mjs             stringify.d.ts
+css-syntax-error.d.ts   list.js                 previous-map.d.ts       stringify.js
+css-syntax-error.js     map-generator.js        previous-map.js         symbols.js
+declaration.d.ts        no-work-result.d.ts     processor.d.ts          terminal-highlight.js
+declaration.js          no-work-result.js       processor.js            tokenize.js
+document.d.ts           node.d.ts               result.d.ts             warn-once.js
+document.js             node.js                 result.js               warning.d.ts
+fromJSON.d.ts           parse.d.ts              root.d.ts               warning.js
+
+./packages/ui/node_modules/resolve:
+async.js        example         index.mjs       LICENSE         readme.markdown sync.js
+bin             index.js        lib             package.json    SECURITY.md     test
+
+./packages/ui/node_modules/resolve/bin:
+resolve
+
+./packages/ui/node_modules/resolve/example:
+async.js        sync.js
+
+./packages/ui/node_modules/resolve/lib:
+async.js                homedir.js              normalize-options.js
+caller.js               node-modules-paths.js   sync.js
+
+./packages/ui/node_modules/resolve/test:
+dotdot                  mock_sync.js            nonstring.js            resolver_sync.js
+dotdot.js               mock.js                 pathfilter              resolver.js
+faulty_basedir.js       module_dir              pathfilter_sync.js      shadowed_core
+filter_sync.js          module_dir.js           pathfilter.js           shadowed_core.js
+filter.js               node_path               precedence              subdirs.js
+home_paths_sync.js      node_path.js            precedence.js           symlinks.js
+home_paths.js           node-modules-paths.js   resolver
+
+./packages/ui/node_modules/resolve/test/dotdot:
+abc             index.js
+
+./packages/ui/node_modules/resolve/test/dotdot/abc:
+index.js
+
+./packages/ui/node_modules/resolve/test/module_dir:
+xmodules        ymodules        zmodules
+
+./packages/ui/node_modules/resolve/test/module_dir/xmodules:
+aaa
+
+./packages/ui/node_modules/resolve/test/module_dir/xmodules/aaa:
+index.js
+
+./packages/ui/node_modules/resolve/test/module_dir/ymodules:
+aaa
+
+./packages/ui/node_modules/resolve/test/module_dir/ymodules/aaa:
+index.js
+
+./packages/ui/node_modules/resolve/test/module_dir/zmodules:
+bbb
+
+./packages/ui/node_modules/resolve/test/module_dir/zmodules/bbb:
+main.js         package.json
+
+./packages/ui/node_modules/resolve/test/node_path:
+x       y
+
+./packages/ui/node_modules/resolve/test/node_path/x:
+aaa     ccc
+
+./packages/ui/node_modules/resolve/test/node_path/x/aaa:
+index.js
+
+./packages/ui/node_modules/resolve/test/node_path/x/ccc:
+index.js
+
+./packages/ui/node_modules/resolve/test/node_path/y:
+bbb     ccc
+
+./packages/ui/node_modules/resolve/test/node_path/y/bbb:
+index.js
+
+./packages/ui/node_modules/resolve/test/node_path/y/ccc:
+index.js
+
+./packages/ui/node_modules/resolve/test/pathfilter:
+deep_ref
+
+./packages/ui/node_modules/resolve/test/pathfilter/deep_ref:
+main.js
+
+./packages/ui/node_modules/resolve/test/precedence:
+aaa     aaa.js  bbb     bbb.js
+
+./packages/ui/node_modules/resolve/test/precedence/aaa:
+index.js        main.js
+
+./packages/ui/node_modules/resolve/test/precedence/bbb:
+main.js
+
+./packages/ui/node_modules/resolve/test/resolver:
+baz             dot_slash_main  incorrect_main  mug.coffee      null_main       symlinked
+browser_field   empty_main      invalid_main    mug.js          other_path      without_basedir
+cup.coffee      false_main      missing_index   multirepo       quux
+dot_main        foo.js          missing_main    nested_symlinks same_names
+
+./packages/ui/node_modules/resolve/test/resolver/baz:
+doom.js         package.json    quux.js
+
+./packages/ui/node_modules/resolve/test/resolver/browser_field:
+a.js            b.js            package.json
+
+./packages/ui/node_modules/resolve/test/resolver/dot_main:
+index.js        package.json
+
+./packages/ui/node_modules/resolve/test/resolver/dot_slash_main:
+index.js        package.json
+
+./packages/ui/node_modules/resolve/test/resolver/empty_main:
+index.js        package.json
+
+./packages/ui/node_modules/resolve/test/resolver/false_main:
+index.js        package.json
+
+./packages/ui/node_modules/resolve/test/resolver/incorrect_main:
+index.js        package.json
+
+./packages/ui/node_modules/resolve/test/resolver/invalid_main:
+package.json
+
+./packages/ui/node_modules/resolve/test/resolver/missing_index:
+package.json
+
+./packages/ui/node_modules/resolve/test/resolver/missing_main:
+index.js        package.json
+
+./packages/ui/node_modules/resolve/test/resolver/multirepo:
+lerna.json      package.json    packages
+
+./packages/ui/node_modules/resolve/test/resolver/multirepo/packages:
+package-a       package-b
+
+./packages/ui/node_modules/resolve/test/resolver/multirepo/packages/package-a:
+index.js        package.json
+
+./packages/ui/node_modules/resolve/test/resolver/multirepo/packages/package-b:
+index.js        package.json
+
+./packages/ui/node_modules/resolve/test/resolver/nested_symlinks:
+mylib
+
+./packages/ui/node_modules/resolve/test/resolver/nested_symlinks/mylib:
+async.js        package.json    sync.js
+
+./packages/ui/node_modules/resolve/test/resolver/null_main:
+index.js        package.json
+
+./packages/ui/node_modules/resolve/test/resolver/other_path:
+lib     root.js
+
+./packages/ui/node_modules/resolve/test/resolver/other_path/lib:
+other-lib.js
+
+./packages/ui/node_modules/resolve/test/resolver/quux:
+foo
+
+./packages/ui/node_modules/resolve/test/resolver/quux/foo:
+index.js
+
+./packages/ui/node_modules/resolve/test/resolver/same_names:
+foo     foo.js
+
+./packages/ui/node_modules/resolve/test/resolver/same_names/foo:
+index.js
+
+./packages/ui/node_modules/resolve/test/resolver/symlinked:
+_       package
+
+./packages/ui/node_modules/resolve/test/resolver/symlinked/_:
+node_modules    symlink_target
+
+./packages/ui/node_modules/resolve/test/resolver/symlinked/_/node_modules:
+foo.js
+
+./packages/ui/node_modules/resolve/test/resolver/symlinked/_/symlink_target:
+
+./packages/ui/node_modules/resolve/test/resolver/symlinked/package:
+bar.js          package.json
+
+./packages/ui/node_modules/resolve/test/resolver/without_basedir:
+main.js
+
+./packages/ui/node_modules/resolve/test/shadowed_core:
+node_modules
+
+./packages/ui/node_modules/resolve/test/shadowed_core/node_modules:
+util
+
+./packages/ui/node_modules/resolve/test/shadowed_core/node_modules/util:
+index.js
+
+./packages/ui/node_modules/ts-api-utils:
+lib             LICENSE.md      package.json    README.md
+
+./packages/ui/node_modules/ts-api-utils/lib:
+index.cjs       index.d.cts     index.d.ts      index.js
+
+./packages/ui/node_modules/watchpack:
+lib             LICENSE         package.json    README.md
+
+./packages/ui/node_modules/watchpack/lib:
+DirectoryWatcher.js     LinkResolver.js         watchEventSource.js
+getWatcherManager.js    reducePlan.js           watchpack.js
+
+./packages/ui/theme:
+index.ts
+
+./packages/ui/utils:
+cn.ts
+
+./prisma:
+migrations      schema.prisma
+
+./prisma/migrations:
+20250530185411_init                     20250531001246_add_performance_indexes
+20250530191009_prismarootfix            migration_lock.toml
+20250530194150_rootprismafix
+
+./prisma/migrations/20250530185411_init:
+migration.sql
+
+./prisma/migrations/20250530191009_prismarootfix:
+migration.sql
+
+./prisma/migrations/20250530194150_rootprismafix:
+migration.sql
+
+./prisma/migrations/20250531001246_add_performance_indexes:
+migration.sql
+
+./prompt_history:
+history.log
+
+./scripts:
+check-prisma-sync.sh    find-component-usage.js security-audit.js       setup-mcp.sh
+ensure-db.sh            prisma-commands.sh      set-user-role.ts        test-prisma-counts.ts
+
+./secrets:
+grafana_admin_password.txt      portainer_admin_password.txt    redis_password.txt
+jwt_secret.txt                  postgres_password.txt           session_secret.txt
+Yousef@MacBook-Pro-tilhrende-Yousef LearningLab % 
