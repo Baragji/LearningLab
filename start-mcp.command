@@ -21,14 +21,19 @@ pkill -f "code_lens_server.py" 2>/dev/null
 sleep 1
 
 # Start alle servere
+PROJECT_DIR="$(pwd)"
+
 echo -e "\n${YELLOW}Starter RAG Server...${NC}"
-cd mcp_services/rag_server && python vector_search_server.py > ../logs/rag.log 2>&1 &
+cd "$PROJECT_DIR/mcp_services/rag_server" && python vector_search_server.py > "$PROJECT_DIR/mcp_services/logs/rag.log" 2>&1 &
+RAG_PID=$!
 
 echo -e "${YELLOW}Starter Memory Server...${NC}"
-cd ../memory_server && python prompt_history_server.py > ../logs/memory.log 2>&1 &
+cd "$PROJECT_DIR/mcp_services/memory_server" && python prompt_history_server.py > "$PROJECT_DIR/mcp_services/logs/memory.log" 2>&1 &
+MEMORY_PID=$!
 
 echo -e "${YELLOW}Starter Code Lens Server...${NC}"
-cd ../code_lens_server && python code_lens_server.py > ../logs/lens.log 2>&1 &
+cd "$PROJECT_DIR/mcp_services/code_lens_server" && python code_lens_server.py > "$PROJECT_DIR/mcp_services/logs/lens.log" 2>&1 &
+LENS_PID=$!
 
 sleep 3
 

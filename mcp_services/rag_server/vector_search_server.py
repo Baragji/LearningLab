@@ -1,7 +1,6 @@
 from flask import Flask, request, jsonify
 from sentence_transformers import SentenceTransformer
 import chromadb
-from chromadb.config import Settings
 import os
 import sys
 from datetime import datetime
@@ -39,9 +38,7 @@ def initialize_services():
 
         os.makedirs(CHROMA_DB_DIR, exist_ok=True)
         print(f"🗄️ Initialiserer ChromaDB i '{CHROMA_DB_DIR}'...")
-        chroma_client = chromadb.PersistentClient(
-            path=CHROMA_DB_DIR, settings=Settings(chroma_db_impl="duckdb+parquet")
-        )
+        chroma_client = chromadb.PersistentClient(path=CHROMA_DB_DIR)
         print("✅ ChromaDB-klient initialiseret.")
 
         code_collection = chroma_client.get_or_create_collection(name=COLLECTION_NAME)
@@ -139,5 +136,5 @@ def search():
 
 if __name__ == "__main__":
     initialize_services()
-    print("🚀 Starter RAG-server på http://0.0.0.0:5004 ...")
-    app.run(host="0.0.0.0", port=5004, debug=True)
+    print("🚀 Starter RAG-server på http://0.0.0.0:5005 ...")
+    app.run(host="0.0.0.0", port=5005, debug=False)

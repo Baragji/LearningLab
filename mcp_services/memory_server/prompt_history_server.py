@@ -287,4 +287,4 @@ def clear_history():
 
 if __name__ == "__main__":
     print("🚀 Starter Memory-server på http://0.0.0.0:5007 ...")
-    app.run(host="0.0.0.0", port=5007, debug=True)
+    app.run(host="0.0.0.0", port=5007, debug=False)
