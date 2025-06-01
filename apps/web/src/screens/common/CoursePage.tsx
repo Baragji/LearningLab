@@ -22,7 +22,10 @@ import {
   useGetCourseByIdQuery, 
   useGetModulesByCourseIdQuery,
   useGetSubjectAreaByIdQuery,
-  useGetUserProgressQuery
+  useGetUserProgressQuery,
+  useGetCourseEnrollmentStatusQuery,
+  useEnrollInCourseMutation,
+  useUnenrollFromCourseMutation
 } from '../../store/services/api';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -30,6 +33,9 @@ import FolderIcon from '@mui/icons-material/Folder';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import LockIcon from '@mui/icons-material/Lock';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import PersonRemoveIcon from '@mui/icons-material/PersonRemove';
+import { toast } from 'react-hot-toast';
 
 const CoursePage: React.FC = () => {
   const router = useRouter();
@@ -58,7 +64,16 @@ const CoursePage: React.FC = () => {
     isLoading: isProgressLoading
   } = useGetUserProgressQuery(Number(courseId));
   
-  const isLoading = isCourseLoading || isModulesLoading || isProgressLoading;
+  const {
+    data: enrollmentStatus,
+    isLoading: isEnrollmentLoading,
+    refetch: refetchEnrollmentStatus
+  } = useGetCourseEnrollmentStatusQuery(Number(courseId));
+  
+  const [enrollInCourse, { isLoading: isEnrolling }] = useEnrollInCourseMutation();
+  const [unenrollFromCourse, { isLoading: isUnenrolling }] = useUnenrollFromCourseMutation();
+  
+  const isLoading = isCourseLoading || isModulesLoading || isProgressLoading || isEnrollmentLoading;
   
   // Sort modules by order
   const sortedModules = React.useMemo(() => {
@@ -66,8 +81,32 @@ const CoursePage: React.FC = () => {
     return [...modules].sort((a, b) => a.order - b.order);
   }, [modules]);
   
+  // Handle enrollment
+  const handleEnroll = async () => {
+    try {
+      await enrollInCourse(Number(courseId)).unwrap();
+      toast.success('Du er nu tilmeldt kurset!');
+      refetchEnrollmentStatus();
+    } catch (error) {
+      toast.error('Fejl ved tilmelding til kurset');
+    }
+  };
+  
+  const handleUnenroll = async () => {
+    if (window.confirm('Er du sikker på, at du vil framelde dig dette kursus? Al din fremgang vil gå tabt.')) {
+      try {
+        await unenrollFromCourse(Number(courseId)).unwrap();
+        toast.success('Du er nu frameldt kurset');
+        refetchEnrollmentStatus();
+      } catch (error) {
+        toast.error('Fejl ved framelding fra kurset');
+      }
+    }
+  };
+  
   // Check if a module is unlocked (first module is always unlocked)
   const isModuleUnlocked = (moduleIndex: number) => {
+    if (!enrollmentStatus?.enrolled) return false;
     if (moduleIndex === 0) return true;
     if (!userProgress) return false;
     
@@ -126,20 +165,62 @@ const CoursePage: React.FC = () => {
           {course.description}
         </Typography>
         
+        {/* Enrollment Status and Actions */}
+        <Box sx={{ mt: 3, mb: 3 }}>
+          {enrollmentStatus?.enrolled ? (
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
+              <Chip 
+                icon={<CheckCircleIcon />} 
+                label="Tilmeldt" 
+                color="success" 
+                variant="filled"
+              />
+              <Button
+                startIcon={<PersonRemoveIcon />}
+                onClick={handleUnenroll}
+                disabled={isUnenrolling}
+                color="error"
+                variant="outlined"
+                size="small"
+              >
+                {isUnenrolling ? 'Frammelder...' : 'Frameld'}
+              </Button>
+            </Box>
+          ) : (
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
+              <Chip 
+                label="Ikke tilmeldt" 
+                color="default" 
+                variant="outlined"
+              />
+              <Button
+                startIcon={<PersonAddIcon />}
+                onClick={handleEnroll}
+                disabled={isEnrolling}
+                color="primary"
+                variant="contained"
+                size="small"
+              >
+                {isEnrolling ? 'Tilmelder...' : 'Tilmeld dig'}
+              </Button>
+            </Box>
+          )}
+        </Box>
+        
         {/* Course Progress */}
-        {userProgress && (
+        {enrollmentStatus?.enrolled && enrollmentStatus.progress !== undefined && (
           <Box sx={{ mt: 4, mb: 4 }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
               <Typography variant="body2" color="text.secondary">
-                Course Progress
+                Kursus fremgang
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                {userProgress.courseProgress}%
+                {Math.round(enrollmentStatus.progress)}%
               </Typography>
             </Box>
             <LinearProgress 
               variant="determinate" 
-              value={userProgress.courseProgress} 
+              value={enrollmentStatus.progress} 
               sx={{ height: 8, borderRadius: 4 }} 
             />
           </Box>
@@ -164,6 +245,7 @@ const CoursePage: React.FC = () => {
                     display: 'flex',
                     flexDirection: 'column',
                     opacity: isUnlocked ? 1 : 0.7,
+                    border: !enrollmentStatus?.enrolled ? '2px dashed #ccc' : 'none',
                   }}
                 >
                   <CardActionArea 
@@ -203,11 +285,15 @@ const CoursePage: React.FC = () => {
                         {module.description}
                       </Typography>
                       
-                      {!isUnlocked && (
-                        <Typography variant="caption" color="warning.main" sx={{ display: 'block', mt: 2 }}>
-                          Complete previous module to unlock
+                      {!enrollmentStatus?.enrolled ? (
+                        <Typography variant="caption" color="info.main" sx={{ display: 'block', mt: 2 }}>
+                          Tilmeld dig kurset for at få adgang
                         </Typography>
-                      )}
+                      ) : !isUnlocked ? (
+                        <Typography variant="caption" color="warning.main" sx={{ display: 'block', mt: 2 }}>
+                          Gennemfør forrige modul for at låse op
+                        </Typography>
+                      ) : null}
                     </CardContent>
                   </CardActionArea>
                 </Card>
@@ -226,13 +312,13 @@ const CoursePage: React.FC = () => {
           Back
         </Button>
         
-        {sortedModules.length > 0 && (
+        {sortedModules.length > 0 && enrollmentStatus?.enrolled && (
           <Button 
             endIcon={<NavigateNextIcon />} 
             variant="contained"
             onClick={() => router.push(`/module/${sortedModules[0].id}`)}
           >
-            Start First Module
+            Start første modul
           </Button>
         )}
       </Box>

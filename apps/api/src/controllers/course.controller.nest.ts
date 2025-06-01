@@ -9,10 +9,13 @@ import {
   Body,
   NotFoundException,
   BadRequestException,
+  UnauthorizedException,
   UseGuards,
   ParseIntPipe,
   Inject,
   Logger,
+  Req,
+  Query,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -20,6 +23,7 @@ import {
   ApiResponse,
   ApiBearerAuth,
   ApiParam,
+  ApiQuery,
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { PrismaService } from '../persistence/prisma/prisma.service';
@@ -37,21 +41,90 @@ export class CourseController {
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
-  @ApiOperation({ summary: 'Hent alle kurser' })
+  @ApiOperation({ summary: 'Hent alle kurser med filtrering' })
+  @ApiQuery({ name: 'search', required: false, description: 'Søg i kursustitel og beskrivelse' })
+  @ApiQuery({ name: 'educationProgramId', required: false, description: 'Filtrer efter uddannelsesprogram ID' })
+  @ApiQuery({ name: 'level', required: false, description: 'Filtrer efter sværhedsgrad' })
+  @ApiQuery({ name: 'limit', required: false, description: 'Maksimalt antal resultater' })
+  @ApiQuery({ name: 'offset', required: false, description: 'Antal resultater at springe over' })
   @ApiResponse({
     status: 200,
-    description: 'Liste af alle kurser',
-    type: [CourseDto],
+    description: 'Liste af kurser med filtrering',
+    schema: {
+      type: 'object',
+      properties: {
+        courses: {
+          type: 'array',
+          items: { $ref: '#/components/schemas/CourseDto' },
+        },
+        total: { type: 'number' },
+        hasMore: { type: 'boolean' },
+      },
+    },
   })
   @Get()
-  async getAllCourses(): Promise<CourseDto[]> {
-    this.logger.log('Cache miss for all_courses - henter data fra databasen');
-    return this.prisma.course.findMany({
+  async getAllCourses(
+    @Query('search') search?: string,
+    @Query('educationProgramId') educationProgramId?: string,
+    @Query('level') level?: string,
+    @Query('limit') limit?: string,
+    @Query('offset') offset?: string,
+  ): Promise<{
+    courses: CourseDto[];
+    total: number;
+    hasMore: boolean;
+  }> {
+    const limitNum = limit ? parseInt(limit, 10) : 20;
+    const offsetNum = offset ? parseInt(offset, 10) : 0;
+    const educationProgramIdNum = educationProgramId ? parseInt(educationProgramId, 10) : undefined;
+
+    // Build where clause for filtering
+    const where: any = {};
+
+    if (search) {
+      where.OR = [
+        { title: { contains: search, mode: 'insensitive' } },
+        { description: { contains: search, mode: 'insensitive' } },
+      ];
+    }
+
+    if (educationProgramIdNum) {
+      where.educationProgramId = educationProgramIdNum;
+    }
+
+    if (level) {
+      where.level = level;
+    }
+
+    // Get total count for pagination
+    const total = await this.prisma.course.count({ where });
+
+    // Get courses with pagination
+    const courses = await this.prisma.course.findMany({
+      where,
       include: {
         educationProgram: true,
+        topics: {
+          include: {
+            lessons: true,
+            quizzes: true,
+          },
+        },
       },
-      orderBy: { title: 'asc' },
+      orderBy: { createdAt: 'desc' },
+      take: limitNum,
+      skip: offsetNum,
     });
+
+    const hasMore = offsetNum + limitNum < total;
+
+    this.logger.log(`Retrieved ${courses.length} courses with filters: search=${search}, educationProgramId=${educationProgramId}, level=${level}`);
+    
+    return {
+      courses,
+      total,
+      hasMore,
+    };
   }
 
   @ApiOperation({ summary: 'Hent kurser for et specifikt uddannelsesprogram' })
@@ -307,6 +380,289 @@ export class CourseController {
     }
 
     return updatedCourse;
+  }
+
+  @ApiOperation({ summary: 'Tilmeld bruger til kursus' })
+  @ApiParam({ name: 'id', description: 'Kursus ID', type: Number })
+  @ApiResponse({
+    status: 201,
+    description: 'Bruger tilmeldt kursus',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string' },
+        courseId: { type: 'number' },
+        enrolled: { type: 'boolean' },
+      },
+    },
+  })
+  @ApiResponse({ status: 400, description: 'Bruger allerede tilmeldt kursus' })
+  @ApiResponse({ status: 404, description: 'Kurset blev ikke fundet' })
+  @ApiResponse({ status: 401, description: 'Ikke autoriseret' })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Post(':id/enroll')
+  async enrollInCourse(
+    @Param('id', ParseIntPipe) courseId: number,
+    @Req() req,
+  ): Promise<{ message: string; courseId: number; enrolled: boolean }> {
+    const userId = req.user?.id;
+
+    if (!userId) {
+      throw new UnauthorizedException('Ikke autoriseret');
+    }
+
+    // Check if course exists
+    const course = await this.prisma.course.findUnique({
+      where: { id: courseId },
+      include: {
+        topics: {
+          include: {
+            lessons: true,
+            quizzes: true,
+          },
+        },
+      },
+    });
+
+    if (!course) {
+      throw new NotFoundException('Kurset blev ikke fundet');
+    }
+
+    // Check if user is already enrolled (has any progress in this course)
+    const existingProgress = await this.prisma.userProgress.findFirst({
+      where: {
+        userId,
+        OR: [
+          {
+            lessonId: {
+              in: course.topics.flatMap(topic => topic.lessons.map(lesson => lesson.id)),
+            },
+          },
+          {
+            quizId: {
+              in: course.topics.flatMap(topic => topic.quizzes.map(quiz => quiz.id)),
+            },
+          },
+        ],
+      },
+    });
+
+    if (existingProgress) {
+      throw new BadRequestException('Bruger er allerede tilmeldt dette kursus');
+    }
+
+    // Create initial progress record to mark enrollment
+    // We'll create a progress record for the first lesson if available
+    const firstLesson = course.topics[0]?.lessons[0];
+    if (firstLesson) {
+      await this.prisma.userProgress.create({
+        data: {
+          userId,
+          lessonId: firstLesson.id,
+          status: 'NOT_STARTED',
+        },
+      });
+    }
+
+    // Invalidate relevant caches
+    await this.cacheManager.del(`user_courses_${userId}`);
+    await this.cacheManager.del(`user_progress_${userId}`);
+
+    this.logger.log(`User ${userId} enrolled in course ${courseId}`);
+    return {
+      message: 'Tilmeldt kursus',
+      courseId,
+      enrolled: true,
+    };
+  }
+
+  @ApiOperation({ summary: 'Afmeld bruger fra kursus' })
+  @ApiParam({ name: 'id', description: 'Kursus ID', type: Number })
+  @ApiResponse({
+    status: 200,
+    description: 'Bruger afmeldt kursus',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string' },
+        courseId: { type: 'number' },
+        enrolled: { type: 'boolean' },
+      },
+    },
+  })
+  @ApiResponse({ status: 400, description: 'Bruger ikke tilmeldt kursus' })
+  @ApiResponse({ status: 404, description: 'Kurset blev ikke fundet' })
+  @ApiResponse({ status: 401, description: 'Ikke autoriseret' })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Delete(':id/enroll')
+  async unenrollFromCourse(
+    @Param('id', ParseIntPipe) courseId: number,
+    @Req() req,
+  ): Promise<{ message: string; courseId: number; enrolled: boolean }> {
+    const userId = req.user?.id;
+
+    if (!userId) {
+      throw new UnauthorizedException('Ikke autoriseret');
+    }
+
+    // Check if course exists
+    const course = await this.prisma.course.findUnique({
+      where: { id: courseId },
+      include: {
+        topics: {
+          include: {
+            lessons: true,
+            quizzes: true,
+          },
+        },
+      },
+    });
+
+    if (!course) {
+      throw new NotFoundException('Kurset blev ikke fundet');
+    }
+
+    // Check if user is enrolled
+    const existingProgress = await this.prisma.userProgress.findFirst({
+      where: {
+        userId,
+        OR: [
+          {
+            lessonId: {
+              in: course.topics.flatMap(topic => topic.lessons.map(lesson => lesson.id)),
+            },
+          },
+          {
+            quizId: {
+              in: course.topics.flatMap(topic => topic.quizzes.map(quiz => quiz.id)),
+            },
+          },
+        ],
+      },
+    });
+
+    if (!existingProgress) {
+      throw new BadRequestException('Bruger er ikke tilmeldt dette kursus');
+    }
+
+    // Delete all progress records for this course
+    await this.prisma.userProgress.deleteMany({
+      where: {
+        userId,
+        OR: [
+          {
+            lessonId: {
+              in: course.topics.flatMap(topic => topic.lessons.map(lesson => lesson.id)),
+            },
+          },
+          {
+            quizId: {
+              in: course.topics.flatMap(topic => topic.quizzes.map(quiz => quiz.id)),
+            },
+          },
+        ],
+      },
+    });
+
+    // Invalidate relevant caches
+    await this.cacheManager.del(`user_courses_${userId}`);
+    await this.cacheManager.del(`user_progress_${userId}`);
+
+    this.logger.log(`User ${userId} unenrolled from course ${courseId}`);
+    return {
+      message: 'Afmeldt kursus',
+      courseId,
+      enrolled: false,
+    };
+  }
+
+  @ApiOperation({ summary: 'Tjek brugers tilmeldingsstatus for kursus' })
+  @ApiParam({ name: 'id', description: 'Kursus ID', type: Number })
+  @ApiResponse({
+    status: 200,
+    description: 'Tilmeldingsstatus',
+    schema: {
+      type: 'object',
+      properties: {
+        courseId: { type: 'number' },
+        enrolled: { type: 'boolean' },
+        progress: { type: 'number' },
+      },
+    },
+  })
+  @ApiResponse({ status: 404, description: 'Kurset blev ikke fundet' })
+  @ApiResponse({ status: 401, description: 'Ikke autoriseret' })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Get(':id/enrollment-status')
+  async getCourseEnrollmentStatus(
+    @Param('id', ParseIntPipe) courseId: number,
+    @Req() req,
+  ): Promise<{ courseId: number; enrolled: boolean; progress?: number }> {
+    const userId = req.user?.id;
+
+    if (!userId) {
+      throw new UnauthorizedException('Ikke autoriseret');
+    }
+
+    // Check if course exists
+    const course = await this.prisma.course.findUnique({
+      where: { id: courseId },
+      include: {
+        topics: {
+          include: {
+            lessons: true,
+            quizzes: true,
+          },
+        },
+      },
+    });
+
+    if (!course) {
+      throw new NotFoundException('Kurset blev ikke fundet');
+    }
+
+    // Check enrollment status
+    const userProgress = await this.prisma.userProgress.findMany({
+      where: {
+        userId,
+        OR: [
+          {
+            lessonId: {
+              in: course.topics.flatMap(topic => topic.lessons.map(lesson => lesson.id)),
+            },
+          },
+          {
+            quizId: {
+              in: course.topics.flatMap(topic => topic.quizzes.map(quiz => quiz.id)),
+            },
+          },
+        ],
+      },
+    });
+
+    const enrolled = userProgress.length > 0;
+    let progress = 0;
+
+    if (enrolled) {
+      // Calculate progress percentage
+      const totalItems = course.topics.reduce(
+        (total, topic) => total + topic.lessons.length + topic.quizzes.length,
+        0,
+      );
+      const completedItems = userProgress.filter(
+        p => p.status === 'COMPLETED',
+      ).length;
+      progress = totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 0;
+    }
+
+    return {
+      courseId,
+      enrolled,
+      ...(enrolled && { progress }),
+    };
   }
 
   @ApiOperation({ summary: 'Slet et kursus' })
