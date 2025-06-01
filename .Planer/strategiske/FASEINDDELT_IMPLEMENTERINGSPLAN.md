@@ -45,8 +45,8 @@ Denne plan tager udgangspunkt i den nuværende status (45% færdig) og definerer
 
 **Opgaver:**
 - [ ] Forbedre quiz-taking experience
-- [ ] Implementer progress visualization
-- [ ] Tilføj user profile management
+- [x] Implementer progress visualization
+- [x] Tilføj user profile management
 - [ ] Implementer course browsing og enrollment
 - [ ] Tilføj basic notifications system
 - [ ] Optimér performance og loading times
