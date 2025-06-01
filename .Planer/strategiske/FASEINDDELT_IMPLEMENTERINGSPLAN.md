@@ -28,13 +28,13 @@ Denne plan tager udgangspunkt i den nuværende status (45% færdig) og definerer
 ### 1.2 Modern UI/UX Implementation (3 uger)
 
 **Opgaver:**
-- [ ] Implementer moderne design system med glassmorphism
-- [ ] Tilføj smooth animationer og transitions
-- [ ] Implementer responsive navigation
-- [ ] Skab engaging landing page
-- [ ] Redesign dashboard med moderne cards og layouts
-- [ ] Implementer dark/light theme system
-- [ ] Tilføj loading states og micro-interactions
+- [x] Implementer moderne design system med glassmorphism
+- [x] Tilføj smooth animationer og transitions
+- [x] Implementer responsive navigation
+- [x] Skab engaging landing page
+- [x] Redesign dashboard med moderne cards og layouts
+- [x] Implementer dark/light theme system
+- [x] Tilføj loading states og micro-interactions
 
 **Leverancer:**
 - Moderne, visuelt tiltalende interface
