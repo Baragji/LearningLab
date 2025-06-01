@@ -44,3 +44,11 @@
     * **API-specific code (NestJS modules, controllers, services):** Place in `apps/api/src`.
     * **Web-specific code (Next.js pages, layouts):** Place in `apps/web/`.
     * **Database schema (`schema.prisma`):** Must only be edited, not moved.
+
+9.  ## Component Granularity and Composition
+    * **Principle:** Favor Composition over Monolithic Components. All components should adhere to the Single Responsibility Principle.
+    * **Rule:** Any React component estimated to exceed **200 lines** must be broken down into smaller, single-purpose sub-components.
+    * **Workflow Integration:** During the `sequential-thinking` phase, if a component is identified as complex (e.g., a page with multiple sections, forms, and data displays), the plan must include steps to refactor it into smaller components, each with a clearly defined set of props.
+    * **Placement of Sub-components:**
+        * Truly reusable, generic components must be placed in `packages/ui/`.
+        * Page-specific sub-components can be placed in a local `components/` sub-directory (e.g., `apps/web/src/app/profile/components/`).
