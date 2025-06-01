@@ -1,33 +1,44 @@
-## Project Rules – LearningLab Mono-repo 📚
+# Project Rules
 
-### 1. Code Standards
-- Use **TypeScript strict** everywhere. No `any`.
-- Follow `eslint-config-learninglab` and `.prettierrc`. Trae must lint-fix before commit.
+## Tool priority
 
-### 2. Folder Conventions
-- **Backend**: NestJS modules live in `apps/api/src/modules/<name>/`.
-- **Frontend**: Next 13 App Router components in `apps/web/src/app/(routes)/`.
-- Do **NOT** create new folders at repo root; place shared code in `packages/`.
+* Use `file-context-server` or `rag-docs-ollama` for context retrieval first.
+* All file I/O must go through the MCP `filesystem`; never use the built‑in File system.
+* Use `Terminal` exclusively for git, build, test and dependency operations.
 
-### 3. Database
-- Prisma schema file is `apps/api/prisma/schema.prisma`.
-- Any schema change ⇒  
-  1. Create a `migration.sql` via Prisma Migrate,  
-  2. Add a matching `rollback.sql`,  
-  3. Update `docs/db-changelog.md`.
+## Commit scope
 
-### 4. Testing
-- Every new service/controller/component **must** ship with Jest or Playwright tests.
-- Target coverage ≥ 90 % lines for new code.
+* Stage only paths related to the current task (e.g. `git add dummy-test-full/**`).
+* Exclude `node_modules`, log and build directories (respect `.gitignore`).
 
-### 5. Protected Paths
-- `migrations/legacy/**` – **read-only**. Never modify or delete.
-- `seed/**` – may read, but changes require human approval.
-- `packages/config/**` – do not rename files; other packages import by path.
+## Test gate
 
-### 6. Commit / PR policy
-- One logical feature per PR; PR title in conventional-commits format.
-- Agents must run `turbo run lint test` and pass before pushing.
+* Run only the tests inside the task folder:
+  `npm test -- dummy-test-full/`
+* If exit code ≠ 0: stop, fix errors, rerun tests.
+* Commit and push only when exit code = 0.
 
-### 7. Emergency Stop
-If the string **STOP-AGENT** appears in chat, cancel current task and roll back un-pushed edits.
+## Commit message format
+
+* `<type>(<scope>): <short description>`
+* `type`: feat | fix | docs | style | refactor | test | chore
+* `scope`: folder or module name.
+* Example: `feat(dummy-test-full): add calculator, unit test and README`.
+
+## Memory logging
+
+* After green tests:
+
+  * Call `memory.create_entities` with relevant type (e.g. `unit-test`).
+  * Call `memory.add_observations` with a truthful result (include exit code).
+* Never log “exit 0” when tests failed.
+
+## Documentation & comments
+
+* Public APIs require JSDoc.
+* Add a one‑line comment for non‑obvious internal helpers.
+* Update the project README for new endpoints or scripts.
+
+## Plan first
+
+* Always run `sequential-thinking` before code changes and show the generated plan at the start of the response.

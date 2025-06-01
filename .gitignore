@@ -92,5 +92,4 @@ temp
 *.tmp
 *.temp
 # Trae & MCP-specifikke ignores
-.trae/
 mcp_services/.env.local
