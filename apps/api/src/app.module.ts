@@ -40,6 +40,7 @@ import { JwtService } from '@nestjs/jwt';
 import { SearchModule } from './search/search.module';
 import { FileUploadModule } from './modules/file-upload.module';
 import { MaterialModule } from './modules/material.module';
+import { AIModule } from './ai/ai.module';
 // Import social auth config
 import socialAuthConfig from './config/social-auth.config';
 // Midlertidigt deaktiveret pga. problemer med import
@@ -78,6 +79,7 @@ import socialAuthConfig from './config/social-auth.config';
     SearchModule, // Tilføj SearchModule for avanceret søgning
     FileUploadModule, // Tilføj FileUploadModule for fil-upload
     MaterialModule, // Tilføj MaterialModule for materiale-styring
+    AIModule, // Tilføj AIModule for AI funktionalitet
     CoursesModule,
     TopicsModule, // Updated from ModulesModule
     LessonsModule,
