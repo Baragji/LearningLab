@@ -1,0 +1,29 @@
+        
+Søger i memory efter dummy-test-full relaterede entities.
+        
+            
+toolName: run_mcp
+            
+status: success
+          
+mcp: mcp.config.usrlocalmcp.memory search_nodes [object Object]
+ {"content":[{"type":"text","text":"{\n  \"entities\": [\n    {\n      \"type\": \"entity\",\n      \"name\": \"dummy-test-full-project\",\n      \"entityType\": \"unit-test\",\n      \"observations\": [\n        \"Dummy-test-full projekt oprettet med Node.js, Jest og kalkulationsfunktion\",\n        \"Created calculator.js with add function that takes two parameters and returns sum\",\n        \"Created calculator.test.js with Jest test validating add(2, 3) returns 5\",\n        \"Project successfully passes npm test with exit code 0\",\n        \"Git branch dummy-test-full created and pushed with conventional commit message\"\n      ]\n    }\n  ],\n  \"relations\": []\n}"}],"isError":null}
+          
+## Memory Search Resultat: dummy-test-full
+
+### Fundet Entity:
+**Navn:** `dummy-test-full-project`  
+**Type:** `unit-test`
+
+### Observationer:
+1. **Dummy-test-full projekt oprettet med Node.js, Jest og kalkulationsfunktion**
+2. **Created calculator.js with add function that takes two parameters and returns sum**
+3. **Created calculator.test.js with Jest test validating add(2, 3) returns 5**
+4. **Project successfully passes npm test with exit code 0**
+5. **Git branch dummy-test-full created and pushed with conventional commit message**
+
+### Relationer:
+Ingen relationer fundet for denne entity.
+
+Denne memory-entry dokumenterer det komplette dummy-test-full projekt, som blev oprettet som en test af Trae-agentens fulde pipeline med Node.js, Jest og Git-workflow.
+        

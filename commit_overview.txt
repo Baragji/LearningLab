@@ -1,0 +1,69 @@
+commit b1472bb1b17d83e2a4d45331b33d56a267f0ac98
+Author: yb <ybaragji@gmail.com>
+Date:   Sun Jun 1 16:14:16 2025 +0200
+
+    feat(dummy-test-full): add calculator.js, calculator.test.js and README.md with passing Jest test
+
+ .env.example                                       |    7 +-
+ .env.mcp                                           |   17 +
+ .trae/rules/project_rules.md                       |   48 +-
+ FRESH_MCP_SETUP.md                                 |  217 ++
+ MCP-Test-og-Statusrapport.md                       |  190 +
+ MCP_COMPARISON.md                                  |   98 +
+ MCP_SERVERS_INDIVIDUAL.md                          |  106 +
+ TRAE_AGENT_CONFIG.md                               |  140 +
+ TRAE_AUTOMATIC_TOOL_TEST.md                        |  107 +
+ TRAE_LEARNINGLAB_FINAL_AGENT.md                    |  176 +
+ TRAE_LEARNINGLAB_MASTER_AGENT.md                   |  216 ++
+ TRAE_LEARNINGLAB_OPTIMIZED_AGENT.md                |  185 +
+ TRAE_MCP_CONFIG_GRATIS.json                        |   48 +
+ TRAE_OPTIMIZATION_FINAL.md                         |  215 ++
+ TRAE_ULTIMATE_PLAN.md                              |  266 ++
+ TRAE_ULTIMATE_SETUP.md                             |  159 +
+ chatlog.md                                         |  156 +
+ dummy-test-full/README.md                          |    7 +
+ dummy-test-full/calculator.js                      |    5 +
+ dummy-test-full/calculator.test.js                 |    5 +
+ dummy-test-full/package-lock.json                  | 3655 ++++++++++++++++++++
+ dummy-test-full/package.json                       |   16 +
+ logoutput.txt                                      |  382 ++
+ .../length.bin                                     |  Bin 40000 -> 0 bytes
+ .../.env.example                                   |    0
+ .../auto_configure_trae.sh                         |    8 +-
+ .../auto_setup.sh                                  |    0
+ mcp_services_backup_20250601_142849/chatlog.md     |  294 ++
+ .../data_level0.bin                                |  Bin
+ .../header.bin                                     |  Bin
+ .../length.bin                                     |  Bin 0 -> 40000 bytes
+ .../link_lists.bin                                 |    0
+ .../chroma_db/chroma.sqlite3                       |  Bin 667648 -> 667648 bytes
+ .../code_lens_server/code_lens_server.py           |    0
+ .../configs/mcp-config.json                        |    6 +-
+ .../configs/trae.config.json                       |    0
+ .../forst\303\245else.md"                          |    0
+ .../git_hooks/pre-commit                           |    0
+ .../prompt_history_server.cpython-313.pyc          |  Bin
+ .../memory_server/prompt_history_server.py         |    0
+ .../memory_server/templates/agent-prompt.md        |    0
+ .../memory_server/templates/templates.md           |    0
+ .../ops\303\246tningtiltrae.md"                    |    0
+ .../__pycache__/rank_chunks.cpython-313.pyc        |  Bin
+ .../rag_server/chroma_db/chroma.sqlite3            |  Bin 163840 -> 163840 bytes
+ .../rag_server/index_code_chunks.py                |    0
+ .../rag_server/rank_chunks.py                      |    0
+ .../rag_server/readme.md                           |    0
+ .../rag_server/vector_search_server.py             |    4 +-
+ .../rag_server/vectorsearch.json                   |    7 +-
+ .../requirements.txt                               |    0
+ mcp_services_backup_20250601_142849/services.md    |   23 +
+ .../struktur.txt                                   |    0
+ .../templates/prompt.md                            |  177 +
+ .../traeforklaring.md                              |  188 +
+ setup_clean_mcp.sh                                 |  173 +
+ start-mcp.command                                  |    7 +-
+ test-mcp.command                                   |    4 +-
+ test_mcp_dummy                                     |    1 +
+ til kontekst.md                                    |  361 ++
+ trae-mcp-config-free.json                          |   50 +
+ trae-mcp-config.json                               |   50 +
+ 62 files changed, 7730 insertions(+), 44 deletions(-)
