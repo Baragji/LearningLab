@@ -81,10 +81,20 @@ export const api = createApi({
     }),
 
     // Course endpoints
-    getCourses: builder.query<Course[], { subjectAreaId?: number }>({
+    getCourses: builder.query<{
+      courses: Course[];
+      total: number;
+      hasMore: boolean;
+    }, {
+      search?: string;
+      educationProgramId?: number;
+      level?: string;
+      limit?: number;
+      offset?: number;
+    }>({
       query: (params) => ({
         url: "/courses",
-        params: params.subjectAreaId ? { subjectAreaId: params.subjectAreaId } : undefined,
+        params,
       }),
       providesTags: ['Course'],
     }),
@@ -94,6 +104,51 @@ export const api = createApi({
         url: `/courses/${id}`,
       }),
       providesTags: (result, error, id) => [{ type: 'Course', id }],
+    }),
+
+    // Course enrollment endpoints
+    enrollInCourse: builder.mutation<{
+      message: string;
+      courseId: number;
+      enrolled: boolean;
+    }, number>({
+      query: (courseId) => ({
+        url: `/courses/${courseId}/enroll`,
+        method: 'POST',
+      }),
+      invalidatesTags: (result, error, courseId) => [
+        { type: 'Course', id: courseId },
+        'UserProgress',
+      ],
+    }),
+
+    unenrollFromCourse: builder.mutation<{
+      message: string;
+      courseId: number;
+      enrolled: boolean;
+    }, number>({
+      query: (courseId) => ({
+        url: `/courses/${courseId}/enroll`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: (result, error, courseId) => [
+        { type: 'Course', id: courseId },
+        'UserProgress',
+      ],
+    }),
+
+    getCourseEnrollmentStatus: builder.query<{
+      courseId: number;
+      enrolled: boolean;
+      progress?: number;
+    }, number>({
+      query: (courseId) => ({
+        url: `/courses/${courseId}/enrollment-status`,
+      }),
+      providesTags: (result, error, courseId) => [
+        { type: 'Course', id: courseId },
+        'UserProgress',
+      ],
     }),
 
     // Module endpoints
@@ -291,6 +346,10 @@ export const {
   // Course hooks
   useGetCoursesQuery,
   useGetCourseByIdQuery,
+  // Course enrollment hooks
+  useEnrollInCourseMutation,
+  useUnenrollFromCourseMutation,
+  useGetCourseEnrollmentStatusQuery,
   // Module hooks
   useGetModulesByCourseIdQuery,
   useGetModuleByIdQuery,
