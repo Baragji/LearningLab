@@ -77,6 +77,9 @@ model User {
   
   // File relations
   filesUploaded            File[]             @relation("FileUploadedBy")
+  
+  // AI relations
+  aiUsageLogs              AIUsageLog[]
 }
 
 model EducationProgram {
@@ -537,4 +540,69 @@ enum FagCategory {
   BIOLOGI
   DATABEHANDLING
   ANDET
+}
+
+// AI-related models for embeddings and content processing
+model ContentEmbedding {
+  id          String   @id @default(cuid())
+  content     String
+  embedding   Float[]  // Vector embedding
+  metadata    Json?    // Additional metadata (contentType, lessonId, etc.)
+  contentType String   // Type of content (lesson, quiz, topic, etc.)
+  contentId   String?  // Reference to the original content
+  chunkIndex  Int?     // Index if content is chunked
+  parentId    String?  // Parent content ID for chunks
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  deletedAt   DateTime?
+
+  @@index([contentType])
+  @@index([contentId])
+  @@index([parentId])
+  @@index([createdAt])
+  @@index([deletedAt])
+}
+
+model AIUsageLog {
+  id            String   @id @default(cuid())
+  userId        Int?
+  operation     String   // Type of AI operation (embedding, chat, question_generation)
+  model         String   // AI model used
+  tokensUsed    Int      // Number of tokens consumed
+  cost          Float?   // Cost in USD
+  requestData   Json?    // Request parameters
+  responseData  Json?    // Response data (without sensitive info)
+  duration      Int?     // Duration in milliseconds
+  success       Boolean  @default(true)
+  errorMessage  String?
+  createdAt     DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([operation])
+  @@index([model])
+  @@index([createdAt])
+  @@index([success])
+}
+
+model ProcessedContent {
+  id              String   @id @default(cuid())
+  originalContent String
+  contentType     String   // lesson, topic, quiz, etc.
+  contentId       String   // Reference to original content
+  analysis        Json?    // AI analysis results
+  chunkCount      Int      @default(0)
+  embeddingIds    String[] // Array of embedding IDs
+  processingStatus String  @default("pending") // pending, processing, completed, failed
+  errorMessage    String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  deletedAt       DateTime?
+
+  @@index([contentType])
+  @@index([contentId])
+  @@index([processingStatus])
+  @@index([createdAt])
+  @@index([deletedAt])
 }
