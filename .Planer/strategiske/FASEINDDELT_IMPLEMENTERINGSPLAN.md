@@ -44,7 +44,7 @@ Denne plan tager udgangspunkt i den nuværende status (45% færdig) og definerer
 ### 1.3 Core User Experience (2 uger)
 
 **Opgaver:**
-- [ ] Forbedre quiz-taking experience
+- [x] Forbedre quiz-taking experience
 - [x] Implementer progress visualization
 - [x] Tilføj user profile management
 - [ ] Implementer course browsing og enrollment
