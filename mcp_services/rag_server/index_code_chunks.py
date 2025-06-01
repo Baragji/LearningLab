@@ -38,9 +38,7 @@ def initialize_services():
     global embedding_model, chroma_client, code_collection
 
     os.makedirs(CHROMA_DB_DIR, exist_ok=True)
-    chroma_client = chromadb.PersistentClient(
-        path=CHROMA_DB_DIR, settings=Settings(chroma_db_impl="duckdb+parquet")
-    )
+    chroma_client = chromadb.PersistentClient(path=CHROMA_DB_DIR)
     code_collection = chroma_client.get_or_create_collection(name=COLLECTION_NAME)
     print(f"✅ ChromaDB collection '{COLLECTION_NAME}' klar (path: {CHROMA_DB_DIR}).")
 
@@ -165,7 +163,7 @@ def read_and_chunk_file(file_path: str):
     file_imports = extract_imports_from_file(content, file_ext)
     base_metadata = {
         "file_path": file_path,
-        "imports": file_imports,
+        "imports": ", ".join(file_imports) if file_imports else "",
         "timestamp": datetime.utcnow().isoformat(),
         "file_size": len(content),
         "language": file_ext.lstrip("."),
@@ -193,9 +191,12 @@ def index_workspace():
     print("🗑️ Rydder eksisterende collection…")
     try:
         chroma_client.delete_collection(COLLECTION_NAME)
-        chroma_client.create_collection(COLLECTION_NAME)
     except Exception:
         pass  # Hvis collection ikke eksisterer endnu
+    
+    # Opret ny collection
+    global code_collection
+    code_collection = chroma_client.create_collection(COLLECTION_NAME)
 
     for root, dirs, files in os.walk(os.getcwd()):
         # Filtrer mappestrukturen
