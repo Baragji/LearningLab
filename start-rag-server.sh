@@ -41,6 +41,6 @@ python -u mcp_services/rag_server/vector_search_server.py > logs/rag_server.log 
 # Gem PID for nem reference
 echo $! > logs/rag_server.pid
 echo "✅ RAG-server startet med PID $(cat logs/rag_server.pid)"
-echo "🌐 Server kører på http://localhost:5004"
-echo "📊 Test serveren med: curl -X POST http://localhost:5004/search -H \"Content-Type: application/json\" -d '{\"query\": \"authentication\", \"n_results\": 3}'"
+echo "🌐 Server kører på http://localhost:5021"
+echo "📊 Test serveren med: curl -X POST http://localhost:5021/search -H \"Content-Type: application/json\" -d '{\"query\": \"authentication\", \"n_results\": 3}'"
 echo "🛑 Stop serveren med: ./stop-all-rag-servers.sh"
