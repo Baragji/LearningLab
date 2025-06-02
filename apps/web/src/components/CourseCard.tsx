@@ -51,8 +51,9 @@ export const CourseCard: React.FC<CourseCardProps> = ({
   const progress = enrollmentStatus?.progress || 0;
 
   // Calculate total lessons and quizzes
-  const totalItems = course.topics?.reduce(
-    (total, topic) => total + (topic.lessons?.length || 0) + (topic.quizzes?.length || 0),
+  // Note: topics might not be loaded in all contexts, so we provide a fallback
+  const totalItems = (course as any).topics?.reduce(
+    (total: number, topic: any) => total + (topic.lessons?.length || 0) + (topic.quizzes?.length || 0),
     0
   ) || 0;
 
@@ -62,7 +63,7 @@ export const CourseCard: React.FC<CourseCardProps> = ({
       <div className="h-48 bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center">
         <div className="text-white text-center">
           <h3 className="text-xl font-bold mb-2">{course.title}</h3>
-          <p className="text-sm opacity-90">{course.educationProgram?.name}</p>
+          <p className="text-sm opacity-90">{(course as any).educationProgram?.name}</p>
         </div>
       </div>
 
@@ -74,7 +75,7 @@ export const CourseCard: React.FC<CourseCardProps> = ({
           </p>
           
           <div className="flex items-center justify-between text-sm text-gray-500 mb-3">
-            <span>Niveau: {course.level || 'Ikke angivet'}</span>
+            <span>Niveau: {(course as any).level || 'Ikke angivet'}</span>
             <span>{totalItems} emner</span>
           </div>
 

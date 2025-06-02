@@ -26,18 +26,23 @@ export class OpenAIService {
 
   constructor(private configService: ConfigService) {
     const apiKey = this.configService.get<string>('OPENAI_API_KEY');
-    if (!apiKey) {
-      throw new Error('OPENAI_API_KEY is required');
-    }
-
     const baseURL = this.configService.get<string>('OPENAI_API_BASE');
     
+    // Check if we're using Ollama
+    const isOllama = baseURL && baseURL.includes('localhost:11434');
+    
+    if (!isOllama && !apiKey) {
+      throw new Error('OPENAI_API_KEY is required when not using Ollama');
+    }
+
     this.openai = new OpenAI({
-      apiKey,
+      apiKey: apiKey || 'ollama', // Ollama doesn't need a real API key
       ...(baseURL && { baseURL }),
     });
 
-    this.model = this.configService.get<string>('OPENAI_MODEL') || 'gpt-3.5-turbo';
+    // Default to llama2 for Ollama, gpt-3.5-turbo for OpenAI
+    const defaultModel = isOllama ? 'llama2' : 'gpt-3.5-turbo';
+    this.model = this.configService.get<string>('OPENAI_MODEL') || defaultModel;
     this.embeddingModel = this.configService.get<string>('OPENAI_EMBEDDING_MODEL') || 'text-embedding-ada-002';
 
     this.logger.log(`OpenAI service initialized with model: ${this.model}${baseURL ? ` and baseURL: ${baseURL}` : ''}`);
