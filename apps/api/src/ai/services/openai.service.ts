@@ -30,14 +30,17 @@ export class OpenAIService {
       throw new Error('OPENAI_API_KEY is required');
     }
 
+    const baseURL = this.configService.get<string>('OPENAI_API_BASE');
+    
     this.openai = new OpenAI({
       apiKey,
+      ...(baseURL && { baseURL }),
     });
 
     this.model = this.configService.get<string>('OPENAI_MODEL') || 'gpt-3.5-turbo';
     this.embeddingModel = this.configService.get<string>('OPENAI_EMBEDDING_MODEL') || 'text-embedding-ada-002';
 
-    this.logger.log(`OpenAI service initialized with model: ${this.model}`);
+    this.logger.log(`OpenAI service initialized with model: ${this.model}${baseURL ? ` and baseURL: ${baseURL}` : ''}`);
   }
 
   async createEmbedding(text: string): Promise<number[]> {
@@ -68,25 +71,63 @@ export class OpenAIService {
     options?: Partial<ChatCompletionCreateParamsNonStreaming>,
   ): Promise<string> {
     try {
-      const response = await this.openai.chat.completions.create({
-        model: this.model,
-        messages,
-        temperature: 0.7,
-        max_tokens: 1000,
-        ...options,
-      });
-
-      // Update usage stats
-      if (response.usage) {
-        this.updateUsageStats({
-          totalTokens: response.usage.total_tokens,
-          promptTokens: response.usage.prompt_tokens,
-          completionTokens: response.usage.completion_tokens,
-          cost: this.calculateChatCost(response.usage.total_tokens),
+      // Check if we're using Ollama (baseURL contains localhost:11434)
+      const baseURL = this.configService.get<string>('OPENAI_API_BASE');
+      const isOllama = baseURL && baseURL.includes('localhost:11434');
+      
+      if (isOllama) {
+        // For Ollama, make direct HTTP request
+        const requestBody = {
+          model: this.model,
+          messages,
+          temperature: options?.temperature || 0.7,
+          max_tokens: options?.max_tokens || 1000,
+        };
+        
+        this.logger.log(`Making Ollama request to: ${baseURL}/chat/completions`);
+        this.logger.log(`Request body: ${JSON.stringify(requestBody, null, 2)}`);
+        
+        const response = await fetch(`${baseURL}/chat/completions`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(requestBody),
         });
-      }
+        
+        this.logger.log(`Response status: ${response.status}`);
+        
+        if (!response.ok) {
+          const errorText = await response.text();
+          this.logger.error(`Ollama error response: ${errorText}`);
+          throw new Error(`HTTP error! status: ${response.status}, body: ${errorText}`);
+        }
+        
+        const data = await response.json();
+        this.logger.log(`Ollama response: ${JSON.stringify(data, null, 2)}`);
+        return data.choices[0]?.message?.content || '';
+      } else {
+        // Use OpenAI client for regular OpenAI API
+        const response = await this.openai.chat.completions.create({
+          model: this.model,
+          messages,
+          temperature: 0.7,
+          max_tokens: 1000,
+          ...options,
+        });
 
-      return response.choices[0]?.message?.content || '';
+        // Update usage stats
+        if (response.usage) {
+          this.updateUsageStats({
+            totalTokens: response.usage.total_tokens,
+            promptTokens: response.usage.prompt_tokens,
+            completionTokens: response.usage.completion_tokens,
+            cost: this.calculateChatCost(response.usage.total_tokens),
+          });
+        }
+
+        return response.choices[0]?.message?.content || '';
+      }
     } catch (error) {
       this.logger.error('Failed to create chat completion', error);
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';

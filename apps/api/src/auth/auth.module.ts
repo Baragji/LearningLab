@@ -27,11 +27,7 @@ import socialAuthConfig from '../config/social-auth.config';
   imports: [
     forwardRef(() => UsersModule), // Brug forwardRef for at undgå cirkulære afhængigheder
     PassportModule.register({ defaultStrategy: 'jwt' }),
-    JwtModule.register({
-      secret: process.env.JWT_SECRET || 'testSecret',
-      signOptions: { expiresIn: process.env.JWT_EXPIRES_IN || '1d' },
-    }),
-    SharedModule, // Importér SharedModule i stedet for at konfigurere JwtModule direkte
+    SharedModule, // Importér SharedModule der indeholder JwtModule konfiguration
     NestConfigModule.forFeature(socialAuthConfig), // Tilføj social auth config
     NestConfigModule, // global via AppModule, but imported here for clarity
     PersistenceModule,
@@ -45,6 +41,6 @@ import socialAuthConfig from '../config/social-auth.config';
     // GoogleStrategy,
     // GithubStrategy,
   ],
-  exports: [AuthService, JwtModule],
+  exports: [AuthService],
 })
 export class AuthModule {}

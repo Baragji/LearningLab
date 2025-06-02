@@ -20,6 +20,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       }),
     }),
   ],
+  providers: [],
   exports: [JwtModule], // Eksportér JwtModule, så det kan bruges af andre moduler
 })
 export class SharedModule {}

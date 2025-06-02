@@ -36,7 +36,7 @@ import { CustomValidationPipe } from './pipes/validation.pipe';
 import { ConfigModule } from './config/config.module';
 // Import ConfigService
 // import { ConfigService } from './config/config.service'; // Removed unused import
-import { JwtService } from '@nestjs/jwt';
+
 import { SearchModule } from './search/search.module';
 import { FileUploadModule } from './modules/file-upload.module';
 import { MaterialModule } from './modules/material.module';
@@ -96,7 +96,6 @@ import socialAuthConfig from './config/social-auth.config';
   providers: [
     AppService,
     NestConfigService,
-    JwtService, // Tilføj JwtService for UserIdentificationMiddleware
     // Global Exception Filter
     {
       provide: APP_FILTER,

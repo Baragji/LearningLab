@@ -1,120 +1,163 @@
 # Project Rules
 
-1.  ## **Tool Priority & Fallback (STRICT SEQUENCE)**
-    * **Context Gathering (MANDATORY FIRST STEP):**
-        1. Use `memory.search_nodes` to retrieve past decisions.
-        2. Use `file-context-server.read_context` with multiple specific search terms.
-        3. Use `rag-docs-ollama.search_documentation` for external knowledge.
-        4. FALLBACK: If above fail, use `filesystem.search_files` + `read_file`.
-    * **Planning (MANDATORY SECOND STEP):**
-        * Use `sequential-thinking.sequentialthinking` with retrieved context.
-    * **File I/O:**
-        * ALWAYS use MCP `filesystem` for all file operations.
-        * ALWAYS read file content before editing with `filesystem.read_file`.
-        * FALLBACK: If MCP `filesystem` fails (error or timeout), use Built-in `File system` and log a warning.
-    * **Execution:**
-        * Use `Terminal` exclusively for git, build, test, and dependency operations.
-        * ALWAYS check command output and exit code before proceeding.
+1.  ## **Værktøjsprioritet & Fallback (STRIKT SEKVENS)**
+    * **Kontekstindsamling (OBLIGATORISK FØRSTE SKRIDT):**
+        1. Brug `memory.search_nodes` til at hente tidligere beslutninger med MINDST 3-5 forskellige søgetermer.
+        2. Brug `file-context-server.read_context` med MINDST 3-5 specifikke søgetermer relateret til opgaven.
+        3. Brug `rag-docs-ollama.search_documentation` for ekstern viden med MINDST 3 forskellige søgetermer.
+        4. Hvis ingen resultater, prøv med flere og bredere søgetermer før du går til fallback-strategien.
+        5. FALLBACK: Hvis ovenstående fejler, brug `filesystem.search_files` med multiple mønstre + `read_file`.
+    * **Planlægning (OBLIGATORISK ANDET SKRIDT):**
+        * Brug `sequential-thinking.sequentialthinking` med den hentede kontekst OG brugerens prompt.
+        * Planen SKAL indeholde 5-7 konkrete, handlingsorienterede trin.
+        * HVERT trin SKAL specificere præcist hvilke værktøjer der vil blive brugt og hvilke filer der vil blive påvirket.
+        * Inkluder en verifikationsstrategi for HVERT trin.
+    * **Fil I/O:**
+        * Brug ALTID MCP `filesystem` til alle filoperationer.
+        * Hent ALTID filindhold før redigering med `filesystem.read_file`.
+        * Brug ALDRIG relative stier - brug altid absolutte stier startende med projektets rod.
+        * FALLBACK: Hvis MCP `filesystem` fejler (fejl eller timeout), brug Built-in `File system` og log en advarsel.
+    * **Udførelse:**
+        * Brug `Terminal` eksklusivt til git, build, test og dependency operationer.
+        * Tjek ALTID kommandooutput og exit code før du fortsætter.
+        * Dokumenter ALTID kommandoens resultat og hvordan det påvirker næste trin.
 
-2.  ## **Commit Scope (PRECISE RULES)**
-    * The `<scope>` in the commit message MUST match the primary directory of the task (e.g., `api`, `web`, `ui`).
-    * Stage ONLY paths relevant to the current task (e.g., `git add apps/api/src/auth/**`).
-    * NEVER stage unrelated files or generated files that should be ignored.
-    * ALWAYS respect `.gitignore`.
-    * ALWAYS run `git status` before committing to verify staged files.
+2.  ## **Commit Scope (PRÆCISE REGLER)**
+    * `<scope>` i commit-beskeden SKAL matche det primære directory for opgaven (f.eks. `api`, `web`, `ui`).
+    * Stage KUN stier relevante for den aktuelle opgave (f.eks. `git add apps/api/src/auth/**`).
+    * Stage ALDRIG ikke-relaterede filer eller genererede filer, der bør ignoreres.
+    * Respekter ALTID `.gitignore`.
+    * Kør ALTID `git status` før commit for at verificere staged filer.
+    * Inkluder ALTID en detaljeret commit-besked, der forklarer HVAD og HVORFOR.
 
-3.  ## **Test Gate (MANDATORY BEFORE COMMIT)**
-    * Define a `<task_scope_directory>` variable based on the task context.
-    * ALWAYS run tests targeting only this directory: `npm test -- <task_scope_directory>/`
-    * If exit code is not 0: STOP, fix errors, and rerun tests.
-    * Commit and push ONLY on exit code 0.
-    * For UI changes, ALWAYS validate with `puppeteer_screenshot`.
+3.  ## **Test Gate (OBLIGATORISK FØR COMMIT)**
+    * Definer en `<task_scope_directory>` variabel baseret på opgavekonteksten.
+    * Kør ALTID tests målrettet kun dette directory: `npm test -- <task_scope_directory>/` eller tilsvarende.
+    * Hvis exit code ikke er 0: STOP, ret fejl, og kør tests igen.
+    * Commit og push KUN ved exit code 0.
+    * For UI-ændringer, valider ALTID med `puppeteer_screenshot` før og efter ændringer.
+    * Dokumenter ALTID testresultater med `memory.add_observations`.
 
-4.  ## **Commit Message Format (STRICT FORMAT)**
+4.  ## **Commit Message Format (STRIKT FORMAT)**
     * `<type>(<scope>): <short description>`
     * `type`: feat | fix | docs | style | refactor | test | chore
-    * `scope`: Dynamically determined folder or module name.
-    * `description`: Concise, specific, and in imperative mood (e.g., "add", not "added").
-    * EXAMPLES:
+    * `scope`: Dynamisk bestemt mappe- eller modulnavn.
+    * `description`: Koncis, specifik og i imperativ form (f.eks. "add", ikke "added").
+    * EKSEMPLER:
         * `feat(auth): implement JWT refresh token mechanism`
         * `fix(api): resolve user profile data retrieval issue`
         * `refactor(ui): optimize button component rendering`
+    * Inkluder ALTID en detaljeret beskrivelse i commit-body, der forklarer HVORFOR ændringen blev foretaget.
 
-5.  ## **Memory Logging (COMPREHENSIVE PROTOCOL)**
-    * **During Task Execution:**
-        * Call `memory.add_observations` after EACH significant step.
-        * Include file paths, component names, and code snippets in observations.
-    * **After Test Success (exit code 0):**
-        * Call `memory.create_entities` with a relevant type (e.g., `feature`, `bugfix`, `test`).
-        * Include detailed properties: files, components, dependencies, architectural decisions.
-    * **After Test Failure:**
-        * Call `memory.add_observations` with error details and attempted solutions.
-        * NEVER log a successful outcome if tests failed.
-    * **Entity Types:**
-        * Use specific entity types: 'feature', 'bug', 'refactor', 'test', 'docs'
-        * Include relationships between entities when relevant.
+5.  ## **Memory Logging (OMFATTENDE PROTOKOL)**
+    * **Under opgaveudførelse:**
+        * Kald `memory.add_observations` efter HVERT betydningsfuldt trin med detaljerede beskrivelser.
+        * Inkluder filstier, komponentnavne og kodestykker i observationer.
+        * Beskriv ALTID både hvad der blev gjort og HVORFOR det blev gjort på den måde.
+    * **Efter test-succes (exit code 0):**
+        * Kald `memory.create_entities` med en relevant type (f.eks. `feature`, `bugfix`, `test`).
+        * Inkluder detaljerede egenskaber: filer, komponenter, afhængigheder, arkitektoniske beslutninger.
+        * Tilføj relationer mellem entiteter når det er relevant.
+    * **Efter test-fejl:**
+        * Kald `memory.add_observations` med fejldetaljer og forsøgte løsninger.
+        * Log ALDRIG et succesfuldt resultat, hvis tests fejlede.
+        * Dokumenter fejlmønstre og løsningsstrategier for fremtidig reference.
+    * **Entitetstyper:**
+        * Brug specifikke entitetstyper: 'feature', 'bug', 'refactor', 'test', 'docs'
+        * Inkluder relationer mellem entiteter når det er relevant.
+        * Brug konsekvent navngivning for entiteter på tværs af projektet.
 
-6.  ## **Documentation & Comments (MANDATORY)**
-    * **Public APIs:** REQUIRE comprehensive JSDoc with @param, @returns, and @example.
-    * **Internal Functions:** Add a one-line comment explaining purpose and non-obvious behavior.
-    * **Complex Logic:** Add inline comments for any code with non-trivial logic.
-    * **Project Documentation:**
-        * Update project README for new endpoints or scripts.
-        * Update relevant documentation files in `/docs` directory.
-        * For new features, add usage examples.
+6.  ## **Dokumentation & Kommentarer (OBLIGATORISK)**
+    * **Offentlige API'er:** KRÆVER omfattende JSDoc med @param, @returns, og @example.
+    * **Interne funktioner:** Tilføj en one-line kommentar, der forklarer formål og ikke-åbenlys adfærd.
+    * **Kompleks logik:** Tilføj inline kommentarer for enhver kode med ikke-triviel logik.
+    * **Projektdokumentation:**
+        * Opdater projekt README for nye endpoints eller scripts.
+        * Opdater relevante dokumentationsfiler i `/docs` directory.
+        * For nye features, tilføj brugseksempler.
+        * Dokumenter ALTID arkitektoniske beslutninger og deres begrundelse.
 
-7.  ## **Plan First (MANDATORY WORKFLOW)**
-    * ALWAYS run `sequential-thinking.sequentialthinking` before ANY code changes.
-    * The plan MUST include 5-7 concrete, actionable steps.
-    * Each step MUST specify:
-        * Which tools will be used
-        * What files will be affected
-        * Expected outcome of the step
-    * Display the generated plan at the start of the response.
-    * Follow the plan step by step, validating after each step.
+7.  ## **Plan First (OBLIGATORISK WORKFLOW)**
+    * Kør ALTID `sequential-thinking.sequentialthinking` før ENHVER kodeændring.
+    * Planen SKAL indeholde 5-7 konkrete, handlingsorienterede trin.
+    * Hvert trin SKAL specificere:
+        * Hvilke værktøjer der vil blive brugt
+        * Hvilke filer der vil blive påvirket
+        * Forventet resultat af trinnet
+        * Hvordan trinnet vil blive verificeret
+    * Vis den genererede plan i begyndelsen af svaret.
+    * Følg planen trin for trin, og valider efter hvert trin med konkrete tests eller verifikationsmetoder.
+    * Hvis et trin fejler, løs problemet før du fortsætter.
 
-8.  ## **Code Placement & Monorepo Logic (STRICT ARCHITECTURE)**
-    * Before file creation, the generated plan MUST include a step to validate the correct file path according to these rules.
-    * **Reusable UI components:** Place in `packages/ui/components/`.
-        * EXAMPLE: `packages/ui/components/Button/Button.tsx`
-    * **Shared business logic/utilities (core):** Place in `packages/core/src/`.
-        * EXAMPLE: `packages/core/src/auth/tokenService.ts`
-    * **API-specific code (NestJS):**
-        * Modules: `apps/api/src/modules/`
+8.  ## **Kodeplacering & Monorepo Logik (STRIKT ARKITEKTUR)**
+    * Før filoprettelse SKAL den genererede plan indeholde et trin til at validere den korrekte filsti i henhold til disse regler.
+    * **Genanvendelige UI-komponenter:** Placer i `packages/ui/components/`.
+        * EKSEMPEL: `packages/ui/components/Button/Button.tsx`
+    * **Delt forretningslogik/utilities (core):** Placer i `packages/core/src/`.
+        * EKSEMPEL: `packages/core/src/auth/tokenService.ts`
+    * **API-specifik kode (NestJS):**
+        * Moduler: `apps/api/src/modules/`
         * Controllers: `apps/api/src/modules/<module-name>/controllers/`
         * Services: `apps/api/src/modules/<module-name>/services/`
         * DTOs: `apps/api/src/modules/<module-name>/dto/`
-    * **Web-specific code (Next.js):**
+    * **Web-specifik kode (Next.js):**
         * Pages: `apps/web/src/app/`
         * Components: `apps/web/src/components/`
         * Hooks: `apps/web/src/hooks/`
         * Utils: `apps/web/src/utils/`
-    * **Database schema (`schema.prisma`):** Must only be edited, not moved.
-    * **Tests:** Place adjacent to the code being tested with `.spec.ts` or `.test.ts` suffix.
+    * **Database schema (`schema.prisma`):** Må kun redigeres, ikke flyttes.
+    * **Tests:** Placer ved siden af koden, der testes, med `.spec.ts` eller `.test.ts` suffiks.
+    * Følg ALTID projektets eksisterende mappestruktur og navngivningskonventioner.
 
-9.  ## **Component Granularity and Composition (STRICT DESIGN PRINCIPLES)**
-    * **Principle:** Favor Composition over Monolithic Components. All components MUST adhere to the Single Responsibility Principle.
-    * **Rule:** Any React component estimated to exceed **200 lines** MUST be broken down into smaller, single-purpose sub-components.
-    * **Props Interface:** EVERY component MUST have a clearly defined props interface with JSDoc comments.
-    * **Workflow Integration:** During the `sequential-thinking` phase, if a component is identified as complex (e.g., a page with multiple sections, forms, and data displays), the plan MUST include steps to refactor it into smaller components, each with a clearly defined set of props.
-    * **Placement of Sub-components:**
-        * Truly reusable, generic components MUST be placed in `packages/ui/components/`.
-        * Page-specific sub-components MUST be placed in a local `components/` sub-directory (e.g., `apps/web/src/app/profile/components/`).
-    * **Component Testing:** EVERY component MUST have at least one test file that verifies its rendering and basic functionality.
+9.  ## **Komponentgranularitet og Komposition (STRIKT DESIGNPRINCIPPER)**
+    * **Princip:** Favoriser Komposition over Monolitiske Komponenter. Alle komponenter SKAL overholde Single Responsibility Principle.
+    * **Regel:** Enhver React-komponent, der forventes at overstige **200 linjer**, SKAL nedbrydes i mindre, enkeltformåls-underkomponenter.
+    * **Props Interface:** HVER komponent SKAL have et klart defineret props interface med JSDoc-kommentarer.
+    * **Workflow Integration:** Under `sequential-thinking`-fasen, hvis en komponent identificeres som kompleks (f.eks. en side med flere sektioner, formularer og datadisplays), SKAL planen indeholde trin til at refaktorere den til mindre komponenter, hver med et klart defineret sæt props.
+    * **Placering af underkomponenter:**
+        * Virkelig genanvendelige, generiske komponenter SKAL placeres i `packages/ui/components/`.
+        * Side-specifikke underkomponenter SKAL placeres i et lokalt `components/` underdirectory (f.eks. `apps/web/src/app/profile/components/`).
+    * **Komponenttestning:** HVER komponent SKAL have mindst én testfil, der verificerer dens rendering og grundlæggende funktionalitet.
+    * **Komponentdokumentation:** HVER komponent SKAL have JSDoc-kommentarer, der beskriver dens formål, props og eksempler på brug.
 
-10. ## **Error Handling & Validation (COMPREHENSIVE STRATEGY)**
+10. ## **Fejlhåndtering & Validering (OMFATTENDE STRATEGI)**
     * **Frontend:**
-        * ALWAYS validate user input with proper error messages.
-        * Implement form validation using Zod or similar schema validation.
-        * Handle API errors gracefully with user-friendly messages.
+        * Valider ALTID brugerinput med passende fejlmeddelelser.
+        * Implementer formularvalidering ved hjælp af Zod eller lignende skemavalidering.
+        * Håndter API-fejl elegant med brugervenlige meddelelser.
+        * Implementer graceful fallbacks for alle netværksoperationer.
     * **Backend:**
-        * Use class-validator for DTO validation.
-        * Implement proper exception filters for consistent error responses.
-        * Log errors with appropriate severity levels.
+        * Brug class-validator til DTO-validering.
+        * Implementer korrekte exception filters for konsistente fejlresponser.
+        * Log fejl med passende alvorlighedsniveauer.
+        * Brug try-catch blokke med detaljeret fejlhåndtering.
     * **Database:**
-        * Use Prisma's validation capabilities.
-        * Implement proper error handling for database operations.
-        * Use transactions for operations that modify multiple records.
-    * **Testing:**
-        * Include error case tests for all error handling code.
-        * Verify that error messages are user-friendly and actionable.
+        * Brug Prismas valideringsmuligheder.
+        * Implementer korrekt fejlhåndtering for databaseoperationer.
+        * Brug transaktioner for operationer, der modificerer flere records.
+        * Implementer retry-mekanismer for midlertidige databasefejl.
+    * **Testning:**
+        * Inkluder fejlcase-tests for al fejlhåndteringskode.
+        * Verificer at fejlmeddelelser er brugervenlige og handlingsorienterede.
+        * Test edge cases og grænsetilfælde grundigt.
+        * Implementer stress-tests for kritiske komponenter.
+
+11. ## **Testdrevet Udvikling (NY OBLIGATORISK PROTOKOL)**
+    * Skriv eller opdater tests FØR implementering af funktionalitet.
+    * Kør tests efter HVER betydningsfuld ændring for at sikre stabilitet.
+    * Implementer både unit tests og integration tests for ny funktionalitet.
+    * Dokumenter testresultater og testdækning i memory.
+    * Opret ALDRIG pull requests eller commits uden at alle tests er grønne.
+    * Implementer automatiserede tests for alle kritiske brugerflows.
+    * Brug mocking og stubbing for at isolere testenheder.
+    * Implementer snapshot tests for UI-komponenter.
+
+12. ## **Performance & Optimering (NY OBLIGATORISK PROTOKOL)**
+    * Implementer lazy loading for tunge komponenter og routes.
+    * Optimer database-queries med korrekte indekser og relationsstrategier.
+    * Implementer caching for hyppigt anvendte data og API-kald.
+    * Minimer bundle-størrelse gennem code-splitting og tree-shaking.
+    * Optimer billeder og medier for hurtig indlæsning.
+    * Implementer virtualisering for lange lister og tabeller.
+    * Mål og dokumenter performance-forbedringer med konkrete metrics.
+    * Brug memoization for beregningstunge operationer.
