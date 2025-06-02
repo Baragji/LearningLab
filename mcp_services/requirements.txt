@@ -1,5 +1,7 @@
-flask
-chromadb
-sentence-transformers
+sentence-transformers>=4.0.0
+chromadb>=0.4.0
+flask>=2.0.0
+pyyaml>=6.0
+requests>=2.0.0
 numpy
 scikit-learn
