@@ -11,6 +11,8 @@ import {
   UseInterceptors,
   BadRequestException,
 } from '@nestjs/common';
+import { IsString, IsNotEmpty, IsOptional, IsNumber, IsEnum, IsArray, ValidateNested } from 'class-validator';
+import { Type } from 'class-transformer';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiTags, ApiOperation, ApiResponse, ApiConsumes } from '@nestjs/swagger';
 // import { JwtAuthGuard } from '../auth/jwt-auth.guard'; // Commented out until auth module is available
@@ -23,36 +25,85 @@ import * as path from 'path';
 
 // DTOs for request/response
 export class CreateEmbeddingDto {
+  @IsString({ message: 'Indhold skal være en streng' })
+  @IsNotEmpty({ message: 'Indhold må ikke være tomt' })
   content: string;
+
+  @IsOptional()
   metadata?: Record<string, any>;
+
+  @IsOptional()
+  @IsString({ message: 'ID skal være en streng' })
   id?: string;
 }
 
 export class SearchEmbeddingsDto {
+  @IsString({ message: 'Søgeforespørgsel skal være en streng' })
+  @IsNotEmpty({ message: 'Søgeforespørgsel må ikke være tom' })
   query: string;
+
+  @IsOptional()
   filters?: Record<string, any>;
+
+  @IsOptional()
+  @IsNumber({}, { message: 'Grænse skal være et tal' })
   limit?: number;
+
+  @IsOptional()
+  @IsNumber({}, { message: 'Tærskel skal være et tal' })
   threshold?: number;
 }
 
 export class ProcessContentDto {
+  @IsString({ message: 'Indhold skal være en streng' })
+  @IsNotEmpty({ message: 'Indhold må ikke være tomt' })
   content: string;
+
+  @IsOptional()
   metadata?: Record<string, any>;
 }
 
 export class GenerateQuestionsDto {
+  @IsOptional()
+  @IsString({ message: 'Indhold skal være en streng' })
   content?: string;
+
+  @IsOptional()
+  @IsString({ message: 'Indhold ID skal være en streng' })
   contentId?: string;
+
+  @IsOptional()
+  @IsNumber({}, { message: 'Antal spørgsmål skal være et tal' })
   questionCount?: number;
+
+  @IsOptional()
+  @IsEnum(['easy', 'medium', 'hard'], { message: 'Sværhedsgrad skal være easy, medium eller hard' })
   difficulty?: 'easy' | 'medium' | 'hard';
 }
 
+class MessageDto {
+  @IsString()
+  @IsNotEmpty()
+  role: 'system' | 'user' | 'assistant';
+
+  @IsString()
+  @IsNotEmpty()
+  content: string;
+}
+
 export class ChatCompletionDto {
-  messages: Array<{
-    role: 'system' | 'user' | 'assistant';
-    content: string;
-  }>;
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => MessageDto)
+  @IsNotEmpty({ message: 'Beskeder må ikke være tomme' })
+  messages: MessageDto[];
+
+  @IsOptional()
+  @IsNumber({}, { message: 'Max tokens skal være et tal' })
   maxTokens?: number;
+
+  @IsOptional()
+  @IsNumber({}, { message: 'Temperatur skal være et tal' })
   temperature?: number;
 }
 
