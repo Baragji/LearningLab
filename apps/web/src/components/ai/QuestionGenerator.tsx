@@ -1,18 +1,15 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Badge } from '@/components/ui/badge';
-import { Loader2, Sparkles, CheckCircle, AlertCircle, Brain } from 'lucide-react';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Separator } from '@/components/ui/separator';
-import { Progress } from '@/components/ui/progress';
+import { Button } from 'ui';
+import { Card, CardContent, CardHeader } from '@mui/material';
+import { TextField } from 'ui';
+import { FormControlLabel, Typography } from '@mui/material';
+import { Select } from 'ui';
+import { Checkbox } from 'ui';
+import { Chip } from '@mui/material';
+import { CircularProgress, Alert, AlertTitle, LinearProgress, Box } from '@mui/material';
+import { Divider } from '@mui/material';
 
 interface GeneratedQuestion {
   text: string;
@@ -52,11 +49,6 @@ const difficultyLabels = {
   ADVANCED: 'Avanceret',
 };
 
-const difficultyColors = {
-  BEGINNER: 'bg-green-100 text-green-800',
-  INTERMEDIATE: 'bg-yellow-100 text-yellow-800',
-  ADVANCED: 'bg-red-100 text-red-800',
-};
 
 export function QuestionGenerator({ lessonId, topicId, onQuestionsGenerated }: QuestionGeneratorProps) {
   const [isGenerating, setIsGenerating] = useState(false);
@@ -234,278 +226,278 @@ export function QuestionGenerator({ lessonId, topicId, onQuestionsGenerated }: Q
     }
   };
 
-  const getQualityColor = (score: number) => {
-    if (score >= 80) return 'text-green-600';
-    if (score >= 60) return 'text-yellow-600';
-    return 'text-red-600';
-  };
-
-  const getQualityIcon = (score: number) => {
-    if (score >= 80) return <CheckCircle className="h-4 w-4 text-green-600" />;
-    if (score >= 60) return <AlertCircle className="h-4 w-4 text-yellow-600" />;
-    return <AlertCircle className="h-4 w-4 text-red-600" />;
-  };
-
+  
   return (
-    <div className="space-y-6">
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
       <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Brain className="h-5 w-5" />
-            AI Spørgsmålsgenerator
-          </CardTitle>
-          <CardDescription>
-            Generer automatisk spørgsmål baseret på indhold ved hjælp af avanceret AI-analyse
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
+        <CardHeader
+          title={
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Typography variant="h6">AI Spørgsmålsgenerator</Typography>
+            </Box>
+          }
+          subheader="Generer automatisk spørgsmål baseret på indhold ved hjælp af avanceret AI-analyse"
+        />
+        <CardContent>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
           {/* Generation Options */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {!lessonId && !topicId && (
-              <Card className="p-4">
-                <h3 className="font-medium mb-2">Fra Indhold</h3>
-                <p className="text-sm text-muted-foreground mb-3">
-                  Indsæt dit eget indhold
-                </p>
-                <Button 
-                  onClick={generateQuestionsFromContent} 
-                  disabled={isGenerating || !content.trim()}
-                  className="w-full"
-                >
-                  {isGenerating ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Sparkles className="h-4 w-4 mr-2" />}
-                  Generer
-                </Button>
-              </Card>
-            )}
+            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' }, gap: 2 }}>
+              {!lessonId && !topicId && (
+                <Card sx={{ p: 2 }}>
+                  <Typography variant="subtitle1" gutterBottom>Fra Indhold</Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                    Indsæt dit eget indhold
+                  </Typography>
+                  <Button 
+                    onClick={generateQuestionsFromContent} 
+                    disabled={isGenerating || !content.trim()}
+                    variant="contained"
+                    fullWidth
+                    isLoading={isGenerating}
+                    loadingText="Genererer..."
+                  >
+                    Generer
+                  </Button>
+                </Card>
+              )}
             
             {lessonId && (
-              <Card className="p-4">
-                <h3 className="font-medium mb-2">Fra Lesson</h3>
-                <p className="text-sm text-muted-foreground mb-3">
-                  Generer fra lesson #{lessonId}
-                </p>
-                <Button 
-                  onClick={generateQuestionsFromLesson} 
-                  disabled={isGenerating}
-                  className="w-full"
-                >
-                  {isGenerating ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Sparkles className="h-4 w-4 mr-2" />}
-                  Generer
-                </Button>
-              </Card>
-            )}
-            
-            {topicId && (
-              <Card className="p-4">
-                <h3 className="font-medium mb-2">Fra Topic</h3>
-                <p className="text-sm text-muted-foreground mb-3">
-                  Generer fra topic #{topicId}
-                </p>
-                <Button 
-                  onClick={generateQuestionsFromTopic} 
-                  disabled={isGenerating}
-                  className="w-full"
-                >
-                  {isGenerating ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Sparkles className="h-4 w-4 mr-2" />}
-                  Generer
-                </Button>
-              </Card>
-            )}
-          </div>
+                <Card sx={{ p: 2 }}>
+                  <Typography variant="subtitle1" gutterBottom>Fra Lesson</Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                    Generer fra lesson #{lessonId}
+                  </Typography>
+                  <Button 
+                    onClick={generateQuestionsFromLesson} 
+                    disabled={isGenerating}
+                    variant="contained"
+                    fullWidth
+                    isLoading={isGenerating}
+                    loadingText="Genererer..."
+                  >
+                    Generer
+                  </Button>
+                </Card>
+              )}
+              
+              {topicId && (
+                <Card sx={{ p: 2 }}>
+                  <Typography variant="subtitle1" gutterBottom>Fra Topic</Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                    Generer fra topic #{topicId}
+                  </Typography>
+                  <Button 
+                    onClick={generateQuestionsFromTopic} 
+                    disabled={isGenerating}
+                    variant="contained"
+                    fullWidth
+                    isLoading={isGenerating}
+                    loadingText="Genererer..."
+                  >
+                    Generer
+                  </Button>
+                </Card>
+              )}
+            </Box>
 
           {/* Content Input (only show if no lessonId or topicId) */}
-          {!lessonId && !topicId && (
-            <div className="space-y-2">
-              <Label htmlFor="content">Indhold</Label>
-              <Textarea
-                id="content"
+            {!lessonId && !topicId && (
+              <TextField
+                label="Indhold"
                 placeholder="Indsæt det indhold du vil generere spørgsmål fra..."
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
+                multiline
                 rows={6}
-                className="min-h-[150px]"
+                fullWidth
               />
-            </div>
-          )}
+            )}
 
           {/* Configuration */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="numberOfQuestions">Antal spørgsmål</Label>
-                <Input
-                  id="numberOfQuestions"
+            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 3 }}>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                <TextField
+                  label="Antal spørgsmål"
                   type="number"
-                  min="1"
-                  max="20"
+                  inputProps={{ min: 1, max: 20 }}
                   value={numberOfQuestions}
                   onChange={(e) => setNumberOfQuestions(parseInt(e.target.value) || 5)}
+                  fullWidth
                 />
-              </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="targetDifficulty">Sværhedsgrad</Label>
-                <Select value={targetDifficulty} onValueChange={(value: any) => setTargetDifficulty(value)}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="BEGINNER">Begynder</SelectItem>
-                    <SelectItem value="INTERMEDIATE">Mellem</SelectItem>
-                    <SelectItem value="ADVANCED">Avanceret</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+                <Select
+                  label="Sværhedsgrad"
+                  value={targetDifficulty}
+                  onChange={(value) => setTargetDifficulty(value as any)}
+                  options={[
+                    { value: 'BEGINNER', label: 'Begynder' },
+                    { value: 'INTERMEDIATE', label: 'Mellem' },
+                    { value: 'ADVANCED', label: 'Avanceret' }
+                  ]}
+                  fullWidth
+                />
 
-              <div className="space-y-2">
-                <Label htmlFor="focusAreas">Fokusområder (valgfrit)</Label>
-                <Input
-                  id="focusAreas"
+                <TextField
+                  label="Fokusområder (valgfrit)"
                   placeholder="f.eks. funktioner, variabler, loops"
                   value={focusAreas}
                   onChange={(e) => setFocusAreas(e.target.value)}
+                  helperText="Adskil med komma for at specificere fokusområder"
+                  fullWidth
                 />
-                <p className="text-xs text-muted-foreground">
-                  Adskil med komma for at specificere fokusområder
-                </p>
-              </div>
-            </div>
+              </Box>
 
-            <div className="space-y-4">
-              <div className="space-y-3">
-                <Label>Spørgsmålstyper</Label>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                <Typography variant="subtitle2">Spørgsmålstyper</Typography>
                 {Object.entries(questionTypeLabels).map(([type, label]) => (
-                  <div key={type} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={type}
-                      checked={selectedQuestionTypes.includes(type)}
-                      onCheckedChange={(checked) => handleQuestionTypeChange(type, checked as boolean)}
-                    />
-                    <Label htmlFor={type} className="text-sm font-normal">
-                      {label}
-                    </Label>
-                  </div>
+                  <FormControlLabel
+                    key={type}
+                    control={
+                      <Checkbox
+                        checked={selectedQuestionTypes.includes(type)}
+                        onChange={(e) => handleQuestionTypeChange(type, e.target.checked)}
+                      />
+                    }
+                    label={label}
+                  />
                 ))}
-              </div>
-            </div>
-          </div>
+              </Box>
+            </Box>
 
           {/* Progress */}
-          {isGenerating && (
-            <div className="space-y-2">
-              <div className="flex items-center justify-between text-sm">
-                <span>Genererer spørgsmål...</span>
-                <span>{progress}%</span>
-              </div>
-              <Progress value={progress} className="w-full" />
-            </div>
-          )}
+            {isGenerating && (
+              <Box>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                  <Typography variant="body2">Genererer spørgsmål...</Typography>
+                  <Typography variant="body2">{progress}%</Typography>
+                </Box>
+                <LinearProgress variant="determinate" value={progress} />
+              </Box>
+            )}
 
-          {/* Error */}
-          {error && (
-            <Alert variant="destructive">
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          )}
+            {/* Error */}
+            {error && (
+              <Alert severity="error">
+                <AlertTitle>Fejl</AlertTitle>
+                {error}
+              </Alert>
+            )}
+          </Box>
         </CardContent>
       </Card>
 
       {/* Generated Questions */}
       {generatedQuestions.length > 0 && (
         <Card>
-          <CardHeader>
-            <CardTitle>Genererede Spørgsmål ({generatedQuestions.length})</CardTitle>
-            <CardDescription>
-              Spørgsmålene er sorteret efter kvalitetsscore
-            </CardDescription>
-          </CardHeader>
+          <CardHeader
+            title={`Genererede Spørgsmål (${generatedQuestions.length})`}
+            subheader="Spørgsmålene er sorteret efter kvalitetsscore"
+          />
           <CardContent>
-            <div className="space-y-6">
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
               {generatedQuestions.map((question, index) => (
-                <div key={index} className="border rounded-lg p-4 space-y-3">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Badge variant="outline">
-                          {questionTypeLabels[question.type]}
-                        </Badge>
-                        <Badge className={difficultyColors[question.difficulty]}>
-                          {difficultyLabels[question.difficulty]}
-                        </Badge>
-                        <Badge variant="secondary">
-                          {question.points} point{question.points !== 1 ? 'er' : ''}
-                        </Badge>
-                      </div>
-                      <h4 className="font-medium text-lg mb-2">{question.text}</h4>
-                    </div>
-                    <div className="flex items-center gap-2 ml-4">
-                      {getQualityIcon(question.qualityScore)}
-                      <span className={`text-sm font-medium ${getQualityColor(question.qualityScore)}`}>
+                <Card key={index} sx={{ p: 2 }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                    <Box sx={{ flex: 1 }}>
+                      <Box sx={{ display: 'flex', gap: 1, mb: 2, flexWrap: 'wrap' }}>
+                        <Chip label={questionTypeLabels[question.type]} variant="outlined" size="small" />
+                        <Chip 
+                          label={difficultyLabels[question.difficulty]} 
+                          size="small"
+                          color={question.difficulty === 'BEGINNER' ? 'success' : question.difficulty === 'INTERMEDIATE' ? 'warning' : 'error'}
+                        />
+                        <Chip 
+                          label={`${question.points} point${question.points !== 1 ? 'er' : ''}`} 
+                          size="small" 
+                          variant="outlined"
+                        />
+                      </Box>
+                      <Typography variant="h6" gutterBottom>{question.text}</Typography>
+                    </Box>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, ml: 2 }}>
+                      <Typography 
+                        variant="body2" 
+                        sx={{ 
+                          fontWeight: 'medium',
+                          color: question.qualityScore >= 80 ? 'success.main' : question.qualityScore >= 60 ? 'warning.main' : 'error.main'
+                        }}
+                      >
                         {question.qualityScore}%
-                      </span>
-                    </div>
-                  </div>
+                      </Typography>
+                    </Box>
+                  </Box>
 
                   {/* Answer Options for Multiple Choice */}
                   {question.type === 'MULTIPLE_CHOICE' && question.answerOptions && (
-                    <div className="space-y-2">
-                      <p className="text-sm font-medium text-muted-foreground">Svarmuligheder:</p>
-                      <div className="grid grid-cols-1 gap-2">
+                    <Box sx={{ mt: 2 }}>
+                      <Typography variant="body2" sx={{ fontWeight: 'medium', mb: 1 }}>Svarmuligheder:</Typography>
+                      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
                         {question.answerOptions.map((option, optionIndex) => (
-                          <div 
+                          <Box 
                             key={optionIndex} 
-                            className={`p-2 rounded border text-sm ${
-                              option.isCorrect 
-                                ? 'bg-green-50 border-green-200 text-green-800' 
-                                : 'bg-gray-50 border-gray-200'
-                            }`}
+                            sx={{ 
+                              p: 1, 
+                              borderRadius: 1,
+                              border: 1,
+                              borderColor: option.isCorrect ? 'success.main' : 'grey.300',
+                              bgcolor: option.isCorrect ? 'success.light' : 'grey.50',
+                              color: option.isCorrect ? 'success.dark' : 'text.primary'
+                            }}
                           >
-                            {option.isCorrect && <CheckCircle className="h-3 w-3 inline mr-2" />}
-                            {option.text}
-                          </div>
+                            <Typography variant="body2">
+                              {option.isCorrect && '✓ '}
+                              {option.text}
+                            </Typography>
+                          </Box>
                         ))}
-                      </div>
-                    </div>
+                      </Box>
+                    </Box>
                   )}
 
                   {/* Essay Requirements */}
                   {question.type === 'ESSAY' && (
-                    <div className="text-sm text-muted-foreground">
-                      <p>Ordkrav: {question.essayMinWords}-{question.essayMaxWords} ord</p>
-                    </div>
+                    <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
+                      Ordkrav: {question.essayMinWords}-{question.essayMaxWords} ord
+                    </Typography>
                   )}
 
                   {/* Code Template */}
                   {question.type === 'CODE' && question.codeTemplate && (
-                    <div className="space-y-2">
-                      <p className="text-sm font-medium text-muted-foreground">Kode template ({question.codeLanguage}):</p>
-                      <pre className="bg-gray-100 p-3 rounded text-sm overflow-x-auto">
-                        <code>{question.codeTemplate}</code>
-                      </pre>
+                    <Box sx={{ mt: 2 }}>
+                      <Typography variant="body2" sx={{ fontWeight: 'medium', mb: 1 }}>
+                        Kode template ({question.codeLanguage}):
+                      </Typography>
+                      <Box sx={{ bgcolor: 'grey.100', p: 2, borderRadius: 1, overflow: 'auto' }}>
+                        <Typography component="pre" variant="body2" sx={{ fontFamily: 'monospace' }}>
+                          {question.codeTemplate}
+                        </Typography>
+                      </Box>
                       {question.expectedOutput && (
-                        <div>
-                          <p className="text-sm font-medium text-muted-foreground">Forventet output:</p>
-                          <pre className="bg-gray-100 p-2 rounded text-sm">
-                            <code>{question.expectedOutput}</code>
-                          </pre>
-                        </div>
+                        <Box sx={{ mt: 2 }}>
+                          <Typography variant="body2" sx={{ fontWeight: 'medium', mb: 1 }}>
+                            Forventet output:
+                          </Typography>
+                          <Box sx={{ bgcolor: 'grey.100', p: 1, borderRadius: 1 }}>
+                            <Typography component="pre" variant="body2" sx={{ fontFamily: 'monospace' }}>
+                              {question.expectedOutput}
+                            </Typography>
+                          </Box>
+                        </Box>
                       )}
-                    </div>
+                    </Box>
                   )}
 
                   {/* Reasoning */}
-                  <div className="pt-2 border-t">
-                    <p className="text-sm text-muted-foreground">
-                      <strong>AI Begrundelse:</strong> {question.reasoning}
-                    </p>
-                  </div>
-                </div>
+                  <Divider sx={{ my: 2 }} />
+                  <Typography variant="body2" color="text.secondary">
+                    <strong>AI Begrundelse:</strong> {question.reasoning}
+                  </Typography>
+                </Card>
               ))}
-            </div>
+            </Box>
           </CardContent>
         </Card>
       )}
-    </div>
+    </Box>
   );
 }

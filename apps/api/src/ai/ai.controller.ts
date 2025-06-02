@@ -20,8 +20,12 @@ import { OpenAIService } from './services/openai.service';
 import { EmbeddingService } from './services/embedding.service';
 import { ContentProcessingService } from './services/content-processing.service';
 import { VectorStoreService } from './services/vector-store.service';
-import { QuestionGenerationService } from './services/question-generation.service';
-import { QuestionType, Difficulty } from '@prisma/client';
+import { QuestionGenerationService } from './services/question-generation';
+import { 
+  GenerateQuestionsDto, 
+  GenerateQuestionsOptionsDto,
+  QuestionGenerationResponseDto 
+} from './dto/question-generation.dto';
 import * as multer from 'multer';
 import * as path from 'path';
 
@@ -65,23 +69,6 @@ export class ProcessContentDto {
   metadata?: Record<string, any>;
 }
 
-export class GenerateQuestionsDto {
-  @IsOptional()
-  @IsString({ message: 'Indhold skal være en streng' })
-  content?: string;
-
-  @IsOptional()
-  @IsString({ message: 'Indhold ID skal være en streng' })
-  contentId?: string;
-
-  @IsOptional()
-  @IsNumber({}, { message: 'Antal spørgsmål skal være et tal' })
-  questionCount?: number;
-
-  @IsOptional()
-  @IsEnum(['easy', 'medium', 'hard'], { message: 'Sværhedsgrad skal være easy, medium eller hard' })
-  difficulty?: 'easy' | 'medium' | 'hard';
-}
 
 class MessageDto {
   @IsString()
@@ -267,59 +254,22 @@ export class AIController {
     }
   }
 
-  @Post('questions/generate')
-  @ApiOperation({ summary: 'Generate questions from content' })
-  @ApiResponse({ status: 200, description: 'Questions generated successfully' })
-  async generateQuestions(@Body() generateQuestionsDto: GenerateQuestionsDto) {
-    try {
-      let questions;
-
-      if (generateQuestionsDto.contentId) {
-        // Generate from processed content
-        questions = await this.contentProcessingService.generateQuestionsFromContent(
-          generateQuestionsDto.contentId,
-          generateQuestionsDto.questionCount || 5,
-          generateQuestionsDto.difficulty || 'medium',
-        );
-      } else if (generateQuestionsDto.content) {
-        // Generate from raw content
-        questions = await this.openaiService.generateQuestions(
-          generateQuestionsDto.content,
-          generateQuestionsDto.questionCount || 5,
-          generateQuestionsDto.difficulty || 'medium',
-        );
-      } else {
-        throw new BadRequestException('Either content or contentId must be provided');
-      }
-
-      return {
-        success: true,
-        questions,
-        count: questions.length,
-      };
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      throw new BadRequestException(`Failed to generate questions: ${errorMessage}`);
-    }
-  }
-
+  
   /**
    * Avanceret spørgsmålsgenerering med AI
    */
   @Post('questions/generate-advanced')
   @ApiOperation({ summary: 'Generate advanced questions using AI analysis' })
-  @ApiResponse({ status: 200, description: 'Advanced questions generated successfully' })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Advanced questions generated successfully',
+    type: QuestionGenerationResponseDto 
+  })
   async generateAdvancedQuestions(
-    @Body() request: {
-      content: string;
-      contentType: 'lesson' | 'topic' | 'course';
-      contentId: string;
-      targetDifficulty?: Difficulty;
-      questionTypes?: QuestionType[];
-      numberOfQuestions?: number;
-      focusAreas?: string[];
-    },
-  ) {
+    @Body() request: GenerateQuestionsDto,
+  ): Promise<QuestionGenerationResponseDto> {
+    const startTime = Date.now();
+    
     try {
       const questions = await this.questionGenerationService.generateQuestionsFromContent(request);
 
@@ -328,6 +278,11 @@ export class AIController {
         questions,
         count: questions.length,
         message: 'Advanced questions generated successfully',
+        metadata: {
+          contentType: request.contentType,
+          contentId: request.contentId,
+          processingTime: Date.now() - startTime,
+        },
       };
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
@@ -340,15 +295,17 @@ export class AIController {
    */
   @Post('questions/generate/lesson/:lessonId')
   @ApiOperation({ summary: 'Generate questions from a specific lesson' })
-  @ApiResponse({ status: 200, description: 'Questions generated from lesson successfully' })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Questions generated from lesson successfully',
+    type: QuestionGenerationResponseDto 
+  })
   async generateQuestionsFromLesson(
     @Param('lessonId', ParseIntPipe) lessonId: number,
-    @Body() options: {
-      numberOfQuestions?: number;
-      questionTypes?: QuestionType[];
-      targetDifficulty?: Difficulty;
-    } = {},
-  ) {
+    @Body() options: GenerateQuestionsOptionsDto,
+  ): Promise<QuestionGenerationResponseDto> {
+    const startTime = Date.now();
+    
     try {
       const questions = await this.questionGenerationService.generateQuestionsFromLesson(
         lessonId,
@@ -359,8 +316,12 @@ export class AIController {
         success: true,
         questions,
         count: questions.length,
-        lessonId,
         message: 'Questions generated from lesson successfully',
+        metadata: {
+          contentType: 'lesson',
+          contentId: lessonId.toString(),
+          processingTime: Date.now() - startTime,
+        },
       };
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
@@ -373,15 +334,17 @@ export class AIController {
    */
   @Post('questions/generate/topic/:topicId')
   @ApiOperation({ summary: 'Generate questions from a topic' })
-  @ApiResponse({ status: 200, description: 'Questions generated from topic successfully' })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Questions generated from topic successfully',
+    type: QuestionGenerationResponseDto 
+  })
   async generateQuestionsFromTopic(
     @Param('topicId', ParseIntPipe) topicId: number,
-    @Body() options: {
-      numberOfQuestions?: number;
-      questionTypes?: QuestionType[];
-      targetDifficulty?: Difficulty;
-    } = {},
-  ) {
+    @Body() options: GenerateQuestionsOptionsDto,
+  ): Promise<QuestionGenerationResponseDto> {
+    const startTime = Date.now();
+    
     try {
       const questions = await this.questionGenerationService.generateQuestionsFromTopic(
         topicId,
@@ -392,12 +355,85 @@ export class AIController {
         success: true,
         questions,
         count: questions.length,
-        topicId,
         message: 'Questions generated from topic successfully',
+        metadata: {
+          contentType: 'topic',
+          contentId: topicId.toString(),
+          processingTime: Date.now() - startTime,
+        },
       };
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       throw new BadRequestException(`Failed to generate questions from topic: ${errorMessage}`);
+    }
+  }
+
+  /**
+   * Generer spørgsmål fra et helt course
+   */
+  @Post('questions/generate/course/:courseId')
+  @ApiOperation({ summary: 'Generate questions from a course' })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Questions generated from course successfully',
+    type: QuestionGenerationResponseDto 
+  })
+  async generateQuestionsFromCourse(
+    @Param('courseId', ParseIntPipe) courseId: number,
+    @Body() options: GenerateQuestionsOptionsDto,
+  ): Promise<QuestionGenerationResponseDto> {
+    const startTime = Date.now();
+    
+    try {
+      const questions = await this.questionGenerationService.generateQuestionsFromCourse(
+        courseId,
+        options,
+      );
+
+      return {
+        success: true,
+        questions,
+        count: questions.length,
+        message: 'Questions generated from course successfully',
+        metadata: {
+          contentType: 'course',
+          contentId: courseId.toString(),
+          processingTime: Date.now() - startTime,
+        },
+      };
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      throw new BadRequestException(`Failed to generate questions from course: ${errorMessage}`);
+    }
+  }
+
+  /**
+   * Hent AI usage statistik
+   */
+  @Get('questions/usage-stats')
+  @ApiOperation({ summary: 'Get AI question generation usage statistics' })
+  @ApiResponse({ status: 200, description: 'Usage statistics retrieved' })
+  async getQuestionGenerationStats(
+    @Query('startDate') startDate?: string,
+    @Query('endDate') endDate?: string,
+  ) {
+    try {
+      const stats = await this.questionGenerationService.getUsageStatistics(
+        startDate ? new Date(startDate) : undefined,
+        endDate ? new Date(endDate) : undefined,
+      );
+
+      return {
+        success: true,
+        stats,
+        period: {
+          startDate: startDate || 'all time',
+          endDate: endDate || 'now',
+        },
+      };
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      throw new BadRequestException(`Failed to get usage statistics: ${errorMessage}`);
     }
   }
 
