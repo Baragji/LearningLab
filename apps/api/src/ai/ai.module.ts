@@ -4,6 +4,7 @@ import { OpenAIService } from './services/openai.service';
 import { VectorStoreService } from './services/vector-store.service';
 import { EmbeddingService } from './services/embedding.service';
 import { ContentProcessingService } from './services/content-processing.service';
+import { QuestionGenerationService } from './services/question-generation.service';
 import { AIController } from './ai.controller';
 import { PersistenceModule } from '../persistence/persistence.module';
 
@@ -14,6 +15,7 @@ import { PersistenceModule } from '../persistence/persistence.module';
     VectorStoreService,
     EmbeddingService,
     ContentProcessingService,
+    QuestionGenerationService,
   ],
   controllers: [AIController],
   exports: [
@@ -21,6 +23,7 @@ import { PersistenceModule } from '../persistence/persistence.module';
     VectorStoreService,
     EmbeddingService,
     ContentProcessingService,
+    QuestionGenerationService,
   ],
 })
 export class AIModule {}

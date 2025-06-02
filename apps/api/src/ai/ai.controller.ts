@@ -20,6 +20,8 @@ import { OpenAIService } from './services/openai.service';
 import { EmbeddingService } from './services/embedding.service';
 import { ContentProcessingService } from './services/content-processing.service';
 import { VectorStoreService } from './services/vector-store.service';
+import { QuestionGenerationService } from './services/question-generation.service';
+import { QuestionType, Difficulty } from '@prisma/client';
 import * as multer from 'multer';
 import * as path from 'path';
 
@@ -116,6 +118,7 @@ export class AIController {
     private embeddingService: EmbeddingService,
     private contentProcessingService: ContentProcessingService,
     private vectorStoreService: VectorStoreService,
+    private questionGenerationService: QuestionGenerationService,
   ) {}
 
   @Post('embeddings')
@@ -297,6 +300,104 @@ export class AIController {
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       throw new BadRequestException(`Failed to generate questions: ${errorMessage}`);
+    }
+  }
+
+  /**
+   * Avanceret spørgsmålsgenerering med AI
+   */
+  @Post('questions/generate-advanced')
+  @ApiOperation({ summary: 'Generate advanced questions using AI analysis' })
+  @ApiResponse({ status: 200, description: 'Advanced questions generated successfully' })
+  async generateAdvancedQuestions(
+    @Body() request: {
+      content: string;
+      contentType: 'lesson' | 'topic' | 'course';
+      contentId: string;
+      targetDifficulty?: Difficulty;
+      questionTypes?: QuestionType[];
+      numberOfQuestions?: number;
+      focusAreas?: string[];
+    },
+  ) {
+    try {
+      const questions = await this.questionGenerationService.generateQuestionsFromContent(request);
+
+      return {
+        success: true,
+        questions,
+        count: questions.length,
+        message: 'Advanced questions generated successfully',
+      };
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      throw new BadRequestException(`Failed to generate advanced questions: ${errorMessage}`);
+    }
+  }
+
+  /**
+   * Generer spørgsmål fra en specifik lesson
+   */
+  @Post('questions/generate/lesson/:lessonId')
+  @ApiOperation({ summary: 'Generate questions from a specific lesson' })
+  @ApiResponse({ status: 200, description: 'Questions generated from lesson successfully' })
+  async generateQuestionsFromLesson(
+    @Param('lessonId', ParseIntPipe) lessonId: number,
+    @Body() options: {
+      numberOfQuestions?: number;
+      questionTypes?: QuestionType[];
+      targetDifficulty?: Difficulty;
+    } = {},
+  ) {
+    try {
+      const questions = await this.questionGenerationService.generateQuestionsFromLesson(
+        lessonId,
+        options,
+      );
+
+      return {
+        success: true,
+        questions,
+        count: questions.length,
+        lessonId,
+        message: 'Questions generated from lesson successfully',
+      };
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      throw new BadRequestException(`Failed to generate questions from lesson: ${errorMessage}`);
+    }
+  }
+
+  /**
+   * Generer spørgsmål fra et helt topic
+   */
+  @Post('questions/generate/topic/:topicId')
+  @ApiOperation({ summary: 'Generate questions from a topic' })
+  @ApiResponse({ status: 200, description: 'Questions generated from topic successfully' })
+  async generateQuestionsFromTopic(
+    @Param('topicId', ParseIntPipe) topicId: number,
+    @Body() options: {
+      numberOfQuestions?: number;
+      questionTypes?: QuestionType[];
+      targetDifficulty?: Difficulty;
+    } = {},
+  ) {
+    try {
+      const questions = await this.questionGenerationService.generateQuestionsFromTopic(
+        topicId,
+        options,
+      );
+
+      return {
+        success: true,
+        questions,
+        count: questions.length,
+        topicId,
+        message: 'Questions generated from topic successfully',
+      };
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      throw new BadRequestException(`Failed to generate questions from topic: ${errorMessage}`);
     }
   }
 

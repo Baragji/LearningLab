@@ -149,5 +149,5 @@ def search():
 
 if __name__ == "__main__":
     initialize_services()
-    print("🚀 Starter RAG-server på http://0.0.0.0:5004 ...")
-    app.run(host="0.0.0.0", port=5004, debug=False)
+    print("🚀 Starter RAG-server på http://0.0.0.0:5021 ...")
+    app.run(host="0.0.0.0", port=5021, debug=False)
