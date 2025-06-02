@@ -1,36 +1,92 @@
-Installation og test
+# Optimeret RAG Server
 
-Installer afhængigheder
-pip install flask chromadb sentence-transformers
-Mapper
-Placer alle tre filer i samme mappe:
-your_project/
-├── vector_search_server.py
-├── index_code_chunks.py
-├── rank_chunks.py
-└── (andre projektfiler)
-Sørg for, at du kan køre python3 vector_search_server.py, python3 index_code_chunks.py og importere rank_chunks i begge.
-Kør index‐skriptet først
-python3 index_code_chunks.py
-Dette skaber/rydder ./chroma_db og indekserer alle .py/.js/.ts/.jsx/.tsx‐filer i dit projekt.
-Start RAG‐serveren
-python3 vector_search_server.py
-Serveren lytter nu på port 5004.
-Test /search‐endpoint
-curl -X POST http://localhost:5004/search \
-  -H "Content-Type: application/json" \
-  -d '{"query":"login validation", "n_results":5, "filepath":"./src/auth.py"}'
-Du får et JSON‐svar med top 5 chunks, metadata, distance, total_found, query, context_file.
-Integrér i Trae MCP
-Åbn Trae → MCP-fanen → “+ Add” → indsæt:
-{
-  "mcpServers": {
-    "vector-search": {
-      "command": "python3",
-      "args": ["vector_search_server.py"],
-      "env": {}
-    }
-  }
-}
-Svar “Confirm” og kontroller, at serveren får ✅-ikon.
-Disse tre filer indeholder nu ingen pladsholdere og er fuldt ud funktionsdygtige, avancerede implementationer, der matcher Cursor‐niveauet for RAG, chunking, metadata og rangering. Hvis du har yderligere tilpasningsønsker – fx andre vægte, ændringer i chunk‐størrelse eller mere detaljeret logging – så sig endelig til, så vi kan finjustere!
+Dette er en optimeret implementering af Retrieval-Augmented Generation (RAG) til LearningLab projektet. Systemet bruger ChromaDB til vektoropslag og Ollama til LLM-inferens.
+
+## Komponenter
+
+- **vector_search_server.py**: Flask-server til vektorsøgning (port 5004)
+- **index_code_chunks.py**: Script til at indeksere kode
+- **rank_chunks.py**: Algoritme til at rangere søgeresultater
+- **query_classifier.py**: Klassificerer forespørgsler
+- **benchmark.py**: Værktøj til at benchmarke systemet
+- **config.yaml**: Konfigurationsfil
+
+## Optimeret for ydeevne
+
+Denne implementering er optimeret for hurtig responstid, især på M1 Mac:
+
+1. **Streaming Responses**: Implementerer streaming for hurtigere brugeroplevelse
+2. **Optimerede Ollama-parametre**: Konfigureret for hurtigere inferens på M1 Mac
+3. **Effektiv kontekstopbygning**: Reducerer mængden af kontekst for hurtigere LLM-svar
+4. **Optimeret vektorsøgning**: Hurtigere embedding og søgning
+5. **Forbedret chunking**: Mindre chunks med mindre overlap for hurtigere indeksering
+
+## Brug
+
+### Start serveren
+
+```bash
+./start-rag-server.sh
+```
+
+Dette vil:
+1. Aktivere det virtuelle miljø (mcp-venv)
+2. Tjekke om Ollama kører
+3. Indeksere kodebasen hvis nødvendigt
+4. Starte vector search serveren på port 5004
+5. Logge output til logs/rag_server.log
+
+### Stop serveren
+
+```bash
+./stop-all-rag-servers.sh
+```
+
+### Test RAG-pipelinen
+
+```bash
+source mcp-venv/bin/activate
+python test-rag-pipeline.py "dit spørgsmål her"
+```
+
+### Mål ydeevne
+
+```bash
+source mcp-venv/bin/activate
+python test-rag-performance.py
+```
+
+## Konfiguration
+
+Alle indstillinger kan justeres i `config.yaml`. Vigtige indstillinger inkluderer:
+
+- **llm.temperature**: Lavere værdi (0.1) giver mere deterministiske svar
+- **llm.num_thread**: Optimeret til 4 for M1 Mac
+- **llm.num_ctx**: Reduceret kontekstvindue for hurtigere inferens
+- **retrieval.top_k**: Antal resultater at hente fra vektordatabasen
+- **indexing.chunk_size**: Størrelse på kodechunks ved indeksering
+
+## Fejlfinding
+
+- **Langsom responstid**: Tjek `logs/rag_server.log` for eventuelle fejl
+- **Serveren starter ikke**: Sørg for at Ollama kører og at alle afhængigheder er installeret
+- **Dårlige søgeresultater**: Prøv at genindeksere kodebasen med `python mcp_services/rag_server/index_code_chunks.py`
+
+## Afhængigheder
+
+- sentence-transformers>=4.0.0
+- chromadb>=0.4.0
+- flask>=2.0.0
+- pyyaml>=6.0
+- requests>=2.0.0
+- numpy
+- scikit-learn
+
+## Ollama-optimering
+
+For optimal ydeevne med Ollama på M1 Mac:
+
+1. Sørg for at bruge den nyeste version af Ollama
+2. Luk andre ressourcekrævende applikationer
+3. Brug streaming-mode for hurtigere brugeroplevelse
+4. Overvej at bruge en kvantiseret model hvis llama3.1:8b er for langsom

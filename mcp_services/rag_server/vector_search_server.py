@@ -87,13 +87,14 @@ def search():
         if not query_text:
             return jsonify({"error": "Parameter 'query' kan ikke være tom."}), 400
 
-        # Lav embedding for forespørgslen
-        query_embedding = embedding_model.encode(query_text).tolist()
-
-        # Hent op til 3*x kandidater, men max 50
+        # Optimeret: Lav embedding for forespørgslen med batch_size=1 for hurtigere inferens
+        start_time = datetime.now()
+        query_embedding = embedding_model.encode(query_text, batch_size=1, show_progress_bar=False).tolist()
+        
+        # Optimeret: Hent færre kandidater (2*n_results) for hurtigere søgning
         candidates = code_collection.query(
             query_embeddings=[query_embedding],
-            n_results=min(n_results * 3, 50),
+            n_results=min(n_results * 2, 30),  # Reduceret fra 3*n_results til 2*n_results og max 30
             include=["documents", "metadatas", "distances"],
         )
 
@@ -103,16 +104,11 @@ def search():
 
         total_found = len(raw_docs)
 
-        # Kombiner hver chunk med metadata og distance i en liste af dicts
-        combined = []
-        for doc_text, meta, dist in zip(raw_docs, raw_metas, raw_distances):
-            combined.append(
-                {
-                    "chunk": doc_text,
-                    "metadata": meta,
-                    "distance": dist,
-                }
-            )
+        # Optimeret: Brug list comprehension i stedet for for-loop
+        combined = [
+            {"chunk": doc_text, "metadata": meta, "distance": dist}
+            for doc_text, meta, dist in zip(raw_docs, raw_metas, raw_distances)
+        ]
 
         # Hvis der er angivet en filepath, rangér med rank_chunks
         if filepath:
@@ -120,6 +116,23 @@ def search():
 
         # Tag kun top n_results
         results = combined[:n_results]
+        
+        # Optimeret: Fjern unødvendig metadata fra response for at reducere størrelsen
+        for result in results:
+            if "metadata" in result:
+                # Behold kun de vigtigste metadata-felter
+                meta = result["metadata"]
+                result["metadata"] = {
+                    "file_path": meta.get("file_path", ""),
+                    "chunk_id": meta.get("chunk_id", ""),
+                    "type": meta.get("type", ""),
+                    "name": meta.get("name", ""),
+                }
+
+        # Log performance
+        end_time = datetime.now()
+        search_time = (end_time - start_time).total_seconds()
+        print(f"🔍 Søgning udført på {search_time:.3f} sekunder, fandt {total_found} resultater")
 
         response = {
             "results": results,
@@ -136,5 +149,5 @@ def search():
 
 if __name__ == "__main__":
     initialize_services()
-    print("🚀 Starter RAG-server på http://0.0.0.0:5005 ...")
-    app.run(host="0.0.0.0", port=5005, debug=False)
+    print("🚀 Starter RAG-server på http://0.0.0.0:5004 ...")
+    app.run(host="0.0.0.0", port=5004, debug=False)

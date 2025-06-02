@@ -1,3 +1,5 @@
+### FIL NR 1: 
+
 Grundig Forklaring af Faner i Trae IDE
 Denne guide gennemgår alle vigtige faner og sektioner i Trae IDE, som vi har talt om: Agents, MCP, Context, og Chat UI. Formålet er at give dig en detaljeret forståelse af hver fane, dens komponenter og hvordan du kan bruge dem optimalt.
  
