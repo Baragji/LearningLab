@@ -1,0 +1,36 @@
+{
+  "mcpServers": {
+    "rag-server": {
+      "command": "python3",
+      "args": ["/Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/mcp_services/rag_server/vector_search_server.py"],
+      "description": "Optimeret RAG-server med ChromaDB vektor-søgning på port 5021",
+      "tools": {
+        "search_documentation": {
+          "description": "Søg i kodebasen og dokumentation med optimeret RAG-pipeline",
+          "parameters": {
+            "query": {
+              "type": "string",
+              "description": "Søgeforespørgsel"
+            },
+            "n_results": {
+              "type": "integer",
+              "description": "Antal resultater at returnere",
+              "default": 3
+            },
+            "filepath": {
+              "type": "string",
+              "description": "Valgfri filsti for at begrænse søgningen til en bestemt fil",
+              "default": ""
+            }
+          },
+          "returns": {
+            "type": "object",
+            "description": "Søgeresultater med relevante kodechunks og metadata"
+          },
+          "url": "http://localhost:5021/search",
+          "method": "POST"
+        }
+      }
+    }
+  }
+}

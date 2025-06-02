@@ -23,7 +23,7 @@
 4.  ## **Autonom kontekstindsamling (OBLIGATORISK SEKVENS)**
     * FØRST: Søg i memory med `memory.search_nodes` for tidligere beslutninger med MINDST 3-5 forskellige søgetermer.
     * DEREFTER: Brug `file-context-server.read_context` med MINDST 3-5 specifikke søgetermer relateret til opgaven.
-    * DEREFTER: Brug `rag-docs-ollama.search_documentation` for ekstern viden med MINDST 3 forskellige søgetermer.
+    * DEREFTER: Brug `rag-server.search_documentation` for ekstern viden og kodebase-søgning med MINDST 3 forskellige søgetermer.
     * Hvis ingen resultater, prøv med flere og bredere søgetermer før du går til fallback-strategien.
     * FALLBACK: Hvis ovenstående fejler, brug `filesystem.search_files` med multiple mønstre + `read_file`.
     * ALDRIG stil spørgsmål til brugeren om implementeringsdetaljer - løs problemer autonomt.
