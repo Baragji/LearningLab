@@ -1,15 +1,10 @@
 * **Agents / LearningLab-Master** (titel i øverste bjælke)
 
-* **rag-docs-ollama** ✓ - DOKUMENTATION & EKSTERN VIDEN
-  • search\_documentation - PRIMÆR: Søg i dokumentation med specifikke nøgleord
-    * BRUG: For API docs, framework guides, best practices
-    * EKSEMPEL: `search_documentation({ query: "Next.js App Router data fetching" })`
-  • list\_sources - Se alle tilgængelige dokumentationskilder
-  • extract\_urls - Udtræk URLs fra dokumentation for dybere research
-  • remove\_documentation - Fjern forældet dokumentation
-  • list\_queue - Se køen af dokumentation der skal indekseres
-  • run\_queue - Kør indekseringskøen
-  • clear\_queue - Ryd indekseringskøen
+* **rag-server** ✓ - OPTIMERET KODEBASE & DOKUMENTATIONSSØGNING
+  • search\_documentation - PRIMÆR: Søg i kodebasen og dokumentation med optimeret RAG-pipeline
+    * BRUG: For kodeforståelse, API docs, framework guides, best practices
+    * EKSEMPEL: `search_documentation({ query: "Next.js App Router data fetching", n_results: 3 })`
+    * AVANCERET: `search_documentation({ query: "authentication", filepath: "/apps/api/src/auth/auth.service.ts", n_results: 5 })`
 
 * **memory** ✓ - PERSISTENT HUKOMMELSE
   • create\_entities - KRITISK: Gem vigtige beslutninger og komponenter
