@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { OpenAIService } from './openai.service';
+import { AIProviderService } from './ai-provider.service';
 import { VectorStoreService, VectorDocument, SearchResult } from './vector-store.service';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -21,7 +21,7 @@ export class EmbeddingService {
   private readonly logger = new Logger(EmbeddingService.name);
 
   constructor(
-    private openaiService: OpenAIService,
+    private aiProviderService: AIProviderService,
     private vectorStoreService: VectorStoreService,
   ) {}
 
@@ -39,7 +39,7 @@ export class EmbeddingService {
       }
 
       // Create embedding
-      const embedding = await this.openaiService.createEmbedding(content);
+      const embedding = await this.aiProviderService.generateEmbedding(content);
 
       // Store in vector database
       const document: Omit<VectorDocument, 'createdAt'> = {
@@ -72,7 +72,7 @@ export class EmbeddingService {
       const { query, limit = 10, threshold = 0.7, filters } = request;
 
       // Create embedding for the search query
-      const queryEmbedding = await this.openaiService.createEmbedding(query);
+      const queryEmbedding = await this.aiProviderService.generateEmbedding(query);
 
       // Search in vector store
       let results = await this.vectorStoreService.searchSimilar(
@@ -111,7 +111,7 @@ export class EmbeddingService {
   async updateEmbedding(id: string, newContent: string, metadata?: Record<string, any>): Promise<boolean> {
     try {
       // Create new embedding
-      const embedding = await this.openaiService.createEmbedding(newContent);
+      const embedding = await this.aiProviderService.generateEmbedding(newContent);
 
       // Update document
       const updates: Partial<VectorDocument> = {
@@ -241,7 +241,7 @@ export class EmbeddingService {
   }> {
     return {
       totalDocuments: this.vectorStoreService.getDocumentCount(),
-      aiUsageStats: this.openaiService.getUsageStats(),
+      aiUsageStats: await this.aiProviderService.getUsageStats(),
     };
   }
 }

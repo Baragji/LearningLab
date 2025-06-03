@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { OpenAIService } from '../openai.service';
+import { AIProviderService } from '../ai-provider.service';
 import { QuestionType, Difficulty } from '@prisma/client';
 import { 
   ContentAnalysis, 
@@ -16,7 +16,7 @@ import {
 export class QuestionGenerator {
   private readonly logger = new Logger(QuestionGenerator.name);
 
-  constructor(private readonly openaiService: OpenAIService) {}
+  constructor(private readonly aiProviderService: AIProviderService) {}
 
   /**
    * Generer spørgsmål baseret på indhold og analyse
@@ -44,7 +44,7 @@ export class QuestionGenerator {
     );
 
     try {
-      const response = await this.openaiService.createChatCompletion(
+      const response = await this.aiProviderService.generateChatCompletion(
         [
           {
             role: 'system',
@@ -54,11 +54,11 @@ export class QuestionGenerator {
         ],
         {
           temperature: 0.7,
-          max_tokens: 2000,
+          maxTokens: 2000,
         },
       );
 
-      return this.parseGeneratedQuestions(response);
+      return this.parseGeneratedQuestions(response.content);
     } catch (error) {
       this.logger.error('Fejl ved generering af spørgsmål', error);
       throw new Error('Fejl ved generering af spørgsmål. Prøv igen.');
@@ -126,8 +126,8 @@ Hvert spørgsmål skal have følgende struktur:
   /**
    * Parse AI-genererede spørgsmål
    */
-  private parseGeneratedQuestions(response: string): GeneratedQuestion[] {
-    const cleanedResponse = response.trim();
+  private parseGeneratedQuestions(responseContent: string): GeneratedQuestion[] {
+    const cleanedResponse = responseContent.trim();
     
     let questions: AIQuestionResponse[];
     try {
