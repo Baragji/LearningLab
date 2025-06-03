@@ -57,6 +57,9 @@ export interface LearningAssistanceResponse {
   confidence: number;
 }
 
+// Export alias for PersonalizedFeedback to match controller import
+export type FeedbackResponse = PersonalizedFeedback;
+
 @Injectable()
 export class AIFeedbackService {
   private readonly logger = new Logger(AIFeedbackService.name);

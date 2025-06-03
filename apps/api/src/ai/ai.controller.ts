@@ -36,13 +36,26 @@ export class GenerateQuestionsDto {
   @Max(20)
   questionCount: number;
 
-  @IsEnum(['beginner', 'intermediate', 'advanced'])
-  difficulty: 'beginner' | 'intermediate' | 'advanced';
+  @IsEnum(['easy', 'medium', 'hard'])
+  difficulty: 'easy' | 'medium' | 'hard';
 
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
   topics?: string[];
+}
+
+// Response interfaces
+export interface QuestionMetadata {
+  questionCount: number;
+  difficulty: 'easy' | 'medium' | 'hard';
+  topics?: string[];
+}
+
+export interface QuestionGenerationResponse {
+  success: boolean;
+  data: any[];
+  metadata: QuestionMetadata;
 }
 
 export class FeedbackRequestDto {
@@ -88,6 +101,12 @@ export class UserPerformanceDto {
 
   @IsNumber()
   totalStudyTime: number;
+
+  @IsNumber()
+  averageResponseTime: number;
+
+  @IsEnum(['visual', 'auditory', 'kinesthetic', 'reading'])
+  learningStyle: 'visual' | 'auditory' | 'kinesthetic' | 'reading';
 
   @IsArray()
   @IsString({ each: true })
@@ -245,7 +264,7 @@ export class AIController {
   @ApiResponse({ status: 201, description: 'Questions generated successfully' })
   async generateQuestions(
     @Body(ValidationPipe) generateQuestionsDto: GenerateQuestionsDto,
-  ) {
+  ): Promise<QuestionGenerationResponse> {
     try {
       this.logger.log(`Generating ${generateQuestionsDto.questionCount} questions`);
       
@@ -625,11 +644,13 @@ export class AIController {
     @Body(ValidationPipe) processContentDto: ProcessContentDto,
   ) {
     try {
-      const result = await this.contentProcessingService.processContent(
+      const result = await this.contentProcessingService.processTextContent(
         processContentDto.content,
-        processContentDto.contentType,
-        processContentDto.title,
-        processContentDto.tags,
+        {
+          contentType: processContentDto.contentType,
+          title: processContentDto.title,
+          tags: processContentDto.tags,
+        },
       );
 
       return {
@@ -652,12 +673,12 @@ export class AIController {
     @Body(ValidationPipe) searchContentDto: SearchContentDto,
   ) {
     try {
-      const results = await this.embeddingService.searchSimilarContent(
-        searchContentDto.query,
-        searchContentDto.limit || 10,
-        searchContentDto.threshold || 0.7,
-        searchContentDto.tags,
-      );
+      const results = await this.embeddingService.semanticSearch({
+        query: searchContentDto.query,
+        limit: searchContentDto.limit || 10,
+        threshold: searchContentDto.threshold || 0.7,
+        filters: searchContentDto.tags ? { tags: searchContentDto.tags } : undefined,
+      });
 
       return {
         success: true,
