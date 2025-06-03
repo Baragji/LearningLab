@@ -49,18 +49,7 @@
       }
     },
 
-    "rag-server": {
-      "command": "python3",
-      "args": ["/Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/mcp_services/rag_server/vector_search_server.py"],
-      "description": "Optimeret RAG-server (ChromaDB vektor-søgning) on port 5020",
-      "phase": "1",
-      "priority": "high",
-      "healthcheck": {
-        "cmd": ["curl", "-fs", "http://localhost:5020/search -X POST -H \"Content-Type: application/json\" -d '{\"query\":\"test\",\"n_results\":1}'"],
-        "interval_seconds": 30,
-        "timeout_seconds": 5
-      }
-    },
+  
 
     "brave-search": {
       "command": "npx",
@@ -168,12 +157,8 @@
 
   "deployment": {
     "phases": {
-      "1": ["filesystem", "git", "memory", "rag-server", "brave-search", "sequential-thinking", "file-context-server", "puppeteer", "package-version"]
     },
     "auto_start": {
-      "development": ["filesystem", "git", "memory", "rag-server", "brave-search", "sequential-thinking", "file-context-server"],
-      "testing": ["filesystem", "git", "memory", "rag-server", "brave-search", "sequential-thinking", "file-context-server"],
-      "production": ["filesystem", "git", "memory", "rag-server", "brave-search", "sequential-thinking", "file-context-server"]
     }
   }
 }

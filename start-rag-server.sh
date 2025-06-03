@@ -1,1 +1,0 @@
-/Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/mcp_services/rag_server/scripts/start-rag-server.sh

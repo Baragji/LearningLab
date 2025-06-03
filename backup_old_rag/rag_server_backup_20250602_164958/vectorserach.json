@@ -1,9 +1,0 @@
-{
-  "mcpServers": {
-    "vector-search": {
-      "command": "python3",
-      "args": ["vector_search_server.py"],
-      "env": {}
-    }
-  }
-}
