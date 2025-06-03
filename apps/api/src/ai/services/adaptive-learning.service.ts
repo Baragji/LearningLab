@@ -79,6 +79,9 @@ export interface AdaptiveLearningInsights {
   personalizedTips: string[];
 }
 
+// Export alias for ContentRecommendation to match controller import
+export type LearningRecommendation = ContentRecommendation;
+
 @Injectable()
 export class AdaptiveLearningService {
   private readonly logger = new Logger(AdaptiveLearningService.name);
