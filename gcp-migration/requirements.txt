@@ -1,0 +1,34 @@
+# Core dependencies for RAG + Code Assistant
+fastapi>=0.100.0
+uvicorn[standard]>=0.20.0
+pydantic>=2.0.0
+
+# ChromaDB for vector storage (replacing slow SQLite)
+chromadb>=0.4.0
+sentence-transformers>=2.2.0
+
+# Ollama client
+ollama>=0.1.0
+
+# Document processing
+pypdf2>=3.0.0
+python-docx>=1.0.0
+markdown>=3.5.0
+beautifulsoup4>=4.12.0
+
+# Google Cloud integration
+google-cloud-storage>=2.10.0
+google-cloud-logging>=3.8.0
+
+# Utilities
+aiofiles>=23.0.0
+httpx>=0.25.0
+structlog>=23.0.0
+python-multipart>=0.0.6
+
+# Performance monitoring
+prometheus-client>=0.19.0
+
+# Development
+pytest>=7.4.0
+pytest-asyncio>=0.21.0
