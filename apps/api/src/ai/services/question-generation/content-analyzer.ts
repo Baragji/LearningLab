@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { OpenAIService } from '../openai.service';
+import { AIProviderService } from '../ai-provider.service';
 import { ContentAnalysis } from './types';
 
 /**
@@ -9,7 +9,7 @@ import { ContentAnalysis } from './types';
 export class ContentAnalyzer {
   private readonly logger = new Logger(ContentAnalyzer.name);
 
-  constructor(private readonly openaiService: OpenAIService) {}
+  constructor(private readonly aiProviderService: AIProviderService) {}
 
   /**
    * Analyser indhold for at forstå emner og kompleksitet
@@ -18,7 +18,7 @@ export class ContentAnalyzer {
     const prompt = this.buildAnalysisPrompt(content);
 
     try {
-      const response = await this.openaiService.createChatCompletion(
+      const response = await this.aiProviderService.generateChatCompletion(
         [
           {
             role: 'system',
@@ -28,11 +28,11 @@ export class ContentAnalyzer {
         ],
         {
           temperature: 0.3,
-          max_tokens: 500,
+          maxTokens: 500,
         },
       );
 
-      return this.parseAnalysisResponse(response, content);
+      return this.parseAnalysisResponse(response.content, content);
     } catch (error) {
       this.logger.error('Fejl ved analyse af indhold', error);
       return this.getFallbackAnalysis(content);
@@ -60,9 +60,9 @@ Returner kun JSON uden yderligere tekst:`;
   /**
    * Parse AI response til ContentAnalysis
    */
-  private parseAnalysisResponse(response: string, content: string): ContentAnalysis {
+  private parseAnalysisResponse(responseContent: string, content: string): ContentAnalysis {
     try {
-      const parsed = JSON.parse(response);
+      const parsed = JSON.parse(responseContent);
       return {
         mainTopics: Array.isArray(parsed.mainTopics) 
           ? parsed.mainTopics.slice(0, 5) 

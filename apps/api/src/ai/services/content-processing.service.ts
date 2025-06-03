@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { EmbeddingService } from './embedding.service';
-import { OpenAIService } from './openai.service';
+import { AIProviderService } from './ai-provider.service';
 import * as pdfParse from 'pdf-parse';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -43,7 +43,7 @@ export class ContentProcessingService {
 
   constructor(
     private embeddingService: EmbeddingService,
-    private openaiService: OpenAIService,
+    private aiProviderService: AIProviderService,
   ) {}
 
   /**
@@ -163,7 +163,7 @@ Content:
 ${content.substring(0, 2000)}...
 `;
 
-      const response = await this.openaiService.createChatCompletion([
+      const response = await this.aiProviderService.generateChatCompletion([
         {
           role: 'system',
           content: 'You are an educational content analyst. Respond only with valid JSON.',
@@ -172,9 +172,12 @@ ${content.substring(0, 2000)}...
           role: 'user',
           content: prompt,
         },
-      ]);
+      ], {
+        temperature: 0.3,
+        maxTokens: 1000,
+      });
 
-      const analysis = JSON.parse(response);
+      const analysis = JSON.parse(response.content);
       
       // Add calculated fields
       const wordCount = content.split(/\s+/).length;
@@ -332,7 +335,7 @@ ${content.substring(0, 2000)}...
         .join('\n\n');
 
       // Generate questions
-      return await this.openaiService.generateQuestions(
+      return await this.aiProviderService.generateQuestions(
         fullContent,
         questionCount,
         difficulty,
