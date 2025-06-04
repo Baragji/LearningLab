@@ -12,7 +12,7 @@
 * **Backend Framework**: NestJS v10.3.10 (Node.js-baseret)
 * **Primære Programmeringssprog**: TypeScript v5.3.3 (strict mode)
 * **Database System**: PostgreSQL med Prisma ORM v6.8.2
-* **Runtime Environment**: Node.js ≥18.0.0
+* **Runtime Environment**: Node.js v22
 * **Package Manager**: Yarn v4.9.1
 * **Monorepo Management**: Turborepo v2.5.3
 
