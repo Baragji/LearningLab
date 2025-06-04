@@ -56,7 +56,7 @@ export class AIProviderService {
         return !!apiKey;
       }
     } catch (error) {
-      this.logger.error(`AI provider ${this.provider} is not available:`, error.message);
+      this.logger.error(`AI provider ${this.provider} is not available:`, (error as Error).message);
       return false;
     }
   }
@@ -109,7 +109,7 @@ export class AIProviderService {
         };
       }
     } catch (error) {
-      this.logger.error('Failed to generate completion:', error.message);
+      this.logger.error('Failed to generate completion:', (error as Error).message);
       throw error;
     }
   }
@@ -162,7 +162,7 @@ export class AIProviderService {
         };
       }
     } catch (error) {
-      this.logger.error('Failed to generate chat completion:', error.message);
+      this.logger.error('Failed to generate chat completion:', (error as Error).message);
       throw error;
     }
   }
@@ -175,10 +175,10 @@ export class AIProviderService {
       if (this.provider === 'ollama') {
         return await this.ollamaService.generateEmbedding(text, model);
       } else {
-        return await this.openaiService.createEmbedding(text);
+        return await this.openaiService.getEmbedding(text);
       }
     } catch (error) {
-      this.logger.error('Failed to generate embedding:', error.message);
+      this.logger.error('Failed to generate embedding:', (error as Error).message);
       throw error;
     }
   }
@@ -194,13 +194,13 @@ export class AIProviderService {
         // For OpenAI, generate embeddings one by one
         const embeddings: number[][] = [];
         for (const text of texts) {
-          const embedding = await this.openaiService.createEmbedding(text);
+          const embedding = await this.openaiService.getEmbedding(text);
           embeddings.push(embedding);
         }
         return embeddings;
       }
     } catch (error) {
-      this.logger.error('Failed to generate embeddings:', error.message);
+      this.logger.error('Failed to generate embeddings:', (error as Error).message);
       throw error;
     }
   }
@@ -238,7 +238,7 @@ ${content}
         return await this.openaiService.generateQuestions(content, questionCount, difficulty);
       }
     } catch (error) {
-      this.logger.error('Failed to generate questions:', error.message);
+      this.logger.error('Failed to generate questions:', (error as Error).message);
       throw error;
     }
   }
@@ -262,7 +262,7 @@ ${content}
         ];
       }
     } catch (error) {
-      this.logger.error('Failed to get available models:', error.message);
+      this.logger.error('Failed to get available models:', (error as Error).message);
       return [];
     }
   }

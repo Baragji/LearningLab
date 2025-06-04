@@ -307,7 +307,7 @@ export class DifficultyAdjustmentService {
       return result;
     } catch (error) {
       this.logger.error('Failed to adjust difficulty level', error);
-      throw new Error(`Failed to adjust difficulty level: ${error.message}`);
+      throw new Error(`Failed to adjust difficulty level: ${(error as Error).message}`);
     }
   }
 
@@ -357,7 +357,7 @@ export class DifficultyAdjustmentService {
       };
     } catch (error) {
       this.logger.error('Failed to generate adaptive question config', error);
-      throw new Error(`Failed to generate adaptive question config: ${error.message}`);
+      throw new Error(`Failed to generate adaptive question config: ${(error as Error).message}`);
     }
   }
 
@@ -409,7 +409,7 @@ export class DifficultyAdjustmentService {
       };
     } catch (error) {
       this.logger.error('Failed to perform real-time adjustment', error);
-      throw new Error(`Failed to perform real-time adjustment: ${error.message}`);
+      throw new Error(`Failed to perform real-time adjustment: ${(error as Error).message}`);
     }
   }
 
@@ -462,7 +462,7 @@ export class DifficultyAdjustmentService {
       return calibrationResult;
     } catch (error) {
       this.logger.error('Failed to calibrate question difficulty', error);
-      throw new Error(`Failed to calibrate question difficulty: ${error.message}`);
+      throw new Error(`Failed to calibrate question difficulty: ${(error as Error).message}`);
     }
   }
 

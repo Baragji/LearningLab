@@ -124,7 +124,7 @@ export class AdaptiveLearningService {
       return adjustment;
     } catch (error) {
       this.logger.error('Failed to analyze difficulty adjustment', error);
-      throw new Error(`Failed to analyze difficulty adjustment: ${error.message}`);
+      throw new Error(`Failed to analyze difficulty adjustment: ${(error as Error).message}`);
     }
   }
 
@@ -165,7 +165,7 @@ export class AdaptiveLearningService {
       return learningPath;
     } catch (error) {
       this.logger.error('Failed to generate personalized learning path', error);
-      throw new Error(`Failed to generate personalized learning path: ${error.message}`);
+      throw new Error(`Failed to generate personalized learning path: ${(error as Error).message}`);
     }
   }
 
@@ -196,7 +196,7 @@ export class AdaptiveLearningService {
       return aiRecommendations;
     } catch (error) {
       this.logger.error('Failed to get content recommendations', error);
-      throw new Error(`Failed to get content recommendations: ${error.message}`);
+      throw new Error(`Failed to get content recommendations: ${(error as Error).message}`);
     }
   }
 
@@ -240,7 +240,7 @@ export class AdaptiveLearningService {
       return insights;
     } catch (error) {
       this.logger.error('Failed to generate learning insights', error);
-      throw new Error(`Failed to generate learning insights: ${error.message}`);
+      throw new Error(`Failed to generate learning insights: ${(error as Error).message}`);
     }
   }
 
@@ -271,7 +271,7 @@ export class AdaptiveLearningService {
       return updatedPath;
     } catch (error) {
       this.logger.error('Failed to update learning path', error);
-      throw new Error(`Failed to update learning path: ${error.message}`);
+      throw new Error(`Failed to update learning path: ${(error as Error).message}`);
     }
   }
 
@@ -743,5 +743,91 @@ Tilpas læringsstien for optimal progression i JSON format:
         'Byg videre på dine styrker',
       ],
     };
+  }
+
+  /**
+   * Analyze user performance data
+   */
+  async analyzeUserPerformance(
+    userId: number,
+    courseId?: number,
+    timeframe?: string,
+  ): Promise<UserPerformanceData> {
+    try {
+      this.logger.log(`Analyzing performance for user ${userId}`);
+      
+      // This would typically fetch real data from database
+      // For now, return mock data structure
+      return {
+        userId,
+        courseId,
+        totalQuestions: 50,
+        correctAnswers: 35,
+        averageResponseTime: 45,
+        difficultyLevel: 'intermediate',
+        learningStyle: 'visual',
+        strengths: ['Mathematics', 'Logic'],
+        weaknesses: ['Reading Comprehension', 'Writing'],
+        lastActivity: new Date(),
+        streakDays: 7,
+        totalStudyTime: 1200,
+      };
+    } catch (error) {
+      this.logger.error('Failed to analyze user performance', error);
+      throw new Error(`Failed to analyze performance: ${(error as Error).message}`);
+    }
+  }
+
+  /**
+   * Generate personalized recommendations
+   */
+  async generatePersonalizedRecommendations(
+    userId: number,
+    performanceData?: UserPerformanceData,
+    preferences?: any,
+  ): Promise<LearningRecommendation[]> {
+    try {
+      this.logger.log(`Generating recommendations for user ${userId}`);
+      
+      const userData = performanceData || await this.analyzeUserPerformance(userId);
+      
+      // Generate recommendations based on performance
+      const recommendations: LearningRecommendation[] = [];
+      
+      // Add weakness-focused recommendations
+      userData.weaknesses.forEach((weakness, index) => {
+        recommendations.push({
+          id: `weakness-${index}`,
+          type: 'skill_improvement',
+          title: `Improve ${weakness}`,
+          description: `Focus on strengthening your ${weakness} skills`,
+          priority: 'high',
+          estimatedTime: 30,
+          difficulty: userData.difficultyLevel,
+          confidence: 0.8,
+          actions: [`Practice ${weakness} exercises`, `Review ${weakness} concepts`],
+        });
+      });
+      
+      // Add strength-building recommendations
+      userData.strengths.forEach((strength, index) => {
+        recommendations.push({
+          id: `strength-${index}`,
+          type: 'skill_advancement',
+          title: `Advance ${strength}`,
+          description: `Build upon your strong ${strength} foundation`,
+          priority: 'medium',
+          estimatedTime: 25,
+          difficulty: userData.difficultyLevel,
+          confidence: 0.9,
+          actions: [`Advanced ${strength} challenges`, `Apply ${strength} in new contexts`],
+        });
+      });
+      
+      return recommendations.slice(0, 5); // Return top 5 recommendations
+    } catch (error) {
+      this.logger.error('Failed to generate personalized recommendations', error);
+      throw new Error(`Failed to generate recommendations: ${(error as Error).message}`);
+    }
   }
 }
