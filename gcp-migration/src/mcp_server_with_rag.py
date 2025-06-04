@@ -27,9 +27,9 @@ async def startup_event():
     """Initialize services on startup"""
     global rag_engine
     try:
-        # Try to initialize RAG engine with fixed version
+        # Try to initialize RAG engine with OpenAI version
         try:
-            from rag_engine_fixed import RAGEngine
+            from rag_engine_openai import RAGEngine
             rag_engine = RAGEngine()
             await rag_engine.initialize()
             logger.info("✅ RAG engine initialized successfully")
