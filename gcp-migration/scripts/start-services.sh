@@ -37,12 +37,20 @@ CHROMADB_PID=$!
 # Wait for ChromaDB to be ready
 check_service "http://localhost:8000/api/v1/heartbeat" "ChromaDB"
 
-# Verify OpenAI API key is set
-if [ -z "$OPENAI_API_KEY" ]; then
-    echo "⚠️  Warning: OPENAI_API_KEY environment variable is not set"
-    echo "   The service will start but OpenAI features may not work"
+# Load environment variables from .env file
+if [ -f "../.env" ]; then
+    echo "📄 Loading environment variables from .env file..."
+    export $(cat ../.env | grep -v '^#' | xargs)
 else
-    echo "✅ OpenAI API key is configured"
+    echo "⚠️  Warning: .env file not found. Checking for OPENAI_API_KEY..."
+fi
+
+# Verify OpenAI API Key
+if [ -z "$OPENAI_API_KEY" ]; then
+    echo "❌ Error: OPENAI_API_KEY is not set"
+    echo "Please create a .env file in the gcp-migration directory with:"
+    echo "OPENAI_API_KEY=your-api-key-here"
+    exit 1
 fi
 
 # Start Code Assistant MCP Server

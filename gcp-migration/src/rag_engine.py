@@ -34,10 +34,15 @@ class RAGEngine:
         
         # Initialize OpenAI client with error handling
         try:
-            self.openai_client = openai.OpenAI()
-            # Test connection
-            models = self.openai_client.models.list()
-            logger.info("OpenAI client initialized successfully")
+            api_key = os.getenv('OPENAI_API_KEY')
+            if api_key:
+                self.openai_client = openai.OpenAI(api_key=api_key)
+                # Test connection
+                models = self.openai_client.models.list()
+                logger.info("OpenAI client initialized successfully")
+            else:
+                logger.warning("OPENAI_API_KEY not found in environment variables")
+                self.openai_client = None
         except Exception as e:
             logger.warning("OpenAI client initialization failed - continuing without it", error=str(e))
             self.openai_client = None
