@@ -421,18 +421,23 @@ export class AIController {
       performanceHistory: UserPerformanceDto[];
       learningGoals?: string[];
     },
-  ): Promise<LearningRecommendation> {
+  ) {
     try {
       const performanceData: UserPerformanceData[] = body.performanceHistory.map(p => ({
         ...p,
         lastActivity: new Date(p.lastActivity),
       }));
 
-      return await this.adaptiveLearningService.generatePersonalizedRecommendations(
+      const recommendations = await this.adaptiveLearningService.generatePersonalizedRecommendations(
         body.userId,
         undefined,
         body.learningGoals,
       );
+
+      return {
+        success: true,
+        data: recommendations,
+      };
     } catch (error) {
       this.logger.error('Failed to generate recommendations', error);
       throw new HttpException(
