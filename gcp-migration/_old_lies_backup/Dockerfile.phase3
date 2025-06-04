@@ -1,0 +1,63 @@
+# Phase 3: Optimized Dockerfile for Full RAG with Ollama + ChromaDB
+# Designed for Google Cloud Run with enhanced performance and reliability
+FROM python:3.11-slim
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    curl \
+    wget \
+    git \
+    build-essential \
+    ca-certificates \
+    procps \
+    htop \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create working directory
+WORKDIR /app
+
+# Copy and install Python requirements first (for better caching)
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Install Ollama with optimized settings
+RUN curl -fsSL https://ollama.ai/install.sh | sh
+
+# Create ollama user and directories
+RUN useradd -m -s /bin/bash ollama && \
+    mkdir -p /app/data /app/models /app/logs /app/chromadb /app/uploads && \
+    chown -R ollama:ollama /app/models /app/data
+
+# Copy application code
+COPY src/ ./src/
+COPY scripts/ ./scripts/
+
+# Set up environment variables for Phase 3
+ENV OLLAMA_HOST=0.0.0.0
+ENV OLLAMA_PORT=11434
+ENV CODE_ASSISTANT_PORT=8080
+ENV CHROMADB_HOST=0.0.0.0
+ENV CHROMADB_PORT=8000
+ENV PYTHONPATH=/app
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Performance optimizations for Cloud Run
+ENV OLLAMA_NUM_PARALLEL=2
+ENV OLLAMA_MAX_LOADED_MODELS=2
+ENV OLLAMA_FLASH_ATTENTION=1
+ENV CHROMADB_ALLOW_RESET=true
+ENV PYTHONUNBUFFERED=1
+
+# Expose ports
+EXPOSE 11434 8080 8000
+
+# Copy Phase 3 startup script
+COPY scripts/start-services-phase3.sh /start-services-phase3.sh
+RUN chmod +x /start-services-phase3.sh
+
+# Health check optimized for Phase 3 with longer startup time
+HEALTHCHECK --interval=30s --timeout=30s --start-period=300s --retries=3 \
+    CMD curl -f http://localhost:8080/health || exit 1
+
+# Start all services with Phase 3 optimizations
+CMD ["/start-services-phase3.sh"]
