@@ -1,51 +1,63 @@
 """
-Fixed RAG Engine with ChromaDB for fast vector search
-Uses local writable directory instead of hardcoded /app/chromadb
+RAG Engine with OpenAI API integration
+Fast vector search with ChromaDB + OpenAI embeddings and LLM
 """
 
 import asyncio
 import logging
 import os
 import time
-import tempfile
 from typing import List, Dict, Any, Optional
 from pathlib import Path
 
 import chromadb
 from chromadb.config import Settings
 import openai
+from dotenv import load_dotenv
 
-# Setup basic logging instead of structlog to avoid dependency issues
+# Load environment variables
+load_dotenv()
+
+# Setup logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 class RAGEngine:
     """
-    Fast RAG engine using ChromaDB for vector storage
-    Fixed to use local writable directory
+    RAG engine using ChromaDB + OpenAI API
     """
     
     def __init__(self, 
                  chromadb_path: Optional[str] = None,
-                 embedding_model: str = "text-embedding-ada-002",
-                 llm_model: str = "gpt-3.5-turbo"):
+                 embedding_model: Optional[str] = None,
+                 llm_model: Optional[str] = None):
         
-        # Use local data directory or temp directory
+        # Get models from environment or use defaults
+        self.embedding_model = embedding_model or os.getenv("OPENAI_EMBEDDING_MODEL", "text-embedding-3-small")
+        self.llm_model = llm_model or os.getenv("OPENAI_LLM_MODEL", "gpt-3.5-turbo")
+        
+        # Set ChromaDB path
         if chromadb_path is None:
-            # Create local data directory
-            current_dir = Path(__file__).parent.parent
-            self.chromadb_path = str(current_dir / "data" / "chromadb")
+            env_path = os.getenv("CHROMADB_PATH")
+            if env_path:
+                self.chromadb_path = env_path
+            else:
+                current_dir = Path(__file__).parent.parent
+                self.chromadb_path = str(current_dir / "data" / "chromadb")
             os.makedirs(self.chromadb_path, exist_ok=True)
         else:
             self.chromadb_path = chromadb_path
             
         # Initialize OpenAI client
-        self.openai_client = openai.OpenAI()
+        api_key = os.getenv("OPENAI_API_KEY")
+        if not api_key:
+            raise ValueError("OPENAI_API_KEY environment variable is required")
         
-        self.embedding_model = embedding_model
-        self.llm_model = llm_model
+        self.openai_client = openai.OpenAI(api_key=api_key)
         
         logger.info(f"Initializing RAG engine with ChromaDB path: {self.chromadb_path}")
+        logger.info(f"Using embedding model: {self.embedding_model}")
+        logger.info(f"Using LLM model: {self.llm_model}")
         
         # Initialize ChromaDB client
         try:
@@ -63,9 +75,8 @@ class RAGEngine:
         
         # Test OpenAI client
         try:
-            # Test the connection by listing models
             models = self.openai_client.models.list()
-            logger.info("OpenAI client initialized successfully")
+            logger.info(f"OpenAI client initialized successfully - {len(models.data)} models available")
         except Exception as e:
             logger.error(f"Failed to initialize OpenAI client: {e}")
             raise
@@ -73,7 +84,7 @@ class RAGEngine:
         # Get or create collection
         try:
             self.collection = self.chroma_client.get_or_create_collection(
-                name="code_knowledge",
+                name="code_knowledge_openai",
                 metadata={"description": "Code and documentation embeddings"}
             )
             logger.info(f"Collection initialized with {self.collection.count()} documents")
@@ -99,14 +110,13 @@ class RAGEngine:
             logger.warning(f"No chunks created from content: {metadata}")
             return 0
         
-        # Generate embeddings using Ollama
+        # Generate embeddings using OpenAI
         embeddings = []
         chunk_texts = []
         chunk_metadatas = []
         chunk_ids = []
         
         for i, chunk in enumerate(chunks):
-            # Generate embedding
             try:
                 response = self.openai_client.embeddings.create(
                     model=self.embedding_model,
@@ -380,7 +390,7 @@ class RAGEngine:
     
     async def _generate_response(self, query: str, context: str) -> str:
         """
-        Generate response using Ollama LLM
+        Generate response using OpenAI LLM
         """
         prompt = f"""Based on the following code and documentation context, please answer the question.
 
@@ -581,7 +591,7 @@ Explanation:"""
 # Test function
 async def test_rag_engine():
     """Test the RAG engine with sample data"""
-    print("🧪 Testing RAG Engine...")
+    print("🧪 Testing OpenAI RAG Engine...")
     
     try:
         # Initialize RAG engine
