@@ -21,6 +21,17 @@ export interface FeedbackRequest {
   difficultyLevel?: 'beginner' | 'intermediate' | 'advanced';
 }
 
+export interface SingleQuestionFeedbackRequest {
+  userId: number;
+  questionId: number;
+  userAnswer: string;
+  correctAnswer: string;
+  questionText: string;
+  questionTopic?: string;
+  confidence?: number;
+  timeSpent?: number;
+}
+
 export interface PersonalizedFeedback {
   overallScore: number;
   strengths: string[];
@@ -114,7 +125,7 @@ export class AIFeedbackService {
       };
     } catch (error) {
       this.logger.error('Failed to generate quiz feedback', error);
-      throw new Error(`Failed to generate quiz feedback: ${error.message}`);
+      throw new Error(`Failed to generate quiz feedback: ${(error as Error).message}`);
     }
   }
 
@@ -158,7 +169,7 @@ export class AIFeedbackService {
       return parsedResponse;
     } catch (error) {
       this.logger.error('Failed to provide learning assistance', error);
-      throw new Error(`Failed to provide learning assistance: ${error.message}`);
+      throw new Error(`Failed to provide learning assistance: ${(error as Error).message}`);
     }
   }
 
@@ -176,7 +187,7 @@ export class AIFeedbackService {
       return [];
     } catch (error) {
       this.logger.error('Failed to get feedback history', error);
-      throw new Error(`Failed to get feedback history: ${error.message}`);
+      throw new Error(`Failed to get feedback history: ${(error as Error).message}`);
     }
   }
 
@@ -400,6 +411,87 @@ Giv indsigter i JSON format:
     const baseTime = incorrectAnswers * 5;
     // Add buffer time
     return Math.max(baseTime, 10); // Minimum 10 minutes
+  }
+
+  /**
+   * Generate feedback for a single question
+   */
+  async generateFeedback(
+    request: SingleQuestionFeedbackRequest,
+  ): Promise<FeedbackResponse> {
+    try {
+      const {
+        userId,
+        questionId,
+        userAnswer,
+        correctAnswer,
+        questionText,
+        questionTopic,
+        confidence,
+        timeSpent,
+      } = request;
+
+      const isCorrect = userAnswer.toLowerCase().trim() === correctAnswer.toLowerCase().trim();
+      
+      // Generate AI-powered feedback
+      const feedbackText = await this.generateAIFeedback({
+        questionText,
+        userAnswer,
+        correctAnswer,
+        isCorrect,
+        questionTopic,
+        confidence,
+        timeSpent,
+      });
+
+      return {
+        questionId,
+        isCorrect,
+        feedback: feedbackText,
+        score: isCorrect ? 100 : 0,
+        suggestions: isCorrect ? [] : await this.generateSuggestions(questionTopic),
+        confidence: confidence || 0.5,
+      };
+    } catch (error) {
+      this.logger.error('Failed to generate single question feedback', error);
+      throw new Error(`Failed to generate feedback: ${(error as Error).message}`);
+    }
+  }
+
+  /**
+   * Generate AI-powered feedback for a single question
+   */
+  private async generateAIFeedback(params: {
+    questionText: string;
+    userAnswer: string;
+    correctAnswer: string;
+    isCorrect: boolean;
+    questionTopic?: string;
+    confidence?: number;
+    timeSpent?: number;
+  }): Promise<string> {
+    const { questionText, userAnswer, correctAnswer, isCorrect, questionTopic } = params;
+    
+    if (isCorrect) {
+      return `Excellent! Your answer "${userAnswer}" is correct. ${questionTopic ? `You demonstrate good understanding of ${questionTopic}.` : ''}`;
+    } else {
+      return `Your answer "${userAnswer}" is not quite right. The correct answer is "${correctAnswer}". ${questionTopic ? `Consider reviewing the concepts related to ${questionTopic}.` : ''}`;
+    }
+  }
+
+  /**
+   * Generate suggestions for improvement
+   */
+  private async generateSuggestions(questionTopic?: string): Promise<string[]> {
+    if (!questionTopic) {
+      return ['Review the material and try again', 'Take your time to read the question carefully'];
+    }
+    
+    return [
+      `Study more about ${questionTopic}`,
+      `Practice similar questions on ${questionTopic}`,
+      `Review the key concepts of ${questionTopic}`,
+    ];
   }
 
   /**

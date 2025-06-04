@@ -118,8 +118,8 @@ export interface ChartData {
   datasets: {
     label: string;
     data: number[];
-    backgroundColor?: string;
-    borderColor?: string;
+    backgroundColor?: string | string[];
+    borderColor?: string | string[];
     fill?: boolean;
   }[];
 }
@@ -211,7 +211,7 @@ export class LearningAnalyticsService {
       return dashboardData;
     } catch (error) {
       this.logger.error('Failed to generate dashboard data', error);
-      throw new Error(`Failed to generate dashboard data: ${error.message}`);
+      throw new Error(`Failed to generate dashboard data: ${(error as Error).message}`);
     }
   }
 
@@ -278,7 +278,7 @@ export class LearningAnalyticsService {
       };
     } catch (error) {
       this.logger.error('Failed to calculate learning metrics', error);
-      throw new Error(`Failed to calculate learning metrics: ${error.message}`);
+      throw new Error(`Failed to calculate learning metrics: ${(error as Error).message}`);
     }
   }
 
@@ -358,7 +358,7 @@ export class LearningAnalyticsService {
       return conceptMasteryData.sort((a, b) => b.masteryLevel - a.masteryLevel);
     } catch (error) {
       this.logger.error('Failed to analyze concept mastery', error);
-      throw new Error(`Failed to analyze concept mastery: ${error.message}`);
+      throw new Error(`Failed to analyze concept mastery: ${(error as Error).message}`);
     }
   }
 
@@ -403,7 +403,7 @@ export class LearningAnalyticsService {
       };
     } catch (error) {
       this.logger.error('Failed to analyze learning patterns', error);
-      throw new Error(`Failed to analyze learning patterns: ${error.message}`);
+      throw new Error(`Failed to analyze learning patterns: ${(error as Error).message}`);
     }
   }
 
@@ -437,7 +437,7 @@ export class LearningAnalyticsService {
       };
     } catch (error) {
       this.logger.error('Failed to generate progress prediction', error);
-      throw new Error(`Failed to generate progress prediction: ${error.message}`);
+      throw new Error(`Failed to generate progress prediction: ${(error as Error).message}`);
     }
   }
 
@@ -552,7 +552,7 @@ Generer indsigter og anbefalinger i JSON format:
       };
     } catch (error) {
       this.logger.error('Failed to generate visualization data', error);
-      throw new Error(`Failed to generate visualization data: ${error.message}`);
+      throw new Error(`Failed to generate visualization data: ${(error as Error).message}`);
     }
   }
 

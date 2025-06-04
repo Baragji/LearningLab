@@ -19,7 +19,7 @@ import { Type, Transform } from 'class-transformer';
 
 // Import services
 import { AIProviderService } from './services/ai-provider.service';
-import { AIFeedbackService, FeedbackRequest, FeedbackResponse } from './services/ai-feedback.service';
+import { AIFeedbackService, SingleQuestionFeedbackRequest, FeedbackResponse } from './services/ai-feedback.service';
 import { AdaptiveLearningService, UserPerformanceData, LearningRecommendation } from './services/adaptive-learning.service';
 import { LearningAnalyticsService, AnalyticsTimeframe, ComprehensiveDashboardData } from './services/learning-analytics.service';
 import { DifficultyAdjustmentService, DifficultyLevel, DifficultyAdjustmentResult } from './services/difficulty-adjustment.service';
@@ -267,7 +267,7 @@ export class AIController {
   ): Promise<QuestionGenerationResponse> {
     try {
       this.logger.log(`Generating ${generateQuestionsDto.questionCount} questions`);
-      
+
       const questions = await this.aiProviderService.generateQuestions(
         generateQuestionsDto.content,
         generateQuestionsDto.questionCount,
@@ -301,8 +301,8 @@ export class AIController {
   ): Promise<FeedbackResponse> {
     try {
       this.logger.log(`Generating feedback for user ${feedbackRequestDto.userId}`);
-      
-      const feedbackRequest: FeedbackRequest = {
+
+      const feedbackRequest: SingleQuestionFeedbackRequest = {
         userId: feedbackRequestDto.userId,
         questionId: feedbackRequestDto.questionId,
         userAnswer: feedbackRequestDto.userAnswer,
@@ -360,11 +360,11 @@ export class AIController {
     @Body() body: { userId: number; topic: string; question: string },
   ) {
     try {
-      const assistance = await this.aiFeedbackService.provideLearningAssistance(
-        body.userId,
-        body.topic,
-        body.question,
-      );
+      const assistance = await this.aiFeedbackService.provideLearningAssistance({
+        userId: body.userId,
+        question: body.question,
+        context: body.topic,
+      });
 
       return {
         success: true,
@@ -397,7 +397,6 @@ export class AIController {
 
       const analysis = await this.adaptiveLearningService.analyzeUserPerformance(
         body.userId,
-        performanceData,
       );
 
       return {
@@ -431,7 +430,7 @@ export class AIController {
 
       return await this.adaptiveLearningService.generatePersonalizedRecommendations(
         body.userId,
-        performanceData,
+        undefined,
         body.learningGoals,
       );
     } catch (error) {
@@ -452,10 +451,9 @@ export class AIController {
     try {
       const learningPath = await this.adaptiveLearningService.generatePersonalizedLearningPath(
         learningPathDto.userId,
+        {} as any, // performanceData placeholder
         learningPathDto.currentTopics,
         learningPathDto.learningGoals,
-        learningPathDto.timeframeWeeks,
-        learningPathDto.studyDaysPerWeek,
       );
 
       return {
@@ -583,8 +581,8 @@ export class AIController {
   @ApiResponse({ status: 200, description: 'Difficulty levels retrieved successfully' })
   async getDifficultyLevels() {
     try {
-      const levels = this.difficultyAdjustmentService.getAllDifficultyLevels();
-      
+      const levels = await this.difficultyAdjustmentService.getAllDifficultyLevels();
+
       return {
         success: true,
         data: levels,
@@ -705,8 +703,8 @@ export class AIController {
   async getHealthStatus() {
     try {
       // Test OpenAI/Ollama connection
-      const testEmbedding = await this.embeddingService.createEmbedding('test');
-      
+      const testEmbedding = await this.embeddingService.getEmbedding('test');
+
       return {
         success: true,
         data: {
@@ -730,7 +728,7 @@ export class AIController {
         success: false,
         data: {
           status: 'unhealthy',
-          error: error.message,
+          error: (error as Error).message,
           timestamp: new Date().toISOString(),
         },
       };

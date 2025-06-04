@@ -82,7 +82,7 @@ export class OllamaService {
         return config;
       },
       (error) => {
-        this.logger.error('Ollama Request Error:', error.message);
+        this.logger.error('Ollama Request Error:', (error as Error).message);
         return Promise.reject(error);
       },
     );
@@ -93,7 +93,7 @@ export class OllamaService {
         return response;
       },
       (error) => {
-        this.logger.error('Ollama Response Error:', error.message);
+        this.logger.error('Ollama Response Error:', (error as Error).message);
         return Promise.reject(error);
       },
     );
@@ -107,7 +107,7 @@ export class OllamaService {
       const response = await this.httpClient.get('/api/tags');
       return response.status === 200;
     } catch (error) {
-      this.logger.error('Ollama health check failed:', error.message);
+      this.logger.error('Ollama health check failed:', (error as Error).message);
       return false;
     }
   }
@@ -120,7 +120,7 @@ export class OllamaService {
       const response: AxiosResponse<{ models: OllamaModelInfo[] }> = await this.httpClient.get('/api/tags');
       return response.data.models || [];
     } catch (error) {
-      this.logger.error('Failed to get Ollama models:', error.message);
+      this.logger.error('Failed to get Ollama models:', (error as Error).message);
       throw new HttpException(
         'Failed to retrieve available models from Ollama',
         HttpStatus.SERVICE_UNAVAILABLE,
@@ -136,7 +136,7 @@ export class OllamaService {
       const models = await this.getModels();
       return models.some(model => model.name === modelName);
     } catch (error) {
-      this.logger.error(`Failed to check model availability for ${modelName}:`, error.message);
+      this.logger.error(`Failed to check model availability for ${modelName}:`, (error as Error).message);
       return false;
     }
   }
@@ -188,7 +188,7 @@ export class OllamaService {
       this.logger.debug(`Completion generated successfully. Length: ${response.data.response.length}`);
       return response.data.response;
     } catch (error) {
-      this.logger.error('Failed to generate completion:', error.message);
+      this.logger.error('Failed to generate completion:', (error as Error).message);
       
       if (error.response?.status === 404) {
         throw new HttpException(
@@ -238,7 +238,7 @@ export class OllamaService {
       this.logger.debug(`Embedding generated successfully. Dimensions: ${response.data.embedding.length}`);
       return response.data.embedding;
     } catch (error) {
-      this.logger.error('Failed to generate embedding:', error.message);
+      this.logger.error('Failed to generate embedding:', (error as Error).message);
       
       if (error.response?.status === 404) {
         throw new HttpException(
@@ -265,7 +265,7 @@ export class OllamaService {
         const embedding = await this.generateEmbedding(text, model);
         embeddings.push(embedding);
       } catch (error) {
-        this.logger.error(`Failed to generate embedding for text: ${text.substring(0, 50)}...`, error.message);
+        this.logger.error(`Failed to generate embedding for text: ${text.substring(0, 50)}...`, (error as Error).message);
         // Continue with other texts, but log the error
         embeddings.push([]);
       }
@@ -284,7 +284,7 @@ export class OllamaService {
       this.logger.log(`Model ${modelName} pulled successfully`);
       return true;
     } catch (error) {
-      this.logger.error(`Failed to pull model ${modelName}:`, error.message);
+      this.logger.error(`Failed to pull model ${modelName}:`, (error as Error).message);
       return false;
     }
   }
