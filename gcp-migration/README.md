@@ -12,22 +12,22 @@
    - Health endpoint viser RAG status
    - Port: 8080 (konfigurerbar via CODE_ASSISTANT_PORT)
 
-2. **RAG Engine** ⭐ **FIXED!**
-   - `src/rag_engine_fixed.py` virker perfekt lokalt
+2. **RAG Engine** ⭐ **MIGRATED TO OPENAI!**
+   - `src/rag_engine.py` og `src/rag_engine_fixed.py` bruger nu OpenAI
    - ChromaDB bruger lokal skrivbar mappe (`data/chromadb/`)
-   - Embeddings genereres med Ollama nomic-embed-text
-   - LLM responses via Ollama llama3.1:8b
+   - Embeddings genereres med OpenAI text-embedding-3-small
+   - LLM responses via OpenAI gpt-4o-mini
    - Smart chunking for kode, markdown og tekst
    - Vector search med similarity scoring
 
-3. **Ollama Setup** (Komplet funktionelt)
-   - Ollama kører på localhost:11434
-   - Modeller installeret:
-     - `llama3.1:8b` (4.9 GB) ✅
-     - `nomic-embed-text:latest` (274 MB) ✅
-     - `llama2:latest` (3.8 GB) ✅
-   - API endpoints virker perfekt
-   - Embeddings genereres korrekt (768 dimensioner)
+3. **OpenAI Setup** (Cloud-baseret)
+   - Bruger OpenAI API i stedet for lokal Ollama
+   - Kræver OPENAI_API_KEY environment variable
+   - Modeller:
+     - `text-embedding-3-small` (embeddings) ✅
+     - `gpt-4o-mini` (chat completions) ✅
+   - API endpoints via OpenAI cloud
+   - Embeddings genereres korrekt (1536 dimensioner)
 
 ### ❌ **Hvad der IKKE virker:**
 

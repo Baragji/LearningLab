@@ -13,7 +13,7 @@ from pathlib import Path
 
 import chromadb
 from chromadb.config import Settings
-import ollama
+import openai
 
 # Setup basic logging instead of structlog to avoid dependency issues
 logging.basicConfig(level=logging.INFO)
@@ -27,9 +27,8 @@ class RAGEngine:
     
     def __init__(self, 
                  chromadb_path: Optional[str] = None,
-                 ollama_host: str = "localhost:11434",
-                 embedding_model: str = "nomic-embed-text",
-                 llm_model: str = "llama3.1:8b"):
+                 embedding_model: str = "text-embedding-ada-002",
+                 llm_model: str = "gpt-3.5-turbo"):
         
         # Use local data directory or temp directory
         if chromadb_path is None:
@@ -40,7 +39,9 @@ class RAGEngine:
         else:
             self.chromadb_path = chromadb_path
             
-        self.ollama_host = ollama_host
+        # Initialize OpenAI client
+        self.openai_client = openai.OpenAI()
+        
         self.embedding_model = embedding_model
         self.llm_model = llm_model
         
@@ -60,12 +61,13 @@ class RAGEngine:
             logger.error(f"Failed to initialize ChromaDB: {e}")
             raise
         
-        # Initialize Ollama client
+        # Test OpenAI client
         try:
-            self.ollama_client = ollama.Client(host=f"http://{ollama_host}")
-            logger.info("Ollama client initialized")
+            # Test the connection by listing models
+            models = self.openai_client.models.list()
+            logger.info("OpenAI client initialized successfully")
         except Exception as e:
-            logger.error(f"Failed to initialize Ollama client: {e}")
+            logger.error(f"Failed to initialize OpenAI client: {e}")
             raise
         
         # Get or create collection
@@ -106,11 +108,11 @@ class RAGEngine:
         for i, chunk in enumerate(chunks):
             # Generate embedding
             try:
-                response = self.ollama_client.embeddings(
+                response = self.openai_client.embeddings.create(
                     model=self.embedding_model,
-                    prompt=chunk["text"]
+                    input=chunk["text"]
                 )
-                embeddings.append(response["embedding"])
+                embeddings.append(response.data[0].embedding)
                 chunk_texts.append(chunk["text"])
                 
                 # Create metadata for this chunk
@@ -298,11 +300,11 @@ class RAGEngine:
         
         # Generate query embedding
         try:
-            response = self.ollama_client.embeddings(
+            response = self.openai_client.embeddings.create(
                 model=self.embedding_model,
-                prompt=query
+                input=query
             )
-            query_embedding = response["embedding"]
+            query_embedding = response.data[0].embedding
         except Exception as e:
             logger.error(f"Failed to generate query embedding: {e}")
             raise
@@ -392,28 +394,28 @@ Please provide a helpful and accurate answer based on the context provided. If t
 Answer:"""
 
         try:
-            response = self.ollama_client.generate(
+            response = self.openai_client.chat.completions.create(
                 model=self.llm_model,
-                prompt=prompt,
-                options={
-                    "temperature": 0.1,
-                    "top_p": 0.9,
-                    "num_predict": 1000
-                }
+                messages=[
+                    {"role": "user", "content": prompt}
+                ],
+                temperature=0.1,
+                top_p=0.9,
+                max_tokens=1000
             )
-            return response["response"]
+            return response.choices[0].message.content
         except Exception as e:
             logger.error(f"Failed to generate LLM response: {e}")
             return f"Error generating response: {str(e)}"
     
     async def initialize(self):
         """Initialize the RAG engine"""
-        # Test Ollama connection
+        # Test OpenAI connection
         try:
-            models = self.ollama_client.list()
-            logger.info(f"Ollama connection successful - {len(models.get('models', []))} models available")
+            models = self.openai_client.models.list()
+            logger.info(f"OpenAI connection successful - {len(models.data)} models available")
         except Exception as e:
-            logger.error(f"Failed to connect to Ollama: {e}")
+            logger.error(f"Failed to connect to OpenAI: {e}")
             raise
         
         # Test ChromaDB
@@ -427,8 +429,8 @@ Answer:"""
     def is_ready(self) -> bool:
         """Check if the RAG engine is ready"""
         try:
-            # Test Ollama
-            self.ollama_client.list()
+            # Test OpenAI
+            self.openai_client.models.list()
             # Test ChromaDB
             self.collection.count()
             return True
@@ -455,12 +457,15 @@ Please provide:
 Analysis:"""
 
         try:
-            response = self.ollama_client.generate(
+            response = self.openai_client.chat.completions.create(
                 model=self.llm_model,
-                prompt=prompt,
-                options={"temperature": 0.1, "top_p": 0.9}
+                messages=[
+                    {"role": "user", "content": prompt}
+                ],
+                temperature=0.1,
+                top_p=0.9
             )
-            return response["response"]
+            return response.choices[0].message.content
         except Exception as e:
             logger.error(f"Code analysis failed: {e}")
             return f"Error analyzing code: {str(e)}"
@@ -507,12 +512,15 @@ Please provide:
 Generated code:"""
 
         try:
-            response = self.ollama_client.generate(
+            response = self.openai_client.chat.completions.create(
                 model=self.llm_model,
-                prompt=prompt,
-                options={"temperature": 0.2, "top_p": 0.9}
+                messages=[
+                    {"role": "user", "content": prompt}
+                ],
+                temperature=0.2,
+                top_p=0.9
             )
-            return response["response"]
+            return response.choices[0].message.content
         except Exception as e:
             logger.error(f"Code generation failed: {e}")
             return f"Error generating code: {str(e)}"
@@ -541,12 +549,15 @@ Please explain:
 Explanation:"""
 
         try:
-            response = self.ollama_client.generate(
+            response = self.openai_client.chat.completions.create(
                 model=self.llm_model,
-                prompt=prompt,
-                options={"temperature": 0.1, "top_p": 0.9}
+                messages=[
+                    {"role": "user", "content": prompt}
+                ],
+                temperature=0.1,
+                top_p=0.9
             )
-            return response["response"]
+            return response.choices[0].message.content
         except Exception as e:
             logger.error(f"Code explanation failed: {e}")
             return f"Error explaining code: {str(e)}"

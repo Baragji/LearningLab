@@ -12,7 +12,7 @@ from typing import Any, Dict, List, Optional
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse
 import uvicorn
-from rag_engine import RAGEngine
+from .rag_engine import RAGEngine
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
@@ -42,7 +42,7 @@ async def health_check():
         "status": "healthy",
         "services": {
             "rag_engine": rag_engine is not None and rag_engine.is_ready(),
-            "ollama": True,  # Will be checked by RAG engine
+            "openai": True,  # Will be checked by RAG engine
             "chromadb": True  # Will be checked by RAG engine
         }
     }

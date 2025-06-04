@@ -3,12 +3,11 @@ fastapi>=0.100.0
 uvicorn[standard]>=0.20.0
 pydantic>=2.0.0
 
-# ChromaDB for vector storage (replacing slow SQLite)
+# ChromaDB for vector storage
 chromadb>=0.4.0
-sentence-transformers>=2.2.0
 
-# Ollama client
-ollama>=0.1.0
+# OpenAI client
+openai>=1.0.0
 
 # Document processing
 pypdf2>=3.0.0
