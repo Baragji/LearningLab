@@ -445,12 +445,20 @@ Giv indsigter i JSON format:
       });
 
       return {
-        questionId,
-        isCorrect,
-        feedback: feedbackText,
-        score: isCorrect ? 100 : 0,
-        suggestions: isCorrect ? [] : await this.generateSuggestions(questionTopic),
-        confidence: confidence || 0.5,
+        overallScore: isCorrect ? 100 : 0,
+        strengths: isCorrect ? [questionTopic || 'Good understanding'] : [],
+        weaknesses: isCorrect ? [] : [questionTopic || 'Needs improvement'],
+        recommendations: isCorrect ? [] : await this.generateSuggestions(questionTopic),
+        detailedFeedback: [{
+          questionId: questionId.toString(),
+          feedback: feedbackText,
+          conceptsToReview: isCorrect ? [] : [questionTopic || 'Review concepts'],
+          additionalResources: [],
+          difficultyAdjustment: 'same' as const,
+        }],
+        nextSteps: isCorrect ? ['Continue to next topic'] : ['Review and practice more'],
+        estimatedStudyTime: isCorrect ? 0 : 15,
+        motivationalMessage: this.generateMotivationalMessage(isCorrect ? 100 : 0),
       };
     } catch (error) {
       this.logger.error('Failed to generate single question feedback', error);

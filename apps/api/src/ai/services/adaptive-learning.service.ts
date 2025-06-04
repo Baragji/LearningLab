@@ -797,30 +797,32 @@ Tilpas læringsstien for optimal progression i JSON format:
       // Add weakness-focused recommendations
       userData.weaknesses.forEach((weakness, index) => {
         recommendations.push({
-          id: `weakness-${index}`,
-          type: 'skill_improvement',
+          type: 'exercise',
+          contentId: index + 1,
           title: `Improve ${weakness}`,
           description: `Focus on strengthening your ${weakness} skills`,
-          priority: 'high',
           estimatedTime: 30,
-          difficulty: userData.difficultyLevel,
-          confidence: 0.8,
-          actions: [`Practice ${weakness} exercises`, `Review ${weakness} concepts`],
+          difficultyLevel: userData.difficultyLevel,
+          relevanceScore: 0.8,
+          reason: `Practice ${weakness} exercises and review ${weakness} concepts`,
+          prerequisites: [],
+          learningObjectives: [`Improve ${weakness} skills`],
         });
       });
       
       // Add strength-building recommendations
       userData.strengths.forEach((strength, index) => {
         recommendations.push({
-          id: `strength-${index}`,
-          type: 'skill_advancement',
+          type: 'lesson',
+          contentId: userData.weaknesses.length + index + 1,
           title: `Advance ${strength}`,
           description: `Build upon your strong ${strength} foundation`,
-          priority: 'medium',
           estimatedTime: 25,
-          difficulty: userData.difficultyLevel,
-          confidence: 0.9,
-          actions: [`Advanced ${strength} challenges`, `Apply ${strength} in new contexts`],
+          difficultyLevel: userData.difficultyLevel,
+          relevanceScore: 0.9,
+          reason: `Advanced ${strength} challenges and apply ${strength} in new contexts`,
+          prerequisites: [],
+          learningObjectives: [`Advance ${strength} skills`],
         });
       });
       

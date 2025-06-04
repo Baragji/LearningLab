@@ -241,7 +241,7 @@ export class EmbeddingService {
   }> {
     return {
       totalDocuments: this.vectorStoreService.getDocumentCount(),
-      aiUsageStats: await this.aiProviderService.getUsageStats(),
+      aiUsageStats: null, // Usage stats not available
     };
   }
 }

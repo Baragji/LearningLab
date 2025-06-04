@@ -327,7 +327,6 @@ export class DifficultyAdjustmentService {
       // Analyze user strengths and weaknesses
       const analysis = await this.adaptiveLearningService.analyzeUserPerformance(
         userId,
-        performanceHistory,
       );
       
       // Calculate topic weights based on performance
@@ -348,7 +347,7 @@ export class DifficultyAdjustmentService {
         topicWeights,
         userStrengths: analysis.strengths,
         userWeaknesses: analysis.weaknesses,
-        learningObjectives: analysis.recommendedTopics,
+        learningObjectives: [...analysis.strengths, ...analysis.weaknesses],
         timeConstraints: {
           sessionDuration: sessionConstraints.duration,
           questionsPerSession: sessionConstraints.questionCount,
