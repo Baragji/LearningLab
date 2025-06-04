@@ -148,7 +148,7 @@ MCP serveren er nu klar til integration med Trae IDE:
 ### 4. Deployment Commands for Fuld RAG:
 ```bash
 # Build og deploy fuld RAG version
-docker buildx build --platform linux/amd64 -f Dockerfile.phase2 \
+docker buildx build --platform linux/amd64 -f Dockerfile.bestpractice \
   -t gcr.io/code-assistant-rag/code-assistant-rag:v3-full . --push
 
 # Update Cloud Run service med mere resources
@@ -183,7 +183,7 @@ git clone <repository-url>
 cd gcp-migration
 
 # Build og kør MCP server lokalt
-docker build -f Dockerfile.direct -t code-assistant-rag:mcp .
+docker build -f Dockerfile.bestpractice -t code-assistant-rag:mcp .
 docker run -p 8080:8080 code-assistant-rag:mcp
 
 # Test lokalt
@@ -208,10 +208,7 @@ python3 src/mcp_server_standalone.py
 ```
 gcp-migration/
 ├── README.md                      # Denne fil (opdateret)
-├── Dockerfile.direct              # MCP Server (DEPLOYED ✅)
-├── Dockerfile.phase2              # Fuld RAG implementation
-├── Dockerfile.simple              # Simpel version med Ollama
-├── Dockerfile.minimal             # Minimal version
+├── Dockerfile.bestpractice        # Unified production Dockerfile
 ├── requirements.txt               # Python dependencies
 ├── src/
 │   ├── mcp_server_standalone.py   # MCP Server (LIVE ✅)
