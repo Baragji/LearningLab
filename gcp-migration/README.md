@@ -41,20 +41,14 @@
 ```
 gcp-migration/
 ├── README.md                    # Denne fil (ærlig status)
+├── QUICK_START.md              # Hurtig start guide
 ├── requirements.txt             # Python dependencies
-├── Dockerfile                   # Original Docker setup
-├── data/                        # ⭐ NYT! Lokal data mappe
-│   └── chromadb/               # ChromaDB vector database
+├── data/                        # Lokal data mappe
+│   └── chromadb/               # ChromaDB vector database (persistent)
 ├── src/
-│   ├── mcp_server_with_rag.py  # ⭐ VIRKER! MCP server med RAG
-│   ├── rag_engine_fixed.py     # ⭐ VIRKER! Fixed RAG engine
-│   ├── mcp_server_standalone.py # Virker ✅ (uden RAG)
-│   ├── mcp_server.py           # Original MCP server
-│   ├── rag_engine.py           # RAG implementation (fejler)
-│   ├── rag_engine_phase3.py    # Alternativ RAG
-│   ├── mcp_server_phase3.py    # Alternativ MCP server
-│   └── initialize_rag.py       # RAG initialization
-└── _old_lies_backup/           # Løgnagtige dokumenter flyttet hertil
+│   ├── mcp_server_with_rag.py  # ⭐ MCP server med RAG (VIRKER!)
+│   └── rag_engine_fixed.py     # ⭐ RAG engine (VIRKER!)
+└── _old_lies_backup/           # Alle irrelevante/løgnagtige filer
 ```
 
 ## 🚀 **Hurtig Test (Lokal med RAG)**
