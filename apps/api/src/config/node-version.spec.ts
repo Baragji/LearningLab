@@ -17,10 +17,10 @@ describe('Node.js Version Requirements', () => {
       packageJson = JSON.parse(packageJsonContent);
     });
 
-    it('should have Node.js version requirement of ">=18.0.0"', () => {
+    it('should have Node.js version requirement of ">=22 <23"', () => {
       expect(packageJson.engines).toBeDefined();
       expect(packageJson.engines.node).toBeDefined();
-      expect(packageJson.engines.node).toBe('>=18.0.0');
+      expect(packageJson.engines.node).toBe('>=22 <23');
     });
 
     it('should have npm version requirement', () => {

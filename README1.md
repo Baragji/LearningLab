@@ -7,7 +7,7 @@ En moderne uddannelsesplatform bygget med NestJS, Next.js og Prisma.
 
 ### Forudsætninger
 
-- **Node.js** (v18 eller nyere)
+ - **Node.js** (v22)
 - **Yarn** (v4.9.1 eller nyere)
 - **PostgreSQL** (v14 eller nyere)
 - **Git**
