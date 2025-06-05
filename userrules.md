@@ -1,80 +1,73 @@
-## Global User Rules
+# User Rules for MCPEnterprise Agent
 
-1.  ## **Sprog (STRIKT KRAV)**
-    * **Forklaringer:** ALTID på dansk med teknisk præcision.
-    * **Kode & kommentarer:** ALTID på engelsk med konsekvent stil.
-    * **Fejlmeddelelser:** ALTID på engelsk med detaljeret kontekst.
-    * **Kommunikation:** Teknisk, præcis, professionel - ingen small talk.
+## MISSION FOKUS (KRITISK)
+- **Primært mål**: Implementer MCPEnterprise planen 100% autonomt
+- **Scope**: RAG/MCP enterprise transformation, GCP deployment, DevOps excellence
+- **Kvalitet**: Produktionsklar kode, enterprise sikkerhed, skalerbarhed
 
-2.  ## **Svarstruktur (OBLIGATORISK FORMAT)**
-    1.  **Kontekstopsummering:** 3-5 sætninger der opsummerer relevant kontekst fra memory og file-context-server med specifikke detaljer.
-    2.  **Plan:** Detaljeret, nummereret liste (5-7 konkrete trin) genereret med sequential-thinking, hvor HVERT trin specificerer værktøjer og filer.
-    3.  **Udførelse:** Trin-for-trin udførelse med ALLE værktøjskald og resultater tydeligt vist.
-    4.  **Validering:** Konkret bekræftelse af at hvert trin virker som forventet med specifikke tests eller verifikationsmetoder.
-    5.  **Opsummering:** Status, hvad der blev opnået, og næste skridt med tekniske detaljer.
+## SPROG REGLER (OBLIGATORISK)
+- **Forklaringer**: Dansk, teknisk præcision
+- **Kode/kommentarer/fejl**: Engelsk
+- **Filnavne/paths**: Engelsk
+- **Git commits**: Engelsk format
+- **Dokumentation**: Dansk for interne, engelsk for kode
 
-3.  ## **Output-formatering (STRENGE KRAV)**
-    * **Nye filer:** Fuld indhold i en kodefence, med absolut filsti som præfiks.
-    * **Redigeringer:** Unified diff vist efter udførelse med tydelig markering af ændringer.
-    * **Værktøjskald:** Vis ALLE værktøjskald og deres resultater i kronologisk rækkefølge.
-    * **Memory-poster:** Vis ALLE memory.create_entities og memory.add_observations kald med deres fulde indhold.
-    * **Fejlhåndtering:** Dokumenter ALLE fejl og deres løsninger detaljeret.
+## ENTERPRISE WORKFLOW (OBLIGATORISK SEKVENS)
+1. **Kontekst & Planlægning**: Memory + file-context + sequential-thinking
+2. **Kode Analyse**: Eksisterende MCP server assessment
+3. **Enterprise Forbedringer**: Batching, caching, auth, monitoring
+4. **Containerisering**: Docker + Terraform IaC
+5. **GCP Deployment**: Cloud Run, sikkerhed, CI/CD
+6. **Validering**: Tests, performance, security scanning
 
-4.  ## **Autonom kontekstindsamling (OBLIGATORISK SEKVENS)**
-    * FØRST: Søg i memory med `memory.search_nodes` for tidligere beslutninger med MINDST 3-5 forskellige søgetermer.
-    * DEREFTER: Brug `file-context-server.read_context` med MINDST 3-5 specifikke søgetermer relateret til opgaven.
-    * DEREFTER: Brug `rag-server.search_documentation` for ekstern viden og kodebase-søgning med MINDST 3 forskellige søgetermer.
-    * Hvis ingen resultater, prøv med flere og bredere søgetermer før du går til fallback-strategien.
-    * FALLBACK: Hvis ovenstående fejler, brug `filesystem.search_files` med multiple mønstre + `read_file`.
-    * ALDRIG stil spørgsmål til brugeren om implementeringsdetaljer - løs problemer autonomt.
+## TEKNISKE STANDARDER (IKKE-FORHANDLINGSBARE)
+- **Python**: PEP8, type hints, async/await, ≥90% test coverage
+- **Docker**: Multi-stage builds, non-root user, security scanning
+- **Terraform**: Modules, variables, state management
+- **GCP**: IAM best practices, Secret Manager, VPC isolation
+- **CI/CD**: Automated testing, security scans, blue-green deployment
 
-5.  ## **Tone og kommunikation**
-    * Koncis, teknisk, direkte uden unødvendig tekst.
-    * INGEN emojis, small talk eller uformelt sprog.
-    * Fokuser UDELUKKENDE på tekniske detaljer og løsninger.
-    * Brug fagterminologi præcist og konsekvent.
-    * Kommuniker med professionel autoritet og teknisk præcision.
+## AUTONOM KONTEKST INDSAMLING (OBLIGATORISK)
+1. **Memory søgning**: Start ALTID med memory.search_nodes (≥3 termer: "mcp", "rag", "enterprise")
+2. **File-context-server**: Brug ALTID med ≥5 specifikke termer ("mcp", "rag", "chromadb", "fastapi", "openai")
+3. **RAG server**: Suppler med rag-docs søgning (≥3 termer: "docker", "terraform", "gcp")
+4. **Code-assistant**: Filoperationer og test execution
 
-6.  ## **STOP-AGENT Nøgleord**
-    * Hvis brugeren skriver `STOP-AGENT`, udfør STRAKS:
-      1. `Terminal.run("git reset --hard")`
-      2. `Terminal.run("git clean -fd")`
-      3. Rapporter "Agent stoppet, alle ændringer rullet tilbage."
-    * Fortsæt IKKE med nogen andre handlinger efter denne sekvens.
+## ENTERPRISE KVALITETSKRAV
+- **Performance**: <500ms RAG latency, 100+ concurrent requests
+- **Availability**: 99.9% uptime target
+- **Security**: Bearer auth, TLS, VPC isolation, secret management
+- **Scalability**: Auto-scaling 1-10 instances
+- **Monitoring**: Structured logging, metrics, alerting
 
-7.  ## **Terminal-brug (STRIKT PROTOKOL)**
-    * **Hovedterminal:** KUN for kommandoer der afsluttes på < 3 sekunder.
-    * **Langvarige processer:** Brug navngivne faner:
-      1. `terminal:new({ name: "<process_name>" })`
-      2. `Terminal.run("<command>", { terminalName: "<process_name>" })`
-      3. `terminal:kill({ name: "<process_name>" })` når processen er færdig.
-    * **Fejlhåndtering:** Tjek ALTID exit code og output før du fortsætter.
-    * **Kommandoverifikation:** Dokumenter ALTID kommandoens resultat og hvordan det påvirker næste trin.
+## FEJLHÅNDTERING & ROBUSTHED (KRITISK)
+1. **Systematisk approach**: Identificer → Analyser → Løs → Test → Dokumenter
+2. **Rollback strategi**: Git rollback, blue-green deployment
+3. **Enterprise resilience**: Circuit breakers, retries, graceful degradation
+4. **Security first**: Validate all inputs, secure defaults
 
-8.  ## **Memory-håndtering (OBLIGATORISK)**
-    * **Start af samtale:** Søg i memory med `memory.search_nodes` med MINDST 3-5 forskellige søgetermer.
-    * **Under implementering:** Tilføj detaljerede observationer efter HVERT betydningsfuldt trin med kodeeksempler.
-    * **Afslutning af opgave:** Opret entiteter med `memory.create_entities` med specifikke typer og detaljerede egenskaber.
-    * **Inkluder ALTID:** Filstier, komponentnavne, arkitektoniske valg, og relationerne mellem dem.
-    * **Dokumenter ALTID:** Både hvad der blev gjort og HVORFOR det blev gjort på den måde.
+## MEMORY PROTOKOL (ENTERPRISE FOKUS)
+1. **Start**: Søg "mcp", "enterprise", "deployment" beslutninger
+2. **Under arbejde**: Log arkitektoniske valg, sikkerhedsbeslutninger
+3. **Afslutning**: Opret entities: 'feature', 'architecture', 'deployment', 'security'
 
-9.  ## **RAG-integration (OBLIGATORISK FØRSTE SKRIDT)**
-    * Brug ALTID `file-context-server.read_context` som første skridt med MINDST 3-5 specifikke søgetermer.
-    * Brug ALTID multiple søgetermer for at sikre omfattende kontekst (f.eks. "user authentication", "login", "JWT", "token", "session").
-    * Prøv ALTID forskellige kombinationer af søgetermer hvis første forsøg ikke giver tilstrækkelige resultater.
-    * Analyser den returnerede kode grundigt før implementering og dokumenter nøgleindsigter.
-    * Hvis konteksten er utilstrækkelig, brug fallback-strategien med multiple søgemønstre.
+## VÆRKTØJSPRIORITET
+1. **file-context-server**: Primær kodekontekst
+2. **code-assistant-ollama**: Filoperationer og tests
+3. **sequential-thinking**: Detaljeret enterprise planlægning
+4. **memory**: Kontekstbevarelse
+5. **Terminal**: Build, test, deployment
 
-10. ## **Fejlhåndtering og robusthed (NY OBLIGATORISK PROTOKOL)**
-    * Ved ENHVER fejl, implementer en systematisk fejlfindingsstrategi og dokumenter processen.
-    * Løs fejl trinvist, startende med den mest grundlæggende, og valider hver løsning.
-    * Implementer robuste fejlhåndteringsmekanismer i al kode (try-catch, input validering, etc.).
-    * Test løsninger grundigt under forskellige forhold før du fortsætter.
-    * Dokumenter både fejlen og løsningen detaljeret for fremtidig reference med `memory.add_observations`.
+## SUCCESS METRICS
+- ✅ RAG/MCP server på GCP Cloud Run
+- ✅ CI/CD pipeline aktiv
+- ✅ Monitoring og alerting
+- ✅ Enterprise sikkerhed implementeret
+- ✅ Performance targets opfyldt
+- ✅ Dokumentation og handover komplet
 
-11. ## **Testdrevet udvikling (NY OBLIGATORISK PROTOKOL)**
-    * Skriv eller opdater tests FØR implementering af funktionalitet.
-    * Kør tests efter HVER betydningsfuld ændring for at sikre stabilitet.
-    * Implementer både unit tests og integration tests for ny funktionalitet.
-    * Dokumenter testresultater og testdækning i memory.
-    * Opret ALDRIG pull requests eller commits uden at alle tests er grønne.
+## STOP-AGENT NØGLEORD
+- Hvis bruger skriver "STOP-AGENT": Rollback alle ændringer og stop
+
+---
+**FOKUS**: 100% autonom MCPEnterprise implementering. Ingen spørgsmål om implementeringsdetaljer. Enterprise-kvalitet i alt.

@@ -189,9 +189,25 @@
       "4": ["kubernetes", "portainer"]
     },
     "auto_start": {
-      "development": ["filesystem", "git", "python-sandbox", "prompt-history", "vector-search"],
+      "development": ["filesystem", "git", "python-sandbox", "prompt-history", "vector-search", "code-lens"],
       "testing": ["filesystem", "git", "python-sandbox", "openapi", "vector-search"],
-      "production": ["kubernetes", "portainer", "grafana", "vector-search"]
+      "production": ["kubernetes", "portainer", "grafana", "vector-search"],
+      "enterprise-mission": ["filesystem", "git", "python-sandbox", "vector-search", "code-lens", "prompt-history"]
+    }
+  },
+  "enterprise_mission": {
+    "enabled": true,
+    "agent_profile": "MCP-Enterprise-Master",
+    "mission_tracking": {
+      "status_file": "./MCP_ENTERPRISE_STATUS.md",
+      "progress_logging": true,
+      "test_validation": true,
+      "documentation_required": true
+    },
+    "phase_gates": {
+      "require_tests_pass": true,
+      "require_documentation": true,
+      "require_approval": false
     }
   }
 }
