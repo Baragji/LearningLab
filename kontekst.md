@@ -21,7 +21,7 @@ Denne guide gennemgår alle vigtige faner og sektioner i Trae IDE, som vi har ta
    o Her vælger du, hvilke MCP-tools agenten må bruge.
    o Listen opdeles i:
     MCP-tools (custom-tilføjede via MCP-fanen):
-    Her kan du afkrydse værktøjer som brave-search, sequential-thinking, git-server, file-context-server, Puppeteer, package-version, memory, deepview, codegen-mcp, filesystemosv.
+    Her kan du afkrydse værktøjer som her hentet fra enten Marketplace eller installeret lokalt. 
     Kun de værktøjer, der er afkrydset, vil agenten kunne kalde i dens workflow.
     Built-In Tools (standardfunktioner i Trae):
     File system: Læser, opretter, opdaterer og sletter filer direkte i projektet.
@@ -120,7 +120,7 @@ Denne guide gennemgår alle vigtige faner og sektioner i Trae IDE, som vi har ta
    o Den valgte agent vises med et flueben, og du kan se en hurtig oversigt over dens valgte værktøjer.
 1. Værktøjsoversigt (Tools-MCP og Built-In)
    o Lige under agentnavnet vises to sektioner:
-    Tools - MCP: Viser de MCP-servers/værktøjer, agenten har adgang til (fx Puppeteer, brave-search, filesystem, memory, sequential-thinking).
+    Tools - MCP: Viser de MCP-servers/værktøjer, agenten har adgang til.
     Tools - Built-In: Viser de Trae-indbyggede værktøjer, som File system, Terminal, Web search, Preview.
    o Du kan klikke på værktøjerne for at få en kort beskrivelse af deres funktion.
 1. Context-knapper (#Context)
