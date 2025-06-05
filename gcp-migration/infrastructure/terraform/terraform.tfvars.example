@@ -1,0 +1,99 @@
+# GCP Project Configuration
+# Copy this file to terraform.tfvars and fill in your values
+
+# Required: Your GCP Project ID
+gcp_project = "your-gcp-project-id"
+
+# Required: GCP Region (choose closest to your users)
+gcp_region = "europe-north1"  # Stockholm
+# gcp_region = "europe-west1"   # Belgium
+# gcp_region = "us-central1"    # Iowa
+# gcp_region = "asia-southeast1" # Singapore
+
+# Required: GCP Zone
+gcp_zone = "europe-north1-a"
+
+# Required: OpenAI API Key (get from https://platform.openai.com/api-keys)
+openai_api_key = "sk-your-openai-api-key-here"
+
+# Required: MCP Bearer Token (generate a secure random string)
+mcp_bearer_token = "your-secure-bearer-token-here"
+
+# Optional: AI Model Configuration
+openai_model = "gpt-4"  # or "gpt-3.5-turbo" for cost savings
+embedding_model = "text-embedding-3-small"  # or "text-embedding-3-large" for better quality
+
+# Optional: Environment Configuration
+environment = "dev"  # dev, staging, or prod
+
+# Optional: Cloud Run Scaling Configuration
+min_instances = 1
+max_instances = 10
+cpu_limit = "2"
+memory_limit = "4Gi"
+
+# Optional: Access Control
+allow_public_access = false
+authorized_members = [
+  "user:your-email@example.com",
+  "serviceAccount:your-service-account@your-project.iam.gserviceaccount.com"
+]
+
+# Optional: Network Configuration
+vpc_cidr = "10.10.0.0/24"
+connector_cidr = "10.8.0.0/28"
+
+# Optional: Storage Configuration
+chromadb_bucket_location = "EU"  # EU, US, or ASIA
+storage_class = "STANDARD"  # STANDARD, NEARLINE, COLDLINE, ARCHIVE
+
+# Optional: Performance Configuration
+request_timeout = 300  # seconds
+concurrency = 100      # concurrent requests per instance
+
+# Optional: Monitoring Configuration
+notification_channels = [
+  # Add your notification channel IDs here
+  # "projects/your-project/notificationChannels/your-channel-id"
+]
+
+log_level = "INFO"  # DEBUG, INFO, WARNING, ERROR, CRITICAL
+
+# Optional: Retention Configuration
+backup_retention_days = 30
+log_retention_days = 30
+
+# Optional: Cost Optimization
+enable_cpu_throttling = true
+enable_request_timeout = true
+
+# Optional: Security Features
+enable_vpc_connector = true
+enable_private_ip = true
+enable_audit_logs = true
+
+# Optional: Development Features (set to false for production)
+enable_debug_mode = false
+enable_hot_reload = false
+
+# Example Production Configuration:
+# environment = "prod"
+# min_instances = 2
+# max_instances = 50
+# cpu_limit = "4"
+# memory_limit = "8Gi"
+# allow_public_access = false
+# log_level = "WARNING"
+# enable_debug_mode = false
+# enable_hot_reload = false
+
+# Example Development Configuration:
+# environment = "dev"
+# min_instances = 0
+# max_instances = 3
+# cpu_limit = "1"
+# memory_limit = "2Gi"
+# allow_public_access = true
+# log_level = "DEBUG"
+# enable_debug_mode = true
+# enable_hot_reload = true

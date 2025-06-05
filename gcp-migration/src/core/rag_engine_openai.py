@@ -4,9 +4,11 @@ Fast vector search with ChromaDB + OpenAI embeddings and LLM
 """
 
 import asyncio
+import hashlib
 import logging
 import os
 import time
+from functools import lru_cache
 from typing import List, Dict, Any, Optional
 from pathlib import Path
 
@@ -14,6 +16,24 @@ import chromadb
 from chromadb.config import Settings
 import openai
 from dotenv import load_dotenv
+
+# Import monitoring (with fallback if not available)
+try:
+    from ..monitoring.metrics import mcp_metrics
+except ImportError:
+    mcp_metrics = None
+
+# Import error handling
+try:
+    from ..utils.error_handler import handle_openai_error, handle_chromadb_error, handle_rag_error
+except ImportError:
+    # Fallback functions if error handler is not available
+    def handle_openai_error(error):
+        return error
+    def handle_chromadb_error(error, operation="unknown"):
+        return error
+    def handle_rag_error(error, operation="unknown"):
+        return error
 
 # Load environment variables
 load_dotenv()
@@ -30,7 +50,14 @@ class RAGEngine:
     def __init__(self, 
                  chromadb_path: Optional[str] = None,
                  embedding_model: Optional[str] = None,
-                 llm_model: Optional[str] = None):
+                 llm_model: Optional[str] = None,
+                 enable_cache: bool = True,
+                 cache_size: int = 1000):
+        
+        # Initialize caching
+        self.enable_cache = enable_cache
+        self.cache_size = cache_size
+        self._embedding_cache = {} if enable_cache else None
         
         # Get models from environment or use defaults
         self.embedding_model = embedding_model or os.getenv("OPENAI_EMBEDDING_MODEL", "text-embedding-3-small")
@@ -70,16 +97,18 @@ class RAGEngine:
             )
             logger.info("ChromaDB client initialized successfully")
         except Exception as e:
-            logger.error(f"Failed to initialize ChromaDB: {e}")
-            raise
+            error = handle_chromadb_error(e, "initialization")
+            logger.error(f"Failed to initialize ChromaDB: {error}")
+            raise error
         
         # Test OpenAI client
         try:
             models = self.openai_client.models.list()
             logger.info(f"OpenAI client initialized successfully - {len(models.data)} models available")
         except Exception as e:
-            logger.error(f"Failed to initialize OpenAI client: {e}")
-            raise
+            error = handle_openai_error(e)
+            logger.error(f"Failed to initialize OpenAI client: {error}")
+            raise error
         
         # Get or create collection
         try:
@@ -89,8 +118,9 @@ class RAGEngine:
             )
             logger.info(f"Collection initialized with {self.collection.count()} documents")
         except Exception as e:
-            logger.error(f"Failed to initialize collection: {e}")
-            raise
+            error = handle_chromadb_error(e, "collection_initialization")
+            logger.error(f"Failed to initialize collection: {error}")
+            raise error
     
     async def add_document(self, 
                           content: str, 
@@ -110,38 +140,32 @@ class RAGEngine:
             logger.warning(f"No chunks created from content: {metadata}")
             return 0
         
-        # Generate embeddings using OpenAI
+        # Generate embeddings using OpenAI with batching for better performance
         embeddings = []
         chunk_texts = []
         chunk_metadatas = []
         chunk_ids = []
         
+        # Prepare all chunk data first
         for i, chunk in enumerate(chunks):
-            try:
-                response = self.openai_client.embeddings.create(
-                    model=self.embedding_model,
-                    input=chunk["text"]
-                )
-                embeddings.append(response.data[0].embedding)
-                chunk_texts.append(chunk["text"])
-                
-                # Create metadata for this chunk
-                chunk_metadata = {
-                    **metadata,
-                    "chunk_index": i,
-                    "chunk_size": len(chunk["text"]),
-                    "start_line": chunk.get("start_line", 0),
-                    "end_line": chunk.get("end_line", 0)
-                }
-                chunk_metadatas.append(chunk_metadata)
-                
-                # Create unique ID
-                doc_id = metadata.get("file_path", "unknown").replace("/", "_").replace("\\", "_")
-                chunk_ids.append(f"{doc_id}_chunk_{i}")
-                
-            except Exception as e:
-                logger.error(f"Failed to generate embedding for chunk {i}: {e}")
-                continue
+            chunk_texts.append(chunk["text"])
+            
+            # Create metadata for this chunk
+            chunk_metadata = {
+                **metadata,
+                "chunk_index": i,
+                "chunk_size": len(chunk["text"]),
+                "start_line": chunk.get("start_line", 0),
+                "end_line": chunk.get("end_line", 0)
+            }
+            chunk_metadatas.append(chunk_metadata)
+            
+            # Create unique ID
+            doc_id = metadata.get("file_path", "unknown").replace("/", "_").replace("\\", "_")
+            chunk_ids.append(f"{doc_id}_chunk_{i}")
+        
+        # Generate embeddings in batches for better performance
+        embeddings = await self._generate_embeddings_batch(chunk_texts)
         
         # Add to ChromaDB
         if embeddings:
@@ -154,13 +178,113 @@ class RAGEngine:
                 )
                 logger.info(f"Added {len(embeddings)} chunks to collection")
             except Exception as e:
-                logger.error(f"Failed to add chunks to ChromaDB: {e}")
+                error = handle_chromadb_error(e, "add_documents")
+                logger.error(f"Failed to add chunks to ChromaDB: {error}")
                 return 0
         
         duration = time.time() - start_time
         logger.info(f"Document added: {metadata.get('file_path')} - {len(embeddings)} chunks in {duration:.2f}s")
         
         return len(embeddings)
+    
+    async def _generate_embeddings_batch(self, texts: List[str], batch_size: int = 100) -> List[List[float]]:
+        """
+        Generate embeddings in batches for better performance and rate limiting
+        """
+        all_embeddings = []
+        
+        for i in range(0, len(texts), batch_size):
+            batch_texts = texts[i:i + batch_size]
+            
+            try:
+                # Use batch API call for multiple texts
+                response = self.openai_client.embeddings.create(
+                    model=self.embedding_model,
+                    input=batch_texts
+                )
+                
+                # Extract embeddings from response
+                batch_embeddings = [data.embedding for data in response.data]
+                all_embeddings.extend(batch_embeddings)
+                
+                logger.info(f"Generated embeddings for batch {i//batch_size + 1}/{(len(texts) + batch_size - 1)//batch_size} ({len(batch_texts)} texts)")
+                
+                # Add small delay to respect rate limits
+                if i + batch_size < len(texts):
+                    await asyncio.sleep(0.1)
+                    
+            except Exception as e:
+                logger.error(f"Failed to generate embeddings for batch starting at index {i}: {e}")
+                # Fallback to individual requests for this batch
+                for text in batch_texts:
+                    try:
+                        response = self.openai_client.embeddings.create(
+                            model=self.embedding_model,
+                            input=text
+                        )
+                        all_embeddings.append(response.data[0].embedding)
+                    except Exception as individual_error:
+                        logger.error(f"Failed to generate individual embedding: {individual_error}")
+                        # Add zero vector as placeholder
+                        all_embeddings.append([0.0] * 1536)  # Default embedding size
+        
+        return all_embeddings
+    
+    def _get_cache_key(self, text: str) -> str:
+        """
+        Generate a cache key for the given text
+        """
+        return hashlib.md5(f"{self.embedding_model}:{text}".encode()).hexdigest()
+    
+    async def _get_cached_embedding(self, text: str) -> Optional[List[float]]:
+        """
+        Get cached embedding for the given text
+        """
+        if not self.enable_cache or not self._embedding_cache:
+            return None
+        
+        cache_key = self._get_cache_key(text)
+        return self._embedding_cache.get(cache_key)
+    
+    async def _cache_embedding(self, text: str, embedding: List[float]) -> None:
+        """
+        Cache the embedding for the given text with LRU eviction
+        """
+        if not self.enable_cache or not self._embedding_cache:
+            return
+        
+        cache_key = self._get_cache_key(text)
+        
+        # Simple LRU implementation - remove oldest if cache is full
+        if len(self._embedding_cache) >= self.cache_size:
+            # Remove the first (oldest) item
+            oldest_key = next(iter(self._embedding_cache))
+            del self._embedding_cache[oldest_key]
+        
+        self._embedding_cache[cache_key] = embedding
+        logger.debug(f"Cached embedding for text (key: {cache_key[:8]}...)")
+    
+    def get_cache_stats(self) -> Dict[str, Any]:
+        """
+        Get cache statistics
+        """
+        if not self.enable_cache or not self._embedding_cache:
+            return {"enabled": False}
+        
+        return {
+            "enabled": True,
+            "size": len(self._embedding_cache),
+            "max_size": self.cache_size,
+            "hit_rate": getattr(self, '_cache_hits', 0) / max(getattr(self, '_cache_requests', 1), 1)
+        }
+    
+    def clear_cache(self) -> None:
+        """
+        Clear the embedding cache
+        """
+        if self._embedding_cache:
+            self._embedding_cache.clear()
+            logger.info("Embedding cache cleared")
     
     def _smart_chunk_content(self, 
                            content: str, 
@@ -307,67 +431,113 @@ class RAGEngine:
         Fast query using ChromaDB vector search
         """
         start_time = time.time()
-        
-        # Generate query embedding
-        try:
-            response = self.openai_client.embeddings.create(
-                model=self.embedding_model,
-                input=query
-            )
-            query_embedding = response.data[0].embedding
-        except Exception as e:
-            logger.error(f"Failed to generate query embedding: {e}")
-            raise
-        
-        # Search ChromaDB
-        search_kwargs = {
-            "query_embeddings": [query_embedding],
-            "n_results": max_results,
-            "include": ["documents", "metadatas", "distances"]
-        }
-        
-        # Add filters if provided
-        if context_filter:
-            search_kwargs["where"] = context_filter
+        cache_hit = False
         
         try:
-            results = self.collection.query(**search_kwargs)
+            # Generate query embedding with caching
+            query_embedding = await self._get_cached_embedding(query)
+            if query_embedding is None:
+                try:
+                    response = self.openai_client.embeddings.create(
+                        model=self.embedding_model,
+                        input=query
+                    )
+                    query_embedding = response.data[0].embedding
+                    # Cache the embedding
+                    await self._cache_embedding(query, query_embedding)
+                    
+                    # Record OpenAI API usage
+                    if mcp_metrics:
+                        mcp_metrics.record_openai_request("embeddings", "success")
+                        
+                except Exception as e:
+                    logger.error(f"Failed to generate query embedding: {e}")
+                    if mcp_metrics:
+                        mcp_metrics.record_openai_request("embeddings", "error")
+                    raise
+            else:
+                cache_hit = True
+            
+            # Search ChromaDB
+            search_kwargs = {
+                "query_embeddings": [query_embedding],
+                "n_results": max_results,
+                "include": ["documents", "metadatas", "distances"]
+            }
+            
+            # Add filters if provided
+            if context_filter:
+                search_kwargs["where"] = context_filter
+            
+            try:
+                results = self.collection.query(**search_kwargs)
+            except Exception as e:
+                error = handle_chromadb_error(e, "query")
+                logger.error(f"ChromaDB query failed: {error}")
+                raise error
+            
+            # Extract relevant chunks
+            relevant_chunks = []
+            if results["documents"] and results["documents"][0]:
+                for i, doc in enumerate(results["documents"][0]):
+                    metadata = results["metadatas"][0][i] if results["metadatas"] else {}
+                    distance = results["distances"][0][i] if results["distances"] else 1.0
+                    
+                    relevant_chunks.append({
+                        "content": doc,
+                        "metadata": metadata,
+                        "similarity": 1.0 - distance,  # Convert distance to similarity
+                        "file_path": metadata.get("file_path", "unknown"),
+                        "chunk_index": metadata.get("chunk_index", 0)
+                    })
+            
+            # Generate response using LLM
+            context = self._build_context(relevant_chunks)
+            llm_response = await self._generate_response(query, context)
+            
+            search_duration = time.time() - start_time
+            
+            result = {
+                "query": query,
+                "response": llm_response,
+                "sources": relevant_chunks,
+                "search_duration": round(search_duration, 3),
+                "total_chunks_searched": self.collection.count()
+            }
+            
+            # Record metrics if available
+            if mcp_metrics:
+                mcp_metrics.record_rag_operation("query", "success", search_duration)
+            
+            return result
+            
         except Exception as e:
-            logger.error(f"ChromaDB query failed: {e}")
+            error = handle_rag_error(e, "query")
+            logger.error(f"RAG query failed: {error}")
+            
+            # Record error metrics
+            if mcp_metrics:
+                mcp_metrics.record_rag_operation("query", "error", time.time() - start_time)
+            
+            raise error
+            
+            # Record successful query metrics
+            if mcp_metrics:
+                mcp_metrics.record_rag_query("success", search_duration, cache_hit)
+            
+            logger.info(f"RAG query completed: {len(relevant_chunks)} results in {search_duration:.3f}s")
+            
+            return result
+            
+        except Exception as e:
+            search_duration = time.time() - start_time
+            
+            # Record failed query metrics
+            if mcp_metrics:
+                mcp_metrics.record_rag_query("error", search_duration, cache_hit)
+            
+            logger.error(f"RAG query failed after {search_duration:.3f}s: {e}")
             raise
-        
-        # Extract relevant chunks
-        relevant_chunks = []
-        if results["documents"] and results["documents"][0]:
-            for i, doc in enumerate(results["documents"][0]):
-                metadata = results["metadatas"][0][i] if results["metadatas"] else {}
-                distance = results["distances"][0][i] if results["distances"] else 1.0
-                
-                relevant_chunks.append({
-                    "content": doc,
-                    "metadata": metadata,
-                    "similarity": 1.0 - distance,  # Convert distance to similarity
-                    "file_path": metadata.get("file_path", "unknown"),
-                    "chunk_index": metadata.get("chunk_index", 0)
-                })
-        
-        # Generate response using LLM
-        context = self._build_context(relevant_chunks)
-        llm_response = await self._generate_response(query, context)
-        
-        search_duration = time.time() - start_time
-        
-        result = {
-            "query": query,
-            "response": llm_response,
-            "sources": relevant_chunks,
-            "search_duration": round(search_duration, 3),
-            "total_chunks_searched": self.collection.count()
-        }
-        
-        logger.info(f"RAG query completed: {len(relevant_chunks)} results in {search_duration:.3f}s")
-        
-        return result
     
     def _build_context(self, chunks: List[Dict[str, Any]]) -> str:
         """
@@ -413,9 +583,19 @@ Answer:"""
                 top_p=0.9,
                 max_tokens=1000
             )
+            
+            # Record successful LLM request
+            if mcp_metrics:
+                mcp_metrics.record_openai_request("chat", "success")
+            
             return response.choices[0].message.content
         except Exception as e:
             logger.error(f"Failed to generate LLM response: {e}")
+            
+            # Record failed LLM request
+            if mcp_metrics:
+                mcp_metrics.record_openai_request("chat", "error")
+            
             return f"Error generating response: {str(e)}"
     
     async def initialize(self):

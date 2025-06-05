@@ -26,7 +26,7 @@ class MCPServer:
     async def initialize_rag(self):
         """Initialize RAG engine"""
         try:
-            from rag_engine_openai import RAGEngine
+            from ..core.rag_engine_openai import RAGEngine
             self.rag_engine = RAGEngine()
             await self.rag_engine.initialize()
             logger.info("✅ RAG engine initialized successfully")

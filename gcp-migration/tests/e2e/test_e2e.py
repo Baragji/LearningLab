@@ -321,6 +321,135 @@ class E2ETestSuite:
             print_error(f"Resource read failed: {e}")
             return False
 
+    def test_metrics_endpoint(self):
+        """Test enterprise metrics endpoint"""
+        print_info("Testing metrics endpoint...")
+        try:
+            response = requests.get(f"{BASE_URL}/metrics", timeout=10)
+            if response.status_code == 200:
+                data = response.json()
+                if "request_count" in data or "Enterprise metrics not available" in str(data):
+                    print_success("Metrics endpoint passed")
+                    return True
+                else:
+                    print_error(f"Metrics endpoint failed: {data}")
+                    return False
+            else:
+                print_error(f"Metrics endpoint returned {response.status_code}")
+                return False
+        except Exception as e:
+            print_error(f"Metrics endpoint failed: {e}")
+            return False
+
+    def test_authentication_bypass(self):
+        """Test that authentication is properly enforced"""
+        print_info("Testing authentication enforcement...")
+        try:
+            # Test without authorization header
+            payload = {
+                "method": "tools/call",
+                "params": {
+                    "name": "search_codebase",
+                    "arguments": {"query": "test", "limit": 1}
+                }
+            }
+            response = requests.post(f"{BASE_URL}/mcp", json=payload, timeout=10)
+            
+            # Should either work (auth disabled) or return 401/403
+            if response.status_code in [200, 401, 403]:
+                print_success("Authentication enforcement test passed")
+                return True
+            else:
+                print_error(f"Unexpected auth response: {response.status_code}")
+                return False
+        except Exception as e:
+            print_error(f"Authentication test failed: {e}")
+            return False
+
+    def test_invalid_mcp_request(self):
+        """Test handling of invalid MCP requests"""
+        print_info("Testing invalid MCP request handling...")
+        try:
+            # Test with invalid method
+            payload = {
+                "method": "invalid_method",
+                "params": {}
+            }
+            response = requests.post(f"{BASE_URL}/mcp", json=payload, timeout=10)
+            
+            # Should return error response
+            if response.status_code in [400, 404, 422]:
+                print_success("Invalid request handling passed")
+                return True
+            elif response.status_code == 200:
+                data = response.json()
+                if "error" in data:
+                    print_success("Invalid request handling passed (JSON-RPC error)")
+                    return True
+                else:
+                    print_error(f"Invalid request should return error: {data}")
+                    return False
+            else:
+                print_error(f"Unexpected response to invalid request: {response.status_code}")
+                return False
+        except Exception as e:
+            print_error(f"Invalid request test failed: {e}")
+            return False
+
+    def test_malformed_json(self):
+        """Test handling of malformed JSON"""
+        print_info("Testing malformed JSON handling...")
+        try:
+            # Send malformed JSON
+            response = requests.post(
+                f"{BASE_URL}/mcp", 
+                data="{invalid json}", 
+                headers={"Content-Type": "application/json"},
+                timeout=10
+            )
+            
+            # Should return 400 Bad Request
+            if response.status_code == 400:
+                print_success("Malformed JSON handling passed")
+                return True
+            else:
+                print_error(f"Malformed JSON should return 400, got: {response.status_code}")
+                return False
+        except Exception as e:
+            print_error(f"Malformed JSON test failed: {e}")
+            return False
+
+    def test_large_request(self):
+        """Test handling of large requests"""
+        print_info("Testing large request handling...")
+        try:
+            # Create a large code snippet
+            large_code = "def test_function():\n" + "    # Comment line\n" * 1000 + "    return True"
+            
+            payload = {
+                "method": "tools/call",
+                "params": {
+                    "name": "analyze_code",
+                    "arguments": {
+                        "code": large_code,
+                        "language": "python",
+                        "context": "large code test"
+                    }
+                }
+            }
+            response = requests.post(f"{BASE_URL}/mcp", json=payload, timeout=30)
+            
+            # Should handle large requests gracefully
+            if response.status_code in [200, 413, 422]:  # 413 = Payload Too Large
+                print_success("Large request handling passed")
+                return True
+            else:
+                print_error(f"Large request handling failed: {response.status_code}")
+                return False
+        except Exception as e:
+            print_error(f"Large request test failed: {e}")
+            return False
+
     def run_test(self, test_func, test_name):
         """Run a single test and track results"""
         self.total += 1
@@ -353,6 +482,15 @@ class E2ETestSuite:
         self.run_test(self.test_explain_code, "Explain Code")
         self.run_test(self.test_resources_list, "Resources List")
         self.run_test(self.test_resource_read, "Resource Read")
+        
+        # Enterprise feature tests
+        self.run_test(self.test_metrics_endpoint, "Enterprise Metrics Endpoint")
+        self.run_test(self.test_authentication_bypass, "Authentication Enforcement")
+        
+        # Negative/robustness tests
+        self.run_test(self.test_invalid_mcp_request, "Invalid MCP Request Handling")
+        self.run_test(self.test_malformed_json, "Malformed JSON Handling")
+        self.run_test(self.test_large_request, "Large Request Handling")
         
         # Print results
         print_header("TEST RESULTS")

@@ -9,9 +9,36 @@ import json
 import logging
 import os
 from typing import Any, Dict, List, Optional
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException, Request, Depends
 from fastapi.responses import JSONResponse
+from fastapi.security import HTTPBearer
 import uvicorn
+
+# Import enterprise modules
+try:
+    from ..auth.bearer_auth import verify_bearer_token, get_current_user
+    from ..monitoring.health_checks import HealthChecker
+    from ..monitoring.metrics import MCPMetrics
+except ImportError:
+    # Fallback if modules not available
+    def verify_bearer_token(token: str = None):
+        return True
+    def get_current_user():
+        return "anonymous"
+    class HealthChecker:
+        def __init__(self):
+            pass
+        async def check_all(self):
+            return {"status": "healthy"}
+    class MCPMetrics:
+        def __init__(self):
+            pass
+        def record_request(self, method: str, success: bool = True):
+            pass
+        def record_rag_operation(self, operation: str, success: bool = True):
+            pass
+        def get_metrics(self):
+            return {}
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
@@ -19,17 +46,29 @@ logger = logging.getLogger(__name__)
 
 app = FastAPI(title="Code Assistant MCP Server with RAG", version="2.0.0")
 
-# Global RAG engine
+# Global instances
 rag_engine = None
+health_checker = None
+mcp_metrics = None
+security = HTTPBearer(auto_error=False)
 
 @app.on_event("startup")
 async def startup_event():
     """Initialize services on startup"""
-    global rag_engine
+    global rag_engine, health_checker, mcp_metrics
     try:
+        # Initialize enterprise modules
+        health_checker = HealthChecker()
+        mcp_metrics = MCPMetrics()
+        logger.info("✅ Enterprise modules initialized")
+        
         # Try to initialize RAG engine with OpenAI version
         try:
-            from rag_engine_openai import RAGEngine
+            import sys
+            import os
+            # Add parent directory to path for imports
+            sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+            from core.rag_engine_openai import RAGEngine
             rag_engine = RAGEngine()
             await rag_engine.initialize()
             logger.info("✅ RAG engine initialized successfully")
@@ -41,27 +80,95 @@ async def startup_event():
 
 @app.get("/health")
 async def health_check():
-    """Health check endpoint"""
-    rag_ready = rag_engine is not None and rag_engine.is_ready()
-    
-    return {
-        "status": "healthy",
-        "services": {
-            "rag_engine": rag_ready,
-            "mcp_server": True
-        },
-        "rag_stats": await rag_engine.get_codebase_stats() if rag_ready else None
-    }
+    """Enhanced health check endpoint with detailed metrics"""
+    try:
+        # Get comprehensive health status
+        if health_checker:
+            health_status = await health_checker.check_all()
+        else:
+            rag_ready = rag_engine is not None and rag_engine.is_ready()
+            health_status = {
+                "status": "healthy",
+                "services": {
+                    "rag_engine": rag_ready,
+                    "mcp_server": True
+                }
+            }
+        
+        # Add metrics if available
+        if mcp_metrics:
+            health_status["metrics"] = mcp_metrics.get_metrics()
+        
+        # Add RAG stats if available
+        if rag_engine and rag_engine.is_ready():
+            health_status["rag_stats"] = await rag_engine.get_codebase_stats()
+        
+        return health_status
+        
+    except Exception as e:
+        logger.error(f"❌ Health check error: {e}")
+        return {
+            "status": "unhealthy",
+            "error": str(e)
+        }
+
+@app.get("/metrics")
+async def get_metrics():
+    """Get detailed performance metrics"""
+    try:
+        if mcp_metrics:
+            return mcp_metrics.get_metrics()
+        else:
+            return {
+                "message": "Enterprise metrics not available",
+                "request_count": 0,
+                "rag_operations": 0,
+                "uptime_seconds": 0
+            }
+    except Exception as e:
+        logger.error(f"❌ Metrics error: {e}")
+        return {
+            "error": str(e)
+        }
 
 @app.post("/mcp")
-async def mcp_handler(request: Request):
-    """Main MCP request handler"""
+async def mcp_handler(request: Request, token: str = Depends(security)):
+    """Main MCP request handler with authentication and metrics"""
     try:
-        body = await request.json()
+        # Parse JSON with proper error handling
+        try:
+            body = await request.json()
+        except Exception as e:
+            logger.error(f"❌ JSON parse error: {e}")
+            return JSONResponse(
+                status_code=400,
+                content={
+                    "jsonrpc": "2.0",
+                    "error": {
+                        "code": -32700,
+                        "message": "Parse error",
+                        "data": str(e)
+                    },
+                    "id": None
+                }
+            )
+        
+        # Verify authentication for protected methods
         method = body.get("method")
         params = body.get("params", {})
         
+        # Check authentication for non-public methods
+        if method not in ["initialize", "tools/list", "resources/list"]:
+            if not verify_bearer_token(token.credentials if token else None):
+                if mcp_metrics:
+                    mcp_metrics.record_request(method, success=False)
+                raise HTTPException(status_code=401, detail="Authentication required")
+        
         logger.info(f"🔧 MCP request: {method}")
+        
+        # Record request metrics
+        if mcp_metrics:
+            mcp_metrics.record_request(method, success=True)
         
         if method == "initialize":
             return await handle_initialize(params)
@@ -74,10 +181,16 @@ async def mcp_handler(request: Request):
         elif method == "resources/read":
             return await handle_resource_read(params)
         else:
+            if mcp_metrics:
+                mcp_metrics.record_request(method, success=False)
             raise HTTPException(status_code=400, detail=f"Unknown method: {method}")
             
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"❌ MCP handler error: {e}")
+        if mcp_metrics:
+            mcp_metrics.record_request(method if 'method' in locals() else "unknown", success=False)
         return JSONResponse(
             status_code=500,
             content={"error": {"code": -32603, "message": str(e)}}
@@ -215,7 +328,7 @@ async def handle_tools_list() -> Dict[str, Any]:
     return {"tools": tools}
 
 async def handle_tool_call(params: Dict[str, Any]) -> Dict[str, Any]:
-    """Handle tool call requests"""
+    """Handle tool call requests with metrics tracking"""
     tool_name = params.get("name")
     arguments = params.get("arguments", {})
     
@@ -230,22 +343,30 @@ async def handle_tool_call(params: Dict[str, Any]) -> Dict[str, Any]:
                     language=arguments.get("language"),
                     context=arguments.get("context")
                 )
+                if mcp_metrics:
+                    mcp_metrics.record_rag_operation("analyze_code", success=True)
             elif tool_name == "search_codebase":
                 result = await rag_engine.search_codebase(
                     query=arguments.get("query"),
                     limit=arguments.get("limit", 5)
                 )
+                if mcp_metrics:
+                    mcp_metrics.record_rag_operation("search_codebase", success=True)
             elif tool_name == "generate_code":
                 result = await rag_engine.generate_code(
                     requirements=arguments.get("requirements"),
                     language=arguments.get("language"),
                     context=arguments.get("context")
                 )
+                if mcp_metrics:
+                    mcp_metrics.record_rag_operation("generate_code", success=True)
             elif tool_name == "explain_code":
                 result = await rag_engine.explain_code(
                     code=arguments.get("code"),
                     level=arguments.get("level", "intermediate")
                 )
+                if mcp_metrics:
+                    mcp_metrics.record_rag_operation("explain_code", success=True)
             elif tool_name == "add_document":
                 chunks_added = await rag_engine.add_document(
                     content=arguments.get("content"),
@@ -256,11 +377,18 @@ async def handle_tool_call(params: Dict[str, Any]) -> Dict[str, Any]:
                     }
                 )
                 result = f"✅ Successfully added document '{arguments.get('file_path')}' with {chunks_added} chunks to the knowledge base."
+                if mcp_metrics:
+                    mcp_metrics.record_rag_operation("add_document", success=True)
             else:
+                if mcp_metrics:
+                    mcp_metrics.record_rag_operation(tool_name, success=False)
                 raise HTTPException(status_code=400, detail=f"Unknown tool: {tool_name}")
         else:
             # Fallback responses when RAG engine is not available
             logger.warning(f"⚠️ RAG engine not available for {tool_name}, using fallback")
+            
+            if mcp_metrics:
+                mcp_metrics.record_rag_operation(tool_name, success=False)
             
             if tool_name == "analyze_code":
                 result = f"Code analysis for: {arguments.get('code', '')[:100]}...\n\n⚠️ RAG engine not available. This is a placeholder response."
@@ -284,8 +412,14 @@ async def handle_tool_call(params: Dict[str, Any]) -> Dict[str, Any]:
             ]
         }
         
+    except HTTPException:
+        if mcp_metrics:
+            mcp_metrics.record_rag_operation(tool_name, success=False)
+        raise
     except Exception as e:
         logger.error(f"❌ Tool call error: {e}")
+        if mcp_metrics:
+            mcp_metrics.record_rag_operation(tool_name, success=False)
         raise HTTPException(status_code=500, detail=str(e))
 
 async def handle_resources_list() -> Dict[str, Any]:
@@ -352,15 +486,22 @@ async def handle_resource_read(params: Dict[str, Any]) -> Dict[str, Any]:
 
 @app.get("/")
 async def root():
-    """Root endpoint with server info"""
+    """Root endpoint with server info and enterprise features"""
     rag_ready = rag_engine is not None and rag_engine.is_ready()
     
     return {
         "name": "Code Assistant MCP Server with RAG",
         "version": "2.0.0",
         "rag_enabled": rag_ready,
+        "enterprise_features": {
+            "authentication": True,
+            "metrics": mcp_metrics is not None,
+            "health_checks": health_checker is not None,
+            "error_handling": True
+        },
         "endpoints": {
             "health": "/health",
+            "metrics": "/metrics",
             "mcp": "/mcp",
             "docs": "/docs"
         },

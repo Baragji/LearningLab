@@ -29,6 +29,14 @@
 - **Validation**: Use `puppeteer_screenshot` for UI components
 - **Memory Logging**: Log architectural decisions and security choices
 
+## CRITICAL TERMINAL MANAGEMENT RULES (MANDATORY)
+- **NEVER interrupt running servers**: If a server is running in a terminal, NEVER execute new commands in that terminal
+- **Background servers**: Always start servers with `blocking=false` and `wait_ms_before_async` for proper initialization
+- **Multiple terminals**: Use separate terminal sessions for different tasks (server vs tests vs builds)
+- **Server lifecycle**: Only stop servers with explicit stop commands or dedicated terminal sessions
+- **Command isolation**: Each long-running process gets its own terminal context
+- **Status checking**: Use `check_command_status` to monitor background processes without interruption
+
 ## Enterprise Commit Standards
 - **Scope**: Enterprise modules (docker, terraform, gcp, security)
 - **Format**: `<type>(<scope>): <description>` (feat(docker): add multi-stage build)
