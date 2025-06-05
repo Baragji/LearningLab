@@ -173,6 +173,23 @@ export class AnalyticsTimeframeDto {
   period: 'day' | 'week' | 'month' | 'quarter' | 'year';
 }
 
+export class DifficultyLevelDto {
+  @IsEnum(['beginner', 'intermediate', 'advanced', 'expert'])
+  level: 'beginner' | 'intermediate' | 'advanced' | 'expert';
+
+  @IsNumber()
+  @Min(1)
+  @Max(10)
+  numericValue: number;
+
+  @IsString()
+  description: string;
+
+  @IsArray()
+  @IsString({ each: true })
+  characteristics: string[];
+}
+
 export class DifficultyAdjustmentDto {
   @IsNumber()
   userId: number;
@@ -190,23 +207,6 @@ export class DifficultyAdjustmentDto {
   @IsArray()
   @IsString({ each: true })
   learningObjectives?: string[];
-}
-
-export class DifficultyLevelDto {
-  @IsEnum(['beginner', 'intermediate', 'advanced', 'expert'])
-  level: 'beginner' | 'intermediate' | 'advanced' | 'expert';
-
-  @IsNumber()
-  @Min(1)
-  @Max(10)
-  numericValue: number;
-
-  @IsString()
-  description: string;
-
-  @IsArray()
-  @IsString({ each: true })
-  characteristics: string[];
 }
 
 export class ProcessContentDto {
