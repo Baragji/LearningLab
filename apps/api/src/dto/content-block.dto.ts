@@ -1,4 +1,11 @@
-import { IsString, IsOptional, IsInt, IsEnum, IsNotEmpty, Min } from 'class-validator';
+import {
+  IsString,
+  IsOptional,
+  IsInt,
+  IsEnum,
+  IsNotEmpty,
+  Min,
+} from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { ContentBlockType } from '@prisma/client';
 
@@ -6,7 +13,7 @@ export class CreateContentBlockDto {
   @ApiProperty({
     description: 'Type of content block',
     enum: ContentBlockType,
-    example: ContentBlockType.TEXT
+    example: ContentBlockType.TEXT,
   })
   @IsEnum(ContentBlockType)
   @IsNotEmpty()
@@ -14,7 +21,7 @@ export class CreateContentBlockDto {
 
   @ApiPropertyOptional({
     description: 'Content of the block',
-    example: 'This is the lesson content...'
+    example: 'This is the lesson content...',
   })
   @IsString()
   @IsOptional()
@@ -23,7 +30,7 @@ export class CreateContentBlockDto {
   @ApiPropertyOptional({
     description: 'Order of the content block within the lesson',
     example: 1,
-    minimum: 0
+    minimum: 0,
   })
   @IsInt()
   @Min(0)
@@ -32,7 +39,7 @@ export class CreateContentBlockDto {
 
   @ApiProperty({
     description: 'ID of the lesson this content block belongs to',
-    example: 1
+    example: 1,
   })
   @IsInt()
   @IsNotEmpty()
@@ -40,7 +47,7 @@ export class CreateContentBlockDto {
 
   @ApiPropertyOptional({
     description: 'ID of the associated file (if any)',
-    example: 1
+    example: 1,
   })
   @IsInt()
   @IsOptional()
@@ -51,7 +58,7 @@ export class UpdateContentBlockDto {
   @ApiPropertyOptional({
     description: 'Type of content block',
     enum: ContentBlockType,
-    example: ContentBlockType.TEXT
+    example: ContentBlockType.TEXT,
   })
   @IsEnum(ContentBlockType)
   @IsOptional()
@@ -59,7 +66,7 @@ export class UpdateContentBlockDto {
 
   @ApiPropertyOptional({
     description: 'Content of the block',
-    example: 'Updated lesson content...'
+    example: 'Updated lesson content...',
   })
   @IsString()
   @IsOptional()
@@ -68,7 +75,7 @@ export class UpdateContentBlockDto {
   @ApiPropertyOptional({
     description: 'Order of the content block within the lesson',
     example: 2,
-    minimum: 0
+    minimum: 0,
   })
   @IsInt()
   @Min(0)
@@ -77,7 +84,7 @@ export class UpdateContentBlockDto {
 
   @ApiPropertyOptional({
     description: 'ID of the associated file (if any)',
-    example: 1
+    example: 1,
   })
   @IsInt()
   @IsOptional()
@@ -92,9 +99,9 @@ export class BulkUpdateContentBlockOrderDto {
       type: 'object',
       properties: {
         id: { type: 'number', example: 1 },
-        order: { type: 'number', example: 1, minimum: 0 }
-      }
-    }
+        order: { type: 'number', example: 1, minimum: 0 },
+      },
+    },
   })
   @IsNotEmpty()
   contentBlocks: Array<{

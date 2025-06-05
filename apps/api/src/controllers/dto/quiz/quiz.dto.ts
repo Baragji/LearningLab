@@ -44,8 +44,7 @@ export class QuizDto {
   lessonId?: number | null;
 
   @ApiPropertyOptional({
-    description:
-      'ID for det emne, quizzen tilhører (hvis tilknyttet et emne)',
+    description: 'ID for det emne, quizzen tilhører (hvis tilknyttet et emne)',
     type: Number,
     example: 1,
     nullable: true,
@@ -214,8 +213,7 @@ export class CreateQuizDto {
   lessonId?: number | null;
 
   @ApiPropertyOptional({
-    description:
-      'ID for det emne, quizzen tilhører (hvis tilknyttet et emne)',
+    description: 'ID for det emne, quizzen tilhører (hvis tilknyttet et emne)',
     type: Number,
     example: 1,
     nullable: true,
@@ -346,8 +344,7 @@ export class UpdateQuizDto {
   lessonId?: number | null;
 
   @ApiPropertyOptional({
-    description:
-      'ID for det emne, quizzen tilhører (hvis tilknyttet et emne)',
+    description: 'ID for det emne, quizzen tilhører (hvis tilknyttet et emne)',
     type: Number,
     example: 2,
     nullable: true,

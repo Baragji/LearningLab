@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
-import { useRouter } from 'next/router';
-import Layout from '../../../src/components/layout/Layout';
-import { Role } from '@repo/core';
-import axios from 'axios';
-import { toast } from 'react-hot-toast';
+import React, { useState } from "react";
+import { useRouter } from "next/router";
+import Layout from "../../../src/components/layout/Layout";
+import { Role } from "@repo/core";
+import axios from "axios";
+import { toast } from "react-hot-toast";
 
 interface InviteUserData {
   email: string;
@@ -14,7 +14,7 @@ interface InviteUserData {
 const InviteUsersPage: React.FC = () => {
   const router = useRouter();
   const [invitations, setInvitations] = useState<InviteUserData[]>([
-    { email: '', role: Role.STUDENT },
+    { email: "", role: Role.STUDENT },
   ]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [csvFile, setCsvFile] = useState<File | null>(null);
@@ -23,7 +23,7 @@ const InviteUsersPage: React.FC = () => {
 
   // Add a new empty invitation row
   const addInvitation = () => {
-    setInvitations([...invitations, { email: '', role: Role.STUDENT }]);
+    setInvitations([...invitations, { email: "", role: Role.STUDENT }]);
   };
 
   // Remove an invitation row
@@ -40,10 +40,10 @@ const InviteUsersPage: React.FC = () => {
     value: string,
   ) => {
     const newInvitations = [...invitations];
-    if (field === 'role') {
+    if (field === "role") {
       newInvitations[index][field] = value as Role;
     } else {
-      newInvitations[index][field as 'email' | 'name'] = value;
+      newInvitations[index][field as "email" | "name"] = value;
     }
     setInvitations(newInvitations);
   };
@@ -57,44 +57,48 @@ const InviteUsersPage: React.FC = () => {
     const reader = new FileReader();
     reader.onload = (event) => {
       const csvText = event.target?.result as string;
-      const rows = csvText.split('\n');
-      const headers = rows[0].split(',').map(h => h.trim().toLowerCase());
-      
-      const emailIndex = headers.indexOf('email');
-      const nameIndex = headers.indexOf('name');
-      const roleIndex = headers.indexOf('role');
-      
+      const rows = csvText.split("\n");
+      const headers = rows[0].split(",").map((h) => h.trim().toLowerCase());
+
+      const emailIndex = headers.indexOf("email");
+      const nameIndex = headers.indexOf("name");
+      const roleIndex = headers.indexOf("role");
+
       if (emailIndex === -1) {
         toast.error('CSV-filen skal indeholde en "email" kolonne');
         return;
       }
-      
+
       const parsedData: InviteUserData[] = [];
-      
+
       for (let i = 1; i < rows.length; i++) {
         if (!rows[i].trim()) continue;
-        
-        const values = rows[i].split(',').map(v => v.trim());
+
+        const values = rows[i].split(",").map((v) => v.trim());
         const email = values[emailIndex];
         const name = nameIndex !== -1 ? values[nameIndex] : undefined;
         let role = Role.STUDENT;
-        
+
         if (roleIndex !== -1) {
           const roleValue = values[roleIndex].toUpperCase();
-          if (roleValue === 'ADMIN' || roleValue === 'TEACHER' || roleValue === 'STUDENT') {
+          if (
+            roleValue === "ADMIN" ||
+            roleValue === "TEACHER" ||
+            roleValue === "STUDENT"
+          ) {
             role = roleValue as Role;
           }
         }
-        
+
         if (email) {
           parsedData.push({ email, name, role });
         }
       }
-      
+
       setCsvPreview(parsedData);
       setShowCsvPreview(true);
     };
-    
+
     reader.readAsText(file);
   };
 
@@ -109,27 +113,27 @@ const InviteUsersPage: React.FC = () => {
   // Submit invitations
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Validate emails
     const invalidEmails = invitations.filter(
-      inv => !inv.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(inv.email)
+      (inv) => !inv.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(inv.email),
     );
-    
+
     if (invalidEmails.length > 0) {
-      toast.error('Nogle email-adresser er ugyldige');
+      toast.error("Nogle email-adresser er ugyldige");
       return;
     }
-    
+
     setIsSubmitting(true);
-    
+
     try {
       // Dette endpoint skal implementeres i backend
-      await axios.post('/api/users/bulk-invite', { invitations });
+      await axios.post("/api/users/bulk-invite", { invitations });
       toast.success(`${invitations.length} brugere inviteret`);
-      router.push('/admin/users');
+      router.push("/admin/users");
     } catch (err) {
-      console.error('Error inviting users:', err);
-      toast.error('Der opstod en fejl ved invitation af brugere');
+      console.error("Error inviting users:", err);
+      toast.error("Der opstod en fejl ved invitation af brugere");
     } finally {
       setIsSubmitting(false);
     }
@@ -139,7 +143,9 @@ const InviteUsersPage: React.FC = () => {
     <Layout>
       <div className="space-y-6">
         <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Inviter brugere</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+            Inviter brugere
+          </h1>
           <button
             onClick={() => router.back()}
             className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500"
@@ -154,7 +160,8 @@ const InviteUsersPage: React.FC = () => {
               Importer fra CSV
             </h2>
             <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
-              Upload en CSV-fil med kolonner for email, navn (valgfrit) og rolle (valgfrit).
+              Upload en CSV-fil med kolonner for email, navn (valgfrit) og rolle
+              (valgfrit).
             </p>
             <div className="flex items-center space-x-2">
               <input
@@ -187,13 +194,22 @@ const InviteUsersPage: React.FC = () => {
                 <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                   <thead className="bg-gray-50 dark:bg-gray-800">
                     <tr>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                      <th
+                        scope="col"
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+                      >
                         Email
                       </th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                      <th
+                        scope="col"
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+                      >
                         Navn
                       </th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                      <th
+                        scope="col"
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+                      >
                         Rolle
                       </th>
                     </tr>
@@ -205,7 +221,7 @@ const InviteUsersPage: React.FC = () => {
                           {user.email}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                          {user.name || '-'}
+                          {user.name || "-"}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                           {user.role}
@@ -214,7 +230,10 @@ const InviteUsersPage: React.FC = () => {
                     ))}
                     {csvPreview.length > 5 && (
                       <tr>
-                        <td colSpan={3} className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400 text-center">
+                        <td
+                          colSpan={3}
+                          className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400 text-center"
+                        >
                           ... og {csvPreview.length - 5} flere
                         </td>
                       </tr>
@@ -238,45 +257,60 @@ const InviteUsersPage: React.FC = () => {
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
               Manuel invitation
             </h2>
-            
+
             <div className="space-y-4">
               {invitations.map((invitation, index) => (
                 <div key={index} className="flex flex-col md:flex-row gap-4">
                   <div className="flex-1">
-                    <label htmlFor={`email-${index}`} className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    <label
+                      htmlFor={`email-${index}`}
+                      className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                    >
                       Email *
                     </label>
                     <input
                       type="email"
                       id={`email-${index}`}
                       value={invitation.email}
-                      onChange={(e) => updateInvitation(index, 'email', e.target.value)}
+                      onChange={(e) =>
+                        updateInvitation(index, "email", e.target.value)
+                      }
                       required
                       className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                       placeholder="bruger@eksempel.dk"
                     />
                   </div>
                   <div className="flex-1">
-                    <label htmlFor={`name-${index}`} className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    <label
+                      htmlFor={`name-${index}`}
+                      className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                    >
                       Navn (valgfrit)
                     </label>
                     <input
                       type="text"
                       id={`name-${index}`}
-                      value={invitation.name || ''}
-                      onChange={(e) => updateInvitation(index, 'name', e.target.value)}
+                      value={invitation.name || ""}
+                      onChange={(e) =>
+                        updateInvitation(index, "name", e.target.value)
+                      }
                       className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                       placeholder="Fornavn Efternavn"
                     />
                   </div>
                   <div className="w-full md:w-48">
-                    <label htmlFor={`role-${index}`} className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    <label
+                      htmlFor={`role-${index}`}
+                      className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                    >
                       Rolle
                     </label>
                     <select
                       id={`role-${index}`}
                       value={invitation.role}
-                      onChange={(e) => updateInvitation(index, 'role', e.target.value)}
+                      onChange={(e) =>
+                        updateInvitation(index, "role", e.target.value)
+                      }
                       className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >
                       <option value={Role.STUDENT}>Studerende</option>
@@ -291,12 +325,22 @@ const InviteUsersPage: React.FC = () => {
                       disabled={invitations.length === 1}
                       className={`px-3 py-2 rounded-md ${
                         invitations.length === 1
-                          ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                          : 'bg-red-100 text-red-600 hover:bg-red-200'
+                          ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                          : "bg-red-100 text-red-600 hover:bg-red-200"
                       }`}
                     >
-                      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      <svg
+                        className="h-5 w-5"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                        />
                       </svg>
                     </button>
                   </div>
@@ -322,14 +366,18 @@ const InviteUsersPage: React.FC = () => {
                 </button>
                 <button
                   type="submit"
-                  disabled={isSubmitting || invitations.some(inv => !inv.email)}
+                  disabled={
+                    isSubmitting || invitations.some((inv) => !inv.email)
+                  }
                   className={`px-4 py-2 rounded-md ${
-                    isSubmitting || invitations.some(inv => !inv.email)
-                      ? 'bg-blue-400 text-white cursor-not-allowed'
-                      : 'bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500'
+                    isSubmitting || invitations.some((inv) => !inv.email)
+                      ? "bg-blue-400 text-white cursor-not-allowed"
+                      : "bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   }`}
                 >
-                  {isSubmitting ? 'Sender invitationer...' : 'Send invitationer'}
+                  {isSubmitting
+                    ? "Sender invitationer..."
+                    : "Send invitationer"}
                 </button>
               </div>
             </div>

@@ -1,15 +1,15 @@
-import React from 'react';
-import { 
-  Alert, 
-  AlertTitle, 
-  Box, 
-  Button, 
-  Collapse, 
-  IconButton 
-} from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
-import WifiOffIcon from '@mui/icons-material/WifiOff';
-import SyncIcon from '@mui/icons-material/Sync';
+import React from "react";
+import {
+  Alert,
+  AlertTitle,
+  Box,
+  Button,
+  Collapse,
+  IconButton,
+} from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
+import WifiOffIcon from "@mui/icons-material/WifiOff";
+import SyncIcon from "@mui/icons-material/Sync";
 
 interface OfflineQuizNotificationProps {
   isOffline: boolean;
@@ -26,7 +26,7 @@ const OfflineQuizNotification: React.FC<OfflineQuizNotificationProps> = ({
   pendingUpdates = 0,
   onRetry,
   sx = {},
-  className
+  className,
 }) => {
   const [open, setOpen] = React.useState(true);
 
@@ -43,7 +43,7 @@ const OfflineQuizNotification: React.FC<OfflineQuizNotificationProps> = ({
   }
 
   return (
-    <Box sx={{ width: '100%', mb: 3, ...sx }} className={className}>
+    <Box sx={{ width: "100%", mb: 3, ...sx }} className={className}>
       <Collapse in={open}>
         <Alert
           severity={isOffline ? "warning" : "info"}
@@ -51,9 +51,9 @@ const OfflineQuizNotification: React.FC<OfflineQuizNotificationProps> = ({
           action={
             <>
               {onRetry && (
-                <Button 
-                  color="inherit" 
-                  size="small" 
+                <Button
+                  color="inherit"
+                  size="small"
                   onClick={onRetry}
                   sx={{ mr: 1 }}
                 >
@@ -73,13 +73,11 @@ const OfflineQuizNotification: React.FC<OfflineQuizNotificationProps> = ({
           sx={{ mb: 2 }}
         >
           <AlertTitle>
-            {isOffline 
-              ? 'You are offline' 
-              : 'Synchronizing quiz results'}
+            {isOffline ? "You are offline" : "Synchronizing quiz results"}
           </AlertTitle>
-          {isOffline 
-            ? 'Your quiz progress will be saved locally and synchronized when you\'re back online.'
-            : `Your quiz results are being synchronized (${pendingUpdates} ${pendingUpdates === 1 ? 'result' : 'results'} pending).`}
+          {isOffline
+            ? "Your quiz progress will be saved locally and synchronized when you're back online."
+            : `Your quiz results are being synchronized (${pendingUpdates} ${pendingUpdates === 1 ? "result" : "results"} pending).`}
         </Alert>
       </Collapse>
     </Box>

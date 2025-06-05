@@ -10,7 +10,11 @@ import { ConfigModule } from '@nestjs/config';
 @Module({
   imports: [PersistenceModule, ConfigModule],
   controllers: [SearchController],
-  providers: [SearchService, SearchCacheService, SearchCacheInvalidationService],
+  providers: [
+    SearchService,
+    SearchCacheService,
+    SearchCacheInvalidationService,
+  ],
   exports: [SearchService, SearchCacheService, SearchCacheInvalidationService],
 })
 export class SearchModule {}

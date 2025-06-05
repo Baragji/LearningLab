@@ -1,16 +1,16 @@
 // apps/web/src/screens/auth/signup/signup.tsx
-import React, { useState, FormEvent } from 'react';
-import { useRouter } from 'next/router';
-import { useAuth } from '../../../contexts/AuthContext';
+import React, { useState, FormEvent } from "react";
+import { useRouter } from "next/router";
+import { useAuth } from "../../../contexts/AuthContext";
 
 export function SignupScreen() {
   const router = useRouter();
   const { signup, isLoading: authIsLoading } = useAuth();
 
-  const [name, setName] = useState<string>('');
-  const [email, setEmail] = useState<string>('');
-  const [password, setPassword] = useState<string>('');
-  const [confirmPassword, setConfirmPassword] = useState<string>('');
+  const [name, setName] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [confirmPassword, setConfirmPassword] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
@@ -20,7 +20,7 @@ export function SignupScreen() {
     setSuccessMessage(null);
 
     if (password !== confirmPassword) {
-      setError('Adgangskoderne matcher ikke.');
+      setError("Adgangskoderne matcher ikke.");
       return;
     }
 
@@ -28,17 +28,18 @@ export function SignupScreen() {
       // Brug signup funktionen fra AuthContext
       await signup(name || undefined, email, password);
 
-      console.log('Registrering succesfuld');
-      setSuccessMessage('Din konto er blevet oprettet! Du bliver nu sendt til login-siden.');
+      console.log("Registrering succesfuld");
+      setSuccessMessage(
+        "Din konto er blevet oprettet! Du bliver nu sendt til login-siden.",
+      );
 
       // Omdiriger til login-siden efter en kort pause, så brugeren kan se succesbeskeden.
       setTimeout(() => {
-        router.push('/login');
+        router.push("/login");
       }, 3000); // 3 sekunders forsinkelse
-
     } catch (err: any) {
-      console.error('Registreringsfejl:', err);
-      setError(err.message || 'Der opstod en uventet fejl under registrering.');
+      console.error("Registreringsfejl:", err);
+      setError(err.message || "Der opstod en uventet fejl under registrering.");
     }
   };
 
@@ -158,20 +159,39 @@ export function SignupScreen() {
               className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-indigo-400 disabled:cursor-not-allowed transition-colors duration-150"
             >
               {authIsLoading ? (
-                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <svg
+                  className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
                   {/* ... spinner SVG ... */}
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
                 </svg>
               ) : (
-                'Opret konto'
+                "Opret konto"
               )}
             </button>
           </div>
         </form>
         <p className="text-sm text-center text-gray-600">
-          Har du allerede en konto?{' '}
-          <a href="/login" className="font-medium text-indigo-600 hover:text-indigo-500">
+          Har du allerede en konto?{" "}
+          <a
+            href="/login"
+            className="font-medium text-indigo-600 hover:text-indigo-500"
+          >
             Log ind her
           </a>
         </p>

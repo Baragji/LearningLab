@@ -5,7 +5,9 @@
 Efter en grundig analyse af LearningLab monorepo'et har jeg identificeret følgende problemer, der forårsager build-fejl:
 
 ### Hovedproblem
+
 Build-processen fejler under kompilering af web-applikationen med følgende fejl:
+
 ```
 Type '{ (props: ButtonProps): Element; displayName: string | undefined; }' is not assignable to type 'FC<ButtonProps>'.
 Type 'Element' is not assignable to type 'ReactNode'.
@@ -14,15 +16,16 @@ Property 'children' is missing in type 'Element' but required in type 'ReactPort
 
 ### Underliggende årsager
 
-1. **TypeScript-typekonflikt i UI-pakken**: 
+1. **TypeScript-typekonflikt i UI-pakken**:
    - Fejlen opstår i `packages/ui/components/mui/Button/Button.tsx` hvor React.FC-typen ikke er kompatibel med returtypen.
-   
 2. **Versionskonflikter mellem React-typer**:
+
    - Der er forskellige versioner af `@types/react` i projektet:
      - Web-applikationen bruger `@types/react@18.2.18`
      - Transitive afhængigheder trækker `@types/react@19.1.5` ind
 
 3. **Potentielle problemer med peer dependencies**:
+
    - UI-pakken har React som peer dependency, men der kan være konflikter i hvordan disse håndteres i monorepo'et.
 
 4. **Yarn PnP og TypeScript-kompatibilitet**:
@@ -130,8 +133,8 @@ yarn add @mui/material@7.1.0 @emotion/react@11.14.0 @emotion/styled@11.14.0
 2. Opdater Button-komponenten til at bruge korrekte typer fra MUI v7:
 
 ```typescript
-import { Button as MuiButton, CircularProgress } from '@mui/material';
-import type { ButtonProps as MuiButtonProps } from '@mui/material';
+import { Button as MuiButton, CircularProgress } from "@mui/material";
+import type { ButtonProps as MuiButtonProps } from "@mui/material";
 
 // Opdater typedefinitionen hvis nødvendigt
 ```
@@ -197,6 +200,7 @@ yarn why @mui/material
 ### 10. Opdater dependencies til kompatible versioner
 
 1. Tjek om der er kendte kompatibilitetsproblemer mellem:
+
    - Next.js 13.4.12 og React 18.2.0
    - MUI v7.1.0 og React 18.2.0
    - TypeScript 5.1.6/5.3.3/5.8.3 (forskellige versioner i projektet)
@@ -210,14 +214,17 @@ yarn up -R typescript@5.3.3
 ## Forebyggelse af fremtidige problemer
 
 1. **Implementer strikte versionskontrols**:
+
    - Brug `"resolutions"` i root package.json til at sikre konsistente versioner.
    - Overvej at bruge `syncpack` til at holde versioner synkroniserede.
 
 2. **Forbedre TypeScript-konfiguration**:
+
    - Brug `"skipLibCheck": true` i alle tsconfig-filer.
    - Implementer project references for bedre monorepo-støtte.
 
 3. **Forbedre CI/CD-pipeline**:
+
    - Tilføj type-checking som et separat trin før build.
    - Implementer dependency-scanning for at fange versionskonflikter tidligt.
 

@@ -1,21 +1,19 @@
 // packages/ui/components/mui/test-utils.tsx
-import React, { ReactElement } from 'react';
-import { render, RenderOptions } from '@testing-library/react';
-import { ThemeProvider } from '@mui/material/styles';
-import { theme } from '../../theme';
+import React, { ReactElement } from "react";
+import { render, RenderOptions } from "@testing-library/react";
+import { ThemeProvider } from "@mui/material/styles";
+import { theme } from "../../theme";
 
 const AllTheProviders = ({ children }: { children: React.ReactNode }) => {
-  return (
-    <ThemeProvider theme={theme}>
-      {children}
-    </ThemeProvider>
-  );
+  return <ThemeProvider theme={theme}>{children}</ThemeProvider>;
 };
 
 const customRender = (
   ui: ReactElement,
-  options?: Omit<RenderOptions, 'wrapper'>,
-): ReturnType<typeof render> & { rerender: ReturnType<typeof render>['rerender'] } => render(ui, { wrapper: AllTheProviders, ...options });
+  options?: Omit<RenderOptions, "wrapper">,
+): ReturnType<typeof render> & {
+  rerender: ReturnType<typeof render>["rerender"];
+} => render(ui, { wrapper: AllTheProviders, ...options });
 
-export * from '@testing-library/react';
+export * from "@testing-library/react";
 export { customRender as render };

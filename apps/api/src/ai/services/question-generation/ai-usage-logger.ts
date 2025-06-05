@@ -56,27 +56,29 @@ export class AIUsageLogger {
       ...(endDate && { createdAt: { lte: endDate } }),
     };
 
-    const [totalUsage, successRate, avgQuestionsPerRequest] = await Promise.all([
-      // Total token usage
-      this.prisma.aIUsageLog.aggregate({
-        where,
-        _sum: { tokensUsed: true },
-        _count: true,
-      }),
-      
-      // Success rate
-      this.prisma.aIUsageLog.groupBy({
-        by: ['success'],
-        where,
-        _count: true,
-      }),
-      
-      // Average questions per request - we'll calculate from responseData
-      this.prisma.aIUsageLog.findMany({
-        where: { ...where, success: true },
-        select: { responseData: true },
-      }),
-    ]);
+    const [totalUsage, successRate, avgQuestionsPerRequest] = await Promise.all(
+      [
+        // Total token usage
+        this.prisma.aIUsageLog.aggregate({
+          where,
+          _sum: { tokensUsed: true },
+          _count: true,
+        }),
+
+        // Success rate
+        this.prisma.aIUsageLog.groupBy({
+          by: ['success'],
+          where,
+          _count: true,
+        }),
+
+        // Average questions per request - we'll calculate from responseData
+        this.prisma.aIUsageLog.findMany({
+          where: { ...where, success: true },
+          select: { responseData: true },
+        }),
+      ],
+    );
 
     // Calculate average questions per request from responseData
     const avgQuestions = this.calculateAverageQuestions(avgQuestionsPerRequest);
@@ -114,7 +116,7 @@ export class AIUsageLogger {
    */
   private calculateSuccessRate(data: any[]): number {
     const total = data.reduce((sum, item) => sum + item._count, 0);
-    const successful = data.find(item => item.success === true)?._count || 0;
+    const successful = data.find((item) => item.success === true)?._count || 0;
     return total > 0 ? (successful / total) * 100 : 0;
   }
 
@@ -123,13 +125,13 @@ export class AIUsageLogger {
    */
   private calculateAverageQuestions(logs: any[]): number {
     if (logs.length === 0) return 0;
-    
+
     const totalQuestions = logs.reduce((sum, log) => {
       const responseData = log.responseData as any;
       const questionsGenerated = responseData?.questionsGenerated || 0;
       return sum + questionsGenerated;
     }, 0);
-    
+
     return totalQuestions / logs.length;
   }
 

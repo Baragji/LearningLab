@@ -27,8 +27,8 @@ module.exports = function (options, webpackInstance) {
       ...options.resolve,
       alias: {
         ...options.resolve?.alias,
-        rxjs: path.resolve(__dirname, '../../node_modules/rxjs')
-      }
+        rxjs: path.resolve(__dirname, '../../node_modules/rxjs'),
+      },
     },
     module: {
       ...options.module,

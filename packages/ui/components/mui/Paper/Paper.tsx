@@ -1,6 +1,6 @@
 // packages/ui/components/mui/Paper/Paper.tsx
-import React from 'react';
-import { Paper as MuiPaper, PaperProps as MuiPaperProps } from '@mui/material';
+import React from "react";
+import { Paper as MuiPaper, PaperProps as MuiPaperProps } from "@mui/material";
 
 export interface PaperProps extends MuiPaperProps {
   /**
@@ -27,7 +27,7 @@ export const Paper = React.forwardRef<HTMLDivElement, PaperProps>(
         {children}
       </MuiPaper>
     );
-  }
+  },
 );
 
-Paper.displayName = 'Paper';
+Paper.displayName = "Paper";

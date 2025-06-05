@@ -23,12 +23,14 @@ question-generation/
 ## Features
 
 ### 1. Indholdsanalyse
+
 - Identificerer hovedemner og nøgletermer
 - Vurderer kompleksitetsniveau
 - Estimerer læsetid
 - Kategoriserer indholdstype (tekst, kode, blandet)
 
 ### 2. Spørgsmålsgenerering
+
 - Understøtter multiple spørgsmålstyper:
   - Multiple Choice
   - Fill in the Blank
@@ -40,6 +42,7 @@ question-generation/
 - Fokuserer på specifikke emneområder
 
 ### 3. Kvalitetsevaluering
+
 - Scorer hvert spørgsmål på en skala fra 0-100
 - Evaluerer baseret på:
   - Tekstlængde og klarhed
@@ -49,6 +52,7 @@ question-generation/
   - Pædagogisk værdi
 
 ### 4. AI Usage Tracking
+
 - Logger alle AI requests
 - Sporer token forbrug
 - Beregner estimerede omkostninger
@@ -57,6 +61,7 @@ question-generation/
 ## API Endpoints
 
 ### Generer spørgsmål fra rå indhold
+
 ```
 POST /api/ai/questions/generate-advanced
 Body: {
@@ -71,6 +76,7 @@ Body: {
 ```
 
 ### Generer spørgsmål fra lesson
+
 ```
 POST /api/ai/questions/generate/lesson/:lessonId
 Body: {
@@ -81,6 +87,7 @@ Body: {
 ```
 
 ### Generer spørgsmål fra topic
+
 ```
 POST /api/ai/questions/generate/topic/:topicId
 Body: {
@@ -91,6 +98,7 @@ Body: {
 ```
 
 ### Generer spørgsmål fra course
+
 ```
 POST /api/ai/questions/generate/course/:courseId
 Body: {
@@ -102,6 +110,7 @@ Body: {
 ```
 
 ### Hent usage statistik
+
 ```
 GET /api/ai/questions/usage-stats?startDate=2024-01-01&endDate=2024-12-31
 ```
@@ -162,6 +171,7 @@ OPENAI_MODEL=gpt-4-turbo-preview  # eller gpt-3.5-turbo for lavere omkostninger
 ## Fejlhåndtering
 
 Servicen håndterer følgende fejlscenarier:
+
 - OpenAI API fejl (timeout, rate limits)
 - Parsing fejl af AI responses
 - Manglende indhold i lessons/topics
@@ -178,6 +188,7 @@ Alle fejl logges og returneres med beskrivende fejlmeddelelser.
 ## Testing
 
 Kør tests med:
+
 ```bash
 npm test apps/api/src/ai/services/question-generation
 ```

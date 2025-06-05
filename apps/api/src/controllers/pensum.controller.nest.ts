@@ -71,7 +71,9 @@ export class PensumController {
     }
   }
 
-  @ApiOperation({ summary: 'Hent pensum-struktur for et specifikt uddannelsesprogram' })
+  @ApiOperation({
+    summary: 'Hent pensum-struktur for et specifikt uddannelsesprogram',
+  })
   @ApiParam({
     name: 'educationProgramId',
     description: 'Uddannelsesprogram ID',
@@ -82,7 +84,10 @@ export class PensumController {
     description: 'Pensum-struktur for det angivne uddannelsesprogram',
     type: PensumStructureDto,
   })
-  @ApiResponse({ status: 404, description: 'Uddannelsesprogrammet blev ikke fundet' })
+  @ApiResponse({
+    status: 404,
+    description: 'Uddannelsesprogrammet blev ikke fundet',
+  })
   @ApiResponse({ status: 500, description: 'Serverfejl' })
   @Get('education-program/:educationProgramId')
   async getPensumByEducationProgram(
@@ -226,10 +231,7 @@ export class PensumController {
       if (error instanceof NotFoundException) {
         throw error;
       }
-      console.error(
-        `Fejl ved hentning af pensum for emne ${topicId}:`,
-        error,
-      );
+      console.error(`Fejl ved hentning af pensum for emne ${topicId}:`, error);
       throw new NotFoundException(
         'Der opstod en fejl ved hentning af pensum-strukturen',
       );

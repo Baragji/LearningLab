@@ -27,10 +27,10 @@ export class OpenAIService {
   constructor(private configService: ConfigService) {
     const apiKey = this.configService.get<string>('OPENAI_API_KEY');
     const baseURL = this.configService.get<string>('OPENAI_API_BASE');
-    
+
     // Check if we're using Ollama
     const isOllama = baseURL && baseURL.includes('localhost:11434');
-    
+
     if (!isOllama && !apiKey) {
       throw new Error('OPENAI_API_KEY is required when not using Ollama');
     }
@@ -43,17 +43,22 @@ export class OpenAIService {
     // Default to llama2 for Ollama, gpt-3.5-turbo for OpenAI
     const defaultModel = isOllama ? 'llama2' : 'gpt-3.5-turbo';
     this.model = this.configService.get<string>('OPENAI_MODEL') || defaultModel;
-    this.embeddingModel = this.configService.get<string>('OPENAI_EMBEDDING_MODEL') || 'text-embedding-ada-002';
+    this.embeddingModel =
+      this.configService.get<string>('OPENAI_EMBEDDING_MODEL') ||
+      'text-embedding-ada-002';
 
-    this.logger.log(`OpenAI service initialized with model: ${this.model}${baseURL ? ` and baseURL: ${baseURL}` : ''}`);
+    this.logger.log(
+      `OpenAI service initialized with model: ${this.model}${baseURL ? ` and baseURL: ${baseURL}` : ''}`,
+    );
   }
 
   async createEmbedding(text: string): Promise<number[]> {
     try {
-      const response: CreateEmbeddingResponse = await this.openai.embeddings.create({
-        model: this.embeddingModel,
-        input: text,
-      });
+      const response: CreateEmbeddingResponse =
+        await this.openai.embeddings.create({
+          model: this.embeddingModel,
+          input: text,
+        });
 
       // Update usage stats
       this.updateUsageStats({
@@ -66,7 +71,8 @@ export class OpenAIService {
       return response.data[0].embedding;
     } catch (error) {
       this.logger.error('Failed to create embedding', error);
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
       throw new Error(`Failed to create embedding: ${errorMessage}`);
     }
   }
@@ -79,7 +85,7 @@ export class OpenAIService {
       // Check if we're using Ollama (baseURL contains localhost:11434)
       const baseURL = this.configService.get<string>('OPENAI_API_BASE');
       const isOllama = baseURL && baseURL.includes('localhost:11434');
-      
+
       if (isOllama) {
         // For Ollama, make direct HTTP request
         const requestBody = {
@@ -88,10 +94,14 @@ export class OpenAIService {
           temperature: options?.temperature || 0.7,
           max_tokens: options?.max_tokens || 1000,
         };
-        
-        this.logger.log(`Making Ollama request to: ${baseURL}/chat/completions`);
-        this.logger.log(`Request body: ${JSON.stringify(requestBody, null, 2)}`);
-        
+
+        this.logger.log(
+          `Making Ollama request to: ${baseURL}/chat/completions`,
+        );
+        this.logger.log(
+          `Request body: ${JSON.stringify(requestBody, null, 2)}`,
+        );
+
         const response = await fetch(`${baseURL}/chat/completions`, {
           method: 'POST',
           headers: {
@@ -99,15 +109,17 @@ export class OpenAIService {
           },
           body: JSON.stringify(requestBody),
         });
-        
+
         this.logger.log(`Response status: ${response.status}`);
-        
+
         if (!response.ok) {
           const errorText = await response.text();
           this.logger.error(`Ollama error response: ${errorText}`);
-          throw new Error(`HTTP error! status: ${response.status}, body: ${errorText}`);
+          throw new Error(
+            `HTTP error! status: ${response.status}, body: ${errorText}`,
+          );
         }
-        
+
         const data = await response.json();
         this.logger.log(`Ollama response: ${JSON.stringify(data, null, 2)}`);
         return data.choices[0]?.message?.content || '';
@@ -135,7 +147,8 @@ export class OpenAIService {
       }
     } catch (error) {
       this.logger.error('Failed to create chat completion', error);
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
       throw new Error(`Failed to create chat completion: ${errorMessage}`);
     }
   }
@@ -166,7 +179,8 @@ ${content}
       const response = await this.createChatCompletion([
         {
           role: 'system',
-          content: 'You are an expert educator who creates high-quality quiz questions. Always respond with valid JSON.',
+          content:
+            'You are an expert educator who creates high-quality quiz questions. Always respond with valid JSON.',
         },
         {
           role: 'user',
@@ -177,7 +191,8 @@ ${content}
       return JSON.parse(response);
     } catch (error) {
       this.logger.error('Failed to generate questions', error);
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
       throw new Error(`Failed to generate questions: ${errorMessage}`);
     }
   }

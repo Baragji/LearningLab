@@ -7,16 +7,16 @@
  */
 
 // User types
-export * from './types/user.types';
+export * from "./types/user.types";
 
 // Pensum types
-export * from './types/pensum.types';
+export * from "./types/pensum.types";
 
 // Quiz types
-export * from './types/quiz.types';
+export * from "./types/quiz.types";
 
 // EducationProgram types
-export * from './types/educationProgram.types';
+export * from "./types/educationProgram.types";
 
 // Utility functions
-export * from './utils/validation';
+export * from "./utils/validation";

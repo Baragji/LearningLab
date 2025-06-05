@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import React, { useState, useEffect } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   BarChart,
   Bar,
@@ -26,7 +26,7 @@ import {
   PolarAngleAxis,
   PolarRadiusAxis,
   Radar,
-} from 'recharts';
+} from "recharts";
 import {
   TrendingUp,
   TrendingDown,
@@ -42,8 +42,8 @@ import {
   CheckCircle,
   AlertTriangle,
   Info,
-} from 'lucide-react';
-import { cn } from '@/lib/utils';
+} from "lucide-react";
+import { cn } from "@/lib/utils";
 
 // Types
 interface LearningMetrics {
@@ -66,15 +66,15 @@ interface ConceptMastery {
   accuracy: number;
   timeSpent: number;
   lastStudied: Date;
-  difficulty: 'beginner' | 'intermediate' | 'advanced';
-  trend: 'improving' | 'stable' | 'declining';
+  difficulty: "beginner" | "intermediate" | "advanced";
+  trend: "improving" | "stable" | "declining";
 }
 
 interface LearningPattern {
   pattern: string;
   description: string;
   frequency: number;
-  impact: 'positive' | 'neutral' | 'negative';
+  impact: "positive" | "neutral" | "negative";
   recommendations: string[];
 }
 
@@ -128,27 +128,35 @@ interface LearningAnalyticsDashboardProps {
   timeframe?: {
     start: Date;
     end: Date;
-    period: 'day' | 'week' | 'month' | 'quarter' | 'year';
+    period: "day" | "week" | "month" | "quarter" | "year";
   };
   className?: string;
 }
 
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8', '#82CA9D'];
+const COLORS = [
+  "#0088FE",
+  "#00C49F",
+  "#FFBB28",
+  "#FF8042",
+  "#8884D8",
+  "#82CA9D",
+];
 
 export function LearningAnalyticsDashboard({
   userId,
   timeframe,
   className,
 }: LearningAnalyticsDashboardProps) {
-  const [dashboardData, setDashboardData] = useState<ComprehensiveDashboardData | null>(null);
+  const [dashboardData, setDashboardData] =
+    useState<ComprehensiveDashboardData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedTimeframe, setSelectedTimeframe] = useState(
     timeframe || {
       start: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), // 30 days ago
       end: new Date(),
-      period: 'month' as const,
-    }
+      period: "month" as const,
+    },
   );
 
   useEffect(() => {
@@ -167,19 +175,19 @@ export function LearningAnalyticsDashboard({
           totalQuestions: 150,
           correctAnswers: 120,
           totalStudyTime: 3600,
-          strengths: ['Mathematics', 'Logic'],
-          weaknesses: ['History', 'Literature'],
-          difficultyLevel: 'intermediate' as const,
+          strengths: ["Mathematics", "Logic"],
+          weaknesses: ["History", "Literature"],
+          difficultyLevel: "intermediate" as const,
           streakDays: 7,
           lastActivity: new Date().toISOString(),
-          topicsStudied: ['Math', 'Science', 'History'],
+          topicsStudied: ["Math", "Science", "History"],
         },
       ];
 
-      const response = await fetch('/api/ai/analytics/dashboard', {
-        method: 'POST',
+      const response = await fetch("/api/ai/analytics/dashboard", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           userId,
@@ -193,13 +201,13 @@ export function LearningAnalyticsDashboard({
       });
 
       if (!response.ok) {
-        throw new Error('Failed to load dashboard data');
+        throw new Error("Failed to load dashboard data");
       }
 
       const data = await response.json();
       setDashboardData(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
       setIsLoading(false);
     }
@@ -207,13 +215,13 @@ export function LearningAnalyticsDashboard({
 
   const getMetricIcon = (metric: string) => {
     switch (metric) {
-      case 'accuracy':
+      case "accuracy":
         return <Target className="h-4 w-4" />;
-      case 'time':
+      case "time":
         return <Clock className="h-4 w-4" />;
-      case 'streak':
+      case "streak":
         return <Zap className="h-4 w-4" />;
-      case 'engagement':
+      case "engagement":
         return <Activity className="h-4 w-4" />;
       default:
         return <Brain className="h-4 w-4" />;
@@ -222,9 +230,9 @@ export function LearningAnalyticsDashboard({
 
   const getTrendIcon = (trend: string) => {
     switch (trend) {
-      case 'improving':
+      case "improving":
         return <TrendingUp className="h-4 w-4 text-green-500" />;
-      case 'declining':
+      case "declining":
         return <TrendingDown className="h-4 w-4 text-red-500" />;
       default:
         return <Activity className="h-4 w-4 text-gray-500" />;
@@ -233,18 +241,18 @@ export function LearningAnalyticsDashboard({
 
   const getImpactColor = (impact: string) => {
     switch (impact) {
-      case 'positive':
-        return 'text-green-600 bg-green-50';
-      case 'negative':
-        return 'text-red-600 bg-red-50';
+      case "positive":
+        return "text-green-600 bg-green-50";
+      case "negative":
+        return "text-red-600 bg-red-50";
       default:
-        return 'text-gray-600 bg-gray-50';
+        return "text-gray-600 bg-gray-50";
     }
   };
 
   if (isLoading) {
     return (
-      <Card className={cn('w-full', className)}>
+      <Card className={cn("w-full", className)}>
         <CardContent className="p-6">
           <div className="flex items-center justify-center space-x-2">
             <Brain className="h-5 w-5 animate-pulse text-blue-500" />
@@ -259,7 +267,7 @@ export function LearningAnalyticsDashboard({
 
   if (error) {
     return (
-      <Card className={cn('w-full', className)}>
+      <Card className={cn("w-full", className)}>
         <CardContent className="p-6">
           <Alert variant="destructive">
             <AlertTriangle className="h-4 w-4" />
@@ -275,13 +283,13 @@ export function LearningAnalyticsDashboard({
   }
 
   return (
-    <div className={cn('space-y-6', className)}>
+    <div className={cn("space-y-6", className)}>
       {/* Header with Key Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center space-x-2">
-              {getMetricIcon('accuracy')}
+              {getMetricIcon("accuracy")}
               <div>
                 <p className="text-sm font-medium">Accuracy</p>
                 <p className="text-2xl font-bold">
@@ -295,7 +303,7 @@ export function LearningAnalyticsDashboard({
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center space-x-2">
-              {getMetricIcon('time')}
+              {getMetricIcon("time")}
               <div>
                 <p className="text-sm font-medium">Study Time</p>
                 <p className="text-2xl font-bold">
@@ -309,7 +317,7 @@ export function LearningAnalyticsDashboard({
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center space-x-2">
-              {getMetricIcon('streak')}
+              {getMetricIcon("streak")}
               <div>
                 <p className="text-sm font-medium">Streak</p>
                 <p className="text-2xl font-bold">
@@ -323,7 +331,7 @@ export function LearningAnalyticsDashboard({
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center space-x-2">
-              {getMetricIcon('engagement')}
+              {getMetricIcon("engagement")}
               <div>
                 <p className="text-sm font-medium">Engagement</p>
                 <p className="text-2xl font-bold">
@@ -355,7 +363,9 @@ export function LearningAnalyticsDashboard({
               </CardHeader>
               <CardContent>
                 <ResponsiveContainer width="100%" height={300}>
-                  <LineChart data={dashboardData.visualizations.progressOverTime}>
+                  <LineChart
+                    data={dashboardData.visualizations.progressOverTime}
+                  >
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="date" />
                     <YAxis />
@@ -391,14 +401,21 @@ export function LearningAnalyticsDashboard({
                       cx="50%"
                       cy="50%"
                       labelLine={false}
-                      label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                      label={({ name, percent }) =>
+                        `${name} ${(percent * 100).toFixed(0)}%`
+                      }
                       outerRadius={80}
                       fill="#8884d8"
                       dataKey="value"
                     >
-                      {dashboardData.visualizations.topicDistribution.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                      ))}
+                      {dashboardData.visualizations.topicDistribution.map(
+                        (entry, index) => (
+                          <Cell
+                            key={`cell-${index}`}
+                            fill={COLORS[index % COLORS.length]}
+                          />
+                        ),
+                      )}
                     </Pie>
                     <Tooltip />
                   </PieChart>
@@ -419,7 +436,10 @@ export function LearningAnalyticsDashboard({
               <CardContent>
                 <ul className="space-y-2">
                   {dashboardData.insights.map((insight, index) => (
-                    <li key={index} className="text-sm text-muted-foreground flex items-start space-x-2">
+                    <li
+                      key={index}
+                      className="text-sm text-muted-foreground flex items-start space-x-2"
+                    >
                       <CheckCircle className="h-3 w-3 mt-1 flex-shrink-0 text-green-500" />
                       <span>{insight}</span>
                     </li>
@@ -437,12 +457,17 @@ export function LearningAnalyticsDashboard({
               </CardHeader>
               <CardContent>
                 <ul className="space-y-2">
-                  {dashboardData.recommendations.map((recommendation, index) => (
-                    <li key={index} className="text-sm text-muted-foreground flex items-start space-x-2">
-                      <Award className="h-3 w-3 mt-1 flex-shrink-0 text-blue-500" />
-                      <span>{recommendation}</span>
-                    </li>
-                  ))}
+                  {dashboardData.recommendations.map(
+                    (recommendation, index) => (
+                      <li
+                        key={index}
+                        className="text-sm text-muted-foreground flex items-start space-x-2"
+                      >
+                        <Award className="h-3 w-3 mt-1 flex-shrink-0 text-blue-500" />
+                        <span>{recommendation}</span>
+                      </li>
+                    ),
+                  )}
                 </ul>
               </CardContent>
             </Card>
@@ -487,7 +512,9 @@ export function LearningAnalyticsDashboard({
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={dashboardData.visualizations.difficultyProgression}>
+                <BarChart
+                  data={dashboardData.visualizations.difficultyProgression}
+                >
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="difficulty" />
                   <YAxis />
@@ -520,7 +547,7 @@ export function LearningAnalyticsDashboard({
                     </div>
                     <Progress value={concept.masteryLevel} className="h-2" />
                   </div>
-                  
+
                   <div className="space-y-1">
                     <div className="flex justify-between text-xs">
                       <span>Accuracy</span>
@@ -558,7 +585,7 @@ export function LearningAnalyticsDashboard({
                   <p className="text-sm text-muted-foreground">
                     {pattern.description}
                   </p>
-                  
+
                   <div className="text-xs text-muted-foreground">
                     Frequency: {pattern.frequency}%
                   </div>
@@ -568,7 +595,10 @@ export function LearningAnalyticsDashboard({
                       <h4 className="text-sm font-medium">Recommendations:</h4>
                       <ul className="space-y-1">
                         {pattern.recommendations.map((rec, recIndex) => (
-                          <li key={recIndex} className="text-xs text-muted-foreground flex items-start space-x-2">
+                          <li
+                            key={recIndex}
+                            className="text-xs text-muted-foreground flex items-start space-x-2"
+                          >
                             <Target className="h-3 w-3 mt-0.5 flex-shrink-0" />
                             <span>{rec}</span>
                           </li>
@@ -594,12 +624,21 @@ export function LearningAnalyticsDashboard({
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <div className="flex justify-between items-center">
-                  <span className="text-sm font-medium">Predicted Accuracy ({dashboardData.progressPredictions.timeframe})</span>
+                  <span className="text-sm font-medium">
+                    Predicted Accuracy (
+                    {dashboardData.progressPredictions.timeframe})
+                  </span>
                   <span className="text-lg font-bold">
-                    {dashboardData.progressPredictions.predictedAccuracy.toFixed(1)}%
+                    {dashboardData.progressPredictions.predictedAccuracy.toFixed(
+                      1,
+                    )}
+                    %
                   </span>
                 </div>
-                <Progress value={dashboardData.progressPredictions.predictedAccuracy} className="h-3" />
+                <Progress
+                  value={dashboardData.progressPredictions.predictedAccuracy}
+                  className="h-3"
+                />
                 <div className="text-xs text-muted-foreground">
                   Confidence: {dashboardData.progressPredictions.confidence}%
                 </div>
@@ -607,19 +646,26 @@ export function LearningAnalyticsDashboard({
 
               <div className="space-y-3">
                 <h4 className="text-sm font-medium">Upcoming Milestones</h4>
-                {dashboardData.progressPredictions.milestones.map((milestone, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
-                    <div className="space-y-1">
-                      <p className="text-sm font-medium">{milestone.description}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {milestone.date.toLocaleDateString()}
-                      </p>
+                {dashboardData.progressPredictions.milestones.map(
+                  (milestone, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center justify-between p-3 border rounded-lg"
+                    >
+                      <div className="space-y-1">
+                        <p className="text-sm font-medium">
+                          {milestone.description}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {milestone.date.toLocaleDateString()}
+                        </p>
+                      </div>
+                      <Badge variant="outline">
+                        {milestone.probability}% likely
+                      </Badge>
                     </div>
-                    <Badge variant="outline">
-                      {milestone.probability}% likely
-                    </Badge>
-                  </div>
-                ))}
+                  ),
+                )}
               </div>
             </CardContent>
           </Card>

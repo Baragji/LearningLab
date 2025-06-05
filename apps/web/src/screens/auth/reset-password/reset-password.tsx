@@ -1,22 +1,22 @@
 // apps/web/src/screens/auth/reset-password/reset-password.tsx
-import React, { useState, FormEvent, useEffect } from 'react';
-import { useRouter } from 'next/router';
-import { useAuth } from '../../../contexts/AuthContext';
+import React, { useState, FormEvent, useEffect } from "react";
+import { useRouter } from "next/router";
+import { useAuth } from "../../../contexts/AuthContext";
 
 export function ResetPasswordScreen() {
   const router = useRouter();
   const { token: queryToken } = router.query; // Hent token fra URL query parameter
   const { resetPassword, isLoading: authIsLoading } = useAuth();
 
-  const [token, setToken] = useState<string>('');
-  const [newPassword, setNewPassword] = useState<string>('');
-  const [confirmPassword, setConfirmPassword] = useState<string>('');
+  const [token, setToken] = useState<string>("");
+  const [newPassword, setNewPassword] = useState<string>("");
+  const [confirmPassword, setConfirmPassword] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   // Sæt token fra URL, når komponenten mounter, hvis det findes
   useEffect(() => {
-    if (queryToken && typeof queryToken === 'string') {
+    if (queryToken && typeof queryToken === "string") {
       setToken(queryToken);
     }
   }, [queryToken]);
@@ -27,30 +27,34 @@ export function ResetPasswordScreen() {
     setSuccessMessage(null);
 
     if (newPassword !== confirmPassword) {
-      setError('De nye adgangskoder matcher ikke.');
+      setError("De nye adgangskoder matcher ikke.");
       return;
     }
 
     if (!token) {
-        setError('Password reset token mangler. Prøv at anmode om et nyt nulstillingslink.');
-        return;
+      setError(
+        "Password reset token mangler. Prøv at anmode om et nyt nulstillingslink.",
+      );
+      return;
     }
 
     try {
       // Brug resetPassword funktionen fra AuthContext
       const message = await resetPassword(token, newPassword, confirmPassword);
 
-      console.log('Nulstilling af adgangskode succesfuld');
-      setSuccessMessage(message || 'Din adgangskode er blevet nulstillet! Du bliver nu sendt til login-siden.');
+      console.log("Nulstilling af adgangskode succesfuld");
+      setSuccessMessage(
+        message ||
+          "Din adgangskode er blevet nulstillet! Du bliver nu sendt til login-siden.",
+      );
 
       // Omdiriger til login-siden efter en kort pause
       setTimeout(() => {
-        router.push('/login');
+        router.push("/login");
       }, 3000); // 3 sekunders forsinkelse
-
     } catch (err: any) {
-      console.error('Fejl ved nulstilling af adgangskode:', err);
-      setError(err.message || 'Der opstod en uventet fejl.');
+      console.error("Fejl ved nulstilling af adgangskode:", err);
+      setError(err.message || "Der opstod en uventet fejl.");
     }
   };
 
@@ -80,7 +84,11 @@ export function ResetPasswordScreen() {
               className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm disabled:bg-gray-100"
               placeholder="Indsæt dit token her"
             />
-             {queryToken && <p className="mt-1 text-xs text-gray-500">Token hentet fra URL.</p>}
+            {queryToken && (
+              <p className="mt-1 text-xs text-gray-500">
+                Token hentet fra URL.
+              </p>
+            )}
           </div>
 
           {/* Nyt Password felt */}
@@ -149,19 +157,38 @@ export function ResetPasswordScreen() {
               className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-indigo-400 disabled:cursor-not-allowed transition-colors duration-150"
             >
               {authIsLoading ? (
-                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                <svg
+                  className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
                 </svg>
               ) : (
-                'Nulstil Adgangskode'
+                "Nulstil Adgangskode"
               )}
             </button>
           </div>
         </form>
         <p className="text-sm text-center text-gray-600">
-          Husker du din adgangskode?{' '}
-          <a href="/login" className="font-medium text-indigo-600 hover:text-indigo-500">
+          Husker du din adgangskode?{" "}
+          <a
+            href="/login"
+            className="font-medium text-indigo-600 hover:text-indigo-500"
+          >
             Log ind
           </a>
         </p>

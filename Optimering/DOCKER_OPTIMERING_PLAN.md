@@ -3,12 +3,14 @@
 ## 📊 NUVÆRENDE DOCKER SITUATION
 
 ### Eksisterende Setup
+
 - **docker-compose.yml**: Grundlæggende multi-service setup
 - **Dockerfile.api**: Multi-stage build med Node.js 22
 - **Dockerfile.web**: Multi-stage build med Next.js standalone
 - **nginx**: Reverse proxy konfiguration
 
 ### Identificerede Problemer
+
 1. **Image størrelse**: Ikke optimeret for minimal størrelse
 2. **Security**: Manglende security best practices
 3. **Performance**: Ikke optimeret build cache
@@ -19,12 +21,14 @@
 ## 🎯 OPTIMERINGSMÅL
 
 ### Performance
+
 - Reducer image størrelse med 40%+
 - Forbedre build tid med 50%+
 - Optimere startup tid
 - Implementere effektiv caching
 
 ### Security
+
 - Non-root users
 - Minimal base images
 - Secret management
@@ -32,12 +36,14 @@
 - Security scanning
 
 ### Reliability
+
 - Health checks
 - Graceful shutdown
 - Resource limits
 - Restart policies
 
 ### Developer Experience
+
 - Development compose setup
 - Hot reload support
 - Debug capabilities
@@ -46,6 +52,7 @@
 ## 🔧 OPTIMERET DOCKER ARKITEKTUR
 
 ### Ny Folder Struktur
+
 ```
 docker/
 ├── api/
@@ -71,6 +78,7 @@ docker/
 ### Fase 1: Optimeret API Dockerfile
 
 #### docker/api/Dockerfile
+
 ```dockerfile
 # Multi-stage build for optimal size and security
 FROM node:22-alpine AS base
@@ -143,6 +151,7 @@ CMD ["node", "apps/api/dist/main.js"]
 ```
 
 #### docker/api/.dockerignore
+
 ```
 node_modules
 npm-debug.log
@@ -167,6 +176,7 @@ build
 ### Fase 2: Optimeret Web Dockerfile
 
 #### docker/web/Dockerfile
+
 ```dockerfile
 FROM node:22-alpine AS base
 WORKDIR /app
@@ -231,6 +241,7 @@ CMD ["node", "server.js"]
 ### Fase 3: Optimeret Nginx Setup
 
 #### docker/nginx/Dockerfile
+
 ```dockerfile
 FROM nginx:1.25-alpine AS base
 
@@ -262,6 +273,7 @@ CMD ["nginx", "-g", "daemon off;"]
 ```
 
 #### docker/nginx/nginx.conf
+
 ```nginx
 worker_processes auto;
 error_log /var/log/nginx/error.log warn;
@@ -342,7 +354,7 @@ http {
         # API routes
         location /api/ {
             limit_req zone=api burst=20 nodelay;
-            
+
             proxy_pass http://api/;
             proxy_http_version 1.1;
             proxy_set_header Upgrade $http_upgrade;
@@ -352,7 +364,7 @@ http {
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
             proxy_set_header X-Forwarded-Proto $scheme;
             proxy_cache_bypass $http_upgrade;
-            
+
             # Timeouts
             proxy_connect_timeout 5s;
             proxy_send_timeout 60s;
@@ -362,7 +374,7 @@ http {
         # Web application
         location / {
             limit_req zone=web burst=50 nodelay;
-            
+
             proxy_pass http://web/;
             proxy_http_version 1.1;
             proxy_set_header Upgrade $http_upgrade;
@@ -372,7 +384,7 @@ http {
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
             proxy_set_header X-Forwarded-Proto $scheme;
             proxy_cache_bypass $http_upgrade;
-            
+
             # Timeouts
             proxy_connect_timeout 5s;
             proxy_send_timeout 60s;
@@ -392,8 +404,9 @@ http {
 ### Fase 4: Production Docker Compose
 
 #### docker-compose.prod.yml
+
 ```yaml
-version: '3.8'
+version: "3.8"
 
 services:
   postgres:
@@ -413,7 +426,11 @@ services:
       - postgres_user
       - postgres_password
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $$(cat /run/secrets/postgres_user) -d learninglab_prod"]
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U $$(cat /run/secrets/postgres_user) -d learninglab_prod",
+        ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -422,10 +439,10 @@ services:
       resources:
         limits:
           memory: 512M
-          cpus: '0.5'
+          cpus: "0.5"
         reservations:
           memory: 256M
-          cpus: '0.25'
+          cpus: "0.25"
 
   redis:
     image: redis:7-alpine
@@ -447,7 +464,7 @@ services:
       resources:
         limits:
           memory: 256M
-          cpus: '0.25'
+          cpus: "0.25"
 
   api:
     build:
@@ -477,7 +494,13 @@ services:
       - postgres_password
       - jwt_secret
     healthcheck:
-      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3001/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })"]
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "require('http').get('http://localhost:3001/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })",
+        ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -486,10 +509,10 @@ services:
       resources:
         limits:
           memory: 1G
-          cpus: '1.0'
+          cpus: "1.0"
         reservations:
           memory: 512M
-          cpus: '0.5'
+          cpus: "0.5"
 
   web:
     build:
@@ -512,7 +535,13 @@ services:
     networks:
       - frontend
     healthcheck:
-      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3001/api/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })"]
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "require('http').get('http://localhost:3001/api/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })",
+        ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -521,10 +550,10 @@ services:
       resources:
         limits:
           memory: 512M
-          cpus: '0.5'
+          cpus: "0.5"
         reservations:
           memory: 256M
-          cpus: '0.25'
+          cpus: "0.25"
 
   nginx:
     build:
@@ -546,7 +575,15 @@ services:
     networks:
       - frontend
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/health"]
+      test:
+        [
+          "CMD",
+          "wget",
+          "--no-verbose",
+          "--tries=1",
+          "--spider",
+          "http://localhost:8080/health",
+        ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -554,7 +591,7 @@ services:
       resources:
         limits:
           memory: 128M
-          cpus: '0.25'
+          cpus: "0.25"
 
 networks:
   frontend:
@@ -581,8 +618,9 @@ secrets:
 ### Fase 5: Development Docker Compose
 
 #### docker-compose.dev.yml
+
 ```yaml
-version: '3.8'
+version: "3.8"
 
 services:
   postgres:
@@ -616,7 +654,7 @@ services:
     container_name: learning-api-dev
     ports:
       - "3001:3001"
-      - "9229:9229"  # Debug port
+      - "9229:9229" # Debug port
     environment:
       - NODE_ENV=development
       - DATABASE_URL=postgresql://dev:dev@postgres:5432/learninglab_dev?schema=public
@@ -664,6 +702,7 @@ volumes:
 ## 🔒 SECURITY ENHANCEMENTS
 
 ### Secret Management
+
 ```bash
 # Opret secrets directory
 mkdir -p secrets
@@ -679,6 +718,7 @@ chmod 600 secrets/*
 ```
 
 ### SSL/TLS Setup
+
 ```bash
 # Generer self-signed certificates for development
 mkdir -p ssl
@@ -691,9 +731,10 @@ openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
 ## 📊 MONITORING & LOGGING
 
 ### Prometheus & Grafana Setup
+
 ```yaml
 # docker-compose.monitoring.yml
-version: '3.8'
+version: "3.8"
 
 services:
   prometheus:
@@ -705,12 +746,12 @@ services:
       - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus_data:/prometheus
     command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
-      - '--web.console.libraries=/etc/prometheus/console_libraries'
-      - '--web.console.templates=/etc/prometheus/consoles'
-      - '--storage.tsdb.retention.time=200h'
-      - '--web.enable-lifecycle'
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--web.console.libraries=/etc/prometheus/console_libraries"
+      - "--web.console.templates=/etc/prometheus/consoles"
+      - "--storage.tsdb.retention.time=200h"
+      - "--web.enable-lifecycle"
     networks:
       - monitoring
 
@@ -745,12 +786,14 @@ secrets:
 ## 📋 IMPLEMENTATION CHECKLIST
 
 ### Pre-Implementation
+
 - [ ] Backup nuværende Docker setup
 - [ ] Test nuværende functionality
 - [ ] Setup development environment
 - [ ] Create secrets directory
 
 ### Phase 1: Dockerfile Optimization
+
 - [ ] Create optimized API Dockerfile
 - [ ] Create optimized Web Dockerfile
 - [ ] Create optimized Nginx Dockerfile
@@ -758,6 +801,7 @@ secrets:
 - [ ] Test individual builds
 
 ### Phase 2: Compose Files
+
 - [ ] Create production compose file
 - [ ] Create development compose file
 - [ ] Create monitoring compose file
@@ -765,6 +809,7 @@ secrets:
 - [ ] Configure networks
 
 ### Phase 3: Security
+
 - [ ] Implement non-root users
 - [ ] Setup SSL certificates
 - [ ] Configure security headers
@@ -772,6 +817,7 @@ secrets:
 - [ ] Security scanning
 
 ### Phase 4: Monitoring
+
 - [ ] Setup health checks
 - [ ] Configure Prometheus
 - [ ] Setup Grafana dashboards
@@ -779,6 +825,7 @@ secrets:
 - [ ] Performance monitoring
 
 ### Phase 5: Testing
+
 - [ ] Test development environment
 - [ ] Test production environment
 - [ ] Load testing
@@ -788,24 +835,28 @@ secrets:
 ## 🚀 SUCCESS METRICS
 
 ### Performance
+
 - [ ] Image size reduction 40%+
 - [ ] Build time improvement 50%+
 - [ ] Startup time < 30 seconds
 - [ ] Memory usage optimized
 
 ### Security
+
 - [ ] No security vulnerabilities
 - [ ] Non-root containers
 - [ ] Encrypted secrets
 - [ ] Network isolation
 
 ### Reliability
+
 - [ ] 99.9% uptime
 - [ ] Graceful shutdowns
 - [ ] Health checks working
 - [ ] Auto-restart on failure
 
 ### Developer Experience
+
 - [ ] Hot reload working
 - [ ] Debug capabilities
 - [ ] Easy setup process
@@ -813,4 +864,4 @@ secrets:
 
 ---
 
-*Denne plan sikrer en professionel, sikker og optimeret Docker setup med best practices.*
+_Denne plan sikrer en professionel, sikker og optimeret Docker setup med best practices._

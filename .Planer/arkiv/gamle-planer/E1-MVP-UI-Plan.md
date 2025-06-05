@@ -2,12 +2,12 @@
 
 ## Oversigt over E1 opgaver
 
-| Key  | Summary                      | Status | SP | Beskrivelse                                                    |
-| ---- | ---------------------------- | ------ | -- | -------------------------------------------------------------- |
-| E1‑1 | Layout & App‑shell           | WIP    | 5  | Header m. logo, user‑menu; sidebar collapsible; dark‑mode toggle |
-| E1‑2 | AuthContext + ProtectedRoute | TODO   | 3  | Uautoriseret redirect → `/login`; efter login redirect → lastRoute |
-| E1‑3 | Dashboard page               | TODO   | 5  | Grid af kurser (`/courses` API) + placeholder statistik |
-| E1‑4 | Kursusflow V1                | TODO   | 8  | `courses/[slug]` → modul‑liste; `lessons/[id]` viser TEXT‑contentBlocks |
+| Key  | Summary                      | Status | SP  | Beskrivelse                                                             |
+| ---- | ---------------------------- | ------ | --- | ----------------------------------------------------------------------- |
+| E1‑1 | Layout & App‑shell           | WIP    | 5   | Header m. logo, user‑menu; sidebar collapsible; dark‑mode toggle        |
+| E1‑2 | AuthContext + ProtectedRoute | TODO   | 3   | Uautoriseret redirect → `/login`; efter login redirect → lastRoute      |
+| E1‑3 | Dashboard page               | TODO   | 5   | Grid af kurser (`/courses` API) + placeholder statistik                 |
+| E1‑4 | Kursusflow V1                | TODO   | 8   | `courses/[slug]` → modul‑liste; `lessons/[id]` viser TEXT‑contentBlocks |
 
 ## Detaljeret implementeringsplan
 
@@ -18,16 +18,19 @@
 **Opgaver:**
 
 1. **Færdiggør header-komponenten:**
+
    - Implementer logo og navigation
    - Tilføj user-menu dropdown med placeholder for brugerinfo
    - Tilføj responsive design for mobil/tablet
 
 2. **Implementer sidebar:**
+
    - Opret collapsible sidebar-komponent
    - Tilføj navigation links til forskellige sektioner
    - Implementer toggle-funktion for at vise/skjule sidebar
 
 3. **Tilføj dark-mode toggle:**
+
    - Implementer context for theme-state
    - Opret toggle-komponent for dark/light mode
    - Tilføj CSS-variabler for farver i begge temaer
@@ -44,16 +47,19 @@
 **Opgaver:**
 
 1. **Opret AuthContext:**
+
    - Implementer context med state for authentication (isAuthenticated, user, loading)
    - Tilføj login/logout funktioner
    - Tilføj token-håndtering (localStorage/sessionStorage)
 
 2. **Implementer ProtectedRoute komponent:**
+
    - Opret HOC eller komponent der tjekker authentication status
    - Implementer redirect til login-side for uautoriserede brugere
    - Gem lastRoute i state/localStorage for at kunne redirecte tilbage efter login
 
 3. **Opret login-side:**
+
    - Design simpel login-formular
    - Implementer form-validering
    - Tilslut til AuthContext for login-funktionalitet
@@ -69,16 +75,19 @@
 **Opgaver:**
 
 1. **Opret API-integration:**
+
    - Implementer service/hooks til at hente kurser fra `/courses` API
    - Tilføj loading og error states
    - Implementer caching af data hvis nødvendigt
 
 2. **Design kursus-grid:**
+
    - Opret responsive grid-layout for kurser
    - Design kursus-kort med billede, titel, beskrivelse
    - Implementer hover/fokus effekter
 
 3. **Tilføj placeholder statistik:**
+
    - Design widgets til statistik (antal kurser, fremskridt, etc.)
    - Implementer placeholder data indtil backend er klar
    - Gør widgets responsive
@@ -95,16 +104,19 @@
 **Opgaver:**
 
 1. **Opret kursusside med dynamisk routing:**
+
    - Implementer `courses/[slug]` route
    - Hent kursusdata baseret på slug
    - Design kursusside med header, beskrivelse og moduler
 
 2. **Implementer modulliste:**
+
    - Design liste over moduler i kurset
    - Tilføj progress-indikator for hvert modul
    - Implementer navigation mellem moduler
 
 3. **Opret lesson-side:**
+
    - Implementer `lessons/[id]` route
    - Design lesson-side med navigation og indhold
    - Tilføj breadcrumb navigation
@@ -117,15 +129,18 @@
 ## Tekniske overvejelser
 
 1. **State Management:**
+
    - Brug React Context for global state (auth, theme)
    - Overvej React Query for data fetching og caching
 
 2. **Styling:**
+
    - Brug Tailwind CSS for konsistent styling
    - Implementer responsive design fra starten
    - Brug CSS-variabler for theming
 
 3. **Komponent-struktur:**
+
    - Opret genbrugelige komponenter i UI-pakken
    - Dokumenter komponenter med JSDoc/TSDoc
    - Implementer prop-validering med TypeScript
@@ -138,10 +153,12 @@
 ## Testplan
 
 1. **Unit tests:**
+
    - Test AuthContext og ProtectedRoute logik
    - Test data fetching hooks/services
 
 2. **Integration tests:**
+
    - Test navigation flow mellem sider
    - Test authentication flow
 

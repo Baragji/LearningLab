@@ -98,33 +98,49 @@ export class AdaptiveLearningService {
     performanceData: UserPerformanceData,
   ): Promise<DifficultyAdjustment> {
     try {
-      const { userId, totalQuestions, correctAnswers, averageResponseTime, difficultyLevel } = performanceData;
-      
+      const {
+        userId,
+        totalQuestions,
+        correctAnswers,
+        averageResponseTime,
+        difficultyLevel,
+      } = performanceData;
+
       const accuracy = (correctAnswers / totalQuestions) * 100;
-      const responseTimeScore = this.calculateResponseTimeScore(averageResponseTime, difficultyLevel);
-      
+      const responseTimeScore = this.calculateResponseTimeScore(
+        averageResponseTime,
+        difficultyLevel,
+      );
+
       // AI-powered difficulty analysis
       const aiAnalysis = await this.getAIDifficultyRecommendation(
         performanceData,
         accuracy,
         responseTimeScore,
       );
-      
+
       const adjustment: DifficultyAdjustment = {
         currentLevel: difficultyLevel,
         recommendedLevel: aiAnalysis.recommendedLevel,
         adjustmentReason: aiAnalysis.reason,
         confidence: aiAnalysis.confidence,
         suggestedActions: aiAnalysis.actions,
-        timeToReassess: this.calculateReassessmentTime(accuracy, performanceData.streakDays),
+        timeToReassess: this.calculateReassessmentTime(
+          accuracy,
+          performanceData.streakDays,
+        ),
       };
-      
-      this.logger.log(`Difficulty adjustment for user ${userId}: ${difficultyLevel} -> ${adjustment.recommendedLevel}`);
-      
+
+      this.logger.log(
+        `Difficulty adjustment for user ${userId}: ${difficultyLevel} -> ${adjustment.recommendedLevel}`,
+      );
+
       return adjustment;
     } catch (error) {
       this.logger.error('Failed to analyze difficulty adjustment', error);
-      throw new Error(`Failed to analyze difficulty adjustment: ${(error as Error).message}`);
+      throw new Error(
+        `Failed to analyze difficulty adjustment: ${(error as Error).message}`,
+      );
     }
   }
 
@@ -144,7 +160,7 @@ export class AdaptiveLearningService {
         availableLessons,
         learningGoals,
       );
-      
+
       const learningPath: LearningPath = {
         id: `path_${userId}_${Date.now()}`,
         userId,
@@ -159,13 +175,17 @@ export class AdaptiveLearningService {
         createdAt: new Date(),
         updatedAt: new Date(),
       };
-      
-      this.logger.log(`Generated personalized learning path for user ${userId}`);
-      
+
+      this.logger.log(
+        `Generated personalized learning path for user ${userId}`,
+      );
+
       return learningPath;
     } catch (error) {
       this.logger.error('Failed to generate personalized learning path', error);
-      throw new Error(`Failed to generate personalized learning path: ${(error as Error).message}`);
+      throw new Error(
+        `Failed to generate personalized learning path: ${(error as Error).message}`,
+      );
     }
   }
 
@@ -181,7 +201,7 @@ export class AdaptiveLearningService {
       // Analyze user's weak areas
       const weakAreas = performanceData.weaknesses;
       const strongAreas = performanceData.strengths;
-      
+
       // AI-powered content recommendation
       const aiRecommendations = await this.getAIContentRecommendations(
         performanceData,
@@ -190,13 +210,17 @@ export class AdaptiveLearningService {
         strongAreas,
         limit,
       );
-      
-      this.logger.log(`Generated ${aiRecommendations.length} content recommendations for user ${performanceData.userId}`);
-      
+
+      this.logger.log(
+        `Generated ${aiRecommendations.length} content recommendations for user ${performanceData.userId}`,
+      );
+
       return aiRecommendations;
     } catch (error) {
       this.logger.error('Failed to get content recommendations', error);
-      throw new Error(`Failed to get content recommendations: ${(error as Error).message}`);
+      throw new Error(
+        `Failed to get content recommendations: ${(error as Error).message}`,
+      );
     }
   }
 
@@ -208,11 +232,14 @@ export class AdaptiveLearningService {
     historicalData: UserPerformanceData[],
   ): Promise<AdaptiveLearningInsights> {
     try {
-      const progress = this.calculateOverallProgress(performanceData, historicalData);
+      const progress = this.calculateOverallProgress(
+        performanceData,
+        historicalData,
+      );
       const velocity = this.calculateLearningVelocity(historicalData);
       const retention = this.calculateRetentionRate(historicalData);
       const engagement = this.calculateEngagementLevel(performanceData);
-      
+
       // AI-powered insights generation
       const aiInsights = await this.getAILearningInsights(
         performanceData,
@@ -221,7 +248,7 @@ export class AdaptiveLearningService {
         retention,
         engagement,
       );
-      
+
       const insights: AdaptiveLearningInsights = {
         userId: performanceData.userId,
         overallProgress: progress,
@@ -234,13 +261,17 @@ export class AdaptiveLearningService {
         strengthAreas: aiInsights.strengthAreas,
         personalizedTips: aiInsights.personalizedTips,
       };
-      
-      this.logger.log(`Generated learning insights for user ${performanceData.userId}`);
-      
+
+      this.logger.log(
+        `Generated learning insights for user ${performanceData.userId}`,
+      );
+
       return insights;
     } catch (error) {
       this.logger.error('Failed to generate learning insights', error);
-      throw new Error(`Failed to generate learning insights: ${(error as Error).message}`);
+      throw new Error(
+        `Failed to generate learning insights: ${(error as Error).message}`,
+      );
     }
   }
 
@@ -257,7 +288,7 @@ export class AdaptiveLearningService {
         currentPath,
         newPerformanceData,
       );
-      
+
       const updatedPath: LearningPath = {
         ...currentPath,
         lessons: adaptationRecommendation.updatedLessons,
@@ -265,13 +296,15 @@ export class AdaptiveLearningService {
         adaptationReason: adaptationRecommendation.reason,
         updatedAt: new Date(),
       };
-      
+
       this.logger.log(`Updated learning path for user ${currentPath.userId}`);
-      
+
       return updatedPath;
     } catch (error) {
       this.logger.error('Failed to update learning path', error);
-      throw new Error(`Failed to update learning path: ${(error as Error).message}`);
+      throw new Error(
+        `Failed to update learning path: ${(error as Error).message}`,
+      );
     }
   }
 
@@ -319,7 +352,8 @@ Svar i JSON format:
       const response = await this.aiProviderService.generateChatCompletion([
         {
           role: 'system',
-          content: 'Du er en AI læringskonsulent der analyserer brugerperformance og anbefaler optimal sværhedsgrad. Svar kun med valid JSON på dansk.',
+          content:
+            'Du er en AI læringskonsulent der analyserer brugerperformance og anbefaler optimal sværhedsgrad. Svar kun med valid JSON på dansk.',
         },
         {
           role: 'user',
@@ -329,8 +363,14 @@ Svar i JSON format:
 
       return JSON.parse(response.content);
     } catch (error) {
-      this.logger.warn('Failed to get AI difficulty recommendation, using fallback', error);
-      return this.getFallbackDifficultyRecommendation(accuracy, performanceData.difficultyLevel);
+      this.logger.warn(
+        'Failed to get AI difficulty recommendation, using fallback',
+        error,
+      );
+      return this.getFallbackDifficultyRecommendation(
+        accuracy,
+        performanceData.difficultyLevel,
+      );
     }
   }
 
@@ -399,7 +439,8 @@ Svar i JSON format:
       const response = await this.aiProviderService.generateChatCompletion([
         {
           role: 'system',
-          content: 'Du er en AI læringskonsulent der designer personaliserede læringsstier. Svar kun med valid JSON på dansk.',
+          content:
+            'Du er en AI læringskonsulent der designer personaliserede læringsstier. Svar kun med valid JSON på dansk.',
         },
         {
           role: 'user',
@@ -409,7 +450,10 @@ Svar i JSON format:
 
       return JSON.parse(response.content);
     } catch (error) {
-      this.logger.warn('Failed to get AI learning path recommendation, using fallback', error);
+      this.logger.warn(
+        'Failed to get AI learning path recommendation, using fallback',
+        error,
+      );
       return this.getFallbackLearningPath(performanceData);
     }
   }
@@ -460,7 +504,8 @@ Anbefal ${limit} stykker indhold i JSON format:
       const response = await this.aiProviderService.generateChatCompletion([
         {
           role: 'system',
-          content: 'Du er en AI læringskonsulent der anbefaler relevant indhold. Svar kun med valid JSON array på dansk.',
+          content:
+            'Du er en AI læringskonsulent der anbefaler relevant indhold. Svar kun med valid JSON array på dansk.',
         },
         {
           role: 'user',
@@ -470,7 +515,10 @@ Anbefal ${limit} stykker indhold i JSON format:
 
       return JSON.parse(response.content);
     } catch (error) {
-      this.logger.warn('Failed to get AI content recommendations, using fallback', error);
+      this.logger.warn(
+        'Failed to get AI content recommendations, using fallback',
+        error,
+      );
       return this.getFallbackContentRecommendations(performanceData, limit);
     }
   }
@@ -518,7 +566,8 @@ Generer personaliserede indsigter i JSON format:
       const response = await this.aiProviderService.generateChatCompletion([
         {
           role: 'system',
-          content: 'Du er en AI læringskonsulent der genererer personaliserede læringsindsigter. Svar kun med valid JSON på dansk.',
+          content:
+            'Du er en AI læringskonsulent der genererer personaliserede læringsindsigter. Svar kun med valid JSON på dansk.',
         },
         {
           role: 'user',
@@ -528,7 +577,10 @@ Generer personaliserede indsigter i JSON format:
 
       return JSON.parse(response.content);
     } catch (error) {
-      this.logger.warn('Failed to get AI learning insights, using fallback', error);
+      this.logger.warn(
+        'Failed to get AI learning insights, using fallback',
+        error,
+      );
       return this.getFallbackLearningInsights(performanceData);
     }
   }
@@ -581,7 +633,8 @@ Tilpas læringsstien for optimal progression i JSON format:
       const response = await this.aiProviderService.generateChatCompletion([
         {
           role: 'system',
-          content: 'Du er en AI læringskonsulent der tilpasser læringsstier. Svar kun med valid JSON på dansk.',
+          content:
+            'Du er en AI læringskonsulent der tilpasser læringsstier. Svar kun med valid JSON på dansk.',
         },
         {
           role: 'user',
@@ -591,7 +644,10 @@ Tilpas læringsstien for optimal progression i JSON format:
 
       return JSON.parse(response.content);
     } catch (error) {
-      this.logger.warn('Failed to get AI path adaptation, using fallback', error);
+      this.logger.warn(
+        'Failed to get AI path adaptation, using fallback',
+        error,
+      );
       return {
         updatedLessons: currentPath.lessons,
         updatedProgression: currentPath.difficultyProgression,
@@ -601,67 +657,86 @@ Tilpas læringsstien for optimal progression i JSON format:
   }
 
   // Helper methods
-  private calculateResponseTimeScore(averageTime: number, difficulty: string): number {
+  private calculateResponseTimeScore(
+    averageTime: number,
+    difficulty: string,
+  ): number {
     const expectedTimes = {
       beginner: 45,
       intermediate: 60,
       advanced: 90,
     };
-    
+
     const expected = expectedTimes[difficulty] || 60;
     return Math.max(0, Math.min(100, (expected / averageTime) * 100));
   }
 
-  private calculateReassessmentTime(accuracy: number, streakDays: number): number {
+  private calculateReassessmentTime(
+    accuracy: number,
+    streakDays: number,
+  ): number {
     if (accuracy >= 90) return 7; // Weekly for high performers
     if (accuracy >= 70) return 5; // Every 5 days for good performers
     return 3; // Every 3 days for struggling learners
   }
 
-  private calculateOverallProgress(current: UserPerformanceData, historical: UserPerformanceData[]): number {
+  private calculateOverallProgress(
+    current: UserPerformanceData,
+    historical: UserPerformanceData[],
+  ): number {
     if (historical.length === 0) return 0;
-    
-    const currentAccuracy = (current.correctAnswers / current.totalQuestions) * 100;
-    const historicalAccuracy = historical.map(h => (h.correctAnswers / h.totalQuestions) * 100);
-    const averageHistorical = historicalAccuracy.reduce((a, b) => a + b, 0) / historicalAccuracy.length;
-    
+
+    const currentAccuracy =
+      (current.correctAnswers / current.totalQuestions) * 100;
+    const historicalAccuracy = historical.map(
+      (h) => (h.correctAnswers / h.totalQuestions) * 100,
+    );
+    const averageHistorical =
+      historicalAccuracy.reduce((a, b) => a + b, 0) / historicalAccuracy.length;
+
     return Math.max(0, Math.min(100, currentAccuracy));
   }
 
   private calculateLearningVelocity(historical: UserPerformanceData[]): number {
     if (historical.length < 2) return 0;
-    
+
     const recent = historical.slice(-5); // Last 5 sessions
-    const accuracies = recent.map(h => (h.correctAnswers / h.totalQuestions) * 100);
-    
+    const accuracies = recent.map(
+      (h) => (h.correctAnswers / h.totalQuestions) * 100,
+    );
+
     // Calculate trend
     let trend = 0;
     for (let i = 1; i < accuracies.length; i++) {
       trend += accuracies[i] - accuracies[i - 1];
     }
-    
+
     return trend / (accuracies.length - 1);
   }
 
   private calculateRetentionRate(historical: UserPerformanceData[]): number {
     if (historical.length < 2) return 100;
-    
+
     // Simple retention calculation based on consistency
-    const accuracies = historical.map(h => (h.correctAnswers / h.totalQuestions) * 100);
+    const accuracies = historical.map(
+      (h) => (h.correctAnswers / h.totalQuestions) * 100,
+    );
     const variance = this.calculateVariance(accuracies);
-    
+
     return Math.max(0, 100 - variance);
   }
 
-  private calculateEngagementLevel(performance: UserPerformanceData): 'low' | 'medium' | 'high' {
+  private calculateEngagementLevel(
+    performance: UserPerformanceData,
+  ): 'low' | 'medium' | 'high' {
     const factors = [
       performance.streakDays >= 7 ? 1 : 0,
       performance.totalStudyTime >= 60 ? 1 : 0,
-      (performance.correctAnswers / performance.totalQuestions) >= 0.7 ? 1 : 0,
+      performance.correctAnswers / performance.totalQuestions >= 0.7 ? 1 : 0,
     ];
-    
+
     const score = factors.reduce((a, b) => a + b, 0);
-    
+
     if (score >= 3) return 'high';
     if (score >= 2) return 'medium';
     return 'low';
@@ -669,15 +744,22 @@ Tilpas læringsstien for optimal progression i JSON format:
 
   private calculateVariance(numbers: number[]): number {
     const mean = numbers.reduce((a, b) => a + b, 0) / numbers.length;
-    const squaredDiffs = numbers.map(n => Math.pow(n - mean, 2));
+    const squaredDiffs = numbers.map((n) => Math.pow(n - mean, 2));
     return squaredDiffs.reduce((a, b) => a + b, 0) / numbers.length;
   }
 
   // Fallback methods
-  private getFallbackDifficultyRecommendation(accuracy: number, currentLevel: string) {
+  private getFallbackDifficultyRecommendation(
+    accuracy: number,
+    currentLevel: string,
+  ) {
     if (accuracy >= 90) {
-      const nextLevel = currentLevel === 'beginner' ? 'intermediate' : 
-                       currentLevel === 'intermediate' ? 'advanced' : 'advanced';
+      const nextLevel =
+        currentLevel === 'beginner'
+          ? 'intermediate'
+          : currentLevel === 'intermediate'
+            ? 'advanced'
+            : 'advanced';
       return {
         recommendedLevel: nextLevel as any,
         reason: 'Høj nøjagtighed indikerer klar til næste niveau',
@@ -685,16 +767,23 @@ Tilpas læringsstien for optimal progression i JSON format:
         actions: ['Prøv sværere indhold', 'Udforsk avancerede emner'],
       };
     } else if (accuracy < 60) {
-      const prevLevel = currentLevel === 'advanced' ? 'intermediate' : 
-                       currentLevel === 'intermediate' ? 'beginner' : 'beginner';
+      const prevLevel =
+        currentLevel === 'advanced'
+          ? 'intermediate'
+          : currentLevel === 'intermediate'
+            ? 'beginner'
+            : 'beginner';
       return {
         recommendedLevel: prevLevel as any,
         reason: 'Lav nøjagtighed indikerer behov for mere grundlæggende øvelse',
         confidence: 0.8,
-        actions: ['Gennemgå grundlæggende koncepter', 'Øv mere på nuværende niveau'],
+        actions: [
+          'Gennemgå grundlæggende koncepter',
+          'Øv mere på nuværende niveau',
+        ],
       };
     }
-    
+
     return {
       recommendedLevel: currentLevel as any,
       reason: 'Nuværende niveau passer godt',
@@ -706,7 +795,8 @@ Tilpas læringsstien for optimal progression i JSON format:
   private getFallbackLearningPath(performanceData: UserPerformanceData) {
     return {
       title: `Personaliseret læringssti for ${performanceData.learningStyle} lærende`,
-      description: 'Tilpasset læringssti baseret på din performance og læringsstil',
+      description:
+        'Tilpasset læringssti baseret på din performance og læringsstil',
       estimatedDuration: 120,
       difficultyProgression: [performanceData.difficultyLevel],
       lessons: [],
@@ -716,7 +806,10 @@ Tilpas læringsstien for optimal progression i JSON format:
     };
   }
 
-  private getFallbackContentRecommendations(performanceData: UserPerformanceData, limit: number): ContentRecommendation[] {
+  private getFallbackContentRecommendations(
+    performanceData: UserPerformanceData,
+    limit: number,
+  ): ContentRecommendation[] {
     return Array.from({ length: Math.min(limit, 3) }, (_, i) => ({
       type: 'lesson' as const,
       contentId: i + 1,
@@ -755,7 +848,7 @@ Tilpas læringsstien for optimal progression i JSON format:
   ): Promise<UserPerformanceData> {
     try {
       this.logger.log(`Analyzing performance for user ${userId}`);
-      
+
       // This would typically fetch real data from database
       // For now, return mock data structure
       return {
@@ -774,7 +867,9 @@ Tilpas læringsstien for optimal progression i JSON format:
       };
     } catch (error) {
       this.logger.error('Failed to analyze user performance', error);
-      throw new Error(`Failed to analyze performance: ${(error as Error).message}`);
+      throw new Error(
+        `Failed to analyze performance: ${(error as Error).message}`,
+      );
     }
   }
 
@@ -788,12 +883,13 @@ Tilpas læringsstien for optimal progression i JSON format:
   ): Promise<LearningRecommendation[]> {
     try {
       this.logger.log(`Generating recommendations for user ${userId}`);
-      
-      const userData = performanceData || await this.analyzeUserPerformance(userId);
-      
+
+      const userData =
+        performanceData || (await this.analyzeUserPerformance(userId));
+
       // Generate recommendations based on performance
       const recommendations: LearningRecommendation[] = [];
-      
+
       // Add weakness-focused recommendations
       userData.weaknesses.forEach((weakness, index) => {
         recommendations.push({
@@ -809,7 +905,7 @@ Tilpas læringsstien for optimal progression i JSON format:
           learningObjectives: [`Improve ${weakness} skills`],
         });
       });
-      
+
       // Add strength-building recommendations
       userData.strengths.forEach((strength, index) => {
         recommendations.push({
@@ -825,11 +921,16 @@ Tilpas læringsstien for optimal progression i JSON format:
           learningObjectives: [`Advance ${strength} skills`],
         });
       });
-      
+
       return recommendations.slice(0, 5); // Return top 5 recommendations
     } catch (error) {
-      this.logger.error('Failed to generate personalized recommendations', error);
-      throw new Error(`Failed to generate recommendations: ${(error as Error).message}`);
+      this.logger.error(
+        'Failed to generate personalized recommendations',
+        error,
+      );
+      throw new Error(
+        `Failed to generate recommendations: ${(error as Error).message}`,
+      );
     }
   }
 }

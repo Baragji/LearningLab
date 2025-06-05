@@ -1,44 +1,61 @@
 // apps/web/app/admin/users/page.tsx
-'use client';
+"use client";
 
-import React, { useState, useEffect, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
-import Image from 'next/image';
-import { useAuth } from '@/contexts/AuthContext';
-import { AppButton as Button } from '@/components/ui/AppButton';
-import { Input } from '@/components/ui/input';
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
-} from '@/components/ui/table';
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogHeader, 
-  DialogTitle, 
+import React, { useState, useEffect, useCallback } from "react";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
+import { useAuth } from "@/contexts/AuthContext";
+import { AppButton as Button } from "@/components/ui/AppButton";
+import { Input } from "@/components/ui/input";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
   DialogFooter,
-  DialogTrigger
-} from '@/components/ui/dialog';
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
-} from '@/components/ui/select';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { toast } from 'sonner';
-import { Loader2, Search, UserPlus, Users, UserCheck, Trash2, Filter, Download, Upload } from 'lucide-react';
-import { Role } from '@repo/core';
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { toast } from "sonner";
+import {
+  Loader2,
+  Search,
+  UserPlus,
+  Users,
+  UserCheck,
+  Trash2,
+  Filter,
+  Download,
+  Upload,
+} from "lucide-react";
+import { Role } from "@repo/core";
 
 // Brugertype
 interface User {
@@ -73,106 +90,114 @@ interface BulkInvitation {
 const AdminUsersPage = () => {
   const { user, isAuthenticated, isLoading, apiClient } = useAuth();
   const router = useRouter();
-  
+
   // State for users
   const [users, setUsers] = useState<User[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
   const [selectedUsers, setSelectedUsers] = useState<number[]>([]);
   const [isLoadingUsers, setIsLoadingUsers] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [roleFilter, setRoleFilter] = useState<string>('');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [roleFilter, setRoleFilter] = useState<string>("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalUsers, setTotalUsers] = useState(0);
-  
+
   // State for user groups
   const [userGroups, setUserGroups] = useState<UserGroup[]>([]);
   const [isLoadingGroups, setIsLoadingGroups] = useState(true);
   const [selectedGroup, setSelectedGroup] = useState<UserGroup | null>(null);
-  
+
   // State for bulk operations
   const [bulkInvitations, setBulkInvitations] = useState<BulkInvitation[]>([
-    { email: '', role: Role.STUDENT }
+    { email: "", role: Role.STUDENT },
   ]);
-  const [bulkInvitationText, setBulkInvitationText] = useState('');
+  const [bulkInvitationText, setBulkInvitationText] = useState("");
   const [isSendingInvitations, setIsSendingInvitations] = useState(false);
-  
+
   // State for dialogs
   const [isCreateUserDialogOpen, setIsCreateUserDialogOpen] = useState(false);
   const [isCreateGroupDialogOpen, setIsCreateGroupDialogOpen] = useState(false);
-  const [isDeleteConfirmDialogOpen, setIsDeleteConfirmDialogOpen] = useState(false);
-  const [isAssignToGroupDialogOpen, setIsAssignToGroupDialogOpen] = useState(false);
-  
+  const [isDeleteConfirmDialogOpen, setIsDeleteConfirmDialogOpen] =
+    useState(false);
+  const [isAssignToGroupDialogOpen, setIsAssignToGroupDialogOpen] =
+    useState(false);
+
   // State for new user form
   const [newUser, setNewUser] = useState({
-    email: '',
-    name: '',
-    password: '',
+    email: "",
+    name: "",
+    password: "",
     role: Role.STUDENT,
-    profileImage: '',
-    bio: ''
+    profileImage: "",
+    bio: "",
   });
-  
+
   // State for new group form
   const [newGroup, setNewGroup] = useState({
-    name: '',
-    description: '',
+    name: "",
+    description: "",
     permissions: {
       canManageUsers: false,
       canManageCourses: false,
       canManageContent: false,
-      canViewReports: false
-    }
+      canViewReports: false,
+    },
   });
-  
+
   // Redirect if not authenticated or not admin
   useEffect(() => {
-    if (!isLoading && (!isAuthenticated || (user && user.role !== Role.ADMIN))) {
-      toast.error('Du har ikke adgang til denne side');
-      router.push('/');
+    if (
+      !isLoading &&
+      (!isAuthenticated || (user && user.role !== Role.ADMIN))
+    ) {
+      toast.error("Du har ikke adgang til denne side");
+      router.push("/");
     }
   }, [isAuthenticated, isLoading, user, router]);
-  
+
   // Fetch users
-  const fetchUsers = useCallback(async (page = 1, filter = searchQuery, role = roleFilter) => {
-    if (!apiClient) return;
-    
-    setIsLoadingUsers(true);
-    try {
-      let url = `/api/users?page=${page}&limit=10`;
-      if (filter) url += `&filter=${filter}`;
-      if (role) url += `&role=${role}`;
-      
-      const response = await apiClient.get(url);
-      setUsers(response.data.users);
-      setFilteredUsers(response.data.users);
-      setTotalUsers(response.data.total);
-      setTotalPages(Math.ceil(response.data.total / 10));
-      setCurrentPage(page);
-    } catch (error) {
-      console.error('Fejl ved hentning af brugere:', error);
-      toast.error('Der opstod en fejl ved hentning af brugere');
-    } finally {
-      setIsLoadingUsers(false);
-    }
-  }, [apiClient, searchQuery, roleFilter]);
-  
+  const fetchUsers = useCallback(
+    async (page = 1, filter = searchQuery, role = roleFilter) => {
+      if (!apiClient) return;
+
+      setIsLoadingUsers(true);
+      try {
+        let url = `/api/users?page=${page}&limit=10`;
+        if (filter) url += `&filter=${filter}`;
+        if (role) url += `&role=${role}`;
+
+        const response = await apiClient.get(url);
+        setUsers(response.data.users);
+        setFilteredUsers(response.data.users);
+        setTotalUsers(response.data.total);
+        setTotalPages(Math.ceil(response.data.total / 10));
+        setCurrentPage(page);
+      } catch (error) {
+        console.error("Fejl ved hentning af brugere:", error);
+        toast.error("Der opstod en fejl ved hentning af brugere");
+      } finally {
+        setIsLoadingUsers(false);
+      }
+    },
+    [apiClient, searchQuery, roleFilter],
+  );
+
   // Fetch user groups
   const fetchUserGroups = useCallback(async () => {
     if (!apiClient) return;
-    
+
     setIsLoadingGroups(true);
     try {
-      const response = await apiClient.get('/api/user-groups');
+      const response = await apiClient.get("/api/user-groups");
       setUserGroups(response.data.userGroups);
     } catch (error) {
-      console.error('Fejl ved hentning af brugergrupper:', error);
-      toast.error('Der opstod en fejl ved hentning af brugergrupper');
+      console.error("Fejl ved hentning af brugergrupper:", error);
+      toast.error("Der opstod en fejl ved hentning af brugergrupper");
     } finally {
       setIsLoadingGroups(false);
     }
   }, [apiClient]);
-  
+
   // Fetch users and groups on component mount
   useEffect(() => {
     if (isAuthenticated && user?.role === Role.ADMIN) {
@@ -180,201 +205,214 @@ const AdminUsersPage = () => {
       fetchUserGroups();
     }
   }, [isAuthenticated, user, fetchUsers, fetchUserGroups]);
-  
+
   // Handle search
   const handleSearch = () => {
     fetchUsers(1, searchQuery, roleFilter);
   };
-  
+
   // Handle role filter change
   const handleRoleFilterChange = (value: string) => {
     setRoleFilter(value);
     fetchUsers(1, searchQuery, value);
   };
-  
+
   // Handle user selection
   const handleUserSelection = (userId: number) => {
-    setSelectedUsers(prev => {
+    setSelectedUsers((prev) => {
       if (prev.includes(userId)) {
-        return prev.filter(id => id !== userId);
+        return prev.filter((id) => id !== userId);
       } else {
         return [...prev, userId];
       }
     });
   };
-  
+
   // Handle select all users
   const handleSelectAllUsers = () => {
     if (selectedUsers.length === filteredUsers.length) {
       setSelectedUsers([]);
     } else {
-      setSelectedUsers(filteredUsers.map(user => user.id));
+      setSelectedUsers(filteredUsers.map((user) => user.id));
     }
   };
-  
+
   // Handle create user
   const handleCreateUser = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!apiClient) return;
-    
+
     try {
-      const response = await apiClient.post('/api/users/signup', newUser);
-      toast.success('Bruger oprettet');
+      const response = await apiClient.post("/api/users/signup", newUser);
+      toast.success("Bruger oprettet");
       setIsCreateUserDialogOpen(false);
       setNewUser({
-        email: '',
-        name: '',
-        password: '',
+        email: "",
+        name: "",
+        password: "",
         role: Role.STUDENT,
-        profileImage: '',
-        bio: ''
+        profileImage: "",
+        bio: "",
       });
       fetchUsers();
     } catch (error) {
-      console.error('Fejl ved oprettelse af bruger:', error);
-      toast.error('Der opstod en fejl ved oprettelse af brugeren');
+      console.error("Fejl ved oprettelse af bruger:", error);
+      toast.error("Der opstod en fejl ved oprettelse af brugeren");
     }
   };
-  
+
   // Handle create group
   const handleCreateGroup = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!apiClient) return;
-    
+
     try {
-      const response = await apiClient.post('/api/user-groups', newGroup);
-      toast.success('Brugergruppe oprettet');
+      const response = await apiClient.post("/api/user-groups", newGroup);
+      toast.success("Brugergruppe oprettet");
       setIsCreateGroupDialogOpen(false);
       setNewGroup({
-        name: '',
-        description: '',
+        name: "",
+        description: "",
         permissions: {
           canManageUsers: false,
           canManageCourses: false,
           canManageContent: false,
-          canViewReports: false
-        }
+          canViewReports: false,
+        },
       });
       fetchUserGroups();
     } catch (error) {
-      console.error('Fejl ved oprettelse af brugergruppe:', error);
-      toast.error('Der opstod en fejl ved oprettelse af brugergruppen');
+      console.error("Fejl ved oprettelse af brugergruppe:", error);
+      toast.error("Der opstod en fejl ved oprettelse af brugergruppen");
     }
   };
-  
+
   // Handle bulk delete
   const handleBulkDelete = async () => {
     if (!apiClient || selectedUsers.length === 0) return;
-    
+
     try {
-      const response = await apiClient.post('/api/users/bulk-delete', {
-        userIds: selectedUsers
+      const response = await apiClient.post("/api/users/bulk-delete", {
+        userIds: selectedUsers,
       });
       toast.success(`${response.data.count} brugere slettet`);
       setSelectedUsers([]);
       setIsDeleteConfirmDialogOpen(false);
       fetchUsers();
     } catch (error) {
-      console.error('Fejl ved sletning af brugere:', error);
-      toast.error('Der opstod en fejl ved sletning af brugerne');
+      console.error("Fejl ved sletning af brugere:", error);
+      toast.error("Der opstod en fejl ved sletning af brugerne");
     }
   };
-  
+
   // Handle assign to group
   const handleAssignToGroup = async () => {
     if (!apiClient || selectedUsers.length === 0 || !selectedGroup) return;
-    
+
     try {
-      const response = await apiClient.post(`/api/user-groups/${selectedGroup.id}/users`, {
-        userIds: selectedUsers
-      });
+      const response = await apiClient.post(
+        `/api/user-groups/${selectedGroup.id}/users`,
+        {
+          userIds: selectedUsers,
+        },
+      );
       toast.success(`Brugere tilføjet til gruppen ${selectedGroup.name}`);
       setSelectedUsers([]);
       setSelectedGroup(null);
       setIsAssignToGroupDialogOpen(false);
     } catch (error) {
-      console.error('Fejl ved tilføjelse af brugere til gruppe:', error);
-      toast.error('Der opstod en fejl ved tilføjelse af brugere til gruppen');
+      console.error("Fejl ved tilføjelse af brugere til gruppe:", error);
+      toast.error("Der opstod en fejl ved tilføjelse af brugere til gruppen");
     }
   };
-  
+
   // Handle bulk invite
   const handleBulkInvite = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!apiClient) return;
-    
+
     // Validate emails
-    const validInvitations = bulkInvitations.filter(inv => 
-      inv.email && inv.email.includes('@')
+    const validInvitations = bulkInvitations.filter(
+      (inv) => inv.email && inv.email.includes("@"),
     );
-    
+
     if (validInvitations.length === 0) {
-      toast.error('Ingen gyldige e-mailadresser at invitere');
+      toast.error("Ingen gyldige e-mailadresser at invitere");
       return;
     }
-    
+
     setIsSendingInvitations(true);
     try {
-      const response = await apiClient.post('/api/users/bulk-invite', {
-        invitations: validInvitations
+      const response = await apiClient.post("/api/users/bulk-invite", {
+        invitations: validInvitations,
       });
-      
+
       toast.success(`${response.data.count} invitationer sendt`);
-      setBulkInvitations([{ email: '', role: Role.STUDENT }]);
-      setBulkInvitationText('');
+      setBulkInvitations([{ email: "", role: Role.STUDENT }]);
+      setBulkInvitationText("");
     } catch (error) {
-      console.error('Fejl ved afsendelse af invitationer:', error);
-      toast.error('Der opstod en fejl ved afsendelse af invitationerne');
+      console.error("Fejl ved afsendelse af invitationer:", error);
+      toast.error("Der opstod en fejl ved afsendelse af invitationerne");
     } finally {
       setIsSendingInvitations(false);
     }
   };
-  
+
   // Handle bulk invitation text change
-  const handleBulkInvitationTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+  const handleBulkInvitationTextChange = (
+    e: React.ChangeEvent<HTMLTextAreaElement>,
+  ) => {
     const text = e.target.value;
     setBulkInvitationText(text);
-    
+
     // Parse emails from text (one per line)
-    const lines = text.split('\n').filter(line => line.trim());
-    const newInvitations: BulkInvitation[] = lines.map(line => {
-      const parts = line.split(',').map(part => part.trim());
+    const lines = text.split("\n").filter((line) => line.trim());
+    const newInvitations: BulkInvitation[] = lines.map((line) => {
+      const parts = line.split(",").map((part) => part.trim());
       return {
-        email: parts[0] || '',
+        email: parts[0] || "",
         name: parts[1] || undefined,
-        role: (parts[2] as Role) || Role.STUDENT
+        role: (parts[2] as Role) || Role.STUDENT,
       };
     });
-    
+
     if (newInvitations.length > 0) {
       setBulkInvitations(newInvitations);
     } else {
-      setBulkInvitations([{ email: '', role: Role.STUDENT }]);
+      setBulkInvitations([{ email: "", role: Role.STUDENT }]);
     }
   };
-  
+
   // Add invitation field
   const addInvitationField = () => {
-    setBulkInvitations([...bulkInvitations, { email: '', role: Role.STUDENT }]);
+    setBulkInvitations([...bulkInvitations, { email: "", role: Role.STUDENT }]);
   };
-  
+
   // Remove invitation field
   const removeInvitationField = (index: number) => {
     const newInvitations = [...bulkInvitations];
     newInvitations.splice(index, 1);
-    setBulkInvitations(newInvitations.length ? newInvitations : [{ email: '', role: Role.STUDENT }]);
+    setBulkInvitations(
+      newInvitations.length
+        ? newInvitations
+        : [{ email: "", role: Role.STUDENT }],
+    );
   };
-  
+
   // Update invitation field
-  const updateInvitationField = (index: number, field: keyof BulkInvitation, value: string) => {
+  const updateInvitationField = (
+    index: number,
+    field: keyof BulkInvitation,
+    value: string,
+  ) => {
     const newInvitations = [...bulkInvitations];
-    newInvitations[index] = { 
-      ...newInvitations[index], 
-      [field]: field === 'role' ? value as Role : value 
+    newInvitations[index] = {
+      ...newInvitations[index],
+      [field]: field === "role" ? (value as Role) : value,
     };
     setBulkInvitations(newInvitations);
   };
-  
+
   // If loading or not authenticated, show loading
   if (isLoading || !isAuthenticated || (user && user.role !== Role.ADMIN)) {
     return (
@@ -383,11 +421,11 @@ const AdminUsersPage = () => {
       </div>
     );
   }
-  
+
   return (
     <div className="container mx-auto py-8">
       <h1 className="text-3xl font-bold mb-6">Brugeradministration</h1>
-      
+
       <Tabs defaultValue="users" className="w-full">
         <TabsList className="mb-6">
           <TabsTrigger value="users" className="flex items-center gap-2">
@@ -403,7 +441,7 @@ const AdminUsersPage = () => {
             <span>Inviter brugere</span>
           </TabsTrigger>
         </TabsList>
-        
+
         {/* Brugere tab */}
         <TabsContent value="users">
           <Card>
@@ -415,9 +453,7 @@ const AdminUsersPage = () => {
                   Opret bruger
                 </Button>
               </CardTitle>
-              <CardDescription>
-                Administrer brugere i systemet
-              </CardDescription>
+              <CardDescription>Administrer brugere i systemet</CardDescription>
             </CardHeader>
             <CardContent>
               {/* Søg og filtrer */}
@@ -430,15 +466,18 @@ const AdminUsersPage = () => {
                       className="pl-8"
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                      onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                     />
                   </div>
                   <Button onClick={handleSearch}>Søg</Button>
                 </div>
-                
+
                 <div className="flex gap-2 items-center">
                   <Filter className="h-4 w-4 text-muted-foreground" />
-                  <Select value={roleFilter} onValueChange={handleRoleFilterChange}>
+                  <Select
+                    value={roleFilter}
+                    onValueChange={handleRoleFilterChange}
+                  >
                     <SelectTrigger className="w-[180px]">
                       <SelectValue placeholder="Alle roller" />
                     </SelectTrigger>
@@ -451,7 +490,7 @@ const AdminUsersPage = () => {
                   </Select>
                 </div>
               </div>
-              
+
               {/* Bulk actions */}
               {selectedUsers.length > 0 && (
                 <div className="bg-muted p-2 rounded-md mb-4 flex items-center justify-between">
@@ -459,15 +498,15 @@ const AdminUsersPage = () => {
                     {selectedUsers.length} bruger(e) valgt
                   </span>
                   <div className="flex gap-2">
-                    <Button 
-                      variant="outline" 
+                    <Button
+                      variant="outline"
                       size="sm"
                       onClick={() => setIsAssignToGroupDialogOpen(true)}
                     >
                       Tilføj til gruppe
                     </Button>
-                    <Button 
-                      variant="destructive" 
+                    <Button
+                      variant="destructive"
                       size="sm"
                       onClick={() => setIsDeleteConfirmDialogOpen(true)}
                     >
@@ -477,7 +516,7 @@ const AdminUsersPage = () => {
                   </div>
                 </div>
               )}
-              
+
               {/* Brugertabel */}
               {isLoadingUsers ? (
                 <div className="flex justify-center py-8">
@@ -490,8 +529,11 @@ const AdminUsersPage = () => {
                       <TableHeader>
                         <TableRow>
                           <TableHead className="w-12">
-                            <Checkbox 
-                              checked={selectedUsers.length > 0 && selectedUsers.length === filteredUsers.length}
+                            <Checkbox
+                              checked={
+                                selectedUsers.length > 0 &&
+                                selectedUsers.length === filteredUsers.length
+                              }
                               onCheckedChange={handleSelectAllUsers}
                             />
                           </TableHead>
@@ -499,13 +541,18 @@ const AdminUsersPage = () => {
                           <TableHead>Email</TableHead>
                           <TableHead>Rolle</TableHead>
                           <TableHead>Oprettet</TableHead>
-                          <TableHead className="text-right">Handlinger</TableHead>
+                          <TableHead className="text-right">
+                            Handlinger
+                          </TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
                         {users.length === 0 ? (
                           <TableRow>
-                            <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                            <TableCell
+                              colSpan={6}
+                              className="text-center py-8 text-muted-foreground"
+                            >
                               Ingen brugere fundet
                             </TableCell>
                           </TableRow>
@@ -513,55 +560,63 @@ const AdminUsersPage = () => {
                           users.map((u) => (
                             <TableRow key={u.id}>
                               <TableCell>
-                                <Checkbox 
+                                <Checkbox
                                   checked={selectedUsers.includes(u.id)}
-                                  onCheckedChange={() => handleUserSelection(u.id)}
+                                  onCheckedChange={() =>
+                                    handleUserSelection(u.id)
+                                  }
                                 />
                               </TableCell>
                               <TableCell className="font-medium">
                                 <div className="flex items-center">
                                   {u.profileImage ? (
-                                    <Image 
-                                      src={u.profileImage} 
-                                      alt={u.name || u.email} 
-                                      width={32} 
-                                      height={32} 
+                                    <Image
+                                      src={u.profileImage}
+                                      alt={u.name || u.email}
+                                      width={32}
+                                      height={32}
                                       className="w-8 h-8 rounded-full mr-3 object-cover"
                                     />
                                   ) : (
                                     <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-gray-500 mr-3">
-                                      {u.name ? u.name.charAt(0).toUpperCase() : u.email.charAt(0).toUpperCase()}
+                                      {u.name
+                                        ? u.name.charAt(0).toUpperCase()
+                                        : u.email.charAt(0).toUpperCase()}
                                     </div>
                                   )}
-                                  <div>
-                                    {u.name || 'Unavngivet'}
-                                  </div>
+                                  <div>{u.name || "Unavngivet"}</div>
                                 </div>
                               </TableCell>
                               <TableCell>{u.email}</TableCell>
                               <TableCell>
-                                <Badge variant={
-                                  u.role === Role.ADMIN 
-                                    ? 'destructive' 
-                                    : u.role === Role.TEACHER 
-                                      ? 'default' 
-                                      : 'secondary'
-                                }>
-                                  {u.role === Role.ADMIN 
-                                    ? 'Administrator' 
-                                    : u.role === Role.TEACHER 
-                                      ? 'Underviser' 
-                                      : 'Studerende'}
+                                <Badge
+                                  variant={
+                                    u.role === Role.ADMIN
+                                      ? "destructive"
+                                      : u.role === Role.TEACHER
+                                        ? "default"
+                                        : "secondary"
+                                  }
+                                >
+                                  {u.role === Role.ADMIN
+                                    ? "Administrator"
+                                    : u.role === Role.TEACHER
+                                      ? "Underviser"
+                                      : "Studerende"}
                                 </Badge>
                               </TableCell>
                               <TableCell>
-                                {new Date(u.createdAt).toLocaleDateString('da-DK')}
+                                {new Date(u.createdAt).toLocaleDateString(
+                                  "da-DK",
+                                )}
                               </TableCell>
                               <TableCell className="text-right">
-                                <Button 
-                                  variant="ghost" 
+                                <Button
+                                  variant="ghost"
                                   size="sm"
-                                  onClick={() => router.push(`/admin/users/${u.id}`)}
+                                  onClick={() =>
+                                    router.push(`/admin/users/${u.id}`)
+                                  }
                                 >
                                   Rediger
                                 </Button>
@@ -572,25 +627,27 @@ const AdminUsersPage = () => {
                       </TableBody>
                     </Table>
                   </div>
-                  
+
                   {/* Pagination */}
                   {totalPages > 1 && (
                     <div className="flex justify-between items-center mt-4">
                       <div className="text-sm text-muted-foreground">
-                        Viser {(currentPage - 1) * 10 + 1}-{Math.min(currentPage * 10, totalUsers)} af {totalUsers} brugere
+                        Viser {(currentPage - 1) * 10 + 1}-
+                        {Math.min(currentPage * 10, totalUsers)} af {totalUsers}{" "}
+                        brugere
                       </div>
                       <div className="flex gap-2">
-                        <Button 
-                          variant="outline" 
-                          size="sm" 
+                        <Button
+                          variant="outline"
+                          size="sm"
                           disabled={currentPage === 1}
                           onClick={() => fetchUsers(currentPage - 1)}
                         >
                           Forrige
                         </Button>
-                        <Button 
-                          variant="outline" 
-                          size="sm" 
+                        <Button
+                          variant="outline"
+                          size="sm"
                           disabled={currentPage === totalPages}
                           onClick={() => fetchUsers(currentPage + 1)}
                         >
@@ -604,7 +661,7 @@ const AdminUsersPage = () => {
             </CardContent>
           </Card>
         </TabsContent>
-        
+
         {/* Brugergrupper tab */}
         <TabsContent value="groups">
           <Card>
@@ -640,41 +697,55 @@ const AdminUsersPage = () => {
                     <TableBody>
                       {userGroups.length === 0 ? (
                         <TableRow>
-                          <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
+                          <TableCell
+                            colSpan={5}
+                            className="text-center py-8 text-muted-foreground"
+                          >
                             Ingen brugergrupper fundet
                           </TableCell>
                         </TableRow>
                       ) : (
                         userGroups.map((group) => (
                           <TableRow key={group.id}>
-                            <TableCell className="font-medium">{group.name}</TableCell>
-                            <TableCell>{group.description || '-'}</TableCell>
+                            <TableCell className="font-medium">
+                              {group.name}
+                            </TableCell>
+                            <TableCell>{group.description || "-"}</TableCell>
                             <TableCell>
                               {group.permissions ? (
                                 <div className="flex flex-wrap gap-1">
-                                  {Object.entries(group.permissions).map(([key, value]) => (
-                                    value && (
-                                      <Badge key={key} variant="outline" className="text-xs">
-                                        {key === 'canManageUsers' && 'Administrer brugere'}
-                                        {key === 'canManageCourses' && 'Administrer kurser'}
-                                        {key === 'canManageContent' && 'Administrer indhold'}
-                                        {key === 'canViewReports' && 'Se rapporter'}
-                                      </Badge>
-                                    )
-                                  ))}
+                                  {Object.entries(group.permissions).map(
+                                    ([key, value]) =>
+                                      value && (
+                                        <Badge
+                                          key={key}
+                                          variant="outline"
+                                          className="text-xs"
+                                        >
+                                          {key === "canManageUsers" &&
+                                            "Administrer brugere"}
+                                          {key === "canManageCourses" &&
+                                            "Administrer kurser"}
+                                          {key === "canManageContent" &&
+                                            "Administrer indhold"}
+                                          {key === "canViewReports" &&
+                                            "Se rapporter"}
+                                        </Badge>
+                                      ),
+                                  )}
                                 </div>
                               ) : (
-                                '-'
+                                "-"
                               )}
                             </TableCell>
-                            <TableCell>
-                              {group.users?.length || 0}
-                            </TableCell>
+                            <TableCell>{group.users?.length || 0}</TableCell>
                             <TableCell className="text-right">
-                              <Button 
-                                variant="ghost" 
+                              <Button
+                                variant="ghost"
                                 size="sm"
-                                onClick={() => router.push(`/admin/groups/${group.id}`)}
+                                onClick={() =>
+                                  router.push(`/admin/groups/${group.id}`)
+                                }
                               >
                                 Administrer
                               </Button>
@@ -689,7 +760,7 @@ const AdminUsersPage = () => {
             </CardContent>
           </Card>
         </TabsContent>
-        
+
         {/* Inviter brugere tab */}
         <TabsContent value="invite">
           <Card>
@@ -705,27 +776,44 @@ const AdminUsersPage = () => {
                   <TabsTrigger value="form">Formular</TabsTrigger>
                   <TabsTrigger value="bulk">Bulk import</TabsTrigger>
                 </TabsList>
-                
+
                 <TabsContent value="form">
                   <form onSubmit={handleBulkInvite}>
                     {bulkInvitations.map((invitation, index) => (
-                      <div key={index} className="flex flex-col md:flex-row gap-4 mb-4">
+                      <div
+                        key={index}
+                        className="flex flex-col md:flex-row gap-4 mb-4"
+                      >
                         <div className="flex-1">
                           <Label htmlFor={`email-${index}`}>Email</Label>
                           <Input
                             id={`email-${index}`}
                             value={invitation.email}
-                            onChange={(e) => updateInvitationField(index, 'email', e.target.value)}
+                            onChange={(e) =>
+                              updateInvitationField(
+                                index,
+                                "email",
+                                e.target.value,
+                              )
+                            }
                             placeholder="bruger@eksempel.dk"
                             required
                           />
                         </div>
                         <div className="flex-1">
-                          <Label htmlFor={`name-${index}`}>Navn (valgfrit)</Label>
+                          <Label htmlFor={`name-${index}`}>
+                            Navn (valgfrit)
+                          </Label>
                           <Input
                             id={`name-${index}`}
-                            value={invitation.name || ''}
-                            onChange={(e) => updateInvitationField(index, 'name', e.target.value)}
+                            value={invitation.name || ""}
+                            onChange={(e) =>
+                              updateInvitationField(
+                                index,
+                                "name",
+                                e.target.value,
+                              )
+                            }
                             placeholder="Fornavn Efternavn"
                           />
                         </div>
@@ -733,15 +821,23 @@ const AdminUsersPage = () => {
                           <Label htmlFor={`role-${index}`}>Rolle</Label>
                           <Select
                             value={invitation.role}
-                            onValueChange={(value) => updateInvitationField(index, 'role', value)}
+                            onValueChange={(value) =>
+                              updateInvitationField(index, "role", value)
+                            }
                           >
                             <SelectTrigger id={`role-${index}`}>
                               <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value={Role.STUDENT}>Studerende</SelectItem>
-                              <SelectItem value={Role.TEACHER}>Underviser</SelectItem>
-                              <SelectItem value={Role.ADMIN}>Administrator</SelectItem>
+                              <SelectItem value={Role.STUDENT}>
+                                Studerende
+                              </SelectItem>
+                              <SelectItem value={Role.TEACHER}>
+                                Underviser
+                              </SelectItem>
+                              <SelectItem value={Role.ADMIN}>
+                                Administrator
+                              </SelectItem>
                             </SelectContent>
                           </Select>
                         </div>
@@ -758,7 +854,7 @@ const AdminUsersPage = () => {
                         </div>
                       </div>
                     ))}
-                    
+
                     <div className="flex justify-between mt-6">
                       <Button
                         type="button"
@@ -774,13 +870,13 @@ const AdminUsersPage = () => {
                             Sender invitationer...
                           </>
                         ) : (
-                          'Send invitationer'
+                          "Send invitationer"
                         )}
                       </Button>
                     </div>
                   </form>
                 </TabsContent>
-                
+
                 <TabsContent value="bulk">
                   <form onSubmit={handleBulkInvite}>
                     <div className="mb-4">
@@ -795,13 +891,15 @@ const AdminUsersPage = () => {
                         className="h-40 font-mono"
                       />
                       <p className="text-sm text-muted-foreground mt-2">
-                        Format: email,navn,rolle (STUDENT/TEACHER/ADMIN). Navn og rolle er valgfri.
+                        Format: email,navn,rolle (STUDENT/TEACHER/ADMIN). Navn
+                        og rolle er valgfri.
                       </p>
                     </div>
-                    
+
                     <div className="flex justify-between items-center mt-6">
                       <div className="text-sm">
-                        {bulkInvitations.filter(inv => inv.email).length} gyldige e-mails fundet
+                        {bulkInvitations.filter((inv) => inv.email).length}{" "}
+                        gyldige e-mails fundet
                       </div>
                       <div className="flex gap-2">
                         <Button
@@ -809,12 +907,15 @@ const AdminUsersPage = () => {
                           variant="outline"
                           onClick={() => {
                             // Download template
-                            const template = "email,navn,rolle\nbruger1@eksempel.dk,John Doe,STUDENT\nbruger2@eksempel.dk,Jane Smith,TEACHER";
-                            const blob = new Blob([template], { type: 'text/csv' });
+                            const template =
+                              "email,navn,rolle\nbruger1@eksempel.dk,John Doe,STUDENT\nbruger2@eksempel.dk,Jane Smith,TEACHER";
+                            const blob = new Blob([template], {
+                              type: "text/csv",
+                            });
                             const url = URL.createObjectURL(blob);
-                            const a = document.createElement('a');
+                            const a = document.createElement("a");
                             a.href = url;
-                            a.download = 'invitation_skabelon.csv';
+                            a.download = "invitation_skabelon.csv";
                             document.body.appendChild(a);
                             a.click();
                             document.body.removeChild(a);
@@ -846,9 +947,12 @@ const AdminUsersPage = () => {
           </Card>
         </TabsContent>
       </Tabs>
-      
+
       {/* Opret bruger dialog */}
-      <Dialog open={isCreateUserDialogOpen} onOpenChange={setIsCreateUserDialogOpen}>
+      <Dialog
+        open={isCreateUserDialogOpen}
+        onOpenChange={setIsCreateUserDialogOpen}
+      >
         <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
             <DialogTitle>Opret ny bruger</DialogTitle>
@@ -862,7 +966,9 @@ const AdminUsersPage = () => {
                 <Input
                   id="email"
                   value={newUser.email}
-                  onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
+                  onChange={(e) =>
+                    setNewUser({ ...newUser, email: e.target.value })
+                  }
                   className="col-span-3"
                   required
                 />
@@ -874,7 +980,9 @@ const AdminUsersPage = () => {
                 <Input
                   id="name"
                   value={newUser.name}
-                  onChange={(e) => setNewUser({ ...newUser, name: e.target.value })}
+                  onChange={(e) =>
+                    setNewUser({ ...newUser, name: e.target.value })
+                  }
                   className="col-span-3"
                 />
               </div>
@@ -886,7 +994,9 @@ const AdminUsersPage = () => {
                   id="password"
                   type="password"
                   value={newUser.password}
-                  onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
+                  onChange={(e) =>
+                    setNewUser({ ...newUser, password: e.target.value })
+                  }
                   className="col-span-3"
                   required
                 />
@@ -897,7 +1007,9 @@ const AdminUsersPage = () => {
                 </Label>
                 <Select
                   value={newUser.role}
-                  onValueChange={(value) => setNewUser({ ...newUser, role: value as Role })}
+                  onValueChange={(value) =>
+                    setNewUser({ ...newUser, role: value as Role })
+                  }
                 >
                   <SelectTrigger id="role" className="col-span-3">
                     <SelectValue />
@@ -916,7 +1028,9 @@ const AdminUsersPage = () => {
                 <Input
                   id="profileImage"
                   value={newUser.profileImage}
-                  onChange={(e) => setNewUser({ ...newUser, profileImage: e.target.value })}
+                  onChange={(e) =>
+                    setNewUser({ ...newUser, profileImage: e.target.value })
+                  }
                   className="col-span-3"
                   placeholder="https://..."
                 />
@@ -928,14 +1042,20 @@ const AdminUsersPage = () => {
                 <Textarea
                   id="bio"
                   value={newUser.bio}
-                  onChange={(e) => setNewUser({ ...newUser, bio: e.target.value })}
+                  onChange={(e) =>
+                    setNewUser({ ...newUser, bio: e.target.value })
+                  }
                   className="col-span-3"
                   placeholder="Kort beskrivelse..."
                 />
               </div>
             </div>
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => setIsCreateUserDialogOpen(false)}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setIsCreateUserDialogOpen(false)}
+              >
                 Annuller
               </Button>
               <Button type="submit">Opret bruger</Button>
@@ -943,9 +1063,12 @@ const AdminUsersPage = () => {
           </form>
         </DialogContent>
       </Dialog>
-      
+
       {/* Opret gruppe dialog */}
-      <Dialog open={isCreateGroupDialogOpen} onOpenChange={setIsCreateGroupDialogOpen}>
+      <Dialog
+        open={isCreateGroupDialogOpen}
+        onOpenChange={setIsCreateGroupDialogOpen}
+      >
         <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
             <DialogTitle>Opret ny brugergruppe</DialogTitle>
@@ -959,7 +1082,9 @@ const AdminUsersPage = () => {
                 <Input
                   id="groupName"
                   value={newGroup.name}
-                  onChange={(e) => setNewGroup({ ...newGroup, name: e.target.value })}
+                  onChange={(e) =>
+                    setNewGroup({ ...newGroup, name: e.target.value })
+                  }
                   className="col-span-3"
                   required
                 />
@@ -971,74 +1096,76 @@ const AdminUsersPage = () => {
                 <Textarea
                   id="groupDescription"
                   value={newGroup.description}
-                  onChange={(e) => setNewGroup({ ...newGroup, description: e.target.value })}
+                  onChange={(e) =>
+                    setNewGroup({ ...newGroup, description: e.target.value })
+                  }
                   className="col-span-3"
                 />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label className="text-right">
-                  Tilladelser
-                </Label>
+                <Label className="text-right">Tilladelser</Label>
                 <div className="col-span-3 space-y-2">
                   <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="canManageUsers" 
+                    <Checkbox
+                      id="canManageUsers"
                       checked={newGroup.permissions.canManageUsers}
-                      onCheckedChange={(checked) => 
+                      onCheckedChange={(checked) =>
                         setNewGroup({
                           ...newGroup,
                           permissions: {
                             ...newGroup.permissions,
-                            canManageUsers: !!checked
-                          }
+                            canManageUsers: !!checked,
+                          },
                         })
                       }
                     />
                     <Label htmlFor="canManageUsers">Administrer brugere</Label>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="canManageCourses" 
+                    <Checkbox
+                      id="canManageCourses"
                       checked={newGroup.permissions.canManageCourses}
-                      onCheckedChange={(checked) => 
+                      onCheckedChange={(checked) =>
                         setNewGroup({
                           ...newGroup,
                           permissions: {
                             ...newGroup.permissions,
-                            canManageCourses: !!checked
-                          }
+                            canManageCourses: !!checked,
+                          },
                         })
                       }
                     />
                     <Label htmlFor="canManageCourses">Administrer kurser</Label>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="canManageContent" 
+                    <Checkbox
+                      id="canManageContent"
                       checked={newGroup.permissions.canManageContent}
-                      onCheckedChange={(checked) => 
+                      onCheckedChange={(checked) =>
                         setNewGroup({
                           ...newGroup,
                           permissions: {
                             ...newGroup.permissions,
-                            canManageContent: !!checked
-                          }
+                            canManageContent: !!checked,
+                          },
                         })
                       }
                     />
-                    <Label htmlFor="canManageContent">Administrer indhold</Label>
+                    <Label htmlFor="canManageContent">
+                      Administrer indhold
+                    </Label>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="canViewReports" 
+                    <Checkbox
+                      id="canViewReports"
                       checked={newGroup.permissions.canViewReports}
-                      onCheckedChange={(checked) => 
+                      onCheckedChange={(checked) =>
                         setNewGroup({
                           ...newGroup,
                           permissions: {
                             ...newGroup.permissions,
-                            canViewReports: !!checked
-                          }
+                            canViewReports: !!checked,
+                          },
                         })
                       }
                     />
@@ -1048,7 +1175,11 @@ const AdminUsersPage = () => {
               </div>
             </div>
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => setIsCreateGroupDialogOpen(false)}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setIsCreateGroupDialogOpen(false)}
+              >
                 Annuller
               </Button>
               <Button type="submit">Opret gruppe</Button>
@@ -1056,21 +1187,30 @@ const AdminUsersPage = () => {
           </form>
         </DialogContent>
       </Dialog>
-      
+
       {/* Bekræft sletning dialog */}
-      <Dialog open={isDeleteConfirmDialogOpen} onOpenChange={setIsDeleteConfirmDialogOpen}>
+      <Dialog
+        open={isDeleteConfirmDialogOpen}
+        onOpenChange={setIsDeleteConfirmDialogOpen}
+      >
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>Bekræft sletning</DialogTitle>
           </DialogHeader>
           <div className="py-4">
-            <p>Er du sikker på, at du vil slette {selectedUsers.length} bruger(e)?</p>
+            <p>
+              Er du sikker på, at du vil slette {selectedUsers.length}{" "}
+              bruger(e)?
+            </p>
             <p className="text-sm text-muted-foreground mt-2">
               Denne handling kan ikke fortrydes.
             </p>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsDeleteConfirmDialogOpen(false)}>
+            <Button
+              variant="outline"
+              onClick={() => setIsDeleteConfirmDialogOpen(false)}
+            >
               Annuller
             </Button>
             <Button variant="destructive" onClick={handleBulkDelete}>
@@ -1079,19 +1219,25 @@ const AdminUsersPage = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-      
+
       {/* Tilføj til gruppe dialog */}
-      <Dialog open={isAssignToGroupDialogOpen} onOpenChange={setIsAssignToGroupDialogOpen}>
+      <Dialog
+        open={isAssignToGroupDialogOpen}
+        onOpenChange={setIsAssignToGroupDialogOpen}
+      >
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>Tilføj til brugergruppe</DialogTitle>
           </DialogHeader>
           <div className="py-4">
-            <p className="mb-4">Vælg en brugergruppe at tilføje {selectedUsers.length} bruger(e) til:</p>
+            <p className="mb-4">
+              Vælg en brugergruppe at tilføje {selectedUsers.length} bruger(e)
+              til:
+            </p>
             <Select
-              value={selectedGroup?.id.toString() || ''}
+              value={selectedGroup?.id.toString() || ""}
               onValueChange={(value) => {
-                const group = userGroups.find(g => g.id.toString() === value);
+                const group = userGroups.find((g) => g.id.toString() === value);
                 setSelectedGroup(group || null);
               }}
             >
@@ -1108,7 +1254,10 @@ const AdminUsersPage = () => {
             </Select>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsAssignToGroupDialogOpen(false)}>
+            <Button
+              variant="outline"
+              onClick={() => setIsAssignToGroupDialogOpen(false)}
+            >
               Annuller
             </Button>
             <Button onClick={handleAssignToGroup} disabled={!selectedGroup}>

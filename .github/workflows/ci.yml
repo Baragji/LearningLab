@@ -16,9 +16,9 @@ jobs:
     env: # Definer miljøvariabler her, så de er tilgængelige for alle steps i jobbet
       NEXT_PUBLIC_API_URL: http://localhost:5002/api # Bruges af web tests/build
       DATABASE_URL: ${{ secrets.DATABASE_URL_CI }} # Bruges af api tests/prisma (bør være en test-database)
-      JWT_SECRET: ${{ secrets.JWT_SECRET_CI }}         # Bruges af api tests
-      JWT_EXPIRES_IN: "15m"                           # Bruges af api tests
-      SALT_ROUNDS: "10"                               # Bruges af api tests
+      JWT_SECRET: ${{ secrets.JWT_SECRET_CI }} # Bruges af api tests
+      JWT_EXPIRES_IN: "15m" # Bruges af api tests
+      SALT_ROUNDS: "10" # Bruges af api tests
       # Tilføj andre nødvendige miljøvariabler for dine tests her
 
     steps:
@@ -31,7 +31,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22 # Matcher .node-version
-          cache: 'yarn'
+          cache: "yarn"
 
       - name: Enable Corepack
         run: corepack enable
@@ -53,13 +53,13 @@ jobs:
         # Kør test:ci for alle workspaces.
         # Miljøvariabler defineret på job-niveau vil være tilgængelige her.
         run: yarn turbo run test:ci
-        
+
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
-        
+
       - name: Run Playwright E2E tests
         run: yarn workspace web test:e2e
-        
+
       - name: Upload Playwright test results
         if: always()
         uses: actions/upload-artifact@v3
@@ -97,7 +97,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: 'yarn'
+          cache: "yarn"
 
       - name: Enable Corepack
         run: corepack enable

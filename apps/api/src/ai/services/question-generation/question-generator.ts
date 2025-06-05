@@ -1,12 +1,12 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { AIProviderService } from '../ai-provider.service';
 import { QuestionType, Difficulty } from '@prisma/client';
-import { 
-  ContentAnalysis, 
-  GeneratedQuestion, 
+import {
+  ContentAnalysis,
+  GeneratedQuestion,
   QuestionGenerationRequest,
   AIQuestionResponse,
-  AnswerOption 
+  AnswerOption,
 } from './types';
 
 /**
@@ -31,7 +31,8 @@ export class QuestionGenerator {
       QuestionType.MULTIPLE_CHOICE,
       QuestionType.FILL_IN_BLANK,
     ];
-    const targetDifficulty = request.targetDifficulty || 
+    const targetDifficulty =
+      request.targetDifficulty ||
       this.mapComplexityToDifficulty(analysis.complexity);
 
     const prompt = this.buildGenerationPrompt(
@@ -69,9 +70,9 @@ export class QuestionGenerator {
    * System prompt for AI
    */
   private getSystemPrompt(): string {
-    return `Du er en hjælpsom AI, der genererer quizspørgsmål på dansk ud fra undervisningsmateriale. Spørgsmålene skal være relevante, varierede og i forskellige sværhedsgrader. Svar kun i gyldig JSON som i eksemplet: [{"question": "...", "type": "MULTIPLE_CHOICE", "options": ["..."], "answer": "..."}, ...]`; 
-////Lav relevante, præcise spørgsmål der tester forståelse. 
-//Returner ALTID og KUN valid JSON som et array.`;
+    return `Du er en hjælpsom AI, der genererer quizspørgsmål på dansk ud fra undervisningsmateriale. Spørgsmålene skal være relevante, varierede og i forskellige sværhedsgrader. Svar kun i gyldig JSON som i eksemplet: [{"question": "...", "type": "MULTIPLE_CHOICE", "options": ["..."], "answer": "..."}, ...]`;
+    ////Lav relevante, præcise spørgsmål der tester forståelse.
+    //Returner ALTID og KUN valid JSON som et array.`;
   }
 
   /**
@@ -126,14 +127,19 @@ Hvert spørgsmål skal have følgende struktur:
   /**
    * Parse AI-genererede spørgsmål
    */
-  private parseGeneratedQuestions(responseContent: string): GeneratedQuestion[] {
+  private parseGeneratedQuestions(
+    responseContent: string,
+  ): GeneratedQuestion[] {
     const cleanedResponse = responseContent.trim();
-    
+
     let questions: AIQuestionResponse[];
     try {
       questions = this.extractJSONFromResponse(cleanedResponse);
     } catch (error) {
-      this.logger.error('Kunne ikke parse AI response', { error, response: cleanedResponse });
+      this.logger.error('Kunne ikke parse AI response', {
+        error,
+        response: cleanedResponse,
+      });
       throw new Error('Fejl ved parsing af AI-genererede spørgsmål');
     }
 
@@ -159,21 +165,28 @@ Hvert spørgsmål skal have følgende struktur:
   /**
    * Normaliser et spørgsmål til standard format
    */
-  private normalizeQuestion(question: AIQuestionResponse, index: number): GeneratedQuestion {
+  private normalizeQuestion(
+    question: AIQuestionResponse,
+    index: number,
+  ): GeneratedQuestion {
     const type = this.normalizeQuestionType(question.type);
     const difficulty = this.normalizeDifficulty(question.difficulty);
-    
+
     return {
       text: question.text || `Spørgsmål ${index + 1}`,
       type,
       difficulty,
       points: question.points || this.calculateDefaultPoints(difficulty),
-      answerOptions: type === QuestionType.MULTIPLE_CHOICE 
-        ? this.normalizeAnswerOptions(question.answerOptions) 
-        : undefined,
-      essayMinWords: type === QuestionType.ESSAY ? (question.essayMinWords || 50) : undefined,
-      essayMaxWords: type === QuestionType.ESSAY ? (question.essayMaxWords || 200) : undefined,
-      reasoning: question.reasoning || 'Spørgsmålet tester forståelse af indholdet',
+      answerOptions:
+        type === QuestionType.MULTIPLE_CHOICE
+          ? this.normalizeAnswerOptions(question.answerOptions)
+          : undefined,
+      essayMinWords:
+        type === QuestionType.ESSAY ? question.essayMinWords || 50 : undefined,
+      essayMaxWords:
+        type === QuestionType.ESSAY ? question.essayMaxWords || 200 : undefined,
+      reasoning:
+        question.reasoning || 'Spørgsmålet tester forståelse af indholdet',
       qualityScore: 0, // Beregnes senere
     };
   }
@@ -183,15 +196,15 @@ Hvert spørgsmål skal have følgende struktur:
    */
   private normalizeQuestionType(type: string): QuestionType {
     const typeMap: Record<string, QuestionType> = {
-      'MULTIPLE_CHOICE': QuestionType.MULTIPLE_CHOICE,
-      'FILL_IN_BLANK': QuestionType.FILL_IN_BLANK,
-      'ESSAY': QuestionType.ESSAY,
-      'MATCHING': QuestionType.MATCHING,
-      'CODE': QuestionType.CODE,
-      'DRAG_AND_DROP': QuestionType.DRAG_AND_DROP,
-      'DRAG_DROP': QuestionType.DRAG_AND_DROP, // Alias
+      MULTIPLE_CHOICE: QuestionType.MULTIPLE_CHOICE,
+      FILL_IN_BLANK: QuestionType.FILL_IN_BLANK,
+      ESSAY: QuestionType.ESSAY,
+      MATCHING: QuestionType.MATCHING,
+      CODE: QuestionType.CODE,
+      DRAG_AND_DROP: QuestionType.DRAG_AND_DROP,
+      DRAG_DROP: QuestionType.DRAG_AND_DROP, // Alias
     };
-    
+
     return typeMap[type?.toUpperCase()] || QuestionType.MULTIPLE_CHOICE;
   }
 
@@ -200,14 +213,14 @@ Hvert spørgsmål skal have følgende struktur:
    */
   private normalizeDifficulty(difficulty: string): Difficulty {
     const difficultyMap: Record<string, Difficulty> = {
-      'BEGINNER': Difficulty.BEGINNER,
-      'INTERMEDIATE': Difficulty.INTERMEDIATE,
-      'ADVANCED': Difficulty.ADVANCED,
-      'EASY': Difficulty.BEGINNER,
-      'MEDIUM': Difficulty.INTERMEDIATE,
-      'HARD': Difficulty.ADVANCED,
+      BEGINNER: Difficulty.BEGINNER,
+      INTERMEDIATE: Difficulty.INTERMEDIATE,
+      ADVANCED: Difficulty.ADVANCED,
+      EASY: Difficulty.BEGINNER,
+      MEDIUM: Difficulty.INTERMEDIATE,
+      HARD: Difficulty.ADVANCED,
     };
-    
+
     return difficultyMap[difficulty?.toUpperCase()] || Difficulty.BEGINNER;
   }
 
@@ -234,18 +247,18 @@ Hvert spørgsmål skal have følgende struktur:
     if (!Array.isArray(options) || options.length === 0) {
       return this.getDefaultAnswerOptions();
     }
-    
+
     // Sørg for at der er præcis ét korrekt svar
-    const correctAnswers = options.filter(opt => opt.isCorrect);
+    const correctAnswers = options.filter((opt) => opt.isCorrect);
     if (correctAnswers.length === 0) {
       options[0].isCorrect = true;
     } else if (correctAnswers.length > 1) {
       options.forEach((opt, index) => {
-        opt.isCorrect = index === options.findIndex(o => o.isCorrect);
+        opt.isCorrect = index === options.findIndex((o) => o.isCorrect);
       });
     }
-    
-    return options.map(opt => ({
+
+    return options.map((opt) => ({
       text: opt.text || 'Svarmulighed',
       isCorrect: Boolean(opt.isCorrect),
     }));

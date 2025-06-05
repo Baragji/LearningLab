@@ -13,9 +13,7 @@ async function testQuizFields() {
     });
 
     if (!topic) {
-      console.log(
-        'No topics found to test with. Please create a topic first.',
-      );
+      console.log('No topics found to test with. Please create a topic first.');
       return;
     }
 

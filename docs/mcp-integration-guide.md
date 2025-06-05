@@ -5,6 +5,7 @@ Denne guide beskriver hvordan Model Context Protocol (MCP) servere er integreret
 ## Oversigt
 
 MCP servere giver LearningLab platformen kraftfulde værktøjer til:
+
 - Filhåndtering og materiale management
 - Automatiseret testing og kodevalidering
 - AI-drevet content analyse og quiz generering
@@ -62,11 +63,13 @@ yarn mcp:status
 ### Environment Variables
 
 1. Copy environment template:
+
 ```bash
 cp .env.mcp .env.mcp.local
 ```
 
 2. Fill in your API keys and configuration:
+
 ```bash
 # Email Configuration
 SMTP_HOST=smtp.gmail.com
@@ -97,80 +100,90 @@ MCP servers are configured in `.trae/mcp-config.json`. Each server includes:
 ### Phase 1: Grundlæggende Funktionalitet
 
 #### Filesystem Server
+
 **Purpose**: File upload system, materiale management
-**Usage**: 
+**Usage**:
+
 ```typescript
 // Upload PDF materials
-const uploadResult = await mcpClient.call('filesystem', 'writeFile', {
-  path: './uploads/materials/lesson1.pdf',
-  content: pdfBuffer
+const uploadResult = await mcpClient.call("filesystem", "writeFile", {
+  path: "./uploads/materials/lesson1.pdf",
+  content: pdfBuffer,
 });
 
 // Read course materials
-const materials = await mcpClient.call('filesystem', 'readDir', {
-  path: './uploads/materials'
+const materials = await mcpClient.call("filesystem", "readDir", {
+  path: "./uploads/materials",
 });
 ```
 
 #### Git Server
+
 **Purpose**: Version control, code review, change tracking
 **Usage**:
+
 ```typescript
 // Get repository status
-const status = await mcpClient.call('git', 'status', {});
+const status = await mcpClient.call("git", "status", {});
 
 // Create feature branch
-const branch = await mcpClient.call('git', 'createBranch', {
-  name: 'feature/ai-quiz-generation'
+const branch = await mcpClient.call("git", "createBranch", {
+  name: "feature/ai-quiz-generation",
 });
 
 // Get commit history
-const history = await mcpClient.call('git', 'log', {
-  limit: 10
+const history = await mcpClient.call("git", "log", {
+  limit: 10,
 });
 ```
 
 #### Python Sandbox
+
 **Purpose**: Sikker kodeudførelse, testing, validation
 **Usage**:
+
 ```typescript
 // Run Python tests
-const testResult = await mcpClient.call('python-sandbox', 'execute', {
+const testResult = await mcpClient.call("python-sandbox", "execute", {
   code: `
 import pytest
 result = pytest.main(['-v', './tests/'])
 print(f'Test result: {result}')
   `,
-  timeout: 30
+  timeout: 30,
 });
 ```
 
 #### OpenAPI Server
+
 **Purpose**: API testing, integration validation
 **Usage**:
+
 ```typescript
 // Test API endpoints
-const apiTest = await mcpClient.call('openapi', 'testEndpoint', {
-  method: 'POST',
-  path: '/api/courses',
-  data: { title: 'Test Course', description: 'Test' }
+const apiTest = await mcpClient.call("openapi", "testEndpoint", {
+  method: "POST",
+  path: "/api/courses",
+  data: { title: "Test Course", description: "Test" },
 });
 ```
 
 ### Phase 2: AI Integration & Intelligence
 
 #### Jupyter Server
+
 **Purpose**: AI development, content analysis, model training
 **Usage**:
+
 ```typescript
 // Create AI analysis notebook
-const notebook = await mcpClient.call('jupyter', 'createNotebook', {
-  name: 'content-analysis',
-  kernel: 'python3'
+const notebook = await mcpClient.call("jupyter", "createNotebook", {
+  name: "content-analysis",
+  kernel: "python3",
 });
 
 // Execute AI code
-const analysis = await mcpClient.call('jupyter', 'executeCell', {
+const analysis = await mcpClient.call("jupyter", "executeCell", {
   notebookId: notebook.id,
   code: `
 import openai
@@ -180,17 +193,19 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 content = load_course_content()
 questions = generate_quiz_questions(content)
 print(f'Generated {len(questions)} questions')
-  `
+  `,
 });
 ```
 
 #### Data Analysis Server
+
 **Purpose**: Multi-source data processing, learning analytics
 **Usage**:
+
 ```typescript
 // Analyze student performance data
-const analytics = await mcpClient.call('data-analysis', 'query', {
-  source: 'postgresql://localhost/learninglab',
+const analytics = await mcpClient.call("data-analysis", "query", {
+  source: "postgresql://localhost/learninglab",
   query: `
     SELECT 
       course_id,
@@ -199,110 +214,122 @@ const analytics = await mcpClient.call('data-analysis', 'query', {
     FROM quiz_attempts 
     WHERE created_at > NOW() - INTERVAL '30 days'
     GROUP BY course_id
-  `
+  `,
 });
 
 // Process CSV data
-const csvAnalysis = await mcpClient.call('data-analysis', 'processCsv', {
-  path: './data/student-engagement.csv',
-  operations: ['describe', 'correlations']
+const csvAnalysis = await mcpClient.call("data-analysis", "processCsv", {
+  path: "./data/student-engagement.csv",
+  operations: ["describe", "correlations"],
 });
 ```
 
 ### Phase 3: Avancerede Features & Gamification
 
 #### Grafana Server
+
 **Purpose**: Learning analytics, performance monitoring
 **Usage**:
+
 ```typescript
 // Create learning analytics dashboard
-const dashboard = await mcpClient.call('grafana', 'createDashboard', {
-  title: 'Student Engagement Analytics',
+const dashboard = await mcpClient.call("grafana", "createDashboard", {
+  title: "Student Engagement Analytics",
   panels: [
     {
-      title: 'Quiz Completion Rate',
-      type: 'stat',
-      targets: [{
-        expr: 'quiz_completions_total / quiz_attempts_total * 100'
-      }]
+      title: "Quiz Completion Rate",
+      type: "stat",
+      targets: [
+        {
+          expr: "quiz_completions_total / quiz_attempts_total * 100",
+        },
+      ],
     },
     {
-      title: 'Learning Progress',
-      type: 'graph',
-      targets: [{
-        expr: 'avg(student_progress_percent) by (course)'
-      }]
-    }
-  ]
+      title: "Learning Progress",
+      type: "graph",
+      targets: [
+        {
+          expr: "avg(student_progress_percent) by (course)",
+        },
+      ],
+    },
+  ],
 });
 
 // Query metrics
-const metrics = await mcpClient.call('grafana', 'queryMetrics', {
-  query: 'student_engagement_score',
-  timeRange: '7d'
+const metrics = await mcpClient.call("grafana", "queryMetrics", {
+  query: "student_engagement_score",
+  timeRange: "7d",
 });
 ```
 
 ### Phase 4: Template System & Deployment
 
 #### Kubernetes Server
+
 **Purpose**: Production deployment, scaling, management
 **Usage**:
+
 ```typescript
 // Deploy LearningLab to production
-const deployment = await mcpClient.call('kubernetes', 'apply', {
+const deployment = await mcpClient.call("kubernetes", "apply", {
   manifest: {
-    apiVersion: 'apps/v1',
-    kind: 'Deployment',
+    apiVersion: "apps/v1",
+    kind: "Deployment",
     metadata: {
-      name: 'learninglab-api',
-      namespace: 'learninglab'
+      name: "learninglab-api",
+      namespace: "learninglab",
     },
     spec: {
       replicas: 3,
       selector: {
-        matchLabels: { app: 'learninglab-api' }
+        matchLabels: { app: "learninglab-api" },
       },
       template: {
         metadata: {
-          labels: { app: 'learninglab-api' }
+          labels: { app: "learninglab-api" },
         },
         spec: {
-          containers: [{
-            name: 'api',
-            image: 'learninglab/api:latest',
-            ports: [{ containerPort: 3000 }]
-          }]
-        }
-      }
-    }
-  }
+          containers: [
+            {
+              name: "api",
+              image: "learninglab/api:latest",
+              ports: [{ containerPort: 3000 }],
+            },
+          ],
+        },
+      },
+    },
+  },
 });
 
 // Scale deployment
-const scaling = await mcpClient.call('kubernetes', 'scale', {
-  deployment: 'learninglab-api',
-  replicas: 5
+const scaling = await mcpClient.call("kubernetes", "scale", {
+  deployment: "learninglab-api",
+  replicas: 5,
 });
 ```
 
 #### Portainer Server
+
 **Purpose**: Container management, CI/CD integration
 **Usage**:
+
 ```typescript
 // Manage Docker containers
-const containers = await mcpClient.call('portainer', 'listContainers', {
-  filters: { label: ['app=learninglab'] }
+const containers = await mcpClient.call("portainer", "listContainers", {
+  filters: { label: ["app=learninglab"] },
 });
 
 // Deploy stack
-const stack = await mcpClient.call('portainer', 'deployStack', {
-  name: 'learninglab-production',
-  composeFile: './docker-compose.prod.yml',
+const stack = await mcpClient.call("portainer", "deployStack", {
+  name: "learninglab-production",
+  composeFile: "./docker-compose.prod.yml",
   env: {
     DATABASE_URL: process.env.DATABASE_URL,
-    REDIS_URL: process.env.REDIS_URL
-  }
+    REDIS_URL: process.env.REDIS_URL,
+  },
 });
 ```
 
@@ -380,16 +407,19 @@ Automatiske alerts for:
 ### Daily Development
 
 1. **Start MCP servers**:
+
    ```bash
    yarn mcp:start
    ```
 
 2. **Develop with AI assistance**:
+
    - File operations via filesystem server
    - Code testing via sandbox servers
    - Git operations via git server
 
 3. **Test AI features**:
+
    - Content analysis via Jupyter
    - Data processing via data-analysis server
 
@@ -410,17 +440,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Setup MCP servers
         run: |
           ./scripts/setup-mcp.sh --phase 1 --env testing
           yarn mcp:start
-      
+
       - name: Run tests with MCP
         run: |
           # Tests can now use MCP servers for file operations, etc.
           yarn test
-      
+
       - name: AI-powered code analysis
         run: |
           # Use Jupyter server for code quality analysis
@@ -505,14 +535,14 @@ curl -H "Authorization: Bearer $OPENAI_API_KEY" \
 
 ```typescript
 // 1. Upload file via filesystem server
-const uploadResult = await mcpClient.call('filesystem', 'writeFile', {
-  path: './uploads/materials/advanced-chemistry.pdf',
-  content: fileBuffer
+const uploadResult = await mcpClient.call("filesystem", "writeFile", {
+  path: "./uploads/materials/advanced-chemistry.pdf",
+  content: fileBuffer,
 });
 
 // 2. Process content via Jupyter
-const analysis = await mcpClient.call('jupyter', 'executeCell', {
-  notebookId: 'content-processor',
+const analysis = await mcpClient.call("jupyter", "executeCell", {
+  notebookId: "content-processor",
   code: `
 import PyPDF2
 import openai
@@ -532,22 +562,22 @@ questions = openai.ChatCompletion.create(
 )
 
 print(f"Generated {len(questions.choices[0].message.content)} questions")
-  `
+  `,
 });
 
 // 3. Save to database via API
-const saveResult = await mcpClient.call('openapi', 'request', {
-  method: 'POST',
-  path: '/api/quizzes',
+const saveResult = await mcpClient.call("openapi", "request", {
+  method: "POST",
+  path: "/api/quizzes",
   data: {
-    courseId: 'advanced-chemistry',
-    questions: analysis.output
-  }
+    courseId: "advanced-chemistry",
+    questions: analysis.output,
+  },
 });
 
 // 4. Track in Git
-const gitResult = await mcpClient.call('git', 'add', {
-  files: ['./uploads/materials/advanced-chemistry.pdf']
+const gitResult = await mcpClient.call("git", "add", {
+  files: ["./uploads/materials/advanced-chemistry.pdf"],
 });
 ```
 
@@ -555,28 +585,28 @@ const gitResult = await mcpClient.call('git', 'add', {
 
 ```typescript
 // 1. Run tests
-const testResult = await mcpClient.call('python-sandbox', 'execute', {
-  code: 'pytest ./tests/ -v --coverage'
+const testResult = await mcpClient.call("python-sandbox", "execute", {
+  code: "pytest ./tests/ -v --coverage",
 });
 
 if (testResult.exitCode === 0) {
   // 2. Build and deploy
-  const deployment = await mcpClient.call('kubernetes', 'apply', {
-    manifest: './k8s/production.yaml'
+  const deployment = await mcpClient.call("kubernetes", "apply", {
+    manifest: "./k8s/production.yaml",
   });
-  
+
   // 3. Monitor deployment
-  const monitoring = await mcpClient.call('grafana', 'createAlert', {
-    name: 'deployment-health',
+  const monitoring = await mcpClient.call("grafana", "createAlert", {
+    name: "deployment-health",
     condition: 'avg(up{job="learninglab"}) < 0.9',
-    duration: '5m'
+    duration: "5m",
   });
-  
+
   // 4. Send notification
-  await mcpClient.call('email', 'send', {
-    to: 'team@learninglab.com',
-    subject: 'Deployment Successful',
-    body: `LearningLab deployed successfully at ${new Date()}`
+  await mcpClient.call("email", "send", {
+    to: "team@learninglab.com",
+    subject: "Deployment Successful",
+    body: `LearningLab deployed successfully at ${new Date()}`,
   });
 }
 ```
@@ -584,16 +614,19 @@ if (testResult.exitCode === 0) {
 ## Roadmap
 
 ### Short Term (1-2 måneder)
+
 - [ ] Complete Phase 1 server integration
 - [ ] Basic AI content analysis
 - [ ] Automated testing pipeline
 
 ### Medium Term (3-6 måneder)
+
 - [ ] Advanced AI features (adaptive learning)
 - [ ] Comprehensive analytics dashboard
 - [ ] Multi-environment deployment
 
 ### Long Term (6+ måneder)
+
 - [ ] Custom MCP server development
 - [ ] Advanced security features
 - [ ] Multi-tenant support
@@ -610,4 +643,4 @@ For support og spørgsmål:
 
 ---
 
-*Denne guide opdateres løbende efterhånden som nye MCP servere tilføjes og eksisterende forbedres.*
+_Denne guide opdateres løbende efterhånden som nye MCP servere tilføjes og eksisterende forbedres._

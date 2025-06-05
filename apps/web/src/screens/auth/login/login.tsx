@@ -1,6 +1,6 @@
 // apps/web/src/screens/auth/login/login.tsx
-import React, { useState, FormEvent } from 'react';
-import { useAuth } from '../../../contexts/AuthContext'; // Importer useAuth hook'en
+import React, { useState, FormEvent } from "react";
+import { useAuth } from "../../../contexts/AuthContext"; // Importer useAuth hook'en
 // useRouter er ikke længere nødvendig her, da AuthContext håndterer omdirigering efter login
 
 export function LoginScreen() {
@@ -8,8 +8,8 @@ export function LoginScreen() {
   const { login, isLoading: authIsLoading, user } = useAuth(); // Hent login funktion og auth loading state fra context
 
   // Lokal state for inputfelter og specifikke fejl for denne formular
-  const [email, setEmail] = useState<string>('');
-  const [password, setPassword] = useState<string>('');
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
   const [formError, setFormError] = useState<string | null>(null); // Lokal fejl state for denne formular
 
   // Omdiriger hvis brugeren allerede er logget ind
@@ -21,19 +21,23 @@ export function LoginScreen() {
   //   }
   // }, [user, router]);
 
-
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setFormError(null); // Nulstil formularfejl
 
     try {
-      console.log('LoginScreen: Forsøger login via AuthContext med:', { email, password });
+      console.log("LoginScreen: Forsøger login via AuthContext med:", {
+        email,
+        password,
+      });
       await login(email, password); // Kald login funktionen fra AuthContext
       // AuthContext's login funktion håndterer nu token lagring, bruger state opdatering, og omdirigering.
-      console.log('LoginScreen: Login succesfuld (håndteret af AuthContext).');
+      console.log("LoginScreen: Login succesfuld (håndteret af AuthContext).");
     } catch (err: any) {
-      console.error('LoginScreen: Login fejl fanget:', err);
-      setFormError(err.message || 'Login fejlede. Tjek din email og adgangskode.');
+      console.error("LoginScreen: Login fejl fanget:", err);
+      setFormError(
+        err.message || "Login fejlede. Tjek din email og adgangskode.",
+      );
     }
     // authIsLoading fra context vil styre knappens disabled state
   };
@@ -91,7 +95,10 @@ export function LoginScreen() {
 
           {/* Fejlmeddelelse for formularen */}
           {formError && (
-            <div role="alert" className="p-3 text-sm text-red-700 bg-red-100 border border-red-400 rounded-md">
+            <div
+              role="alert"
+              className="p-3 text-sm text-red-700 bg-red-100 border border-red-400 rounded-md"
+            >
               {formError}
             </div>
           )}
@@ -104,24 +111,46 @@ export function LoginScreen() {
               className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-indigo-400 disabled:cursor-not-allowed transition-colors duration-150"
             >
               {authIsLoading ? (
-                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                <svg
+                  className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
                 </svg>
               ) : (
-                'Log ind'
+                "Log ind"
               )}
             </button>
           </div>
         </form>
         <p className="text-sm text-center text-gray-600">
-          Har du ikke en konto?{' '}
-          <a href="/signup" className="font-medium text-indigo-600 hover:text-indigo-500">
+          Har du ikke en konto?{" "}
+          <a
+            href="/signup"
+            className="font-medium text-indigo-600 hover:text-indigo-500"
+          >
             Opret dig her
           </a>
         </p>
         <p className="text-sm text-center text-gray-600">
-          <a href="/forgot-password" className="font-medium text-indigo-600 hover:text-indigo-500">
+          <a
+            href="/forgot-password"
+            className="font-medium text-indigo-600 hover:text-indigo-500"
+          >
             Glemt adgangskode?
           </a>
         </p>

@@ -72,12 +72,13 @@ export class EducationProgramService extends BaseService<EducationProgram> {
       createEducationProgramDto;
 
     // Tjek om slug allerede eksisterer
-    const existingEducationProgram = await this.prisma.educationProgram.findFirst({
-      where: {
-        slug,
-        deletedAt: null,
-      },
-    });
+    const existingEducationProgram =
+      await this.prisma.educationProgram.findFirst({
+        where: {
+          slug,
+          deletedAt: null,
+        },
+      });
 
     if (existingEducationProgram) {
       throw new ConflictException(
@@ -141,7 +142,10 @@ export class EducationProgramService extends BaseService<EducationProgram> {
         slug: slug !== undefined ? slug : existingEducationProgram.slug,
         description: description, // Prisma handles undefined: if description is undefined, it won't be updated
         tags: tags !== undefined ? tags : existingEducationProgram.tags,
-        categories: categories !== undefined ? categories : existingEducationProgram.categories,
+        categories:
+          categories !== undefined
+            ? categories
+            : existingEducationProgram.categories,
         image: image !== undefined ? image : existingEducationProgram.image,
         banner: banner !== undefined ? banner : existingEducationProgram.banner,
       },
@@ -155,7 +159,10 @@ export class EducationProgramService extends BaseService<EducationProgram> {
    * @param userId ID på brugeren der sletter uddannelsesprogrammet
    * @returns Det slettede uddannelsesprogram
    */
-  async deleteEducationProgram(id: number, userId?: number): Promise<EducationProgram> {
+  async deleteEducationProgram(
+    id: number,
+    userId?: number,
+  ): Promise<EducationProgram> {
     // Tjek om uddannelsesprogrammet eksisterer
     const existingEducationProgram = await this.findById(id);
 

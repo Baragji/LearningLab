@@ -12,12 +12,14 @@ export class QualityEvaluator {
   /**
    * Evaluer kvaliteten af genererede spørgsmål
    */
-  async evaluateQuestions(questions: GeneratedQuestion[]): Promise<GeneratedQuestion[]> {
+  async evaluateQuestions(
+    questions: GeneratedQuestion[],
+  ): Promise<GeneratedQuestion[]> {
     const evaluatedQuestions = await Promise.all(
       questions.map(async (question) => ({
         ...question,
         qualityScore: await this.calculateQualityScore(question),
-      }))
+      })),
     );
 
     // Sorter efter kvalitet (højeste først)
@@ -27,7 +29,9 @@ export class QualityEvaluator {
   /**
    * Beregn kvalitetsscore for et spørgsmål
    */
-  private async calculateQualityScore(question: GeneratedQuestion): Promise<number> {
+  private async calculateQualityScore(
+    question: GeneratedQuestion,
+  ): Promise<number> {
     const criteria: QualityScoreCriteria = {
       textLengthScore: this.evaluateTextLength(question.text),
       questionFormatScore: this.evaluateQuestionFormat(question.text),
@@ -55,24 +59,24 @@ export class QualityEvaluator {
    */
   private evaluateQuestionFormat(text: string): number {
     let score = 0;
-    
+
     // Indeholder spørgsmålstegn
     if (text.includes('?')) score += 5;
-    
+
     // Undgå for simple spørgsmål
     const simpleWords = ['hvad', 'hvilken', 'hvem', 'hvor'];
-    const hasSimpleStart = simpleWords.some(word => 
-      text.toLowerCase().startsWith(word)
+    const hasSimpleStart = simpleWords.some((word) =>
+      text.toLowerCase().startsWith(word),
     );
     if (!hasSimpleStart) score += 5;
-    
+
     // Bonus for specifikke spørgsmålstyper
     const analyticalWords = ['forklar', 'analyser', 'sammenlign', 'vurder'];
-    const hasAnalytical = analyticalWords.some(word => 
-      text.toLowerCase().includes(word)
+    const hasAnalytical = analyticalWords.some((word) =>
+      text.toLowerCase().includes(word),
     );
     if (hasAnalytical) score += 5;
-    
+
     return score;
   }
 
@@ -80,28 +84,32 @@ export class QualityEvaluator {
    * Evaluer svarmuligheder for multiple choice
    */
   private evaluateAnswerOptions(question: GeneratedQuestion): number {
-    if (question.type !== QuestionType.MULTIPLE_CHOICE || !question.answerOptions) {
+    if (
+      question.type !== QuestionType.MULTIPLE_CHOICE ||
+      !question.answerOptions
+    ) {
       return 0;
     }
 
     let score = 0;
     const options = question.answerOptions;
-    
+
     // Præcis ét korrekt svar
-    const correctAnswers = options.filter(opt => opt.isCorrect);
+    const correctAnswers = options.filter((opt) => opt.isCorrect);
     if (correctAnswers.length === 1) score += 15;
-    
+
     // Passende antal muligheder
     if (options.length >= 3 && options.length <= 5) score += 10;
-    
+
     // Evaluer distraktorer (plausible forkerte svar)
-    const avgLength = options.reduce((sum, opt) => sum + opt.text.length, 0) / options.length;
+    const avgLength =
+      options.reduce((sum, opt) => sum + opt.text.length, 0) / options.length;
     if (avgLength > 5 && avgLength < 50) score += 10;
-    
+
     // Alle muligheder har meningsfuld tekst
-    const allMeaningful = options.every(opt => opt.text.length > 3);
+    const allMeaningful = options.every((opt) => opt.text.length > 3);
     if (allMeaningful) score += 5;
-    
+
     return score;
   }
 
@@ -114,16 +122,16 @@ export class QualityEvaluator {
     }
 
     let score = 0;
-    
+
     if (question.essayMinWords && question.essayMinWords >= 25) score += 10;
     if (question.essayMaxWords && question.essayMaxWords <= 500) score += 10;
-    
+
     // Rimelig ordgrænse
     if (question.essayMinWords && question.essayMaxWords) {
       const range = question.essayMaxWords - question.essayMinWords;
       if (range >= 50 && range <= 200) score += 5;
     }
-    
+
     return score;
   }
 
@@ -132,34 +140,43 @@ export class QualityEvaluator {
    */
   private evaluateReasoning(reasoning: string): number {
     if (!reasoning) return 0;
-    
+
     let score = 0;
-    
+
     // Længde på reasoning
     if (reasoning.length > 30) score += 5;
     if (reasoning.length > 50) score += 5;
-    
+
     // Indeholder pædagogiske termer
-    const pedagogicalTerms = ['forståelse', 'viden', 'analyse', 'anvendelse', 'evaluering'];
-    const hasPedagogicalTerms = pedagogicalTerms.some(term => 
-      reasoning.toLowerCase().includes(term)
+    const pedagogicalTerms = [
+      'forståelse',
+      'viden',
+      'analyse',
+      'anvendelse',
+      'evaluering',
+    ];
+    const hasPedagogicalTerms = pedagogicalTerms.some((term) =>
+      reasoning.toLowerCase().includes(term),
     );
     if (hasPedagogicalTerms) score += 5;
-    
+
     return score;
   }
 
   /**
    * Beregn vægtet score baseret på spørgsmålstype
    */
-  private calculateWeightedScore(criteria: QualityScoreCriteria, type: QuestionType): number {
+  private calculateWeightedScore(
+    criteria: QualityScoreCriteria,
+    type: QuestionType,
+  ): number {
     let totalScore = 50; // Base score
-    
+
     // Generelle kriterier
     totalScore += criteria.textLengthScore;
     totalScore += criteria.questionFormatScore;
     totalScore += criteria.reasoningScore;
-    
+
     // Type-specifikke kriterier
     switch (type) {
       case QuestionType.MULTIPLE_CHOICE:
@@ -173,7 +190,7 @@ export class QualityEvaluator {
         totalScore += 10; // Bonus for code spørgsmål
         break;
     }
-    
+
     // Normaliser til 0-100
     return Math.min(100, Math.max(0, totalScore));
   }

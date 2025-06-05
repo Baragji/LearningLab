@@ -90,13 +90,13 @@ export class AIFeedbackService {
       const { userId, quizResponses, learningStyle, difficultyLevel } = request;
 
       // Calculate overall performance metrics
-      const correctAnswers = quizResponses.filter(r => r.isCorrect).length;
+      const correctAnswers = quizResponses.filter((r) => r.isCorrect).length;
       const totalQuestions = quizResponses.length;
       const overallScore = Math.round((correctAnswers / totalQuestions) * 100);
 
       // Analyze patterns in incorrect answers
-      const incorrectResponses = quizResponses.filter(r => !r.isCorrect);
-      
+      const incorrectResponses = quizResponses.filter((r) => !r.isCorrect);
+
       // Generate detailed feedback for each question
       const detailedFeedback = await this.generateDetailedQuestionFeedback(
         quizResponses,
@@ -111,7 +111,9 @@ export class AIFeedbackService {
         difficultyLevel,
       );
 
-      this.logger.log(`Generated feedback for user ${userId} with score ${overallScore}%`);
+      this.logger.log(
+        `Generated feedback for user ${userId} with score ${overallScore}%`,
+      );
 
       return {
         overallScore,
@@ -120,12 +122,19 @@ export class AIFeedbackService {
         recommendations: insights.recommendations,
         detailedFeedback,
         nextSteps: insights.nextSteps,
-        estimatedStudyTime: this.calculateEstimatedStudyTime(incorrectResponses.length),
-        motivationalMessage: this.generateMotivationalMessage(overallScore, learningStyle),
+        estimatedStudyTime: this.calculateEstimatedStudyTime(
+          incorrectResponses.length,
+        ),
+        motivationalMessage: this.generateMotivationalMessage(
+          overallScore,
+          learningStyle,
+        ),
       };
     } catch (error) {
       this.logger.error('Failed to generate quiz feedback', error);
-      throw new Error(`Failed to generate quiz feedback: ${(error as Error).message}`);
+      throw new Error(
+        `Failed to generate quiz feedback: ${(error as Error).message}`,
+      );
     }
   }
 
@@ -152,7 +161,8 @@ export class AIFeedbackService {
       const response = await this.aiProviderService.generateChatCompletion([
         {
           role: 'system',
-          content: 'Du er en hjælpsom AI-lærer, der giver personaliseret læringsassistance. Svar på dansk og tilpas dit svar til brugerens læringsstil.',
+          content:
+            'Du er en hjælpsom AI-lærer, der giver personaliseret læringsassistance. Svar på dansk og tilpas dit svar til brugerens læringsstil.',
         },
         {
           role: 'user',
@@ -162,24 +172,21 @@ export class AIFeedbackService {
 
       const parsedResponse = this.parseAssistanceResponse(response.content);
 
-
-
       this.logger.log(`Provided learning assistance for user ${userId}`);
 
       return parsedResponse;
     } catch (error) {
       this.logger.error('Failed to provide learning assistance', error);
-      throw new Error(`Failed to provide learning assistance: ${(error as Error).message}`);
+      throw new Error(
+        `Failed to provide learning assistance: ${(error as Error).message}`,
+      );
     }
   }
 
   /**
    * Get feedback history for a user
    */
-  async getFeedbackHistory(
-    userId: number,
-    limit: number = 10,
-  ): Promise<any[]> {
+  async getFeedbackHistory(userId: number, limit: number = 10): Promise<any[]> {
     try {
       // This would typically fetch from a database
       // For now, return empty array as placeholder
@@ -187,7 +194,9 @@ export class AIFeedbackService {
       return [];
     } catch (error) {
       this.logger.error('Failed to get feedback history', error);
-      throw new Error(`Failed to get feedback history: ${(error as Error).message}`);
+      throw new Error(
+        `Failed to get feedback history: ${(error as Error).message}`,
+      );
     }
   }
 
@@ -247,7 +256,8 @@ Svar i JSON format:
       const aiResponse = await this.aiProviderService.generateChatCompletion([
         {
           role: 'system',
-          content: 'Du er en ekspert lærer der giver konstruktiv feedback. Svar kun med valid JSON.',
+          content:
+            'Du er en ekspert lærer der giver konstruktiv feedback. Svar kun med valid JSON.',
         },
         {
           role: 'user',
@@ -256,7 +266,6 @@ Svar i JSON format:
       ]);
 
       const parsed = JSON.parse(aiResponse.content);
-
 
       return {
         questionId: response.questionId,
@@ -288,8 +297,8 @@ Svar i JSON format:
     recommendations: string[];
     nextSteps: string[];
   }> {
-    const correctAnswers = responses.filter(r => r.isCorrect);
-    const incorrectAnswers = responses.filter(r => !r.isCorrect);
+    const correctAnswers = responses.filter((r) => r.isCorrect);
+    const incorrectAnswers = responses.filter((r) => !r.isCorrect);
 
     const prompt = `
 Analyser denne quiz-performance og giv indsigter:
@@ -300,7 +309,7 @@ Læringsstil: ${learningStyle || 'ikke specificeret'}
 Sværhedsgrad: ${difficultyLevel || 'ikke specificeret'}
 
 Forkerte svar:
-${incorrectAnswers.map(r => `- ${r.questionText}: ${r.userAnswer} (korrekt: ${r.correctAnswer})`).join('\n')}
+${incorrectAnswers.map((r) => `- ${r.questionText}: ${r.userAnswer} (korrekt: ${r.correctAnswer})`).join('\n')}
 
 Giv indsigter i JSON format:
 {
@@ -315,7 +324,8 @@ Giv indsigter i JSON format:
       const aiResponse = await this.aiProviderService.generateChatCompletion([
         {
           role: 'system',
-          content: 'Du er en læringskonsulent der analyserer quiz-performance. Svar kun med valid JSON på dansk.',
+          content:
+            'Du er en læringskonsulent der analyserer quiz-performance. Svar kun med valid JSON på dansk.',
         },
         {
           role: 'user',
@@ -350,7 +360,7 @@ Giv indsigter i JSON format:
         threshold: 0.7,
       });
 
-      return results.map(result => result.document.content);
+      return results.map((result) => result.document.content);
     } catch (error) {
       this.logger.warn('Failed to find relevant content', error);
       return [];
@@ -367,28 +377,30 @@ Giv indsigter i JSON format:
     learningStyle?: string,
   ): string {
     let prompt = `Brugerens spørgsmål: ${question}\n`;
-    
+
     if (context) {
       prompt += `Kontekst: ${context}\n`;
     }
-    
+
     if (learningStyle) {
       prompt += `Læringsstil: ${learningStyle}\n`;
     }
-    
+
     if (relevantContent && relevantContent.length > 0) {
       prompt += `\nRelevant indhold:\n${relevantContent.join('\n\n')}\n`;
     }
-    
+
     prompt += `\nGiv et hjælpsomt svar der:\n1. Besvarer spørgsmålet klart og præcist\n2. Giver en forklaring der passer til læringsstilen\n3. Foreslår relaterede koncepter at udforske\n4. Anbefaler konkrete handlinger\n\nSvar i JSON format:\n{\n  "answer": "Hovedsvar",\n  "explanation": "Detaljeret forklaring",\n  "relatedConcepts": ["koncept1", "koncept2"],\n  "suggestedActions": ["handling1", "handling2"],\n  "confidence": 0.95\n}`;
-    
+
     return prompt;
   }
 
   /**
    * Parse assistance response
    */
-  private parseAssistanceResponse(response: string): LearningAssistanceResponse {
+  private parseAssistanceResponse(
+    response: string,
+  ): LearningAssistanceResponse {
     try {
       return JSON.parse(response);
     } catch (error) {
@@ -431,8 +443,9 @@ Giv indsigter i JSON format:
         timeSpent,
       } = request;
 
-      const isCorrect = userAnswer.toLowerCase().trim() === correctAnswer.toLowerCase().trim();
-      
+      const isCorrect =
+        userAnswer.toLowerCase().trim() === correctAnswer.toLowerCase().trim();
+
       // Generate AI-powered feedback
       const feedbackText = await this.generateAIFeedback({
         questionText,
@@ -448,21 +461,33 @@ Giv indsigter i JSON format:
         overallScore: isCorrect ? 100 : 0,
         strengths: isCorrect ? [questionTopic || 'Good understanding'] : [],
         weaknesses: isCorrect ? [] : [questionTopic || 'Needs improvement'],
-        recommendations: isCorrect ? [] : await this.generateSuggestions(questionTopic),
-        detailedFeedback: [{
-          questionId: questionId.toString(),
-          feedback: feedbackText,
-          conceptsToReview: isCorrect ? [] : [questionTopic || 'Review concepts'],
-          additionalResources: [],
-          difficultyAdjustment: 'same' as const,
-        }],
-        nextSteps: isCorrect ? ['Continue to next topic'] : ['Review and practice more'],
+        recommendations: isCorrect
+          ? []
+          : await this.generateSuggestions(questionTopic),
+        detailedFeedback: [
+          {
+            questionId: questionId.toString(),
+            feedback: feedbackText,
+            conceptsToReview: isCorrect
+              ? []
+              : [questionTopic || 'Review concepts'],
+            additionalResources: [],
+            difficultyAdjustment: 'same' as const,
+          },
+        ],
+        nextSteps: isCorrect
+          ? ['Continue to next topic']
+          : ['Review and practice more'],
         estimatedStudyTime: isCorrect ? 0 : 15,
-        motivationalMessage: this.generateMotivationalMessage(isCorrect ? 100 : 0),
+        motivationalMessage: this.generateMotivationalMessage(
+          isCorrect ? 100 : 0,
+        ),
       };
     } catch (error) {
       this.logger.error('Failed to generate single question feedback', error);
-      throw new Error(`Failed to generate feedback: ${(error as Error).message}`);
+      throw new Error(
+        `Failed to generate feedback: ${(error as Error).message}`,
+      );
     }
   }
 
@@ -478,8 +503,14 @@ Giv indsigter i JSON format:
     confidence?: number;
     timeSpent?: number;
   }): Promise<string> {
-    const { questionText, userAnswer, correctAnswer, isCorrect, questionTopic } = params;
-    
+    const {
+      questionText,
+      userAnswer,
+      correctAnswer,
+      isCorrect,
+      questionTopic,
+    } = params;
+
     if (isCorrect) {
       return `Excellent! Your answer "${userAnswer}" is correct. ${questionTopic ? `You demonstrate good understanding of ${questionTopic}.` : ''}`;
     } else {
@@ -492,9 +523,12 @@ Giv indsigter i JSON format:
    */
   private async generateSuggestions(questionTopic?: string): Promise<string[]> {
     if (!questionTopic) {
-      return ['Review the material and try again', 'Take your time to read the question carefully'];
+      return [
+        'Review the material and try again',
+        'Take your time to read the question carefully',
+      ];
     }
-    
+
     return [
       `Study more about ${questionTopic}`,
       `Practice similar questions on ${questionTopic}`,

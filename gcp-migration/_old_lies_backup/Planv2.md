@@ -1,4 +1,4 @@
- Nedenfor følger en konkret, trin-for-trin-plan for at erstatte den nuværende Ollama-integration i `gcp-migration` med OpenAI API-nøgler, så din RAG/MCP-server kan køre fejlfrit i skyen. Alt er direkte funderet i dine eksisterende filer og indeholder præcise citationshenvisninger til de viste uddrag fra `repomix-output.xml`.
+Nedenfor følger en konkret, trin-for-trin-plan for at erstatte den nuværende Ollama-integration i `gcp-migration` med OpenAI API-nøgler, så din RAG/MCP-server kan køre fejlfrit i skyen. Alt er direkte funderet i dine eksisterende filer og indeholder præcise citationshenvisninger til de viste uddrag fra `repomix-output.xml`.
 
 ---
 
@@ -26,8 +26,6 @@ gcp-migration/
     ...
 ```
 
-
-
 ### Primære områder med Ollama
 
 1. **`requirements.txt`** indeholder stadig `ollama>=0.1.0` som dependency .
@@ -37,10 +35,10 @@ gcp-migration/
 
 Målet er derfor:
 
-* Fjerne / erstatte Ollama i **`requirements.txt`** og **`Dockerfile`**.
-* Ændre alle imports og kald til `ollama.Client(...)` i RAG-engine-filer­ne, så de i stedet benytter OpenAI’s Python SDK (dvs. `openai.ChatCompletion.create(...)` og `openai.Embeddings.create(...)`).
-* Justere health-checks og eventuel feature-flagging i MCP-serverne, så de tjekker OpenAI-forbindelsen i stedet for Ollama.
-* Sikre, at miljøvariabler (fx `OPENAI_API_KEY`, `OPENAI_MODEL`, `OPENAI_EMBEDDING_MODEL`) sættes korrekt i Dockerfile og i cloud-deployment.
+- Fjerne / erstatte Ollama i **`requirements.txt`** og **`Dockerfile`**.
+- Ændre alle imports og kald til `ollama.Client(...)` i RAG-engine-filer­ne, så de i stedet benytter OpenAI’s Python SDK (dvs. `openai.ChatCompletion.create(...)` og `openai.Embeddings.create(...)`).
+- Justere health-checks og eventuel feature-flagging i MCP-serverne, så de tjekker OpenAI-forbindelsen i stedet for Ollama.
+- Sikre, at miljøvariabler (fx `OPENAI_API_KEY`, `OPENAI_MODEL`, `OPENAI_EMBEDDING_MODEL`) sættes korrekt i Dockerfile og i cloud-deployment.
 
 ---
 
@@ -52,10 +50,8 @@ Din eksisterende `requirements.txt` indeholder (blandt andet) linjen:
 
 ```text
 # Ollama client
-ollama>=0.1.0  
+ollama>=0.1.0
 ```
-
-
 
 Ændr denne sektion til i stedet at indeholde OpenAI SDK og eventuelt Tiktoken (hvis du behøver ekstra hastighed til tokenisering):
 
@@ -97,8 +93,6 @@ pytest>=7.4.0
 pytest-asyncio>=0.21.0
 ```
 
-
-
 **Kommentar**: Hvis du i praksis ikke behøver at token-tælle eller bruge streaming, kan du lade `tiktoken` ude. Men OpenAI SDK’en (`openai>=0.27.0`) er nødvendig.
 
 ---
@@ -131,8 +125,6 @@ ENV OLLAMA_PORT=11434
 CMD ["/start-services.sh"]
 ```
 
-
-
 ### 3.1. Ny, forenklet “production” Dockerfile uden Ollama
 
 Udsted en ny `Dockerfile` i `gcp-migration/` (erstat den eksisterende), som:
@@ -159,7 +151,7 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /app
 
 # Kopiér Python-dependencies
-COPY requirements.txt . 
+COPY requirements.txt .
 
 # Installer Python-pakker (inkl. openai)
 RUN pip install --no-cache-dir --upgrade pip && \
@@ -189,9 +181,9 @@ CMD ["python3", "src/mcp_server_with_rag.py"]
 
 **Bemærkninger**:
 
-* Du skal IKKE længere installere Ollama.
-* Ved deploy i Cloud Run/GKE skal du injicere en hemmelig `OPENAI_API_KEY` via dine miljøvariabler (se “Deploy” nedenfor).
-* Hvis du ønsker at skifte til standalone-version uden RAG, kan du i stedet pege `CMD` på `src/mcp_server_standalone.py`.
+- Du skal IKKE længere installere Ollama.
+- Ved deploy i Cloud Run/GKE skal du injicere en hemmelig `OPENAI_API_KEY` via dine miljøvariabler (se “Deploy” nedenfor).
+- Hvis du ønsker at skifte til standalone-version uden RAG, kan du i stedet pege `CMD` på `src/mcp_server_standalone.py`.
 
 ---
 
@@ -205,11 +197,10 @@ Der er tre varianter af din RAG-Engine, som alle importerer og bruger `ollama.Cl
 
 Alle disse filer deler den samme grundstruktur:
 
-* Importer `ollama`
-* I `__init__` oprettes `self.ollama_client = ollama.Client(host=f"http://{ollama_host}")`
-* Metoderne `create_embedding(...)` og `generate(...)` kalder `self.ollama_client.embeddings(...)` og `self.ollama_client.generate(...)`.
-* Der er også en “health check” med `self.ollama_client.list()` for at teste om Ollama-serveren er oppe.
-
+- Importer `ollama`
+- I `__init__` oprettes `self.ollama_client = ollama.Client(host=f"http://{ollama_host}")`
+- Metoderne `create_embedding(...)` og `generate(...)` kalder `self.ollama_client.embeddings(...)` og `self.ollama_client.generate(...)`.
+- Der er også en “health check” med `self.ollama_client.list()` for at teste om Ollama-serveren er oppe.
 
 ### 4.1. Fælles ændring: Importér og initier OpenAI
 
@@ -447,8 +438,8 @@ Før du pusher til cloud (f.eks. Cloud Run), skal du teste lokalt:
 
 ### 8.1. GitHub Actions (eller anden CI)
 
-* **Secrets**: Tilføj `OPENAI_API_KEY` som Secret i GitHub (fx `OPENAI_API_KEY`).
-* **CI-job**: I dit build-script kan du sætte en dummy-nøgle til test (mock OpenAI-kald) og i “deploy to staging/production” bruge den ægte nøgle. Eksempel:
+- **Secrets**: Tilføj `OPENAI_API_KEY` som Secret i GitHub (fx `OPENAI_API_KEY`).
+- **CI-job**: I dit build-script kan du sætte en dummy-nøgle til test (mock OpenAI-kald) og i “deploy to staging/production” bruge den ægte nøgle. Eksempel:
 
 ```yaml
 env:
@@ -457,7 +448,7 @@ env:
   OPENAI_EMBEDDING_MODEL: text-embedding-ada-002
 ```
 
-* **Tests**: Hvis du har unit-tests på RAGEngine, skal du mock’e `openai.Embeddings.create(...)` og `openai.ChatCompletion.create(...)`, fx ved at bruge `pytest-mock` eller `unittest.mock`.
+- **Tests**: Hvis du har unit-tests på RAGEngine, skal du mock’e `openai.Embeddings.create(...)` og `openai.ChatCompletion.create(...)`, fx ved at bruge `pytest-mock` eller `unittest.mock`.
 
 ### 8.2. Cloud Run / GCR
 
@@ -479,7 +470,7 @@ Når du deployer til Google Cloud Run:
      --image gcr.io/$PROJECT_ID/learninglab-rag-openai \
      --region europe-west1 \
      --platform managed \
-     --set-env-vars OPENAI_API_KEY="${OPENAI_API_KEY}",OPENAI_MODEL="gpt-3.5-turbo",OPENAI_EMBEDDING_MODEL="text-embedding-ada-002",CODE_ASSISTANT_PORT="8080" 
+     --set-env-vars OPENAI_API_KEY="${OPENAI_API_KEY}",OPENAI_MODEL="gpt-3.5-turbo",OPENAI_EMBEDDING_MODEL="text-embedding-ada-002",CODE_ASSISTANT_PORT="8080"
    ```
 
 3. **Kontrollér logs og health**:
@@ -497,51 +488,52 @@ Når du deployer til Google Cloud Run:
 
 1. **Opdater `requirements.txt`**
 
-   * Fjern `ollama>=0.1.0`&#x20;
-   * Tilføj `openai>=0.27.0` (+ evt. `tiktoken`)&#x20;
+   - Fjern `ollama>=0.1.0`&#x20;
+   - Tilføj `openai>=0.27.0` (+ evt. `tiktoken`)&#x20;
 
 2. **Erstat Ollama-kald i RAG-engine**
 
-   * Fjern `import ollama` i alle tre filer:
+   - Fjern `import ollama` i alle tre filer:
 
-     * `src/rag_engine.py`&#x20;
-     * `src/rag_engine_fixed.py`&#x20;
-     * `src/rag_engine_phase3.py`&#x20;
-   * Tilføj `import openai` og `openai.api_key = os.getenv("OPENAI_API_KEY")`.
-   * Udskift `orellama_client.embeddings(...)` → `openai.Embeddings.create(...)`.
-   * Udskift `ollama_client.generate(...)` → `openai.ChatCompletion.create(...)`.
-   * Ret health-check til at kalde en lille OpenAI-embedding (fx `openai.Embeddings.create(input="ping")`).
+     - `src/rag_engine.py`&#x20;
+     - `src/rag_engine_fixed.py`&#x20;
+     - `src/rag_engine_phase3.py`&#x20;
+
+   - Tilføj `import openai` og `openai.api_key = os.getenv("OPENAI_API_KEY")`.
+   - Udskift `orellama_client.embeddings(...)` → `openai.Embeddings.create(...)`.
+   - Udskift `ollama_client.generate(...)` → `openai.ChatCompletion.create(...)`.
+   - Ret health-check til at kalde en lille OpenAI-embedding (fx `openai.Embeddings.create(input="ping")`).
 
 3. **Opdater Dockerfile** (i `gcp-migration/`)
 
-   * Fjern “Ollama-base”-stage og tilhørende `RUN curl … ollama install.sh`.
-   * Installer kun `requirements.txt` (som nu inkluderer OpenAI).
-   * Sæt `ENV OPENAI_API_KEY=${OPENAI_API_KEY}`, `OPENAI_MODEL`, `OPENAI_EMBEDDING_MODEL`.
-   * `CMD ["python3", "src/mcp_server_with_rag.py"]`.
+   - Fjern “Ollama-base”-stage og tilhørende `RUN curl … ollama install.sh`.
+   - Installer kun `requirements.txt` (som nu inkluderer OpenAI).
+   - Sæt `ENV OPENAI_API_KEY=${OPENAI_API_KEY}`, `OPENAI_MODEL`, `OPENAI_EMBEDDING_MODEL`.
+   - `CMD ["python3", "src/mcp_server_with_rag.py"]`.
 
 4. **Ret health-endpoint i MCP** (hvis nødvendigt)
 
-   * I `mcp_server_with_rag.py`: Vis “openai: true/false” i stedet for “ollama: true/false”.&#x20;
+   - I `mcp_server_with_rag.py`: Vis “openai: true/false” i stedet for “ollama: true/false”.&#x20;
 
 5. **Test lokalt**
 
-   * Sæt `export OPENAI_API_KEY=sk-…` og kør `python3 src/mcp_server_with_rag.py`.
-   * `curl http://localhost:8080/health` → `{"services":{"openai":true,...}}`.
-   * `curl -X POST http://localhost:8080/mcp -H "Content-Type: application/json" -d '{"method":"tools/list"}'` → vis værktøjer.&#x20;
+   - Sæt `export OPENAI_API_KEY=sk-…` og kør `python3 src/mcp_server_with_rag.py`.
+   - `curl http://localhost:8080/health` → `{"services":{"openai":true,...}}`.
+   - `curl -X POST http://localhost:8080/mcp -H "Content-Type: application/json" -d '{"method":"tools/list"}'` → vis værktøjer.&#x20;
 
 6. **CI/CD**
 
-   * Tilføj `OPENAI_API_KEY` som secret i GitHub Actions.
-   * Mock OpenAI i tests (fx via `pytest` + `monkeypatch`).
+   - Tilføj `OPENAI_API_KEY` som secret i GitHub Actions.
+   - Mock OpenAI i tests (fx via `pytest` + `monkeypatch`).
 
 7. **Byg og deploy til Cloud Run**
 
-   * `docker buildx build ... --platform linux/amd64,linux/arm64 -t gcr.io/... --push`.&#x20;
-   * `gcloud run deploy ... --set-env-vars OPENAI_API_KEY=…,OPENAI_MODEL=…,OPENAI_EMBEDDING_MODEL=…`.
+   - `docker buildx build ... --platform linux/amd64,linux/arm64 -t gcr.io/... --push`.&#x20;
+   - `gcloud run deploy ... --set-env-vars OPENAI_API_KEY=…,OPENAI_MODEL=…,OPENAI_EMBEDDING_MODEL=…`.
 
 8. **Smoke-test i skyen**
 
-   * `curl https://<service>/health` → `{"services":{"openai":true, ...}}`.
-   * `curl -X POST https://<service>/mcp -H "Content-Type: application/json" -d '{"method":"tools/list"}'` → værktøjer skal dukke op.
+   - `curl https://<service>/health` → `{"services":{"openai":true, ...}}`.
+   - `curl -X POST https://<service>/mcp -H "Content-Type: application/json" -d '{"method":"tools/list"}'` → værktøjer skal dukke op.
 
 Når alle disse trin er gennemført, vil din `gcp-migration`-folder være ryddet for Ollama-afhængigheder og udelukkende benytte OpenAI API-nøgler – klar til en fejlfri deployment til din valgte cloud-platform.

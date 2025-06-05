@@ -1,4 +1,3 @@
-
 # LearningLab 🎓
 
 En moderne uddannelsesplatform bygget med NestJS, Next.js og Prisma.
@@ -7,7 +6,7 @@ En moderne uddannelsesplatform bygget med NestJS, Next.js og Prisma.
 
 ### Forudsætninger
 
- - **Node.js** (v22)
+- **Node.js** (v22)
 - **Yarn** (v4.9.1 eller nyere)
 - **PostgreSQL** (v14 eller nyere)
 - **Git**
@@ -15,27 +14,32 @@ En moderne uddannelsesplatform bygget med NestJS, Next.js og Prisma.
 ### Installation
 
 1. **Klon repositoriet**
+
    ```bash
    git clone https://github.com/yourusername/learninglab.git
    cd learninglab
    ```
 
 2. **Installer dependencies og setup database**
+
    ```bash
    yarn setup
    ```
-   
+
    Dette kommando vil:
+
    - Installere alle dependencies
    - Oprette og migrere databasen
    - Seede databasen med test data
 
 3. **Start udviklings servere**
+
    ```bash
    yarn dev
    ```
-   
+
    Dette starter:
+
    - API server på `http://localhost:5002`
    - Web app på `http://localhost:3000`
    - API dokumentation på `http://localhost:5002/api/docs`
@@ -56,6 +60,7 @@ learninglab/
 ## 🛠️ Tilgængelige Scripts
 
 ### Hovedkommandoer
+
 - `yarn setup` - Komplet setup af projektet (første gang)
 - `yarn dev` - Start udviklings servere
 - `yarn build` - Byg alle apps til produktion
@@ -64,6 +69,7 @@ learninglab/
 - `yarn format` - Formater kode
 
 ### Database kommandoer
+
 - `yarn db:setup` - Setup database (migrate + generate)
 - `yarn db:reset` - Reset database og seed data
 - `yarn db:seed` - Seed database med test data
@@ -72,6 +78,7 @@ learninglab/
 - `yarn prisma:generate` - Generer Prisma client
 
 ### Utility kommandoer
+
 - `yarn clean` - Ryd op i build filer
 - `yarn clean:all` - Ryd op i alle node_modules
 - `yarn typecheck` - Kør TypeScript type checking
@@ -81,17 +88,19 @@ learninglab/
 ### Lokal PostgreSQL Setup
 
 1. **Installer PostgreSQL**
+
    ```bash
    # macOS med Homebrew
    brew install postgresql
    brew services start postgresql
-   
+
    # Ubuntu/Debian
    sudo apt-get install postgresql postgresql-contrib
    sudo systemctl start postgresql
    ```
 
 2. **Opret database og bruger**
+
    ```bash
    sudo -u postgres psql
    CREATE DATABASE learninglab;
@@ -101,13 +110,15 @@ learninglab/
    ```
 
 3. **Konfigurer miljøvariabler**
-   
+
    Kopier `.env.example` til `.env` og opdater database URL:
+
    ```bash
    cp .env.example .env
    ```
-   
+
    Rediger `.env`:
+
    ```
    DATABASE_URL="postgresql://learninglab_user:password@localhost:5432/learninglab"
    ```
@@ -115,6 +126,7 @@ learninglab/
 ### Database Schema
 
 Databasen indeholder følgende hovedentiteter:
+
 - **EducationPrograms** - Uddannelsesprogrammer
 - **Courses** - Kurser
 - **Topics** - Emner
@@ -140,6 +152,7 @@ yarn test:ci
 ## 📝 Code Style
 
 Projektet bruger:
+
 - **ESLint** for linting
 - **Prettier** for code formatting
 - **Husky** for pre-commit hooks
@@ -159,12 +172,15 @@ yarn lint:fix
 ## 🚀 Deployment
 
 ### Byg til produktion
+
 ```bash
 yarn build
 ```
 
 ### Miljøvariabler til produktion
+
 Sørg for at sætte følgende miljøvariabler:
+
 - `DATABASE_URL` - PostgreSQL connection string
 - `JWT_SECRET` - Secret til JWT tokens
 - `NODE_ENV=production`
@@ -188,6 +204,7 @@ Sørg for at sætte følgende miljøvariabler:
 ### Almindelige problemer
 
 **Database connection fejl:**
+
 ```bash
 # Check om PostgreSQL kører
 ps aux | grep postgres
@@ -200,6 +217,7 @@ psql -h localhost -U learninglab_user -d learninglab
 ```
 
 **Port allerede i brug:**
+
 ```bash
 # Find proces der bruger port 3000/5002
 lsof -ti:3000
@@ -210,6 +228,7 @@ kill -9 <PID>
 ```
 
 **Yarn cache problemer:**
+
 ```bash
 yarn clean:all
 yarn install

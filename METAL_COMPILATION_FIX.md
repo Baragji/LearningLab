@@ -3,6 +3,7 @@
 ## Problem Summary
 
 Your `install-code-assistant.sh` script is failing with this error:
+
 ```
 xcrun: error: unable to find utility "metal", not a developer tool or in PATH
 ```
@@ -21,18 +22,21 @@ After thorough research, the issue is:
 ### Step 1: Install Full Xcode
 
 **Option A: Mac App Store (Recommended)**
+
 1. Open Mac App Store
 2. Search for "Xcode"
 3. Click "Install" (free, but requires Apple ID)
 4. Wait for download (several GB - can take 30+ minutes)
 
 **Option B: Apple Developer Website**
+
 1. Go to https://developer.apple.com/xcode/
 2. Download Xcode (requires Apple Developer account)
 
 ### Step 2: Configure Xcode
 
 After installation:
+
 1. **Launch Xcode.app** at least once
 2. **Accept the license agreement**
 3. **Install additional components** when prompted
@@ -41,11 +45,13 @@ After installation:
 ### Step 3: Switch Developer Tools
 
 Run the provided fix script:
+
 ```bash
 ./fix-metal-compilation.sh
 ```
 
 Or manually:
+
 ```bash
 # Switch to full Xcode
 sudo xcode-select --switch /Applications/Xcode.app/Contents/Developer
@@ -60,6 +66,7 @@ xcrun --find metal
 ### Step 4: Retry Installation
 
 Use the improved script:
+
 ```bash
 ./install-code-assistant-fixed.sh
 ```

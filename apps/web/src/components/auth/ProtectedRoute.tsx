@@ -1,7 +1,7 @@
 // apps/web/src/components/auth/ProtectedRoute.tsx
-import React, { ReactNode, useEffect } from 'react';
-import { useRouter } from 'next/router';
-import { useAuth } from '../../contexts/AuthContext';
+import React, { ReactNode, useEffect } from "react";
+import { useRouter } from "next/router";
+import { useAuth } from "../../contexts/AuthContext";
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -14,8 +14,8 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
   // ▶️ Hook now always runs, before any returns:
   useEffect(() => {
     if (!authIsLoading && !user) {
-      console.log('ProtectedRoute: Ingen bruger, omdirigerer til /login');
-      router.replace('/login');
+      console.log("ProtectedRoute: Ingen bruger, omdirigerer til /login");
+      router.replace("/login");
     }
   }, [authIsLoading, user, router]);
 

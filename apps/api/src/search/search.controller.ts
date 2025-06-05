@@ -180,7 +180,8 @@ export class SearchController {
   @Get()
   async search(
     @Query('query') query?: string,
-    @Query('type') type: 'course' | 'topic' | 'lesson' | 'material' | 'file' | 'all' = 'all',
+    @Query('type')
+    type: 'course' | 'topic' | 'lesson' | 'material' | 'file' | 'all' = 'all',
     @Query('tags') tags?: string,
     @Query('difficulty') difficulty?: Difficulty,
     @Query('status') status?: CourseStatus,

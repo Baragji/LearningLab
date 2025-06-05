@@ -20,10 +20,10 @@ export class CustomValidationPipe implements PipeTransform<any> {
 
     // Sanitize input before validation
     const sanitizedValue = this.sanitizeInput(value);
-    
+
     // Transform to class instance
     const object = plainToInstance(metatype, sanitizedValue);
-    
+
     // Validate
     const errors = await validate(object, {
       whitelist: true, // Strip properties that don't have decorators
@@ -57,21 +57,21 @@ export class CustomValidationPipe implements PipeTransform<any> {
     if (typeof value === 'string') {
       // Remove potentially dangerous characters and sanitize HTML
       let sanitized = value.trim();
-      
+
       // Basic XSS protection - sanitize HTML content
       sanitized = DOMPurify.sanitize(sanitized, {
         ALLOWED_TAGS: [], // No HTML tags allowed by default
         ALLOWED_ATTR: [],
       });
-      
+
       // Remove null bytes and other control characters
       sanitized = sanitized.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '');
-      
+
       return sanitized;
     }
 
     if (Array.isArray(value)) {
-      return value.map(item => this.sanitizeInput(item));
+      return value.map((item) => this.sanitizeInput(item));
     }
 
     if (typeof value === 'object') {
@@ -90,10 +90,10 @@ export class CustomValidationPipe implements PipeTransform<any> {
   }
 
   private formatValidationErrors(errors: any[]): any[] {
-    return errors.map(error => {
+    return errors.map((error) => {
       const constraints = error.constraints;
       const children = error.children;
-      
+
       const formattedError: any = {
         property: error.property,
         value: error.value,
@@ -144,14 +144,14 @@ export class FileValidationPipe implements PipeTransform {
     // Check file size
     if (file.size > this.maxFileSize) {
       throw new BadRequestException(
-        `File size too large. Maximum allowed size is ${this.maxFileSize / (1024 * 1024)}MB`
+        `File size too large. Maximum allowed size is ${this.maxFileSize / (1024 * 1024)}MB`,
       );
     }
 
     // Check MIME type
     if (!this.allowedMimeTypes.includes(file.mimetype)) {
       throw new BadRequestException(
-        `File type not allowed. Allowed types: ${this.allowedMimeTypes.join(', ')}`
+        `File type not allowed. Allowed types: ${this.allowedMimeTypes.join(', ')}`,
       );
     }
 
@@ -160,8 +160,10 @@ export class FileValidationPipe implements PipeTransform {
       file.originalname = this.sanitizeFilename(file.originalname);
     }
 
-    this.logger.log(`File validated: ${file.originalname} (${file.mimetype}, ${file.size} bytes)`);
-    
+    this.logger.log(
+      `File validated: ${file.originalname} (${file.mimetype}, ${file.size} bytes)`,
+    );
+
     return file;
   }
 

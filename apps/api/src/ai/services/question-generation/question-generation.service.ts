@@ -35,7 +35,9 @@ export class QuestionGenerationService {
       );
 
       // 1. Analyser indholdet
-      const analysis = await this.contentAnalyzer.analyzeContent(request.content);
+      const analysis = await this.contentAnalyzer.analyzeContent(
+        request.content,
+      );
       this.logger.debug('Content analysis completed', analysis);
 
       // 2. Generer spørgsmål baseret på analyse
@@ -47,7 +49,8 @@ export class QuestionGenerationService {
       this.logger.debug(`Generated ${questions.length} questions`);
 
       // 3. Evaluer kvalitet af spørgsmål
-      const evaluatedQuestions = await this.qualityEvaluator.evaluateQuestions(questions);
+      const evaluatedQuestions =
+        await this.qualityEvaluator.evaluateQuestions(questions);
 
       // 4. Log AI usage
       await this.aiUsageLogger.logUsage(
@@ -58,8 +61,9 @@ export class QuestionGenerationService {
 
       return evaluatedQuestions;
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+
       // Log fejl
       await this.aiUsageLogger.logUsage(
         'question_generation',
@@ -68,8 +72,11 @@ export class QuestionGenerationService {
         false,
         errorMessage,
       );
-      
-      this.logger.error(`Fejl ved generering af spørgsmål: ${errorMessage}`, error);
+
+      this.logger.error(
+        `Fejl ved generering af spørgsmål: ${errorMessage}`,
+        error,
+      );
       throw new Error(`Failed to generate questions: ${errorMessage}`);
     }
   }
@@ -86,7 +93,7 @@ export class QuestionGenerationService {
     } = {},
   ): Promise<GeneratedQuestion[]> {
     const content = await this.contentFetcher.fetchLessonContent(lessonId);
-    
+
     return this.generateQuestionsFromContent({
       content,
       contentType: 'lesson',
@@ -107,7 +114,7 @@ export class QuestionGenerationService {
     } = {},
   ): Promise<GeneratedQuestion[]> {
     const content = await this.contentFetcher.fetchTopicContent(topicId);
-    
+
     return this.generateQuestionsFromContent({
       content,
       contentType: 'topic',
@@ -129,7 +136,7 @@ export class QuestionGenerationService {
     } = {},
   ): Promise<GeneratedQuestion[]> {
     const content = await this.contentFetcher.fetchCourseContent(courseId);
-    
+
     return this.generateQuestionsFromContent({
       content,
       contentType: 'course',
@@ -165,9 +172,13 @@ export class QuestionGenerationService {
         if (!question.answerOptions || question.answerOptions.length < 2) {
           issues.push(`Spørgsmål ${index + 1}: Mangler svarmuligheder`);
         } else {
-          const correctAnswers = question.answerOptions.filter(opt => opt.isCorrect);
+          const correctAnswers = question.answerOptions.filter(
+            (opt) => opt.isCorrect,
+          );
           if (correctAnswers.length !== 1) {
-            issues.push(`Spørgsmål ${index + 1}: Skal have præcis ét korrekt svar`);
+            issues.push(
+              `Spørgsmål ${index + 1}: Skal have præcis ét korrekt svar`,
+            );
           }
         }
       }
@@ -181,7 +192,9 @@ export class QuestionGenerationService {
 
       // Valider kvalitetsscore
       if (question.qualityScore < 50) {
-        issues.push(`Spørgsmål ${index + 1}: Lav kvalitetsscore (${question.qualityScore})`);
+        issues.push(
+          `Spørgsmål ${index + 1}: Lav kvalitetsscore (${question.qualityScore})`,
+        );
       }
     });
 

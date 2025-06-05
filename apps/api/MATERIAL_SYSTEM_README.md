@@ -5,6 +5,7 @@ Dette dokument beskriver det nye materialesystem, der er implementeret i Learnin
 ## Oversigt
 
 Materialesystemet giver mulighed for at:
+
 - Uploade og administrere filer
 - Oprette og administrere undervisningsmaterialer (ContentBlocks)
 - Søge i materialer og filer
@@ -17,12 +18,14 @@ Materialesystemet giver mulighed for at:
 Tilføjet indekser til følgende modeller for optimeret performance:
 
 #### ContentBlock
+
 - `lessonId` - For hurtig hentning af materialer efter lektion
 - `type` - For filtrering efter materialetype
 - `order` - For sortering af materialer
 - `fileId` - For hurtig lookup af tilknyttede filer
 
 #### Course
+
 - `title` - For søgning efter kursustitler
 - `slug` - For hurtig URL-baseret lookup
 - `educationProgramId` - For filtrering efter uddannelsesprogram
@@ -30,25 +33,30 @@ Tilføjet indekser til følgende modeller for optimeret performance:
 - `status` - For filtrering efter status
 
 #### Topic
+
 - `courseId` - For hentning af emner efter kursus
 - `title` - For søgning efter emnetitler
 - `order` - For sortering af emner
 - `subjectCategory` - For kategorisering
 
 #### Lesson
+
 - `topicId` - For hentning af lektioner efter emne
 - `title` - For søgning efter lektionstitler
 - `order` - For sortering af lektioner
 
 #### EducationProgram
+
 - `name` - For søgning efter programnavne
 
 ### 2. Services
 
 #### FileUploadService
+
 **Placering:** `src/services/file-upload.service.ts`
 
 **Funktionalitet:**
+
 - Upload af filer med validering
 - Hentning af filinformation
 - Søgning i filer
@@ -57,6 +65,7 @@ Tilføjet indekser til følgende modeller for optimeret performance:
 - Sikkerhedsvalidering af filtyper og størrelser
 
 **Understøttede filtyper:**
+
 - Billeder: JPEG, PNG, GIF, WebP
 - Dokumenter: PDF, Word, Excel, PowerPoint, TXT, CSV
 - Video: MP4, WebM
@@ -65,9 +74,11 @@ Tilføjet indekser til følgende modeller for optimeret performance:
 **Maksimal filstørrelse:** 10MB
 
 #### MaterialService
+
 **Placering:** `src/services/material.service.ts`
 
 **Funktionalitet:**
+
 - Oprettelse af materialer (ContentBlocks)
 - Hentning af materialer (individuelt, efter lektion, emne, kursus)
 - Opdatering af materialer
@@ -79,9 +90,11 @@ Tilføjet indekser til følgende modeller for optimeret performance:
 ### 3. Controllers
 
 #### FileController
+
 **Placering:** `src/controllers/file.controller.ts`
 
 **Endpoints:**
+
 - `POST /files/upload` - Upload filer
 - `GET /files/:id` - Hent filinformation
 - `GET /files/:id/download` - Download fil
@@ -91,9 +104,11 @@ Tilføjet indekser til følgende modeller for optimeret performance:
 - `DELETE /files/:id` - Slet fil
 
 #### MaterialController
+
 **Placering:** `src/controllers/material.controller.ts`
 
 **Endpoints:**
+
 - `POST /materials` - Opret materiale
 - `GET /materials/:id` - Hent materiale
 - `GET /materials/lesson/:lessonId` - Hent materialer efter lektion
@@ -108,6 +123,7 @@ Tilføjet indekser til følgende modeller for optimeret performance:
 ### 4. DTOs
 
 #### ContentBlock DTOs
+
 **Placering:** `src/dto/content-block.dto.ts`
 
 - `CreateContentBlockDto` - Validering af nye materialer
@@ -115,6 +131,7 @@ Tilføjet indekser til følgende modeller for optimeret performance:
 - `BulkUpdateContentBlockOrderDto` - Validering af bulk rækkefølge opdateringer
 
 #### File Upload DTOs
+
 **Placering:** `src/dto/file-upload.dto.ts`
 
 - `UpdateFileDto` - Validering af filopdateringer
@@ -124,27 +141,33 @@ Tilføjet indekser til følgende modeller for optimeret performance:
 ### 5. Sikkerhed og Validering
 
 #### GlobalExceptionFilter
+
 **Placering:** `src/filters/global-exception.filter.ts`
 
 **Funktionalitet:**
+
 - Centraliseret fejlhåndtering
 - Prisma fejl mapping
 - Sikkerhedslogning
 - Strukturerede fejlresponses
 
 #### CustomValidationPipe
+
 **Placering:** `src/pipes/validation.pipe.ts`
 
 **Funktionalitet:**
+
 - Input sanitization (XSS beskyttelse)
 - Validering med class-validator
 - Filvalidering med størrelser og typer
 - Sikkerhedsfiltrering af farlige karakterer
 
 #### FileValidationPipe
+
 **Samme fil som CustomValidationPipe**
 
 **Funktionalitet:**
+
 - Validering af uploadede filer
 - Kontrol af filstørrelser og typer
 - Sanitization af filnavne
@@ -152,18 +175,22 @@ Tilføjet indekser til følgende modeller for optimeret performance:
 ### 6. Logging og Monitoring
 
 #### LoggingInterceptor
+
 **Placering:** `src/interceptors/logging.interceptor.ts`
 
 **Funktionalitet:**
+
 - HTTP request/response logging
 - Brugeridentifikation i logs
 - Sanitization af sensitive data
 - Performance monitoring
 
 #### PerformanceInterceptor
+
 **Samme fil som LoggingInterceptor**
 
 **Funktionalitet:**
+
 - Måling af response tider
 - Identifikation af langsomme requests
 - Memory usage monitoring
@@ -171,6 +198,7 @@ Tilføjet indekser til følgende modeller for optimeret performance:
 ### 7. Udvidet Søgning
 
 **SearchService er udvidet til at inkludere:**
+
 - Søgning i materialer (ContentBlocks)
 - Søgning i filer
 - Relevance scoring for materialer og filer
@@ -228,9 +256,9 @@ formData.append('description', 'Min fil beskrivelse');
 const response = await fetch('/files/upload', {
   method: 'POST',
   headers: {
-    'Authorization': `Bearer ${token}`
+    Authorization: `Bearer ${token}`,
   },
-  body: formData
+  body: formData,
 });
 ```
 
@@ -241,7 +269,7 @@ const material = await fetch('/materials', {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',
-    'Authorization': `Bearer ${token}`
+    Authorization: `Bearer ${token}`,
   },
   body: JSON.stringify({
     lessonId: 1,
@@ -249,19 +277,22 @@ const material = await fetch('/materials', {
     title: 'Lektion 1 Materiale',
     content: 'Beskrivelse af materialet',
     fileId: 123,
-    order: 1
-  })
+    order: 1,
+  }),
 });
 ```
 
 ### Søg i materialer
 
 ```typescript
-const results = await fetch('/search?query=matematik&type=material&page=1&limit=10', {
-  headers: {
-    'Authorization': `Bearer ${token}`
-  }
-});
+const results = await fetch(
+  '/search?query=matematik&type=material&page=1&limit=10',
+  {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  },
+);
 ```
 
 ## Migration

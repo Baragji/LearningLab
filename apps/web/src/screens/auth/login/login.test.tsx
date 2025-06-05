@@ -1,13 +1,13 @@
 // apps/web/src/screens/auth/login/login.test.tsx
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { Provider } from 'react-redux';
-import store from '../../../store';
+import { Provider } from "react-redux";
+import store from "../../../store";
 import { LoginScreen } from "./login";
-import { AuthContext } from '../../../contexts/AuthContext';
-import { useRouter } from 'next/router';
+import { AuthContext } from "../../../contexts/AuthContext";
+import { useRouter } from "next/router";
 
 // Mock next/router
-jest.mock('next/router', () => ({
+jest.mock("next/router", () => ({
   useRouter: jest.fn(),
 }));
 
@@ -17,14 +17,14 @@ const mockPush = jest.fn();
   push: mockPush,
 }));
 
-describe('LoginScreen', () => {
+describe("LoginScreen", () => {
   // Setup for each test
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
   // Test 1: Basic rendering test
-  test('renders login form with all elements', () => {
+  test("renders login form with all elements", () => {
     // Mock AuthContext values
     const mockAuthContext = {
       user: null,
@@ -44,19 +44,21 @@ describe('LoginScreen', () => {
         <AuthContext.Provider value={mockAuthContext}>
           <LoginScreen />
         </AuthContext.Provider>
-      </Provider>
+      </Provider>,
     );
 
     // Check if all form elements are rendered
     expect(screen.getByLabelText(/emailadresse/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/adgangskode/i)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /log ind/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /log ind/i }),
+    ).toBeInTheDocument();
     expect(screen.getByText(/har du ikke en konto/i)).toBeInTheDocument();
     expect(screen.getByText(/glemt adgangskode/i)).toBeInTheDocument();
   });
 
   // Test 2: Form submission with valid credentials
-  test('submits form with valid credentials', async () => {
+  test("submits form with valid credentials", async () => {
     // Mock successful login
     const mockLogin = jest.fn().mockResolvedValue(undefined);
 
@@ -78,23 +80,23 @@ describe('LoginScreen', () => {
         <AuthContext.Provider value={mockAuthContext}>
           <LoginScreen />
         </AuthContext.Provider>
-      </Provider>
+      </Provider>,
     );
 
     // Fill out the form
     fireEvent.change(screen.getByLabelText(/emailadresse/i), {
-      target: { value: 'test@example.com' },
+      target: { value: "test@example.com" },
     });
     fireEvent.change(screen.getByLabelText(/adgangskode/i), {
-      target: { value: 'password123' },
+      target: { value: "password123" },
     });
 
     // Submit the form
-    fireEvent.click(screen.getByRole('button', { name: /log ind/i }));
+    fireEvent.click(screen.getByRole("button", { name: /log ind/i }));
 
     // Check if login was called with correct credentials
     await waitFor(() => {
-      expect(mockLogin).toHaveBeenCalledWith('test@example.com', 'password123');
+      expect(mockLogin).toHaveBeenCalledWith("test@example.com", "password123");
     });
   });
 

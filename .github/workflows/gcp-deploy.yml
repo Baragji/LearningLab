@@ -2,16 +2,16 @@ name: Deploy to Google Cloud Platform
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
     paths:
-      - 'gcp-deployment/**'
-      - 'src/**'
-      - '.github/workflows/gcp-deploy.yml'
+      - "gcp-deployment/**"
+      - "src/**"
+      - ".github/workflows/gcp-deploy.yml"
   pull_request:
-    branches: [ main ]
+    branches: [main]
     paths:
-      - 'gcp-deployment/**'
-      - 'src/**'
+      - "gcp-deployment/**"
+      - "src/**"
 
 env:
   PROJECT_ID: learninglab-rag-mcp
@@ -22,157 +22,157 @@ jobs:
   test:
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
-    
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '18'
-        cache: 'yarn'
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "yarn"
 
-    - name: Setup Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.11'
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
 
-    - name: Install dependencies
-      run: |
-        yarn install --frozen-lockfile
-        pip install -r gcp-deployment/docker/rag-service/requirements.txt
+      - name: Install dependencies
+        run: |
+          yarn install --frozen-lockfile
+          pip install -r gcp-deployment/docker/rag-service/requirements.txt
 
-    - name: Run tests
-      run: |
-        yarn test
-        # Add Python tests here when available
+      - name: Run tests
+        run: |
+          yarn test
+          # Add Python tests here when available
 
-    - name: Lint code
-      run: |
-        yarn lint
-        # Add Python linting here
+      - name: Lint code
+        run: |
+          yarn lint
+          # Add Python linting here
 
   deploy:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    
+
     permissions:
       contents: read
       id-token: write
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Google Auth
-      id: auth
-      uses: google-github-actions/auth@v2
-      with:
-        credentials_json: '${{ secrets.GCP_SA_KEY }}'
+      - name: Google Auth
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: "${{ secrets.GCP_SA_KEY }}"
 
-    - name: Set up Cloud SDK
-      uses: google-github-actions/setup-gcloud@v2
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
 
-    - name: Configure Docker to use gcloud as a credential helper
-      run: |
-        gcloud auth configure-docker gcr.io
+      - name: Configure Docker to use gcloud as a credential helper
+        run: |
+          gcloud auth configure-docker gcr.io
 
-    - name: Build and push RAG Service
-      run: |
-        docker build \
-          -t gcr.io/$PROJECT_ID/rag-service:$GITHUB_SHA \
-          -t gcr.io/$PROJECT_ID/rag-service:latest \
-          -f gcp-deployment/docker/rag-service/Dockerfile \
-          .
-        
-        docker push gcr.io/$PROJECT_ID/rag-service:$GITHUB_SHA
-        docker push gcr.io/$PROJECT_ID/rag-service:latest
+      - name: Build and push RAG Service
+        run: |
+          docker build \
+            -t gcr.io/$PROJECT_ID/rag-service:$GITHUB_SHA \
+            -t gcr.io/$PROJECT_ID/rag-service:latest \
+            -f gcp-deployment/docker/rag-service/Dockerfile \
+            .
 
-    - name: Build and push Code-assist MCP
-      run: |
-        docker build \
-          -t gcr.io/$PROJECT_ID/code-assist-mcp:$GITHUB_SHA \
-          -t gcr.io/$PROJECT_ID/code-assist-mcp:latest \
-          -f gcp-deployment/docker/code-assist-mcp/Dockerfile \
-          .
-        
-        docker push gcr.io/$PROJECT_ID/code-assist-mcp:$GITHUB_SHA
-        docker push gcr.io/$PROJECT_ID/code-assist-mcp:latest
+          docker push gcr.io/$PROJECT_ID/rag-service:$GITHUB_SHA
+          docker push gcr.io/$PROJECT_ID/rag-service:latest
 
-    - name: Deploy RAG Service to Cloud Run
-      run: |
-        gcloud run deploy rag-service \
-          --image gcr.io/$PROJECT_ID/rag-service:$GITHUB_SHA \
-          --platform managed \
-          --region $REGION \
-          --allow-unauthenticated \
-          --service-account learninglab-rag@$PROJECT_ID.iam.gserviceaccount.com \
-          --add-cloudsql-instances $PROJECT_ID:$REGION:learninglab-rag-db \
-          --set-env-vars "GOOGLE_CLOUD_PROJECT=$PROJECT_ID,ENVIRONMENT=production,COMMIT_SHA=$GITHUB_SHA" \
-          --set-secrets "DATABASE_URL=database-url:latest,OPENAI_API_KEY=openai-api-key:latest,ANTHROPIC_API_KEY=anthropic-api-key:latest" \
-          --memory 2Gi \
-          --cpu 1 \
-          --max-instances 10 \
-          --min-instances 1 \
-          --timeout 300
+      - name: Build and push Code-assist MCP
+        run: |
+          docker build \
+            -t gcr.io/$PROJECT_ID/code-assist-mcp:$GITHUB_SHA \
+            -t gcr.io/$PROJECT_ID/code-assist-mcp:latest \
+            -f gcp-deployment/docker/code-assist-mcp/Dockerfile \
+            .
 
-    - name: Deploy Code-assist MCP to Cloud Run
-      run: |
-        gcloud run deploy code-assist-mcp \
-          --image gcr.io/$PROJECT_ID/code-assist-mcp:$GITHUB_SHA \
-          --platform managed \
-          --region $REGION \
-          --allow-unauthenticated \
-          --service-account learninglab-rag@$PROJECT_ID.iam.gserviceaccount.com \
-          --set-env-vars "GOOGLE_CLOUD_PROJECT=$PROJECT_ID,ENVIRONMENT=production,COMMIT_SHA=$GITHUB_SHA" \
-          --set-secrets "OPENAI_API_KEY=openai-api-key:latest,ANTHROPIC_API_KEY=anthropic-api-key:latest" \
-          --memory 1Gi \
-          --cpu 1 \
-          --max-instances 5 \
-          --min-instances 0 \
-          --timeout 300
+          docker push gcr.io/$PROJECT_ID/code-assist-mcp:$GITHUB_SHA
+          docker push gcr.io/$PROJECT_ID/code-assist-mcp:latest
 
-    - name: Run health checks
-      run: |
-        # Wait for services to be ready
-        sleep 30
-        
-        # Get service URLs
-        RAG_URL=$(gcloud run services describe rag-service --region=$REGION --format="value(status.url)")
-        MCP_URL=$(gcloud run services describe code-assist-mcp --region=$REGION --format="value(status.url)")
-        
-        # Health checks
-        curl -f "$RAG_URL/health"
-        curl -f "$MCP_URL/health"
-        
-        echo "RAG Service deployed to: $RAG_URL"
-        echo "Code-assist MCP deployed to: $MCP_URL"
+      - name: Deploy RAG Service to Cloud Run
+        run: |
+          gcloud run deploy rag-service \
+            --image gcr.io/$PROJECT_ID/rag-service:$GITHUB_SHA \
+            --platform managed \
+            --region $REGION \
+            --allow-unauthenticated \
+            --service-account learninglab-rag@$PROJECT_ID.iam.gserviceaccount.com \
+            --add-cloudsql-instances $PROJECT_ID:$REGION:learninglab-rag-db \
+            --set-env-vars "GOOGLE_CLOUD_PROJECT=$PROJECT_ID,ENVIRONMENT=production,COMMIT_SHA=$GITHUB_SHA" \
+            --set-secrets "DATABASE_URL=database-url:latest,OPENAI_API_KEY=openai-api-key:latest,ANTHROPIC_API_KEY=anthropic-api-key:latest" \
+            --memory 2Gi \
+            --cpu 1 \
+            --max-instances 10 \
+            --min-instances 1 \
+            --timeout 300
 
-    - name: Run deployment tests
-      run: |
-        chmod +x gcp-deployment/scripts/test-deployment.sh
-        ./gcp-deployment/scripts/test-deployment.sh
+      - name: Deploy Code-assist MCP to Cloud Run
+        run: |
+          gcloud run deploy code-assist-mcp \
+            --image gcr.io/$PROJECT_ID/code-assist-mcp:$GITHUB_SHA \
+            --platform managed \
+            --region $REGION \
+            --allow-unauthenticated \
+            --service-account learninglab-rag@$PROJECT_ID.iam.gserviceaccount.com \
+            --set-env-vars "GOOGLE_CLOUD_PROJECT=$PROJECT_ID,ENVIRONMENT=production,COMMIT_SHA=$GITHUB_SHA" \
+            --set-secrets "OPENAI_API_KEY=openai-api-key:latest,ANTHROPIC_API_KEY=anthropic-api-key:latest" \
+            --memory 1Gi \
+            --cpu 1 \
+            --max-instances 5 \
+            --min-instances 0 \
+            --timeout 300
+
+      - name: Run health checks
+        run: |
+          # Wait for services to be ready
+          sleep 30
+
+          # Get service URLs
+          RAG_URL=$(gcloud run services describe rag-service --region=$REGION --format="value(status.url)")
+          MCP_URL=$(gcloud run services describe code-assist-mcp --region=$REGION --format="value(status.url)")
+
+          # Health checks
+          curl -f "$RAG_URL/health"
+          curl -f "$MCP_URL/health"
+
+          echo "RAG Service deployed to: $RAG_URL"
+          echo "Code-assist MCP deployed to: $MCP_URL"
+
+      - name: Run deployment tests
+        run: |
+          chmod +x gcp-deployment/scripts/test-deployment.sh
+          ./gcp-deployment/scripts/test-deployment.sh
 
   notify:
     runs-on: ubuntu-latest
     needs: [deploy]
     if: always()
-    
+
     steps:
-    - name: Notify deployment status
-      uses: 8398a7/action-slack@v3
-      with:
-        status: ${{ job.status }}
-        channel: '#deployments'
-        text: |
-          Deployment to GCP ${{ job.status }}!
-          
-          RAG Service: https://rag-service-${{ env.REGION }}-${{ env.PROJECT_ID }}.a.run.app
-          Code-assist MCP: https://code-assist-mcp-${{ env.REGION }}-${{ env.PROJECT_ID }}.a.run.app
-          
-          Commit: ${{ github.sha }}
-          Author: ${{ github.actor }}
-      env:
-        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-      if: always()
+      - name: Notify deployment status
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          channel: "#deployments"
+          text: |
+            Deployment to GCP ${{ job.status }}!
+
+            RAG Service: https://rag-service-${{ env.REGION }}-${{ env.PROJECT_ID }}.a.run.app
+            Code-assist MCP: https://code-assist-mcp-${{ env.REGION }}-${{ env.PROJECT_ID }}.a.run.app
+
+            Commit: ${{ github.sha }}
+            Author: ${{ github.actor }}
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        if: always()

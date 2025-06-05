@@ -280,7 +280,9 @@ export class LessonController {
 
       // Tjek om der er indholdsblokke tilknyttet lektionen
       // Tjek for quizzer skal ske ved at iterere over contentBlocks og se efter QUIZ_REF type
-      const hasQuizReferences = existingLesson.contentBlocks.some(cb => cb.type === 'QUIZ_REF');
+      const hasQuizReferences = existingLesson.contentBlocks.some(
+        (cb) => cb.type === 'QUIZ_REF',
+      );
 
       if (existingLesson.contentBlocks.length > 0 || hasQuizReferences) {
         throw new BadRequestException(
@@ -357,31 +359,36 @@ export class LessonController {
       const { lessonIds } = updateLessonsOrderDto; // Ændret fra newOrder til lessonIds
 
       // Tjek om den nye rækkefølge er gyldig
-      if (lessonIds.length !== topic.lessons.length) { // Sammenlign med antallet af faktiske lektioner
+      if (lessonIds.length !== topic.lessons.length) {
+        // Sammenlign med antallet af faktiske lektioner
         throw new BadRequestException(
           'Den nye rækkefølge skal indeholde samme antal lektioner som emnet',
         );
       }
 
       // Tjek om alle lektion ID'er i lessonIds faktisk tilhører emnet
-      const topicLessonIds = topic.lessons.map(lesson => lesson.id);
-      const allLessonIdsBelongToTopic = lessonIds.every(id => topicLessonIds.includes(id));
+      const topicLessonIds = topic.lessons.map((lesson) => lesson.id);
+      const allLessonIdsBelongToTopic = lessonIds.every((id) =>
+        topicLessonIds.includes(id),
+      );
       if (!allLessonIdsBelongToTopic) {
         throw new BadRequestException(
-          'En eller flere af de angivne lektions-ID\'er tilhører ikke det specificerede emne.',
+          "En eller flere af de angivne lektions-ID'er tilhører ikke det specificerede emne.",
         );
       }
-      
+
       // Tjek for duplikerede ID'er i lessonIds
       const uniqueLessonIds = new Set(lessonIds);
       if (uniqueLessonIds.size !== lessonIds.length) {
-        throw new BadRequestException('Lektions-ID\'er i den nye rækkefølge må ikke være duplikerede.');
+        throw new BadRequestException(
+          "Lektions-ID'er i den nye rækkefølge må ikke være duplikerede.",
+        );
       }
 
       // Opdater rækkefølgen af lektioner
       const updates = lessonIds.map((lessonId, index) => {
         return this.prisma.lesson.update({
-          where: { id: lessonId }, 
+          where: { id: lessonId },
           data: { order: index + 1 }, // Sæt rækkefølgen baseret på array-indeks
         });
       });

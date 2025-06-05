@@ -7,6 +7,7 @@ Dette dokument beskriver de avancerede AI-optimeringer implementeret i LearningL
 ### ✅ Implementerede features
 
 #### 1. RAG System (Retrieval-Augmented Generation)
+
 - **ChromaDB integration** for vektor-baseret kodesøgning
 - **Intelligent chunking** af kode med metadata
 - **Ranking system** baseret på:
@@ -16,12 +17,14 @@ Dette dokument beskriver de avancerede AI-optimeringer implementeret i LearningL
   - Recency score
 
 #### 2. Persistent Hukommelse
+
 - **Samtalehistorik** gemt i struktureret format
 - **Intent detection** baseret på nøgleord og mønstre
 - **Template system** for forskellige opgavetyper
 - **Summarization endpoint** for ældre samtaler
 
 #### 3. Modulær Promptarkitektur
+
 - **5 prompt templates**:
   - `unit-test.md` - Generering af tests
   - `bugfix.md` - Fejlrettelser
@@ -32,12 +35,14 @@ Dette dokument beskriver de avancerede AI-optimeringer implementeret i LearningL
 - **Agent prompt** for workflow
 
 #### 4. Code Lens Server
+
 - **Kontekstuel analyse** af kode
 - **Intelligente forslag** baseret på kodetype
 - **Fil-niveau analyse** med kompleksitetsscore
 - **Action mapping** til intent system
 
 #### 5. Automatiseret Pipeline
+
 - **Git pre-commit hook** for auto-indeksering
 - **Enhanced metadata** i chunks
 - **Diff generation** med preview
@@ -75,6 +80,7 @@ python3 scripts/code_lens_server.py &       # Port 5008
 ### 4. Konfigurer Git hooks
 
 Hook'en er allerede oprettet og gjort eksekverbar:
+
 - `.git/hooks/pre-commit` - Auto-indekserer ved hver commit
 
 ## Brug af optimeringerne
@@ -149,6 +155,7 @@ ProjektLL agenten følger dette workflow:
 ### Ranking Algorithm
 
 Ranking funktionen i `rank_chunks.py` bruger vægtede scores:
+
 - **Semantisk relevans**: 40%
 - **Import overlap**: 25%
 - **Fil afstand**: 20%
@@ -157,6 +164,7 @@ Ranking funktionen i `rank_chunks.py` bruger vægtede scores:
 ### Smart Chunking
 
 Indekseringssystemet bruger:
+
 - AST parsing for Python filer
 - Regex patterns for JS/TS filer
 - Intelligent metadata extraction
@@ -165,6 +173,7 @@ Indekseringssystemet bruger:
 ### Commit Standards
 
 AI commits følger formatet:
+
 ```
 AI: <type>(<scope>): <description>
 
@@ -183,6 +192,7 @@ Co-authored-by: ProjektLL <ai@learninglab.dk>
 ## Fejlfinding
 
 ### ChromaDB fejl
+
 ```bash
 # Slet og genopbyg database
 rm -rf chroma_db/
@@ -190,6 +200,7 @@ python3 index_code_chunks.py
 ```
 
 ### Server fejl
+
 ```bash
 # Check logs
 tail -f prompt_history/history.log
@@ -212,6 +223,7 @@ pkill -f code_lens_server.py
 ## Konklusion
 
 Med disse optimeringer har LearningLab nu:
+
 - ✅ Intelligent kodesøgning med RAG
 - ✅ Persistent hukommelse på tværs af sessioner
 - ✅ Modulær og genanvendelig promptarkitektur

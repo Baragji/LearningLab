@@ -1,16 +1,16 @@
 // apps/web/pages/lessons/[id].tsx
-import React, { useState, useEffect } from 'react';
-import Head from 'next/head';
-import { useRouter } from 'next/router';
-import Link from 'next/link';
-import Image from 'next/image';
-import { 
-  useGetLessonByIdQuery, 
+import React, { useState, useEffect } from "react";
+import Head from "next/head";
+import { useRouter } from "next/router";
+import Link from "next/link";
+import Image from "next/image";
+import {
+  useGetLessonByIdQuery,
   useGetContentBlocksByLessonIdQuery,
   useGetModuleByIdQuery,
   useGetCourseByIdQuery,
-  useGetLessonsByModuleIdQuery
-} from '../../src/store/services/api';
+  useGetLessonsByModuleIdQuery,
+} from "../../src/store/services/api";
 
 // Define types for our content renderer
 interface ContentBlockProps {
@@ -19,30 +19,39 @@ interface ContentBlockProps {
 }
 
 // Content block renderer component
-const ContentBlockRenderer: React.FC<ContentBlockProps> = ({ type, content }) => {
+const ContentBlockRenderer: React.FC<ContentBlockProps> = ({
+  type,
+  content,
+}) => {
   switch (type) {
-    case 'TEXT':
-      return <div className="prose dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: content }} />;
+    case "TEXT":
+      return (
+        <div
+          className="prose dark:prose-invert max-w-none"
+          dangerouslySetInnerHTML={{ __html: content }}
+        />
+      );
 
-    case 'IMAGE_URL':
+    case "IMAGE_URL":
       return (
         <div className="my-4 relative w-full h-auto">
-          <Image 
-            src={content} 
-            alt="Lesson content" 
+          <Image
+            src={content}
+            alt="Lesson content"
             width={800}
             height={450}
             className="rounded-lg"
-            style={{ maxWidth: '100%', height: 'auto' }}
+            style={{ maxWidth: "100%", height: "auto" }}
           />
         </div>
       );
 
-    case 'VIDEO_URL':
+    case "VIDEO_URL":
       // Extract video ID from YouTube or Vimeo URL
       const getVideoEmbedUrl = (url: string) => {
         // YouTube URL patterns
-        const youtubeRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
+        const youtubeRegex =
+          /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
         const youtubeMatch = url.match(youtubeRegex);
 
         if (youtubeMatch && youtubeMatch[1]) {
@@ -75,7 +84,11 @@ const ContentBlockRenderer: React.FC<ContentBlockProps> = ({ type, content }) =>
       );
 
     default:
-      return <div className="text-gray-500 dark:text-gray-400">Unsupported content type: {type}</div>;
+      return (
+        <div className="text-gray-500 dark:text-gray-400">
+          Unsupported content type: {type}
+        </div>
+      );
   }
 };
 
@@ -87,59 +100,64 @@ const LessonDetail: React.FC = () => {
   const lessonId = id ? parseInt(id as string) : undefined;
 
   // Fetch lesson data
-  const { 
-    data: lesson, 
-    isLoading: isLoadingLesson, 
-    error: lessonError 
-  } = useGetLessonByIdQuery(lessonId as number, { 
-    skip: !lessonId 
+  const {
+    data: lesson,
+    isLoading: isLoadingLesson,
+    error: lessonError,
+  } = useGetLessonByIdQuery(lessonId as number, {
+    skip: !lessonId,
   });
 
   // Fetch content blocks for this lesson
-  const { 
-    data: contentBlocks = [], 
-    isLoading: isLoadingContentBlocks 
-  } = useGetContentBlocksByLessonIdQuery(lessonId as number, { 
-    skip: !lessonId 
-  });
+  const { data: contentBlocks = [], isLoading: isLoadingContentBlocks } =
+    useGetContentBlocksByLessonIdQuery(lessonId as number, {
+      skip: !lessonId,
+    });
 
   // Fetch module data to get navigation context
-  const { 
-    data: module,
-    isLoading: isLoadingModule
-  } = useGetModuleByIdQuery(lesson?.moduleId as number, {
-    skip: !lesson?.moduleId
-  });
+  const { data: module, isLoading: isLoadingModule } = useGetModuleByIdQuery(
+    lesson?.moduleId as number,
+    {
+      skip: !lesson?.moduleId,
+    },
+  );
 
   // Fetch course data for breadcrumbs
-  const {
-    data: course,
-    isLoading: isLoadingCourse
-  } = useGetCourseByIdQuery(lesson?.courseId as number, {
-    skip: !lesson?.courseId
-  });
+  const { data: course, isLoading: isLoadingCourse } = useGetCourseByIdQuery(
+    lesson?.courseId as number,
+    {
+      skip: !lesson?.courseId,
+    },
+  );
 
   // State for previous and next lessons
-  const [prevLesson, setPrevLesson] = useState<{ id: number; title: string } | null>(null);
-  const [nextLesson, setNextLesson] = useState<{ id: number; title: string } | null>(null);
+  const [prevLesson, setPrevLesson] = useState<{
+    id: number;
+    title: string;
+  } | null>(null);
+  const [nextLesson, setNextLesson] = useState<{
+    id: number;
+    title: string;
+  } | null>(null);
 
   // Fetch lessons for the module to determine prev/next
-  const {
-    data: moduleLessons = []
-  } = useGetLessonsByModuleIdQuery(module?.id as number, {
-    skip: !module?.id
-  });
+  const { data: moduleLessons = [] } = useGetLessonsByModuleIdQuery(
+    module?.id as number,
+    {
+      skip: !module?.id,
+    },
+  );
 
   // Determine previous and next lessons when module data is loaded
   useEffect(() => {
     if (module && lesson && moduleLessons.length > 0) {
       // Sort lessons by order or id
-      const sortedLessons = [...moduleLessons].sort((a, b) => 
-        (a.order || a.id) - (b.order || b.id)
+      const sortedLessons = [...moduleLessons].sort(
+        (a, b) => (a.order || a.id) - (b.order || b.id),
       );
 
       // Find current lesson index
-      const currentIndex = sortedLessons.findIndex(l => l.id === lesson.id);
+      const currentIndex = sortedLessons.findIndex((l) => l.id === lesson.id);
 
       if (currentIndex > 0) {
         const prev = sortedLessons[currentIndex - 1];
@@ -158,7 +176,12 @@ const LessonDetail: React.FC = () => {
   }, [module, lesson, moduleLessons]);
 
   // Loading state
-  if (router.isFallback || isLoadingLesson || isLoadingContentBlocks || !lesson) {
+  if (
+    router.isFallback ||
+    isLoadingLesson ||
+    isLoadingContentBlocks ||
+    !lesson
+  ) {
     return (
       <div className="flex justify-center items-center py-20">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
@@ -171,8 +194,8 @@ const LessonDetail: React.FC = () => {
     return (
       <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded my-4">
         <p>Der opstod en fejl ved indlæsning af lektionen. Prøv igen senere.</p>
-        <button 
-          onClick={() => router.push('/courses')}
+        <button
+          onClick={() => router.push("/courses")}
           className="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
         >
           Tilbage til kursusoversigten
@@ -184,19 +207,24 @@ const LessonDetail: React.FC = () => {
   return (
     <>
       <Head>
-        <title>{lesson.title} | {course?.title || 'Kursus'} | LearningLab</title>
+        <title>
+          {lesson.title} | {course?.title || "Kursus"} | LearningLab
+        </title>
       </Head>
       <div>
         {/* Breadcrumb */}
         <nav className="flex mb-4 text-sm text-gray-500 dark:text-gray-400">
-          <Link href="/courses" className="hover:text-gray-700 dark:hover:text-gray-200">
+          <Link
+            href="/courses"
+            className="hover:text-gray-700 dark:hover:text-gray-200"
+          >
             Kurser
           </Link>
           <span className="mx-2">/</span>
           {course?.subjectArea && (
             <>
-              <Link 
-                href={`/courses?subjectAreaId=${course.subjectArea.id}`} 
+              <Link
+                href={`/courses?subjectAreaId=${course.subjectArea.id}`}
                 className="hover:text-gray-700 dark:hover:text-gray-200"
               >
                 {course.subjectArea.name}
@@ -206,7 +234,10 @@ const LessonDetail: React.FC = () => {
           )}
           {course && (
             <>
-              <Link href={`/courses/${course.id}`} className="hover:text-gray-700 dark:hover:text-gray-200">
+              <Link
+                href={`/courses/${course.id}`}
+                className="hover:text-gray-700 dark:hover:text-gray-200"
+              >
                 {course.title}
               </Link>
               <span className="mx-2">/</span>
@@ -214,18 +245,24 @@ const LessonDetail: React.FC = () => {
           )}
           {module && (
             <>
-              <span className="text-gray-600 dark:text-gray-300">{module.title}</span>
+              <span className="text-gray-600 dark:text-gray-300">
+                {module.title}
+              </span>
               <span className="mx-2">/</span>
             </>
           )}
-          <span className="text-gray-700 dark:text-gray-200">{lesson.title}</span>
+          <span className="text-gray-700 dark:text-gray-200">
+            {lesson.title}
+          </span>
         </nav>
 
         {/* Lesson header */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">{lesson.title}</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+            {lesson.title}
+          </h1>
           <p className="text-gray-600 dark:text-gray-300">
-            {module?.title || 'Modul'} • Lektion {lessonId}
+            {module?.title || "Modul"} • Lektion {lessonId}
           </p>
         </div>
 
@@ -234,10 +271,10 @@ const LessonDetail: React.FC = () => {
           {contentBlocks.length > 0 ? (
             <div className="space-y-6">
               {contentBlocks.map((block, index) => (
-                <ContentBlockRenderer 
-                  key={block.id || index} 
-                  type={block.type} 
-                  content={block.content} 
+                <ContentBlockRenderer
+                  key={block.id || index}
+                  type={block.type}
+                  content={block.content}
                 />
               ))}
             </div>
@@ -251,12 +288,22 @@ const LessonDetail: React.FC = () => {
         {/* Lesson navigation */}
         <div className="flex justify-between">
           {prevLesson ? (
-            <Link 
+            <Link
               href={`/lessons/${prevLesson.id}`}
               className="flex items-center px-4 py-2 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 rounded-md shadow hover:bg-gray-50 dark:hover:bg-gray-750"
             >
-              <svg className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              <svg
+                className="h-5 w-5 mr-2"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 19l-7-7 7-7"
+                />
               </svg>
               {prevLesson.title}
             </Link>
@@ -265,24 +312,44 @@ const LessonDetail: React.FC = () => {
           )}
 
           {nextLesson ? (
-            <Link 
+            <Link
               href={`/lessons/${nextLesson.id}`}
               className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md shadow hover:bg-blue-700"
             >
               {nextLesson.title}
-              <svg className="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              <svg
+                className="h-5 w-5 ml-2"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 5l7 7-7 7"
+                />
               </svg>
             </Link>
           ) : (
             course && (
-              <Link 
+              <Link
                 href={`/courses/${course.id}`}
                 className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md shadow hover:bg-blue-700"
               >
                 Tilbage til kurset
-                <svg className="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                <svg
+                  className="h-5 w-5 ml-2"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 10l7-7m0 0l7 7m-7-7v18"
+                  />
                 </svg>
               </Link>
             )

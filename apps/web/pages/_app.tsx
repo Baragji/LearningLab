@@ -2,17 +2,22 @@
 import type { AppProps } from "next/app";
 import { Provider as ReduxProvider } from "react-redux";
 import store from "../src/store";
-import { AuthProvider } from '../src/contexts/AuthContext';
-import { ThemeProvider } from '../src/contexts/ThemeContext';
-import { ProgressProvider } from '../src/contexts/ProgressContext';
-import Layout from '../src/components/layout/Layout';
+import { AuthProvider } from "../src/contexts/AuthContext";
+import { ThemeProvider } from "../src/contexts/ThemeContext";
+import { ProgressProvider } from "../src/contexts/ProgressContext";
+import Layout from "../src/components/layout/Layout";
 import "../src/styles/global.css";
-import { useRouter } from 'next/router';
-import { useEffect } from 'react';
-import { setupOfflineSyncListeners } from '../src/utils/offlineSync';
+import { useRouter } from "next/router";
+import { useEffect } from "react";
+import { setupOfflineSyncListeners } from "../src/utils/offlineSync";
 
 // Pages that don't use the main layout
-const noLayoutPages = ['/login', '/signup', '/forgot-password', '/reset-password'];
+const noLayoutPages = [
+  "/login",
+  "/signup",
+  "/forgot-password",
+  "/reset-password",
+];
 
 function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter();

@@ -17,16 +17,16 @@ import { Checkbox } from '@learninglab/ui';
 <Checkbox defaultChecked label="Remember me" />
 
 // With helper text
-<Checkbox 
-  label="Subscribe to newsletter" 
-  helperText="You can unsubscribe at any time" 
+<Checkbox
+  label="Subscribe to newsletter"
+  helperText="You can unsubscribe at any time"
 />
 
 // Error state
-<Checkbox 
-  label="I agree to the terms" 
-  error 
-  helperText="You must agree to the terms to continue" 
+<Checkbox
+  label="I agree to the terms"
+  error
+  helperText="You must agree to the terms to continue"
 />
 
 // Required
@@ -54,8 +54,8 @@ import { Checkbox } from '@learninglab/ui';
 <Checkbox label="Small" size="small" />
 
 // With custom classes
-<Checkbox 
-  label="Custom styling" 
+<Checkbox
+  label="Custom styling"
   className="custom-checkbox"
   labelClassName="custom-label"
   formControlClassName="custom-form-control"
@@ -63,8 +63,8 @@ import { Checkbox } from '@learninglab/ui';
 
 // Controlled component
 const [checked, setChecked] = useState(false);
-<Checkbox 
-  label="Controlled checkbox" 
+<Checkbox
+  label="Controlled checkbox"
   checked={checked}
   onChange={(e) => setChecked(e.target.checked)}
 />
@@ -72,22 +72,22 @@ const [checked, setChecked] = useState(false);
 
 ## Props
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `color` | `'primary' \| 'secondary' \| 'error' \| 'info' \| 'success' \| 'warning' \| 'default'` | `'primary'` | The color of the checkbox |
-| `size` | `'small' \| 'medium'` | `'medium'` | The size of the checkbox |
-| `label` | `ReactNode` | `undefined` | The label for the checkbox |
-| `labelPlacement` | `'end' \| 'start' \| 'top' \| 'bottom'` | `'end'` | The placement of the label |
-| `helperText` | `ReactNode` | `undefined` | Helper text to display below the checkbox |
-| `error` | `boolean` | `false` | If `true`, the checkbox will be displayed in an error state |
-| `required` | `boolean` | `false` | If `true`, the checkbox will be marked as required |
-| `className` | `string` | `undefined` | CSS class applied to the checkbox |
-| `labelClassName` | `string` | `undefined` | CSS class applied to the label |
-| `formControlClassName` | `string` | `undefined` | CSS class applied to the form control wrapper |
-| `checked` | `boolean` | `undefined` | If `true`, the checkbox will be checked |
-| `defaultChecked` | `boolean` | `undefined` | If `true`, the checkbox will be checked by default |
-| `disabled` | `boolean` | `false` | If `true`, the checkbox will be disabled |
-| `onChange` | `(event: React.ChangeEvent<HTMLInputElement>, checked: boolean) => void` | `undefined` | Callback fired when the state is changed |
+| Prop                   | Type                                                                                   | Default     | Description                                                 |
+| ---------------------- | -------------------------------------------------------------------------------------- | ----------- | ----------------------------------------------------------- |
+| `color`                | `'primary' \| 'secondary' \| 'error' \| 'info' \| 'success' \| 'warning' \| 'default'` | `'primary'` | The color of the checkbox                                   |
+| `size`                 | `'small' \| 'medium'`                                                                  | `'medium'`  | The size of the checkbox                                    |
+| `label`                | `ReactNode`                                                                            | `undefined` | The label for the checkbox                                  |
+| `labelPlacement`       | `'end' \| 'start' \| 'top' \| 'bottom'`                                                | `'end'`     | The placement of the label                                  |
+| `helperText`           | `ReactNode`                                                                            | `undefined` | Helper text to display below the checkbox                   |
+| `error`                | `boolean`                                                                              | `false`     | If `true`, the checkbox will be displayed in an error state |
+| `required`             | `boolean`                                                                              | `false`     | If `true`, the checkbox will be marked as required          |
+| `className`            | `string`                                                                               | `undefined` | CSS class applied to the checkbox                           |
+| `labelClassName`       | `string`                                                                               | `undefined` | CSS class applied to the label                              |
+| `formControlClassName` | `string`                                                                               | `undefined` | CSS class applied to the form control wrapper               |
+| `checked`              | `boolean`                                                                              | `undefined` | If `true`, the checkbox will be checked                     |
+| `defaultChecked`       | `boolean`                                                                              | `undefined` | If `true`, the checkbox will be checked by default          |
+| `disabled`             | `boolean`                                                                              | `false`     | If `true`, the checkbox will be disabled                    |
+| `onChange`             | `(event: React.ChangeEvent<HTMLInputElement>, checked: boolean) => void`               | `undefined` | Callback fired when the state is changed                    |
 
 Plus all other props from Material UI's Checkbox component.
 
@@ -97,25 +97,26 @@ Plus all other props from Material UI's Checkbox component.
 
 ```tsx
 // Before
-import { Checkbox } from '@/components/ui/checkbox';
+import { Checkbox } from "@/components/ui/checkbox";
 
-<Checkbox 
-  className="custom-class" 
+<Checkbox
+  className="custom-class"
   checked={isChecked}
   onCheckedChange={setIsChecked}
-/>
+/>;
 
 // After
-import { Checkbox } from '@learninglab/ui';
+import { Checkbox } from "@learninglab/ui";
 
-<Checkbox 
-  className="custom-class" 
+<Checkbox
+  className="custom-class"
   checked={isChecked}
   onChange={(e) => setIsChecked(e.target.checked)}
-/>
+/>;
 ```
 
 The main differences are:
+
 1. The component is now based on Material UI instead of Radix UI
 2. `onCheckedChange` is replaced with `onChange`
 3. The new component has built-in label support

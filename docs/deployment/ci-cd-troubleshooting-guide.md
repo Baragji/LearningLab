@@ -9,10 +9,12 @@ This guide provides solutions for common issues encountered during CI/CD process
 #### Issue: Dependency Installation Fails
 
 **Symptoms**:
+
 - Error messages like `Cannot find module` or `Failed to install dependencies`
 - Build process terminates during the installation step
 
 **Solutions**:
+
 1. Check if the yarn.lock file is committed to the repository
 2. Verify Node.js version in the workflow matches the project requirements
 3. Check for private npm packages that might require authentication
@@ -24,7 +26,7 @@ This guide provides solutions for common issues encountered during CI/CD process
   uses: actions/setup-node@v4
   with:
     node-version: 22
-    cache: 'yarn'
+    cache: "yarn"
 
 - name: Clear cache # Add this step if cache issues persist
   run: yarn cache clean
@@ -36,10 +38,12 @@ This guide provides solutions for common issues encountered during CI/CD process
 #### Issue: Build Step Fails
 
 **Symptoms**:
+
 - Error messages during the build process
 - TypeScript compilation errors
 
 **Solutions**:
+
 1. Run the build locally to reproduce and fix the issue
 2. Check for environment variables required during build
 3. Verify that all dependencies are correctly installed
@@ -56,10 +60,12 @@ yarn turbo run build --verbose
 #### Issue: Tests Fail in CI but Pass Locally
 
 **Symptoms**:
+
 - Tests pass on local machine but fail in GitHub Actions
 - Inconsistent test failures
 
 **Solutions**:
+
 1. Check for environment-specific code or tests
 2. Verify that all required environment variables are set in the workflow
 3. Look for timing issues or race conditions in tests
@@ -76,10 +82,12 @@ env:
 #### Issue: Playwright E2E Test Failures
 
 **Symptoms**:
+
 - Playwright tests fail in CI but pass locally
 - Browser-specific errors
 
 **Solutions**:
+
 1. Make sure all required browsers are installed in the workflow
 2. Check for missing dependencies for browser automation
 3. Increase timeouts for network operations
@@ -103,10 +111,12 @@ env:
 #### Issue: API Deployment Fails
 
 **Symptoms**:
+
 - Build succeeds but application crashes on startup
 - Health checks fail after deployment
 
 **Solutions**:
+
 1. Check Render logs for specific error messages
 2. Verify that all required environment variables are set
 3. Check database connection and migrations
@@ -120,10 +130,12 @@ cd ../.. && yarn workspace api start:prod
 #### Issue: Database Connection Failures
 
 **Symptoms**:
+
 - Application logs show database connection errors
 - API returns 500 errors for database operations
 
 **Solutions**:
+
 1. Verify the DATABASE_URL environment variable
 2. Check if the database service is running and accessible
 3. Verify IP allowlisting if using a managed database
@@ -134,10 +146,12 @@ cd ../.. && yarn workspace api start:prod
 #### Issue: Web App Build Fails
 
 **Symptoms**:
+
 - Vercel build logs show errors
 - Deployment fails to complete
 
 **Solutions**:
+
 1. Check Vercel build logs for specific errors
 2. Verify that all required environment variables are set
 3. Check for issues with Next.js configuration
@@ -153,10 +167,12 @@ cd ../.. && yarn workspace api start:prod
 #### Issue: API Connection Failures
 
 **Symptoms**:
+
 - Web app deploys but cannot connect to the API
 - Network errors in the browser console
 
 **Solutions**:
+
 1. Verify the NEXT_PUBLIC_API_URL environment variable
 2. Check CORS configuration in the API
 3. Ensure the API is deployed and accessible
@@ -167,10 +183,12 @@ cd ../.. && yarn workspace api start:prod
 #### Issue: Container Startup Failures
 
 **Symptoms**:
+
 - Containers exit immediately after starting
 - Health checks fail
 
 **Solutions**:
+
 1. Check container logs: `docker-compose logs [service_name]`
 2. Verify environment variables in docker-compose.yml
 3. Check for port conflicts
@@ -179,10 +197,12 @@ cd ../.. && yarn workspace api start:prod
 #### Issue: Inter-Service Communication Failures
 
 **Symptoms**:
+
 - Services start but cannot communicate with each other
 - Network-related errors in logs
 
 **Solutions**:
+
 1. Verify the Docker network configuration
 2. Check service names used for communication
 3. Ensure ports are correctly exposed
@@ -197,7 +217,7 @@ services:
       - app-network
     depends_on:
       - postgres
-  
+
   web:
     # ...
     networks:

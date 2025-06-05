@@ -42,11 +42,31 @@ export class CourseController {
   ) {}
 
   @ApiOperation({ summary: 'Hent alle kurser med filtrering' })
-  @ApiQuery({ name: 'search', required: false, description: 'Søg i kursustitel og beskrivelse' })
-  @ApiQuery({ name: 'educationProgramId', required: false, description: 'Filtrer efter uddannelsesprogram ID' })
-  @ApiQuery({ name: 'level', required: false, description: 'Filtrer efter sværhedsgrad' })
-  @ApiQuery({ name: 'limit', required: false, description: 'Maksimalt antal resultater' })
-  @ApiQuery({ name: 'offset', required: false, description: 'Antal resultater at springe over' })
+  @ApiQuery({
+    name: 'search',
+    required: false,
+    description: 'Søg i kursustitel og beskrivelse',
+  })
+  @ApiQuery({
+    name: 'educationProgramId',
+    required: false,
+    description: 'Filtrer efter uddannelsesprogram ID',
+  })
+  @ApiQuery({
+    name: 'level',
+    required: false,
+    description: 'Filtrer efter sværhedsgrad',
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    description: 'Maksimalt antal resultater',
+  })
+  @ApiQuery({
+    name: 'offset',
+    required: false,
+    description: 'Antal resultater at springe over',
+  })
   @ApiResponse({
     status: 200,
     description: 'Liste af kurser med filtrering',
@@ -76,7 +96,9 @@ export class CourseController {
   }> {
     const limitNum = limit ? parseInt(limit, 10) : 20;
     const offsetNum = offset ? parseInt(offset, 10) : 0;
-    const educationProgramIdNum = educationProgramId ? parseInt(educationProgramId, 10) : undefined;
+    const educationProgramIdNum = educationProgramId
+      ? parseInt(educationProgramId, 10)
+      : undefined;
 
     // Build where clause for filtering
     const where: any = {};
@@ -118,8 +140,10 @@ export class CourseController {
 
     const hasMore = offsetNum + limitNum < total;
 
-    this.logger.log(`Retrieved ${courses.length} courses with filters: search=${search}, educationProgramId=${educationProgramId}, level=${level}`);
-    
+    this.logger.log(
+      `Retrieved ${courses.length} courses with filters: search=${search}, educationProgramId=${educationProgramId}, level=${level}`,
+    );
+
     return {
       courses,
       total,
@@ -141,7 +165,8 @@ export class CourseController {
   @Get('by-education-program/:educationProgramId')
   @ApiOperation({
     summary: 'Hent alle kurser for et specifikt uddannelsesprogram',
-    description: 'Returnerer en liste over kurser tilknyttet et givent uddannelsesprogram-ID.',
+    description:
+      'Returnerer en liste over kurser tilknyttet et givent uddannelsesprogram-ID.',
   })
   @ApiResponse({
     status: 200,
@@ -193,7 +218,7 @@ export class CourseController {
               orderBy: { order: 'asc' },
             },
             // quizzes: true, // Fjernet da det ikke er en direkte relation her, quizzes er på Lesson eller Topic niveau
-          }
+          },
         },
       },
     });
@@ -229,7 +254,7 @@ export class CourseController {
               orderBy: { order: 'asc' },
             },
             // quizzes: true, // Fjernet da det ikke er en direkte relation her, quizzes er på Lesson eller Topic niveau
-          }
+          },
         },
       },
     });
@@ -251,11 +276,16 @@ export class CourseController {
     status: 400,
     description: 'Ugyldig anmodning - Valideringsfejl',
   })
-  @ApiResponse({ status: 404, description: 'Uddannelsesprogrammet blev ikke fundet' })
+  @ApiResponse({
+    status: 404,
+    description: 'Uddannelsesprogrammet blev ikke fundet',
+  })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Post()
-  async createCourse(@Body() createCourseDto: CreateCourseDto): Promise<CourseDto> {
+  async createCourse(
+    @Body() createCourseDto: CreateCourseDto,
+  ): Promise<CourseDto> {
     const { title, description, slug, educationProgramId } = createCourseDto;
 
     // Tjek om uddannelsesprogrammet eksisterer
@@ -289,7 +319,9 @@ export class CourseController {
 
     // Invalider cachen for alle kurser og kurser for det pågældende uddannelsesprogram
     await this.cacheManager.del('GET_/api/courses');
-    await this.cacheManager.del(`GET_/api/courses/by-education-program/${educationProgramId}`);
+    await this.cacheManager.del(
+      `GET_/api/courses/by-education-program/${educationProgramId}`,
+    );
 
     return newCourse;
   }
@@ -328,13 +360,18 @@ export class CourseController {
     }
 
     // Hvis educationProgramId ændres, tjek om det nye uddannelsesprogram eksisterer
-    if (educationProgramId && educationProgramId !== existingCourse.educationProgramId) {
+    if (
+      educationProgramId &&
+      educationProgramId !== existingCourse.educationProgramId
+    ) {
       const educationProgram = await this.prisma.educationProgram.findUnique({
         where: { id: educationProgramId },
       });
 
       if (!educationProgram) {
-        throw new NotFoundException('Det angivne uddannelsesprogram findes ikke');
+        throw new NotFoundException(
+          'Det angivne uddannelsesprogram findes ikke',
+        );
       }
     }
 
@@ -357,7 +394,8 @@ export class CourseController {
         title: title || existingCourse.title,
         description: description || existingCourse.description,
         slug: slug || existingCourse.slug,
-        educationProgramId: educationProgramId || existingCourse.educationProgramId,
+        educationProgramId:
+          educationProgramId || existingCourse.educationProgramId,
       },
     });
 
@@ -373,7 +411,10 @@ export class CourseController {
     await this.cacheManager.del(
       `GET_/api/courses/by-education-program/${existingCourse.educationProgramId}`,
     );
-    if (educationProgramId && educationProgramId !== existingCourse.educationProgramId) {
+    if (
+      educationProgramId &&
+      educationProgramId !== existingCourse.educationProgramId
+    ) {
       await this.cacheManager.del(
         `GET_/api/courses/by-education-program/${educationProgramId}`,
       );
@@ -436,12 +477,16 @@ export class CourseController {
         OR: [
           {
             lessonId: {
-              in: course.topics.flatMap(topic => topic.lessons.map(lesson => lesson.id)),
+              in: course.topics.flatMap((topic) =>
+                topic.lessons.map((lesson) => lesson.id),
+              ),
             },
           },
           {
             quizId: {
-              in: course.topics.flatMap(topic => topic.quizzes.map(quiz => quiz.id)),
+              in: course.topics.flatMap((topic) =>
+                topic.quizzes.map((quiz) => quiz.id),
+              ),
             },
           },
         ],
@@ -531,12 +576,16 @@ export class CourseController {
         OR: [
           {
             lessonId: {
-              in: course.topics.flatMap(topic => topic.lessons.map(lesson => lesson.id)),
+              in: course.topics.flatMap((topic) =>
+                topic.lessons.map((lesson) => lesson.id),
+              ),
             },
           },
           {
             quizId: {
-              in: course.topics.flatMap(topic => topic.quizzes.map(quiz => quiz.id)),
+              in: course.topics.flatMap((topic) =>
+                topic.quizzes.map((quiz) => quiz.id),
+              ),
             },
           },
         ],
@@ -554,12 +603,16 @@ export class CourseController {
         OR: [
           {
             lessonId: {
-              in: course.topics.flatMap(topic => topic.lessons.map(lesson => lesson.id)),
+              in: course.topics.flatMap((topic) =>
+                topic.lessons.map((lesson) => lesson.id),
+              ),
             },
           },
           {
             quizId: {
-              in: course.topics.flatMap(topic => topic.quizzes.map(quiz => quiz.id)),
+              in: course.topics.flatMap((topic) =>
+                topic.quizzes.map((quiz) => quiz.id),
+              ),
             },
           },
         ],
@@ -631,12 +684,16 @@ export class CourseController {
         OR: [
           {
             lessonId: {
-              in: course.topics.flatMap(topic => topic.lessons.map(lesson => lesson.id)),
+              in: course.topics.flatMap((topic) =>
+                topic.lessons.map((lesson) => lesson.id),
+              ),
             },
           },
           {
             quizId: {
-              in: course.topics.flatMap(topic => topic.quizzes.map(quiz => quiz.id)),
+              in: course.topics.flatMap((topic) =>
+                topic.quizzes.map((quiz) => quiz.id),
+              ),
             },
           },
         ],
@@ -653,9 +710,10 @@ export class CourseController {
         0,
       );
       const completedItems = userProgress.filter(
-        p => p.status === 'COMPLETED',
+        (p) => p.status === 'COMPLETED',
       ).length;
-      progress = totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 0;
+      progress =
+        totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 0;
     }
 
     return {
@@ -701,7 +759,8 @@ export class CourseController {
       where: { id },
       include: {
         educationProgram: true,
-        topics: { // Rettet fra modules til topics
+        topics: {
+          // Rettet fra modules til topics
           orderBy: { order: 'asc' },
           include: {
             lessons: {
@@ -737,7 +796,8 @@ export class CourseController {
         `GET_/api/courses/by-education-program/${courseWithDetails.educationProgramId}`,
       );
     }
-    if (courseWithDetails.topics) { // Rettet fra modules til topics
+    if (courseWithDetails.topics) {
+      // Rettet fra modules til topics
       // Yderligere cache-invalidering for relaterede data, hvis nødvendigt
     }
 

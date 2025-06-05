@@ -1,9 +1,9 @@
-import { syncOfflineQuizUpdates } from '../services/userProgressApi';
+import { syncOfflineQuizUpdates } from "../services/userProgressApi";
 
 // Helper to safely parse stored offline updates
 const getOfflineUpdates = (): any[] => {
   try {
-    const data = localStorage.getItem('offlineQuizUpdates');
+    const data = localStorage.getItem("offlineQuizUpdates");
     return data ? JSON.parse(data) : [];
   } catch {
     return [];
@@ -17,20 +17,20 @@ const getOfflineUpdates = (): any[] => {
  */
 export const setupOfflineSyncListeners = (): (() => void) | undefined => {
   // Check if window is defined (for SSR)
-  if (typeof window !== 'undefined') {
+  if (typeof window !== "undefined") {
     // Function to sync when coming online
     const handleOnline = async () => {
-      console.log('Connection restored. Syncing offline data...');
+      console.log("Connection restored. Syncing offline data...");
       try {
         await syncOfflineQuizUpdates();
-        console.log('Offline data synced successfully');
+        console.log("Offline data synced successfully");
       } catch (error) {
-        console.error('Failed to sync offline data:', error);
+        console.error("Failed to sync offline data:", error);
       }
     };
 
     // Add event listeners
-    window.addEventListener('online', handleOnline);
+    window.addEventListener("online", handleOnline);
 
     // Initial check - if already online and has offline data, sync it
     if (navigator.onLine) {
@@ -42,7 +42,7 @@ export const setupOfflineSyncListeners = (): (() => void) | undefined => {
 
     // Return cleanup function
     return () => {
-      window.removeEventListener('online', handleOnline);
+      window.removeEventListener("online", handleOnline);
     };
   }
 };
@@ -51,7 +51,7 @@ export const setupOfflineSyncListeners = (): (() => void) | undefined => {
  * Checks if there are any pending offline quiz updates
  */
 export const hasPendingOfflineUpdates = (): boolean => {
-  if (typeof window !== 'undefined') {
+  if (typeof window !== "undefined") {
     const offlineUpdates = getOfflineUpdates();
     return offlineUpdates.length > 0;
   }
@@ -62,7 +62,7 @@ export const hasPendingOfflineUpdates = (): boolean => {
  * Gets the count of pending offline quiz updates
  */
 export const getPendingOfflineUpdatesCount = (): number => {
-  if (typeof window !== 'undefined') {
+  if (typeof window !== "undefined") {
     const offlineUpdates = getOfflineUpdates();
     return offlineUpdates.length;
   }

@@ -11,6 +11,7 @@ Dette projekt bruger en centraliseret Prisma setup:
 ## Vigtige kommandoer
 
 ### Fra rod-mappen:
+
 ```bash
 # Kør migrationer
 npx prisma migrate dev
@@ -23,6 +24,7 @@ npx prisma generate
 ```
 
 ### Fra API-mappen (`/apps/api`):
+
 ```bash
 # Alle Prisma kommandoer peger automatisk til rod-schema
 yarn prisma:generate
@@ -33,18 +35,23 @@ yarn prisma:migrate:dev
 ## Fejlfinding
 
 ### "Unable to process count query" fejl i Prisma Studio
+
 Dette sker typisk når:
+
 1. Schema filen ikke matcher databasen
 2. Prisma Client ikke er regenereret efter schema ændringer
 
 **Løsning:**
+
 ```bash
 cd apps/api
 yarn prisma:generate
 ```
 
 ### Type fejl efter schema ændringer
+
 Efter ændringer i schema filen, skal du:
+
 1. Køre migrationer: `npx prisma migrate dev`
 2. Regenerere client i alle apps:
    ```bash

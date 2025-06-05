@@ -13,19 +13,19 @@ graph TD
     A --> D[prisma]
     A --> E[scripts]
     A --> F[docker-compose.yml]
-    
+
     B --> G[api - NestJS Backend]
     B --> H[web - NextJS Frontend]
-    
+
     C --> I[config]
     C --> J[core]
     C --> K[ui]
     C --> L[tsconfig]
     C --> M[create-solid-wow]
-    
+
     D --> N[migrations]
     D --> O[schema.prisma]
-    
+
     G --> G1[src]
     G1 --> G2[auth]
     G1 --> G3[common]
@@ -37,7 +37,7 @@ graph TD
     G1 --> G9[user-groups]
     G1 --> G10[services]
     G1 --> G11[shared]
-    
+
     H --> H1[pages]
     H --> H2[src]
     H2 --> H3[components]
@@ -64,14 +64,14 @@ graph TD
     AUTH --> DECO[decorators]
     AUTH --> DTO[dto]
     AUTH --> GRD[guards]
-    
+
     SRC --> COMMON[common]
     COMMON --> FILT[filters]
     COMMON --> INT[interceptors]
     COMMON --> MID[middleware]
     COMMON --> PIP[pipes]
     COMMON --> SRV[services]
-    
+
     SRC --> CTRL[controllers]
     CTRL --> CDTO[dto]
     CDTO --> CERT[certificate]
@@ -79,7 +79,7 @@ graph TD
     CDTO --> LESS[lesson]
     CDTO --> MOD[module]
     CDTO --> QUIZ[quiz]
-    
+
     SRC --> PERS[persistence]
     SRC --> QUIZ[quiz]
     SRC --> USRG[user-groups]
@@ -95,7 +95,7 @@ graph TD
     PAGES --> COURSES[courses]
     PAGES --> LESSONS[lessons]
     PAGES --> QUIZ[quiz]
-    
+
     WEB --> SRC[src]
     SRC --> COMP[components]
     COMP --> CAUTH[auth]
@@ -104,7 +104,7 @@ graph TD
     COMP --> CLAY[layout]
     COMP --> CQUIZ[quiz]
     COMP --> CUI[ui]
-    
+
     SRC --> CTX[context/contexts]
     SRC --> HOOKS[hooks]
     SRC --> SCRN[screens]
@@ -112,7 +112,7 @@ graph TD
     SCRN --> SAUTH[auth]
     SCRN --> SCOMM[common]
     SCRN --> SEMP[employee]
-    
+
     SRC --> STORE[store]
     SRC --> SERV[services]
     SRC --> STYLE[styles]
@@ -146,19 +146,19 @@ graph TD
 graph TD
     DC[docker-compose.yml] --> PG[postgres]
     DC --> API[api]
-    
+
     subgraph "Current Implementation"
         PG --- API
     end
-    
+
     subgraph "Missing Components"
         WEB[web]
         NGINX[nginx]
     end
-    
+
     API -.- WEB
     WEB -.- NGINX
-    
+
     style WEB fill:#f9f,stroke:#333,stroke-dasharray: 5 5
     style NGINX fill:#f9f,stroke:#333,stroke-dasharray: 5 5
 ```

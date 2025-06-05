@@ -1,4 +1,8 @@
-import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../persistence/prisma/prisma.service';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -46,7 +50,7 @@ export class FileUploadService {
     'application/msword',
     'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
     'application/vnd.ms-powerpoint',
-    'application/vnd.openxmlformats-officedocument.presentationml.presentation'
+    'application/vnd.openxmlformats-officedocument.presentationml.presentation',
   ];
   private readonly maxFileSize = 50 * 1024 * 1024; // 50MB
 
@@ -69,13 +73,13 @@ export class FileUploadService {
 
     if (!this.allowedMimeTypes.includes(file.mimetype)) {
       throw new BadRequestException(
-        `File type ${file.mimetype} is not allowed. Allowed types: ${this.allowedMimeTypes.join(', ')}`
+        `File type ${file.mimetype} is not allowed. Allowed types: ${this.allowedMimeTypes.join(', ')}`,
       );
     }
 
     if (file.size > this.maxFileSize) {
       throw new BadRequestException(
-        `File size ${file.size} exceeds maximum allowed size of ${this.maxFileSize} bytes`
+        `File size ${file.size} exceeds maximum allowed size of ${this.maxFileSize} bytes`,
       );
     }
   }
@@ -91,12 +95,12 @@ export class FileUploadService {
   async saveFile(createFileDto: CreateFileDto): Promise<File> {
     try {
       const url = `/uploads/${createFileDto.filename}`;
-      
+
       const file = await this.prisma.file.create({
         data: {
           ...createFileDto,
-          url
-        }
+          url,
+        },
       });
 
       return file;
@@ -106,7 +110,11 @@ export class FileUploadService {
     }
   }
 
-  async getFile(id: number): Promise<File & { uploader: { id: number; name: string; email: string } | null }> {
+  async getFile(
+    id: number,
+  ): Promise<
+    File & { uploader: { id: number; name: string; email: string } | null }
+  > {
     const file = await this.prisma.file.findUnique({
       where: { id },
       include: {
@@ -114,10 +122,10 @@ export class FileUploadService {
           select: {
             id: true,
             name: true,
-            email: true
-          }
-        }
-      }
+            email: true,
+          },
+        },
+      },
     });
 
     if (!file) {
@@ -136,16 +144,16 @@ export class FileUploadService {
           select: {
             id: true,
             name: true,
-            email: true
-          }
-        }
-      }
+            email: true,
+          },
+        },
+      },
     });
   }
 
   async deleteFile(id: number, userId: number): Promise<void> {
     const file = await this.prisma.file.findUnique({
-      where: { id }
+      where: { id },
     });
 
     if (!file) {
@@ -158,12 +166,12 @@ export class FileUploadService {
 
     // Check if file is used in any content blocks
     const contentBlocksUsingFile = await this.prisma.contentBlock.count({
-      where: { fileId: id }
+      where: { fileId: id },
     });
 
     if (contentBlocksUsingFile > 0) {
       throw new BadRequestException(
-        'Cannot delete file as it is being used in content blocks'
+        'Cannot delete file as it is being used in content blocks',
       );
     }
 
@@ -176,7 +184,7 @@ export class FileUploadService {
 
       // Delete database record
       await this.prisma.file.delete({
-        where: { id }
+        where: { id },
       });
     } catch (error) {
       console.error('Failed to delete file:', error);
@@ -184,9 +192,13 @@ export class FileUploadService {
     }
   }
 
-  async updateFileDescription(id: number, description: string, userId: number): Promise<File> {
+  async updateFileDescription(
+    id: number,
+    description: string,
+    userId: number,
+  ): Promise<File> {
     const file = await this.prisma.file.findUnique({
-      where: { id }
+      where: { id },
     });
 
     if (!file) {
@@ -199,7 +211,7 @@ export class FileUploadService {
 
     return this.prisma.file.update({
       where: { id },
-      data: { description }
+      data: { description },
     });
   }
 
@@ -207,12 +219,17 @@ export class FileUploadService {
     return path.join(this.uploadPath, filename);
   }
 
-  async searchFiles(query: string, userId?: number): Promise<(File & { uploader: { id: number; name: string; email: string } | null })[]> {
+  async searchFiles(
+    query: string,
+    userId?: number,
+  ): Promise<
+    (File & { uploader: { id: number; name: string; email: string } | null })[]
+  > {
     const whereClause: any = {
       OR: [
         { originalName: { contains: query, mode: 'insensitive' } },
-        { description: { contains: query, mode: 'insensitive' } }
-      ]
+        { description: { contains: query, mode: 'insensitive' } },
+      ],
     };
 
     if (userId) {
@@ -227,10 +244,10 @@ export class FileUploadService {
           select: {
             id: true,
             name: true,
-            email: true
-          }
-        }
-      }
+            email: true,
+          },
+        },
+      },
     });
   }
 }

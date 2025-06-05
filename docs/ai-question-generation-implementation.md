@@ -7,7 +7,9 @@ Fase 2.2 - Automatisk Spørgsmålsgenerering er nu fuldt implementeret og klar t
 ## Hvad er implementeret
 
 ### 1. Modulær Arkitektur
+
 Servicen er opdelt i 6 specialiserede moduler:
+
 - **ContentAnalyzer**: Analyserer indhold for emner og kompleksitet
 - **QuestionGenerator**: Genererer spørgsmål baseret på AI
 - **QualityEvaluator**: Scorer spørgsmålskvalitet
@@ -16,13 +18,15 @@ Servicen er opdelt i 6 specialiserede moduler:
 - **QuestionGenerationService**: Hovedservice der koordinerer
 
 ### 2. API Endpoints
+
 - `POST /api/ai/questions/generate-advanced` - Generer fra rå indhold
 - `POST /api/ai/questions/generate/lesson/:id` - Generer fra lesson
-- `POST /api/ai/questions/generate/topic/:id` - Generer fra topic  
+- `POST /api/ai/questions/generate/topic/:id` - Generer fra topic
 - `POST /api/ai/questions/generate/course/:id` - Generer fra course
 - `GET /api/ai/questions/usage-stats` - Hent usage statistik
 
 ### 3. Spørgsmålstyper
+
 - Multiple Choice (med 4 svarmuligheder)
 - Fill in the Blank
 - Essay (med ordgrænser)
@@ -31,6 +35,7 @@ Servicen er opdelt i 6 specialiserede moduler:
 - Drag & Drop
 
 ### 4. Features
+
 - Indholdsanalyse med AI
 - Kvalitetsscore (0-100) for hvert spørgsmål
 - Tilpasset sværhedsgrad (Beginner/Intermediate/Advanced)
@@ -41,18 +46,22 @@ Servicen er opdelt i 6 specialiserede moduler:
 ## Sådan bruges det
 
 ### 1. Konfiguration
+
 Tilføj OpenAI API nøgle i `.env`:
+
 ```env
 OPENAI_API_KEY=sk-...
 OPENAI_MODEL=gpt-4-turbo-preview
 ```
 
 ### 2. Start serveren
+
 ```bash
 npm run start:dev api
 ```
 
 ### 3. Test med API
+
 ```bash
 # Generer spørgsmål fra en lesson
 curl -X POST http://localhost:3001/api/ai/questions/generate/lesson/1 \
@@ -65,6 +74,7 @@ curl -X POST http://localhost:3001/api/ai/questions/generate/lesson/1 \
 ```
 
 ### 4. Eksempel Response
+
 ```json
 {
   "success": true,
@@ -109,20 +119,24 @@ curl -X POST http://localhost:3001/api/ai/questions/generate/lesson/1 \
 ## Næste Skridt
 
 ### 1. Integration med Quiz System
+
 - Tilføj endpoint til at gemme genererede spørgsmål direkte i quiz
 - Implementer review workflow for AI-genererede spørgsmål
 
 ### 2. Frontend Integration
+
 - Byg UI til at generere spørgsmål
 - Vis kvalitetsscore og reasoning
 - Tillad redigering før gem
 
 ### 3. Optimering
+
 - Implementer caching af genererede spørgsmål
 - Batch processing for multiple lessons
 - Fine-tune prompts baseret på feedback
 
 ### 4. Udvidelser
+
 - Multi-language support
 - Adaptive difficulty baseret på bruger performance
 - Integration med andre AI modeller (Claude, Gemini)
@@ -130,15 +144,19 @@ curl -X POST http://localhost:3001/api/ai/questions/generate/lesson/1 \
 ## Fejlfinding
 
 ### Problem: OpenAI API fejler
+
 **Løsning**: Tjek API nøgle og kvote. Prøv med gpt-3.5-turbo for lavere omkostninger.
 
 ### Problem: Dårlig spørgsmålskvalitet
+
 **Løsning**: Sørg for at indholdet er detaljeret nok. Brug fokusområder til at guide AI.
 
 ### Problem: Timeout ved mange spørgsmål
+
 **Løsning**: Reducer numberOfQuestions eller implementer streaming.
 
 ## Performance Metrics
+
 - Gennemsnitlig responstid: 2-5 sekunder
 - Token forbrug: ~500-1000 per spørgsmål
 - Kvalitetsscore gennemsnit: 75-85

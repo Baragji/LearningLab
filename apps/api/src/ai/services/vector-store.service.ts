@@ -17,10 +17,17 @@ export interface SearchResult {
 
 export interface VectorStoreInterface {
   addDocument(document: Omit<VectorDocument, 'createdAt'>): Promise<void>;
-  searchSimilar(queryEmbedding: number[], limit?: number, threshold?: number): Promise<SearchResult[]>;
+  searchSimilar(
+    queryEmbedding: number[],
+    limit?: number,
+    threshold?: number,
+  ): Promise<SearchResult[]>;
   deleteDocument(id: string): Promise<boolean>;
   getDocument(id: string): Promise<VectorDocument | null>;
-  updateDocument(id: string, updates: Partial<VectorDocument>): Promise<boolean>;
+  updateDocument(
+    id: string,
+    updates: Partial<VectorDocument>,
+  ): Promise<boolean>;
   clear(): Promise<void>;
 }
 
@@ -31,11 +38,14 @@ export class VectorStoreService implements VectorStoreInterface {
   private readonly storeType: string;
 
   constructor(private configService: ConfigService) {
-    this.storeType = this.configService.get<string>('VECTOR_STORE_TYPE') || 'memory';
+    this.storeType =
+      this.configService.get<string>('VECTOR_STORE_TYPE') || 'memory';
     this.logger.log(`Vector store initialized with type: ${this.storeType}`);
   }
 
-  async addDocument(document: Omit<VectorDocument, 'createdAt'>): Promise<void> {
+  async addDocument(
+    document: Omit<VectorDocument, 'createdAt'>,
+  ): Promise<void> {
     const vectorDoc: VectorDocument = {
       ...document,
       createdAt: new Date(),
@@ -56,7 +66,7 @@ export class VectorStoreService implements VectorStoreInterface {
       try {
         // Calculate cosine similarity
         const similarity = cosineSimilarity(queryEmbedding, document.embedding);
-        
+
         if (similarity >= threshold) {
           results.push({
             document,
@@ -64,14 +74,15 @@ export class VectorStoreService implements VectorStoreInterface {
           });
         }
       } catch (error) {
-        this.logger.warn(`Failed to calculate similarity for document ${document.id}:`, error);
+        this.logger.warn(
+          `Failed to calculate similarity for document ${document.id}:`,
+          error,
+        );
       }
     }
 
     // Sort by similarity (highest first) and limit results
-    return results
-      .sort((a, b) => b.similarity - a.similarity)
-      .slice(0, limit);
+    return results.sort((a, b) => b.similarity - a.similarity).slice(0, limit);
   }
 
   async deleteDocument(id: string): Promise<boolean> {
@@ -86,7 +97,10 @@ export class VectorStoreService implements VectorStoreInterface {
     return this.documents.get(id) || null;
   }
 
-  async updateDocument(id: string, updates: Partial<VectorDocument>): Promise<boolean> {
+  async updateDocument(
+    id: string,
+    updates: Partial<VectorDocument>,
+  ): Promise<boolean> {
     const existing = this.documents.get(id);
     if (!existing) {
       return false;
@@ -141,7 +155,7 @@ export class VectorStoreService implements VectorStoreInterface {
 
     for (const document of this.documents.values()) {
       let matches = true;
-      
+
       for (const [key, value] of Object.entries(filters)) {
         if (document.metadata[key] !== value) {
           matches = false;

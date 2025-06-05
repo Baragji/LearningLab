@@ -79,7 +79,7 @@ npx prisma migrate dev --name add_quiz_settings
 
 ```typescript
 // apps/api/src/users/schemas/social-links.schema.ts
-import { z } from 'zod';
+import { z } from "zod";
 
 export const socialLinksSchema = z.object({
   twitter: z.string().url().optional(),
@@ -94,7 +94,7 @@ export type SocialLinks = z.infer<typeof socialLinksSchema>;
 
 ```typescript
 // apps/api/src/users/schemas/user-settings.schema.ts
-import { z } from 'zod';
+import { z } from "zod";
 
 export const userSettingsSchema = z.object({
   notifications: z.object({
@@ -105,7 +105,7 @@ export const userSettingsSchema = z.object({
     showProfile: z.boolean().default(true),
     showProgress: z.boolean().default(false),
   }),
-  theme: z.enum(['light', 'dark', 'system']).default('system'),
+  theme: z.enum(["light", "dark", "system"]).default("system"),
   // Add other settings as needed
 });
 
@@ -116,21 +116,24 @@ export type UserSettings = z.infer<typeof userSettingsSchema>;
 
 ```typescript
 // apps/api/src/users/dto/create-user.dto.ts
-import { IsOptional, ValidateNested } from 'class-validator';
-import { Type } from 'class-transformer';
-import { SocialLinks, socialLinksSchema } from '../schemas/social-links.schema';
-import { UserSettings, userSettingsSchema } from '../schemas/user-settings.schema';
-import { ZodValidationPipe } from '../../common/pipes/zod-validation.pipe';
+import { IsOptional, ValidateNested } from "class-validator";
+import { Type } from "class-transformer";
+import { SocialLinks, socialLinksSchema } from "../schemas/social-links.schema";
+import {
+  UserSettings,
+  userSettingsSchema,
+} from "../schemas/user-settings.schema";
+import { ZodValidationPipe } from "../../common/pipes/zod-validation.pipe";
 
 export class CreateUserDto {
   // Existing fields...
-  
+
   @IsOptional()
   @ValidateNested()
   @Type(() => Object)
   @ZodValidationPipe(socialLinksSchema)
   socialLinks?: SocialLinks;
-  
+
   @IsOptional()
   @ValidateNested()
   @Type(() => Object)
@@ -143,8 +146,13 @@ export class CreateUserDto {
 
 ```typescript
 // apps/api/src/common/pipes/zod-validation.pipe.ts
-import { PipeTransform, Injectable, ArgumentMetadata, BadRequestException } from '@nestjs/common';
-import { ZodSchema } from 'zod';
+import {
+  PipeTransform,
+  Injectable,
+  ArgumentMetadata,
+  BadRequestException,
+} from "@nestjs/common";
+import { ZodSchema } from "zod";
 
 export function ZodValidationPipe(schema: ZodSchema) {
   @Injectable()
@@ -155,7 +163,9 @@ export function ZodValidationPipe(schema: ZodSchema) {
       try {
         return this.schema.parse(value);
       } catch (error) {
-        throw new BadRequestException(`Validation failed: ${error.errors.map(e => e.message).join(', ')}`);
+        throw new BadRequestException(
+          `Validation failed: ${error.errors.map((e) => e.message).join(", ")}`,
+        );
       }
     }
   }
@@ -191,23 +201,29 @@ import {
   ParseIntPipe,
   NotFoundException,
   BadRequestException,
-} from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBody } from '@nestjs/swagger';
-import { CoursesService } from './courses.service';
-import { CreateCourseDto } from './dto/create-course.dto';
-import { UpdateCourseDto } from './dto/update-course.dto';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { RolesGuard } from '../auth/guards/roles.guard';
-import { Roles } from '../auth/decorators/roles.decorator';
-import { Role } from '@repo/core';
+} from "@nestjs/common";
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiParam,
+  ApiBody,
+} from "@nestjs/swagger";
+import { CoursesService } from "./courses.service";
+import { CreateCourseDto } from "./dto/create-course.dto";
+import { UpdateCourseDto } from "./dto/update-course.dto";
+import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
+import { RolesGuard } from "../auth/guards/roles.guard";
+import { Roles } from "../auth/decorators/roles.decorator";
+import { Role } from "@repo/core";
 
-@ApiTags('Courses')
-@Controller('courses')
+@ApiTags("Courses")
+@Controller("courses")
 export class CoursesController {
   constructor(private readonly coursesService: CoursesService) {}
 
-  @ApiOperation({ summary: 'Get all courses' })
-  @ApiResponse({ status: 200, description: 'List of courses' })
+  @ApiOperation({ summary: "Get all courses" })
+  @ApiResponse({ status: 200, description: "List of courses" })
   @Get()
   async getAllCourses() {
     return this.coursesService.findAll();
@@ -221,10 +237,14 @@ export class CoursesController {
 
 ```typescript
 // apps/api/src/courses/courses.service.ts
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
-import { PrismaService } from '../persistence/prisma/prisma.service';
-import { CreateCourseDto } from './dto/create-course.dto';
-import { UpdateCourseDto } from './dto/update-course.dto';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from "@nestjs/common";
+import { PrismaService } from "../persistence/prisma/prisma.service";
+import { CreateCourseDto } from "./dto/create-course.dto";
+import { UpdateCourseDto } from "./dto/update-course.dto";
 
 @Injectable()
 export class CoursesService {
@@ -235,7 +255,7 @@ export class CoursesService {
       include: {
         subjectArea: true,
       },
-      orderBy: { title: 'asc' },
+      orderBy: { title: "asc" },
     });
   }
 
@@ -247,69 +267,75 @@ export class CoursesService {
 
 ```typescript
 // apps/api/src/courses/dto/create-course.dto.ts
-import { IsNotEmpty, IsString, IsInt, IsOptional, IsArray } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
-import { Difficulty, CourseStatus } from '@prisma/client';
+import {
+  IsNotEmpty,
+  IsString,
+  IsInt,
+  IsOptional,
+  IsArray,
+} from "class-validator";
+import { ApiProperty } from "@nestjs/swagger";
+import { Difficulty, CourseStatus } from "@prisma/client";
 
 export class CreateCourseDto {
-  @ApiProperty({ description: 'Course title' })
+  @ApiProperty({ description: "Course title" })
   @IsNotEmpty()
   @IsString()
   title: string;
 
-  @ApiProperty({ description: 'Course description' })
+  @ApiProperty({ description: "Course description" })
   @IsNotEmpty()
   @IsString()
   description: string;
 
-  @ApiProperty({ description: 'Course slug (URL-friendly identifier)' })
+  @ApiProperty({ description: "Course slug (URL-friendly identifier)" })
   @IsNotEmpty()
   @IsString()
   slug: string;
 
-  @ApiProperty({ description: 'Subject area ID' })
+  @ApiProperty({ description: "Subject area ID" })
   @IsNotEmpty()
   @IsInt()
   subjectAreaId: number;
 
-  @ApiProperty({ description: 'Course tags', required: false })
+  @ApiProperty({ description: "Course tags", required: false })
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
   tags?: string[];
 
-  @ApiProperty({ 
-    description: 'Course difficulty', 
+  @ApiProperty({
+    description: "Course difficulty",
     enum: Difficulty,
     required: false,
-    default: 'BEGINNER'
+    default: "BEGINNER",
   })
   @IsOptional()
   difficulty?: Difficulty;
 
-  @ApiProperty({ 
-    description: 'Estimated hours to complete', 
-    required: false 
+  @ApiProperty({
+    description: "Estimated hours to complete",
+    required: false,
   })
   @IsOptional()
   @IsInt()
   estimatedHours?: number;
 
-  @ApiProperty({ 
-    description: 'Course status', 
+  @ApiProperty({
+    description: "Course status",
     enum: CourseStatus,
     required: false,
-    default: 'DRAFT'
+    default: "DRAFT",
   })
   @IsOptional()
   status?: CourseStatus;
 
-  @ApiProperty({ description: 'Course image URL', required: false })
+  @ApiProperty({ description: "Course image URL", required: false })
   @IsOptional()
   @IsString()
   image?: string;
 
-  @ApiProperty({ description: 'Course banner URL', required: false })
+  @ApiProperty({ description: "Course banner URL", required: false })
   @IsOptional()
   @IsString()
   banner?: string;
@@ -381,11 +407,11 @@ async bulkDelete(
   } catch (error) {
     console.error('Error during bulk delete transaction:', error);
     results.success = false;
-    
+
     if (error.message === 'Cannot delete all administrators') {
       throw new ForbiddenException('Cannot delete all administrators');
     }
-    
+
     throw new InternalServerErrorException('Database error during bulk delete operation');
   }
 
@@ -474,21 +500,21 @@ private buildLessonWhereClause(
 ```typescript
 async search(params: SearchParams) {
   const { query, type, tags, difficulty, status, subjectAreaId, page, limit } = params;
-  
+
   // Calculate offset based on page and limit
   const offset = (page - 1) * limit;
-  
+
   // Initialize results
   let courses = [];
   let modules = [];
   let lessons = [];
   let total = 0;
-  
+
   // Build base where conditions
   const courseWhereBase = this.buildCourseWhereClause(
     query, tags, difficulty, status, subjectAreaId
   );
-  
+
   // Search for courses if type is 'course' or 'all'
   if (type === 'course' || type === 'all') {
     courses = await this.prisma.course.findMany({
@@ -502,19 +528,19 @@ async search(params: SearchParams) {
           },
         },
       },
-      orderBy: query 
+      orderBy: query
         ? [{ title: 'asc' }]
         : { createdAt: 'desc' },
       skip: offset,
       take: type === 'all' ? Math.floor(limit / 3) : limit,
     });
-    
+
     // Add relevance score to each course
     courses = courses.map(course => ({
       ...course,
       relevanceScore: this.calculateRelevanceScore(course, query),
     }));
-    
+
     // Count total number of courses matching the search
     if (type === 'course') {
       total = await this.prisma.course.count({
@@ -522,7 +548,7 @@ async search(params: SearchParams) {
       });
     }
   }
-  
+
   // Continue with similar refactoring for modules and lessons...
 }
 ```
@@ -545,31 +571,31 @@ npm install @nestjs-modules/mailer nodemailer
 
 ```typescript
 // apps/api/src/email/email.module.ts
-import { Module } from '@nestjs/common';
-import { MailerModule } from '@nestjs-modules/mailer';
-import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
-import { ConfigService } from '@nestjs/config';
-import { EmailService } from './email.service';
-import { join } from 'path';
+import { Module } from "@nestjs/common";
+import { MailerModule } from "@nestjs-modules/mailer";
+import { HandlebarsAdapter } from "@nestjs-modules/mailer/dist/adapters/handlebars.adapter";
+import { ConfigService } from "@nestjs/config";
+import { EmailService } from "./email.service";
+import { join } from "path";
 
 @Module({
   imports: [
     MailerModule.forRootAsync({
       useFactory: async (config: ConfigService) => ({
         transport: {
-          host: config.get('MAIL_HOST'),
-          port: config.get('MAIL_PORT'),
-          secure: config.get('MAIL_SECURE', false),
+          host: config.get("MAIL_HOST"),
+          port: config.get("MAIL_PORT"),
+          secure: config.get("MAIL_SECURE", false),
           auth: {
-            user: config.get('MAIL_USER'),
-            pass: config.get('MAIL_PASSWORD'),
+            user: config.get("MAIL_USER"),
+            pass: config.get("MAIL_PASSWORD"),
           },
         },
         defaults: {
-          from: `"${config.get('MAIL_FROM_NAME')}" <${config.get('MAIL_FROM_ADDRESS')}>`,
+          from: `"${config.get("MAIL_FROM_NAME")}" <${config.get("MAIL_FROM_ADDRESS")}>`,
         },
         template: {
-          dir: join(__dirname, 'templates'),
+          dir: join(__dirname, "templates"),
           adapter: new HandlebarsAdapter(),
           options: {
             strict: true,
@@ -589,8 +615,8 @@ export class EmailModule {}
 
 ```typescript
 // apps/api/src/email/email.service.ts
-import { Injectable } from '@nestjs/common';
-import { MailerService } from '@nestjs-modules/mailer';
+import { Injectable } from "@nestjs/common";
+import { MailerService } from "@nestjs-modules/mailer";
 
 @Injectable()
 export class EmailService {
@@ -599,13 +625,13 @@ export class EmailService {
   async sendInvitation(email: string, password: string, name?: string) {
     await this.mailerService.sendMail({
       to: email,
-      subject: 'Welcome to LearningLab',
-      template: 'invitation',
+      subject: "Welcome to LearningLab",
+      template: "invitation",
       context: {
-        name: name || 'User',
+        name: name || "User",
         email,
         password,
-        loginUrl: 'https://learninglab.example.com/login',
+        loginUrl: "https://learninglab.example.com/login",
       },
     });
   }
@@ -620,7 +646,10 @@ export class EmailService {
 <p>You have been invited to join LearningLab. Here are your login details:</p>
 <p><strong>Email:</strong> {{email}}</p>
 <p><strong>Password:</strong> {{password}}</p>
-<p>Please login at <a href="{{loginUrl}}">{{loginUrl}}</a> and change your password as soon as possible.</p>
+<p>
+  Please login at <a href="{{loginUrl}}">{{loginUrl}}</a> and change your
+  password as soon as possible.
+</p>
 ```
 
 5. Update the user service to send emails:
@@ -710,11 +739,11 @@ async generatePasswordResetToken(email: string): Promise<boolean> {
 
   // Generate a random token
   const token = crypto.randomBytes(32).toString('hex');
-  
+
   // Set token expiration (1 hour from now)
   const expires = new Date();
   expires.setHours(expires.getHours() + 1);
-  
+
   // Save token to user
   await this.prisma.user.update({
     where: { id: user.id },
@@ -723,14 +752,14 @@ async generatePasswordResetToken(email: string): Promise<boolean> {
       passwordResetExpires: expires,
     },
   });
-  
+
   // Send password reset email
   await this.emailService.sendPasswordReset(
     user.email,
     token,
     user.name,
   );
-  
+
   return true;
 }
 
@@ -745,14 +774,14 @@ async resetPassword(token: string, newPassword: string): Promise<boolean> {
       deletedAt: null,
     },
   });
-  
+
   if (!user) {
     return false;
   }
-  
+
   // Hash the new password
   const passwordHash = await bcrypt.hash(newPassword, this.saltRounds);
-  
+
   // Update user with new password and clear reset token
   await this.prisma.user.update({
     where: { id: user.id },
@@ -763,7 +792,7 @@ async resetPassword(token: string, newPassword: string): Promise<boolean> {
       updatedAt: new Date(),
     },
   });
-  
+
   return true;
 }
 ```
@@ -774,7 +803,7 @@ async resetPassword(token: string, newPassword: string): Promise<boolean> {
 // apps/api/src/email/email.service.ts
 async sendPasswordReset(email: string, token: string, name?: string) {
   const resetUrl = `https://learninglab.example.com/reset-password?token=${token}`;
-  
+
   await this.mailerService.sendMail({
     to: email,
     subject: 'Reset Your Password',
@@ -793,7 +822,10 @@ async sendPasswordReset(email: string, token: string, name?: string) {
 <!-- apps/api/src/email/templates/password-reset.hbs -->
 <h1>Reset Your Password</h1>
 <p>Hello {{name}},</p>
-<p>You requested to reset your password. Please click the link below to set a new password:</p>
+<p>
+  You requested to reset your password. Please click the link below to set a new
+  password:
+</p>
 <p><a href="{{resetUrl}}">Reset Password</a></p>
 <p>This link will expire in 1 hour.</p>
 <p>If you didn't request this, please ignore this email.</p>
@@ -807,7 +839,7 @@ async sendPasswordReset(email: string, token: string, name?: string) {
 @HttpCode(HttpStatus.OK)
 async forgotPassword(@Body('email') email: string) {
   const result = await this.usersService.generatePasswordResetToken(email);
-  
+
   // Always return success to prevent email enumeration
   return { message: 'If your email is registered, you will receive a password reset link.' };
 }
@@ -819,11 +851,11 @@ async resetPassword(
   @Body('password') password: string,
 ) {
   const result = await this.usersService.resetPassword(token, password);
-  
+
   if (!result) {
     throw new BadRequestException('Invalid or expired token');
   }
-  
+
   return { message: 'Password has been reset successfully' };
 }
 ```
@@ -846,8 +878,8 @@ npm install @nestjs/throttler
 
 ```typescript
 // apps/api/src/app.module.ts
-import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
-import { APP_GUARD } from '@nestjs/core';
+import { ThrottlerModule, ThrottlerGuard } from "@nestjs/throttler";
+import { APP_GUARD } from "@nestjs/core";
 
 @Module({
   imports: [
@@ -872,21 +904,21 @@ export class AppModule {}
 
 ```typescript
 // apps/api/src/auth/auth.controller.ts
-import { Throttle } from '@nestjs/throttler';
+import { Throttle } from "@nestjs/throttler";
 
-@Controller('auth')
+@Controller("auth")
 export class AuthController {
   // Existing code...
 
   @Throttle(5, 60) // 5 requests per minute
-  @Post('login')
+  @Post("login")
   async login(@Body() loginDto: LoginDto) {
     // Existing code...
   }
 
   @Throttle(3, 60) // 3 requests per minute
-  @Post('forgot-password')
-  async forgotPassword(@Body('email') email: string) {
+  @Post("forgot-password")
+  async forgotPassword(@Body("email") email: string) {
     // Existing code...
   }
 }
@@ -905,7 +937,7 @@ export class AuthController {
 ```prisma
 model Course {
   // Existing fields...
-  
+
   // Add indexes for frequently searched fields
   @@index([title])
   @@index([tags])
@@ -917,7 +949,7 @@ model Course {
 
 model Module {
   // Existing fields...
-  
+
   @@index([title])
   @@index([courseId])
   @@index([deletedAt])
@@ -925,7 +957,7 @@ model Module {
 
 model Lesson {
   // Existing fields...
-  
+
   @@index([title])
   @@index([moduleId])
   @@index([deletedAt])
@@ -933,7 +965,7 @@ model Lesson {
 
 model User {
   // Existing fields...
-  
+
   @@index([email])
   @@index([role])
   @@index([deletedAt])
@@ -962,7 +994,7 @@ npm install @nestjs/cache-manager cache-manager
 
 ```typescript
 // apps/api/src/app.module.ts
-import { CacheModule } from '@nestjs/cache-manager';
+import { CacheModule } from "@nestjs/cache-manager";
 
 @Module({
   imports: [
@@ -980,9 +1012,9 @@ export class AppModule {}
 
 ```typescript
 // apps/api/src/courses/courses.service.ts
-import { Injectable, Inject } from '@nestjs/common';
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { Cache } from 'cache-manager';
+import { Injectable, Inject } from "@nestjs/common";
+import { CACHE_MANAGER } from "@nestjs/cache-manager";
+import { Cache } from "cache-manager";
 
 @Injectable()
 export class CoursesService {
@@ -993,24 +1025,24 @@ export class CoursesService {
 
   async findAll() {
     // Try to get from cache first
-    const cacheKey = 'all_courses';
+    const cacheKey = "all_courses";
     const cachedCourses = await this.cacheManager.get(cacheKey);
-    
+
     if (cachedCourses) {
       return cachedCourses;
     }
-    
+
     // If not in cache, get from database
     const courses = await this.prisma.course.findMany({
       include: {
         subjectArea: true,
       },
-      orderBy: { title: 'asc' },
+      orderBy: { title: "asc" },
     });
-    
+
     // Store in cache for future requests
     await this.cacheManager.set(cacheKey, courses);
-    
+
     return courses;
   }
 
@@ -1030,14 +1062,14 @@ export class CoursesService {
 
 ```typescript
 // apps/api/src/users/users.service.spec.ts
-import { Test, TestingModule } from '@nestjs/testing';
-import { UsersService } from './users.service';
-import { PrismaService } from '../persistence/prisma/prisma.service';
-import { ConfigService } from '@nestjs/config';
-import { EmailService } from '../email/email.service';
-import { Role } from '@repo/core';
+import { Test, TestingModule } from "@nestjs/testing";
+import { UsersService } from "./users.service";
+import { PrismaService } from "../persistence/prisma/prisma.service";
+import { ConfigService } from "@nestjs/config";
+import { EmailService } from "../email/email.service";
+import { Role } from "@repo/core";
 
-describe('UsersService', () => {
+describe("UsersService", () => {
   let service: UsersService;
   let prismaService: PrismaService;
 
@@ -1080,17 +1112,17 @@ describe('UsersService', () => {
     prismaService = module.get<PrismaService>(PrismaService);
   });
 
-  it('should be defined', () => {
+  it("should be defined", () => {
     expect(service).toBeDefined();
   });
 
   // Add specific tests for each method
-  describe('create', () => {
-    it('should create a user successfully', async () => {
+  describe("create", () => {
+    it("should create a user successfully", async () => {
       const createUserDto = {
-        email: 'test@example.com',
-        password: 'password123',
-        name: 'Test User',
+        email: "test@example.com",
+        password: "password123",
+        name: "Test User",
         role: Role.STUDENT,
       };
 
@@ -1099,13 +1131,15 @@ describe('UsersService', () => {
         email: createUserDto.email,
         name: createUserDto.name,
         role: createUserDto.role,
-        passwordHash: 'hashedpassword',
+        passwordHash: "hashedpassword",
         createdAt: new Date(),
         updatedAt: new Date(),
       };
 
-      jest.spyOn(prismaService.user, 'findUnique').mockResolvedValue(null);
-      jest.spyOn(prismaService.user, 'create').mockResolvedValue(mockUser as any);
+      jest.spyOn(prismaService.user, "findUnique").mockResolvedValue(null);
+      jest
+        .spyOn(prismaService.user, "create")
+        .mockResolvedValue(mockUser as any);
 
       const result = await service.create(createUserDto);
 
@@ -1113,9 +1147,9 @@ describe('UsersService', () => {
         where: { email: createUserDto.email },
       });
       expect(prismaService.user.create).toHaveBeenCalled();
-      expect(result).toHaveProperty('id', mockUser.id);
-      expect(result).toHaveProperty('email', mockUser.email);
-      expect(result).not.toHaveProperty('passwordHash');
+      expect(result).toHaveProperty("id", mockUser.id);
+      expect(result).toHaveProperty("email", mockUser.email);
+      expect(result).not.toHaveProperty("passwordHash");
     });
 
     // Add more tests...
@@ -1127,13 +1161,13 @@ describe('UsersService', () => {
 
 ```typescript
 // apps/api/src/users/users.controller.spec.ts
-import { Test, TestingModule } from '@nestjs/testing';
-import { UsersController } from './users.controller';
-import { UsersService } from './users.service';
-import { Role } from '@repo/core';
-import { ForbiddenException, NotFoundException } from '@nestjs/common';
+import { Test, TestingModule } from "@nestjs/testing";
+import { UsersController } from "./users.controller";
+import { UsersService } from "./users.service";
+import { Role } from "@repo/core";
+import { ForbiddenException, NotFoundException } from "@nestjs/common";
 
-describe('UsersController', () => {
+describe("UsersController", () => {
   let controller: UsersController;
   let service: UsersService;
 
@@ -1162,25 +1196,25 @@ describe('UsersController', () => {
     service = module.get<UsersService>(UsersService);
   });
 
-  it('should be defined', () => {
+  it("should be defined", () => {
     expect(controller).toBeDefined();
   });
 
   // Add specific tests for each endpoint
-  describe('findAll', () => {
-    it('should return an array of users', async () => {
+  describe("findAll", () => {
+    it("should return an array of users", async () => {
       const result = {
         users: [
           {
             id: 1,
-            email: 'test@example.com',
-            name: 'Test User',
+            email: "test@example.com",
+            name: "Test User",
             role: Role.STUDENT,
           },
         ],
         total: 1,
       };
-      jest.spyOn(service, 'findAll').mockResolvedValue(result);
+      jest.spyOn(service, "findAll").mockResolvedValue(result);
 
       expect(await controller.findAll()).toBe(result);
       expect(service.findAll).toHaveBeenCalledWith(1, 10, undefined, undefined);
@@ -1207,15 +1241,15 @@ npm run test
 
 ```typescript
 // apps/api/test/users.e2e-spec.ts
-import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
-import * as request from 'supertest';
-import { AppModule } from '../src/app.module';
-import { PrismaService } from '../src/persistence/prisma/prisma.service';
-import { Role } from '@repo/core';
-import { JwtService } from '@nestjs/jwt';
+import { Test, TestingModule } from "@nestjs/testing";
+import { INestApplication, ValidationPipe } from "@nestjs/common";
+import * as request from "supertest";
+import { AppModule } from "../src/app.module";
+import { PrismaService } from "../src/persistence/prisma/prisma.service";
+import { Role } from "@repo/core";
+import { JwtService } from "@nestjs/jwt";
 
-describe('UsersController (e2e)', () => {
+describe("UsersController (e2e)", () => {
   let app: INestApplication;
   let prismaService: PrismaService;
   let jwtService: JwtService;
@@ -1234,24 +1268,24 @@ describe('UsersController (e2e)', () => {
         forbidNonWhitelisted: true,
       }),
     );
-    
+
     await app.init();
-    
+
     prismaService = app.get<PrismaService>(PrismaService);
     jwtService = app.get<JwtService>(JwtService);
-    
+
     // Create test admin user and generate token
     const adminUser = await prismaService.user.create({
       data: {
-        email: 'admin@test.com',
-        name: 'Admin User',
-        passwordHash: 'hashedpassword',
+        email: "admin@test.com",
+        name: "Admin User",
+        passwordHash: "hashedpassword",
         role: Role.ADMIN,
       },
     });
-    
-    adminToken = jwtService.sign({ 
-      sub: adminUser.id, 
+
+    adminToken = jwtService.sign({
+      sub: adminUser.id,
       email: adminUser.email,
       role: adminUser.role,
     });
@@ -1262,29 +1296,27 @@ describe('UsersController (e2e)', () => {
     await prismaService.user.deleteMany({
       where: {
         email: {
-          contains: 'test.com',
+          contains: "test.com",
         },
       },
     });
-    
+
     await app.close();
   });
 
-  describe('/users (GET)', () => {
-    it('should return 401 for unauthenticated requests', () => {
-      return request(app.getHttpServer())
-        .get('/users')
-        .expect(401);
+  describe("/users (GET)", () => {
+    it("should return 401 for unauthenticated requests", () => {
+      return request(app.getHttpServer()).get("/users").expect(401);
     });
 
-    it('should return users for authenticated admin', () => {
+    it("should return users for authenticated admin", () => {
       return request(app.getHttpServer())
-        .get('/users')
-        .set('Authorization', `Bearer ${adminToken}`)
+        .get("/users")
+        .set("Authorization", `Bearer ${adminToken}`)
         .expect(200)
         .expect((res) => {
-          expect(res.body).toHaveProperty('users');
-          expect(res.body).toHaveProperty('total');
+          expect(res.body).toHaveProperty("users");
+          expect(res.body).toHaveProperty("total");
           expect(Array.isArray(res.body.users)).toBe(true);
         });
     });
@@ -1302,21 +1334,21 @@ npm run test:e2e
 
 ## Timeline and Priority
 
-| Task | Priority | Estimated Time | Dependencies |
-|------|----------|----------------|--------------|
-| Extend ContentBlockType Enum | High | 1 day | None |
-| Add Missing Quiz Fields | High | 1 day | None |
-| Convert Express-style Controllers to NestJS-style | High | 3 days | None |
-| Add Transaction Support for Multi-record Operations | High | 2 days | None |
-| Add Validation for JSON Fields | Medium | 2 days | None |
-| Implement Email Notifications for User Invitations | Medium | 2 days | None |
-| Implement Password Reset Flow | Medium | 2 days | Email Notifications |
-| Add Rate Limiting for Authentication Endpoints | Medium | 1 day | None |
-| Add Database Indexes for Frequently Searched Fields | Medium | 1 day | None |
-| Refactor Search Service to Reduce Duplication | Low | 1 day | None |
-| Implement Caching for Frequently Accessed Data | Low | 2 days | None |
-| Add Unit Tests for Critical Components | Low | 3 days | All implementation tasks |
-| Add Integration Tests for API Endpoints | Low | 2 days | All implementation tasks |
+| Task                                                | Priority | Estimated Time | Dependencies             |
+| --------------------------------------------------- | -------- | -------------- | ------------------------ |
+| Extend ContentBlockType Enum                        | High     | 1 day          | None                     |
+| Add Missing Quiz Fields                             | High     | 1 day          | None                     |
+| Convert Express-style Controllers to NestJS-style   | High     | 3 days         | None                     |
+| Add Transaction Support for Multi-record Operations | High     | 2 days         | None                     |
+| Add Validation for JSON Fields                      | Medium   | 2 days         | None                     |
+| Implement Email Notifications for User Invitations  | Medium   | 2 days         | None                     |
+| Implement Password Reset Flow                       | Medium   | 2 days         | Email Notifications      |
+| Add Rate Limiting for Authentication Endpoints      | Medium   | 1 day          | None                     |
+| Add Database Indexes for Frequently Searched Fields | Medium   | 1 day          | None                     |
+| Refactor Search Service to Reduce Duplication       | Low      | 1 day          | None                     |
+| Implement Caching for Frequently Accessed Data      | Low      | 2 days         | None                     |
+| Add Unit Tests for Critical Components              | Low      | 3 days         | All implementation tasks |
+| Add Integration Tests for API Endpoints             | Low      | 2 days         | All implementation tasks |
 
 **Total Estimated Time: 23 days**
 

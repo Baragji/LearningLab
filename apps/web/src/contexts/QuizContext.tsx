@@ -1,11 +1,11 @@
 "use client";
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode } from "react";
 
 // Define types for quiz data
 interface Question {
   id: number;
   text: string;
-  type: 'multiple-choice' | 'true-false' | 'matching';
+  type: "multiple-choice" | "true-false" | "matching";
   points: number;
 }
 
@@ -32,7 +32,7 @@ interface QuizContextType {
   isSubmitting: boolean;
   isSubmitted: boolean;
   score: number | null;
-  
+
   // Actions
   setQuiz: (quiz: ExtendedQuiz) => void;
   goToNextQuestion: () => void;
@@ -40,7 +40,7 @@ interface QuizContextType {
   selectAnswer: (questionId: number, optionId: number) => void;
   submitQuiz: () => void;
   resetQuiz: () => void;
-  
+
   // Computed values
   currentQuestion: Question | null;
   totalQuestions: number;
@@ -58,7 +58,9 @@ interface QuizProviderProps {
 export const QuizProvider: React.FC<QuizProviderProps> = ({ children }) => {
   const [quiz, setQuiz] = useState<ExtendedQuiz | null>(null);
   const [questions, setQuestions] = useState<Question[]>([]);
-  const [answerOptions, setAnswerOptions] = useState<Record<number, AnswerOption[]>>({});
+  const [answerOptions, setAnswerOptions] = useState<
+    Record<number, AnswerOption[]>
+  >({});
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [userAnswers, setUserAnswers] = useState<Record<number, number>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -67,24 +69,24 @@ export const QuizProvider: React.FC<QuizProviderProps> = ({ children }) => {
 
   // Set quiz data
   const handleSetQuiz = (quizData: ExtendedQuiz) => {
-    console.log('Setting quiz data in context:', { 
-      quizId: quizData.id, 
+    console.log("Setting quiz data in context:", {
+      quizId: quizData.id,
       hasQuestions: !!quizData.questions,
-      questionsCount: quizData.questions?.length || 0
+      questionsCount: quizData.questions?.length || 0,
     });
-    
+
     setQuiz(quizData);
-    
+
     if (quizData.questions && quizData.questions.length > 0) {
-      console.log('Setting questions:', quizData.questions.length);
+      console.log("Setting questions:", quizData.questions.length);
       setQuestions(quizData.questions);
     }
-    
+
     if (quizData.answerOptions) {
-      console.log('Setting answer options');
+      console.log("Setting answer options");
       setAnswerOptions(quizData.answerOptions);
     }
-    
+
     // Reset state when loading a new quiz
     setCurrentQuestionIndex(0);
     setUserAnswers({});
@@ -109,37 +111,38 @@ export const QuizProvider: React.FC<QuizProviderProps> = ({ children }) => {
   const selectAnswer = (questionId: number, optionId: number) => {
     setUserAnswers({
       ...userAnswers,
-      [questionId]: optionId
+      [questionId]: optionId,
     });
   };
 
   // Quiz submission
   const submitQuiz = () => {
     if (!quiz) return;
-    
+
     setIsSubmitting(true);
-    
+
     // Calculate score
     let correctAnswers = 0;
     let totalAnswered = 0;
-    
-    questions.forEach(question => {
+
+    questions.forEach((question) => {
       const selectedOptionId = userAnswers[question.id];
       if (selectedOptionId) {
         totalAnswered++;
         const selectedOption = answerOptions[question.id]?.find(
-          option => option.id === selectedOptionId
+          (option) => option.id === selectedOptionId,
         );
         if (selectedOption?.isCorrect) {
           correctAnswers++;
         }
       }
     });
-    
-    const calculatedScore = totalAnswered > 0 
-      ? Math.round((correctAnswers / questions.length) * 100) 
-      : 0;
-    
+
+    const calculatedScore =
+      totalAnswered > 0
+        ? Math.round((correctAnswers / questions.length) * 100)
+        : 0;
+
     setScore(calculatedScore);
     setIsSubmitted(true);
     setIsSubmitting(false);
@@ -158,8 +161,8 @@ export const QuizProvider: React.FC<QuizProviderProps> = ({ children }) => {
   const totalQuestions = questions.length;
   const isLastQuestion = currentQuestionIndex === totalQuestions - 1;
   const isFirstQuestion = currentQuestionIndex === 0;
-  const hasAnsweredCurrentQuestion = currentQuestion 
-    ? !!userAnswers[currentQuestion.id] 
+  const hasAnsweredCurrentQuestion = currentQuestion
+    ? !!userAnswers[currentQuestion.id]
     : false;
 
   const value = {
@@ -169,32 +172,28 @@ export const QuizProvider: React.FC<QuizProviderProps> = ({ children }) => {
     isSubmitting,
     isSubmitted,
     score,
-    
+
     setQuiz: handleSetQuiz,
     goToNextQuestion,
     goToPreviousQuestion,
     selectAnswer,
     submitQuiz,
     resetQuiz,
-    
+
     currentQuestion,
     totalQuestions,
     isLastQuestion,
     isFirstQuestion,
-    hasAnsweredCurrentQuestion
+    hasAnsweredCurrentQuestion,
   };
 
-  return (
-    <QuizContext.Provider value={value}>
-      {children}
-    </QuizContext.Provider>
-  );
+  return <QuizContext.Provider value={value}>{children}</QuizContext.Provider>;
 };
 
 export const useQuiz = (): QuizContextType => {
   const context = useContext(QuizContext);
   if (context === undefined) {
-    throw new Error('useQuiz must be used within a QuizProvider');
+    throw new Error("useQuiz must be used within a QuizProvider");
   }
   return context;
 };

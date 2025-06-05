@@ -13,16 +13,47 @@ import {
   HttpException,
   HttpStatus,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
-import { IsString, IsNumber, IsArray, IsOptional, IsEnum, IsDateString, ValidateNested, Min, Max } from 'class-validator';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
+import {
+  IsString,
+  IsNumber,
+  IsArray,
+  IsOptional,
+  IsEnum,
+  IsDateString,
+  ValidateNested,
+  Min,
+  Max,
+} from 'class-validator';
 import { Type, Transform } from 'class-transformer';
 
 // Import services
 import { AIProviderService } from './services/ai-provider.service';
-import { AIFeedbackService, SingleQuestionFeedbackRequest, FeedbackResponse } from './services/ai-feedback.service';
-import { AdaptiveLearningService, UserPerformanceData, LearningRecommendation } from './services/adaptive-learning.service';
-import { LearningAnalyticsService, AnalyticsTimeframe, ComprehensiveDashboardData } from './services/learning-analytics.service';
-import { DifficultyAdjustmentService, DifficultyLevel, DifficultyAdjustmentResult } from './services/difficulty-adjustment.service';
+import {
+  AIFeedbackService,
+  SingleQuestionFeedbackRequest,
+  FeedbackResponse,
+} from './services/ai-feedback.service';
+import {
+  AdaptiveLearningService,
+  UserPerformanceData,
+  LearningRecommendation,
+} from './services/adaptive-learning.service';
+import {
+  LearningAnalyticsService,
+  AnalyticsTimeframe,
+  ComprehensiveDashboardData,
+} from './services/learning-analytics.service';
+import {
+  DifficultyAdjustmentService,
+  DifficultyLevel,
+  DifficultyAdjustmentResult,
+} from './services/difficulty-adjustment.service';
 import { EmbeddingService } from './services/embedding.service';
 import { ContentProcessingService } from './services/content-processing.service';
 
@@ -266,7 +297,9 @@ export class AIController {
     @Body(ValidationPipe) generateQuestionsDto: GenerateQuestionsDto,
   ): Promise<QuestionGenerationResponse> {
     try {
-      this.logger.log(`Generating ${generateQuestionsDto.questionCount} questions`);
+      this.logger.log(
+        `Generating ${generateQuestionsDto.questionCount} questions`,
+      );
 
       const questions = await this.aiProviderService.generateQuestions(
         generateQuestionsDto.content,
@@ -294,13 +327,17 @@ export class AIController {
 
   // AI Feedback Endpoints
   @Post('feedback/generate')
-  @ApiOperation({ summary: 'Generate personalized AI feedback for user answers' })
+  @ApiOperation({
+    summary: 'Generate personalized AI feedback for user answers',
+  })
   @ApiResponse({ status: 201, description: 'Feedback generated successfully' })
   async generateFeedback(
     @Body(ValidationPipe) feedbackRequestDto: FeedbackRequestDto,
   ): Promise<FeedbackResponse> {
     try {
-      this.logger.log(`Generating feedback for user ${feedbackRequestDto.userId}`);
+      this.logger.log(
+        `Generating feedback for user ${feedbackRequestDto.userId}`,
+      );
 
       const feedbackRequest: SingleQuestionFeedbackRequest = {
         userId: feedbackRequestDto.userId,
@@ -325,7 +362,10 @@ export class AIController {
 
   @Get('feedback/history/:userId')
   @ApiOperation({ summary: 'Get feedback history for a user' })
-  @ApiResponse({ status: 200, description: 'Feedback history retrieved successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Feedback history retrieved successfully',
+  })
   async getFeedbackHistory(
     @Param('userId', ParseIntPipe) userId: number,
     @Query('limit') limit?: number,
@@ -355,16 +395,21 @@ export class AIController {
 
   @Post('feedback/assistance')
   @ApiOperation({ summary: 'Get AI learning assistance' })
-  @ApiResponse({ status: 201, description: 'Learning assistance provided successfully' })
+  @ApiResponse({
+    status: 201,
+    description: 'Learning assistance provided successfully',
+  })
   async getLearningAssistance(
     @Body() body: { userId: number; topic: string; question: string },
   ) {
     try {
-      const assistance = await this.aiFeedbackService.provideLearningAssistance({
-        userId: body.userId,
-        question: body.question,
-        context: body.topic,
-      });
+      const assistance = await this.aiFeedbackService.provideLearningAssistance(
+        {
+          userId: body.userId,
+          question: body.question,
+          context: body.topic,
+        },
+      );
 
       return {
         success: true,
@@ -382,22 +427,22 @@ export class AIController {
   // Adaptive Learning Endpoints
   @Post('adaptive/analyze')
   @ApiOperation({ summary: 'Analyze user performance for adaptive learning' })
-  @ApiResponse({ status: 201, description: 'Performance analysis completed successfully' })
+  @ApiResponse({
+    status: 201,
+    description: 'Performance analysis completed successfully',
+  })
   async analyzeUserPerformance(
-    @Body() body: {
-      userId: number;
-      performanceHistory: UserPerformanceDto[];
-    },
+    @Body() body: { userId: number; performanceHistory: UserPerformanceDto[] },
   ) {
     try {
-      const performanceData: UserPerformanceData[] = body.performanceHistory.map(p => ({
-        ...p,
-        lastActivity: new Date(p.lastActivity),
-      }));
+      const performanceData: UserPerformanceData[] =
+        body.performanceHistory.map((p) => ({
+          ...p,
+          lastActivity: new Date(p.lastActivity),
+        }));
 
-      const analysis = await this.adaptiveLearningService.analyzeUserPerformance(
-        body.userId,
-      );
+      const analysis =
+        await this.adaptiveLearningService.analyzeUserPerformance(body.userId);
 
       return {
         success: true,
@@ -414,25 +459,31 @@ export class AIController {
 
   @Post('adaptive/recommendations')
   @ApiOperation({ summary: 'Generate personalized learning recommendations' })
-  @ApiResponse({ status: 201, description: 'Recommendations generated successfully' })
+  @ApiResponse({
+    status: 201,
+    description: 'Recommendations generated successfully',
+  })
   async generateLearningRecommendations(
-    @Body() body: {
+    @Body()
+    body: {
       userId: number;
       performanceHistory: UserPerformanceDto[];
       learningGoals?: string[];
     },
   ) {
     try {
-      const performanceData: UserPerformanceData[] = body.performanceHistory.map(p => ({
-        ...p,
-        lastActivity: new Date(p.lastActivity),
-      }));
+      const performanceData: UserPerformanceData[] =
+        body.performanceHistory.map((p) => ({
+          ...p,
+          lastActivity: new Date(p.lastActivity),
+        }));
 
-      const recommendations = await this.adaptiveLearningService.generatePersonalizedRecommendations(
-        body.userId,
-        undefined,
-        body.learningGoals,
-      );
+      const recommendations =
+        await this.adaptiveLearningService.generatePersonalizedRecommendations(
+          body.userId,
+          undefined,
+          body.learningGoals,
+        );
 
       return {
         success: true,
@@ -449,17 +500,21 @@ export class AIController {
 
   @Post('adaptive/learning-path')
   @ApiOperation({ summary: 'Generate personalized learning path' })
-  @ApiResponse({ status: 201, description: 'Learning path generated successfully' })
+  @ApiResponse({
+    status: 201,
+    description: 'Learning path generated successfully',
+  })
   async generateLearningPath(
     @Body(ValidationPipe) learningPathDto: LearningPathDto,
   ) {
     try {
-      const learningPath = await this.adaptiveLearningService.generatePersonalizedLearningPath(
-        learningPathDto.userId,
-        {} as any, // performanceData placeholder
-        learningPathDto.currentTopics,
-        learningPathDto.learningGoals,
-      );
+      const learningPath =
+        await this.adaptiveLearningService.generatePersonalizedLearningPath(
+          learningPathDto.userId,
+          {} as any, // performanceData placeholder
+          learningPathDto.currentTopics,
+          learningPathDto.learningGoals,
+        );
 
       return {
         success: true,
@@ -476,10 +531,16 @@ export class AIController {
 
   // Learning Analytics Endpoints
   @Post('analytics/dashboard')
-  @ApiOperation({ summary: 'Generate comprehensive learning analytics dashboard' })
-  @ApiResponse({ status: 201, description: 'Dashboard data generated successfully' })
+  @ApiOperation({
+    summary: 'Generate comprehensive learning analytics dashboard',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Dashboard data generated successfully',
+  })
   async generateDashboard(
-    @Body() body: {
+    @Body()
+    body: {
       userId: number;
       timeframe: AnalyticsTimeframeDto;
       performanceHistory: UserPerformanceDto[];
@@ -492,10 +553,11 @@ export class AIController {
         period: body.timeframe.period,
       };
 
-      const performanceData: UserPerformanceData[] = body.performanceHistory.map(p => ({
-        ...p,
-        lastActivity: new Date(p.lastActivity),
-      }));
+      const performanceData: UserPerformanceData[] =
+        body.performanceHistory.map((p) => ({
+          ...p,
+          lastActivity: new Date(p.lastActivity),
+        }));
 
       return await this.learningAnalyticsService.generateDashboardData(
         body.userId,
@@ -513,7 +575,10 @@ export class AIController {
 
   @Get('analytics/metrics/:userId')
   @ApiOperation({ summary: 'Get learning metrics for a user' })
-  @ApiResponse({ status: 200, description: 'Learning metrics retrieved successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Learning metrics retrieved successfully',
+  })
   async getLearningMetrics(
     @Param('userId', ParseIntPipe) userId: number,
     @Query('timeframe') timeframe?: string,
@@ -533,11 +598,12 @@ export class AIController {
       // This would typically fetch from database
       const performanceHistory: UserPerformanceData[] = [];
 
-      const metrics = await this.learningAnalyticsService.calculateLearningMetrics(
-        userId,
-        analyticsTimeframe,
-        performanceHistory,
-      );
+      const metrics =
+        await this.learningAnalyticsService.calculateLearningMetrics(
+          userId,
+          analyticsTimeframe,
+          performanceHistory,
+        );
 
       return {
         success: true,
@@ -554,17 +620,20 @@ export class AIController {
 
   // Difficulty Adjustment Endpoints
   @Post('difficulty/adjust')
-  @ApiOperation({ summary: 'Adjust difficulty level based on user performance' })
+  @ApiOperation({
+    summary: 'Adjust difficulty level based on user performance',
+  })
   @ApiResponse({ status: 201, description: 'Difficulty adjusted successfully' })
   async adjustDifficulty(
     @Body(ValidationPipe) adjustmentDto: DifficultyAdjustmentDto,
   ): Promise<DifficultyAdjustmentResult> {
     try {
       const currentLevel: DifficultyLevel = adjustmentDto.currentLevel;
-      const performanceData: UserPerformanceData[] = adjustmentDto.performanceHistory.map(p => ({
-        ...p,
-        lastActivity: new Date(p.lastActivity),
-      }));
+      const performanceData: UserPerformanceData[] =
+        adjustmentDto.performanceHistory.map((p) => ({
+          ...p,
+          lastActivity: new Date(p.lastActivity),
+        }));
 
       return await this.difficultyAdjustmentService.adjustDifficultyLevel(
         adjustmentDto.userId,
@@ -583,10 +652,14 @@ export class AIController {
 
   @Get('difficulty/levels')
   @ApiOperation({ summary: 'Get all available difficulty levels' })
-  @ApiResponse({ status: 200, description: 'Difficulty levels retrieved successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Difficulty levels retrieved successfully',
+  })
   async getDifficultyLevels() {
     try {
-      const levels = await this.difficultyAdjustmentService.getAllDifficultyLevels();
+      const levels =
+        await this.difficultyAdjustmentService.getAllDifficultyLevels();
 
       return {
         success: true,
@@ -602,10 +675,16 @@ export class AIController {
   }
 
   @Post('difficulty/calibrate')
-  @ApiOperation({ summary: 'Calibrate question difficulty based on user responses' })
-  @ApiResponse({ status: 201, description: 'Question difficulty calibrated successfully' })
+  @ApiOperation({
+    summary: 'Calibrate question difficulty based on user responses',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Question difficulty calibrated successfully',
+  })
   async calibrateQuestionDifficulty(
-    @Body() body: {
+    @Body()
+    body: {
       questionId: string;
       userResponses: {
         userId: number;
@@ -616,15 +695,16 @@ export class AIController {
     },
   ) {
     try {
-      const userResponses = body.userResponses.map(response => ({
+      const userResponses = body.userResponses.map((response) => ({
         ...response,
         userLevel: response.userLevel as DifficultyLevel,
       }));
 
-      const calibration = await this.difficultyAdjustmentService.calibrateQuestionDifficulty(
-        body.questionId,
-        userResponses,
-      );
+      const calibration =
+        await this.difficultyAdjustmentService.calibrateQuestionDifficulty(
+          body.questionId,
+          userResponses,
+        );
 
       return {
         success: true,
@@ -670,8 +750,13 @@ export class AIController {
   }
 
   @Post('content/search')
-  @ApiOperation({ summary: 'Search processed content using semantic similarity' })
-  @ApiResponse({ status: 200, description: 'Content search completed successfully' })
+  @ApiOperation({
+    summary: 'Search processed content using semantic similarity',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Content search completed successfully',
+  })
   async searchContent(
     @Body(ValidationPipe) searchContentDto: SearchContentDto,
   ) {
@@ -680,7 +765,9 @@ export class AIController {
         query: searchContentDto.query,
         limit: searchContentDto.limit || 10,
         threshold: searchContentDto.threshold || 0.7,
-        filters: searchContentDto.tags ? { tags: searchContentDto.tags } : undefined,
+        filters: searchContentDto.tags
+          ? { tags: searchContentDto.tags }
+          : undefined,
       });
 
       return {
@@ -704,7 +791,10 @@ export class AIController {
   // Utility Endpoints
   @Get('health')
   @ApiOperation({ summary: 'Check AI services health status' })
-  @ApiResponse({ status: 200, description: 'Health status retrieved successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Health status retrieved successfully',
+  })
   async getHealthStatus() {
     try {
       // Test OpenAI/Ollama connection
@@ -742,14 +832,21 @@ export class AIController {
 
   @Get('config')
   @ApiOperation({ summary: 'Get AI service configuration' })
-  @ApiResponse({ status: 200, description: 'Configuration retrieved successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Configuration retrieved successfully',
+  })
   async getConfiguration() {
     try {
       return {
         success: true,
         data: {
-          aiProvider: process.env.OPENAI_API_BASE?.includes('localhost:11434') ? 'ollama' : 'openai',
-          model: process.env.OPENAI_API_BASE?.includes('localhost:11434') ? 'llama2' : 'gpt-3.5-turbo',
+          aiProvider: process.env.OPENAI_API_BASE?.includes('localhost:11434')
+            ? 'ollama'
+            : 'openai',
+          model: process.env.OPENAI_API_BASE?.includes('localhost:11434')
+            ? 'llama2'
+            : 'gpt-3.5-turbo',
           embeddingModel: 'text-embedding-ada-002',
           features: {
             questionGeneration: true,

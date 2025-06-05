@@ -14,23 +14,23 @@ import { TextField } from '@learninglab/ui';
 <TextField placeholder="Enter your username" />
 
 // With helper text
-<TextField 
-  label="Email" 
-  helperText="We'll never share your email with anyone else" 
+<TextField
+  label="Email"
+  helperText="We'll never share your email with anyone else"
 />
 
 // With error state
-<TextField 
-  label="Password" 
-  type="password" 
-  error 
-  helperText="Password is required" 
+<TextField
+  label="Password"
+  type="password"
+  error
+  helperText="Password is required"
 />
 
 // With icons
-<TextField 
-  label="Search" 
-  startIcon={<SearchIcon />} 
+<TextField
+  label="Search"
+  startIcon={<SearchIcon />}
   endIcon={<ClearIcon />}
   onEndIconClick={() => setValue('')}
 />
@@ -68,24 +68,24 @@ import { TextField } from '@learninglab/ui';
 
 ## Props
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `variant` | `'outlined' \| 'filled' \| 'standard'` | `'outlined'` | The variant of the text field |
-| `fullWidth` | `boolean` | `true` | If `true`, the text field will take up the full width of its container |
-| `size` | `'small' \| 'medium'` | `'medium'` | The size of the text field |
-| `error` | `boolean` | `false` | If `true`, the text field will be displayed in an error state |
-| `helperText` | `ReactNode` | `undefined` | Helper text to display below the text field |
-| `startIcon` | `ReactNode` | `undefined` | Icon to display at the start of the text field |
-| `endIcon` | `ReactNode` | `undefined` | Icon to display at the end of the text field |
-| `onStartIconClick` | `() => void` | `undefined` | Callback when the start icon is clicked |
-| `onEndIconClick` | `() => void` | `undefined` | Callback when the end icon is clicked |
-| `isLoading` | `boolean` | `false` | If `true`, the text field will show a loading spinner and be disabled |
-| `maxLength` | `number` | `undefined` | Maximum number of characters allowed |
-| `label` | `string` | `undefined` | The label for the text field |
-| `placeholder` | `string` | `undefined` | The placeholder text |
-| `disabled` | `boolean` | `false` | If `true`, the text field will be disabled |
-| `required` | `boolean` | `false` | If `true`, the text field will be marked as required |
-| `type` | `string` | `'text'` | The type of the input element |
+| Prop               | Type                                   | Default      | Description                                                            |
+| ------------------ | -------------------------------------- | ------------ | ---------------------------------------------------------------------- |
+| `variant`          | `'outlined' \| 'filled' \| 'standard'` | `'outlined'` | The variant of the text field                                          |
+| `fullWidth`        | `boolean`                              | `true`       | If `true`, the text field will take up the full width of its container |
+| `size`             | `'small' \| 'medium'`                  | `'medium'`   | The size of the text field                                             |
+| `error`            | `boolean`                              | `false`      | If `true`, the text field will be displayed in an error state          |
+| `helperText`       | `ReactNode`                            | `undefined`  | Helper text to display below the text field                            |
+| `startIcon`        | `ReactNode`                            | `undefined`  | Icon to display at the start of the text field                         |
+| `endIcon`          | `ReactNode`                            | `undefined`  | Icon to display at the end of the text field                           |
+| `onStartIconClick` | `() => void`                           | `undefined`  | Callback when the start icon is clicked                                |
+| `onEndIconClick`   | `() => void`                           | `undefined`  | Callback when the end icon is clicked                                  |
+| `isLoading`        | `boolean`                              | `false`      | If `true`, the text field will show a loading spinner and be disabled  |
+| `maxLength`        | `number`                               | `undefined`  | Maximum number of characters allowed                                   |
+| `label`            | `string`                               | `undefined`  | The label for the text field                                           |
+| `placeholder`      | `string`                               | `undefined`  | The placeholder text                                                   |
+| `disabled`         | `boolean`                              | `false`      | If `true`, the text field will be disabled                             |
+| `required`         | `boolean`                              | `false`      | If `true`, the text field will be marked as required                   |
+| `type`             | `string`                               | `'text'`     | The type of the input element                                          |
 
 Plus all other props from Material UI's TextField component.
 
@@ -95,27 +95,24 @@ Plus all other props from Material UI's TextField component.
 
 ```tsx
 // Before
-import { Input } from '@/components/ui/input';
+import { Input } from "@/components/ui/input";
 
-<Input 
-  type="text" 
-  className="custom-class" 
-  placeholder="Enter text" 
-/>
+<Input type="text" className="custom-class" placeholder="Enter text" />;
 
 // After
-import { TextField } from '@learninglab/ui';
+import { TextField } from "@learninglab/ui";
 
-<TextField 
-  type="text" 
-  className="custom-class" 
-  placeholder="Enter text" 
+<TextField
+  type="text"
+  className="custom-class"
+  placeholder="Enter text"
   variant="outlined"
   fullWidth
-/>
+/>;
 ```
 
 The main differences are:
+
 1. The component name changes from `Input` to `TextField`
 2. The new component has built-in label support
 3. The new component has built-in helper text support

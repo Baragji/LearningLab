@@ -7,6 +7,7 @@ This directory is deprecated. All UI components have been moved to the shared pa
 ## Current Location
 
 All UI components are now located in:
+
 ```
 packages/ui/components/
 ```
@@ -34,8 +35,8 @@ The following components are available in `packages/ui/components/`:
 Import components from the shared package:
 
 ```typescript
-import { Button } from '@/packages/ui/components/Button';
-import { Card, CardContent, CardHeader } from '@/packages/ui/components/Card';
+import { Button } from "@/packages/ui/components/Button";
+import { Card, CardContent, CardHeader } from "@/packages/ui/components/Card";
 ```
 
 ## Migration

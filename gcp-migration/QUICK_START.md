@@ -7,6 +7,7 @@ cd gcp-migration && python3 src/mcp_server_with_rag.py
 ```
 
 **Forventet output:**
+
 ```
 🚀 Starting MCP Server with RAG on port 8080
 ✅ RAG engine initialized successfully
@@ -16,27 +17,32 @@ Uvicorn running on http://0.0.0.0:8080
 ## 🧪 Test alle funktioner (5 minutter)
 
 ### 1. Health Check
+
 ```bash
 curl http://localhost:8080/health
 ```
+
 **Forventet:** `"rag_engine": true`
 
 ### 2. List Tools
+
 ```bash
 curl -X POST http://localhost:8080/mcp \
   -H "Content-Type: application/json" \
   -d '{"method": "tools/list"}'
 ```
+
 **Forventet:** 5 tools (analyze_code, search_codebase, generate_code, explain_code, add_document)
 
 ### 3. Add Document
+
 ```bash
 curl -X POST http://localhost:8080/mcp \
   -H "Content-Type: application/json" \
   -d '{
-    "method": "tools/call", 
+    "method": "tools/call",
     "params": {
-      "name": "add_document", 
+      "name": "add_document",
       "arguments": {
         "content": "def bubble_sort(arr):\n    n = len(arr)\n    for i in range(n):\n        for j in range(0, n-i-1):\n            if arr[j] > arr[j+1]:\n                arr[j], arr[j+1] = arr[j+1], arr[j]\n    return arr",
         "file_path": "sorting.py",
@@ -46,16 +52,18 @@ curl -X POST http://localhost:8080/mcp \
     }
   }'
 ```
+
 **Forventet:** `"Successfully added document 'sorting.py' with X chunks"`
 
 ### 4. Search Codebase
+
 ```bash
 curl -X POST http://localhost:8080/mcp \
   -H "Content-Type: application/json" \
   -d '{
-    "method": "tools/call", 
+    "method": "tools/call",
     "params": {
-      "name": "search_codebase", 
+      "name": "search_codebase",
       "arguments": {
         "query": "sorting algorithm",
         "limit": 3
@@ -63,16 +71,18 @@ curl -X POST http://localhost:8080/mcp \
     }
   }'
 ```
+
 **Forventet:** Relevante kode snippets med similarity scores
 
 ### 5. Analyze Code
+
 ```bash
 curl -X POST http://localhost:8080/mcp \
   -H "Content-Type: application/json" \
   -d '{
-    "method": "tools/call", 
+    "method": "tools/call",
     "params": {
-      "name": "analyze_code", 
+      "name": "analyze_code",
       "arguments": {
         "code": "def factorial(n): return 1 if n <= 1 else n * factorial(n-1)",
         "language": "python"
@@ -80,6 +90,7 @@ curl -X POST http://localhost:8080/mcp \
     }
   }'
 ```
+
 **Forventet:** Detaljeret kode analyse fra LLM
 
 ## 📊 Performance Forventninger
@@ -92,17 +103,22 @@ curl -X POST http://localhost:8080/mcp \
 ## 🔧 Troubleshooting
 
 ### Problem: "RAG engine not available"
-**Løsning:** 
+
+**Løsning:**
+
 1. Tjek at Ollama kører: `ollama list`
 2. Tjek at modeller er installeret: `llama3.1:8b` og `nomic-embed-text`
 3. Restart server
 
 ### Problem: "ChromaDB error"
+
 **Løsning:**
+
 1. Slet `data/chromadb/` mappen
 2. Restart server (opretter ny database)
 
 ### Problem: Slow LLM responses
+
 **Normal:** LLM responses tager 20-40 sekunder - dette er normalt for lokal Ollama
 
 ## 🎯 Integration med Trae IDE
@@ -112,6 +128,7 @@ curl -X POST http://localhost:8080/mcp \
 **Content-Type:** `application/json`
 
 **Eksempel MCP client kode:**
+
 ```python
 import requests
 

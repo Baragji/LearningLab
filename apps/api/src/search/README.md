@@ -18,6 +18,7 @@ Søgesystemet er blevet optimeret med følgende forbedringer:
 Følgende indekser er blevet tilføjet til `schema.prisma` for at optimere søgeperformance:
 
 #### Quiz Model
+
 ```prisma
 @@index([lessonId])
 @@index([difficulty])
@@ -25,6 +26,7 @@ Følgende indekser er blevet tilføjet til `schema.prisma` for at optimere søge
 ```
 
 #### Question Model
+
 ```prisma
 @@index([quizId])
 @@index([type])
@@ -32,12 +34,14 @@ Følgende indekser er blevet tilføjet til `schema.prisma` for at optimere søge
 ```
 
 #### AnswerOption Model
+
 ```prisma
 @@index([questionId])
 @@index([isCorrect])
 ```
 
 #### QuizAttempt Model
+
 ```prisma
 @@index([userId])
 @@index([quizId])
@@ -46,6 +50,7 @@ Følgende indekser er blevet tilføjet til `schema.prisma` for at optimere søge
 ```
 
 #### UserAnswer Model
+
 ```prisma
 @@index([quizAttemptId])
 @@index([questionId])
@@ -53,6 +58,7 @@ Følgende indekser er blevet tilføjet til `schema.prisma` for at optimere søge
 ```
 
 #### UserProgress Model
+
 ```prisma
 @@index([userId])
 @@index([lessonId])
@@ -61,6 +67,7 @@ Følgende indekser er blevet tilføjet til `schema.prisma` for at optimere søge
 ```
 
 #### Certificate Model
+
 ```prisma
 @@index([userId])
 @@index([courseId])
@@ -68,6 +75,7 @@ Følgende indekser er blevet tilføjet til `schema.prisma` for at optimere søge
 ```
 
 #### QuestionBank Model
+
 ```prisma
 @@index([name])
 @@index([category])
@@ -75,6 +83,7 @@ Følgende indekser er blevet tilføjet til `schema.prisma` for at optimere søge
 ```
 
 #### QuestionBankItem Model
+
 ```prisma
 @@index([questionBankId])
 @@index([type])
@@ -83,6 +92,7 @@ Følgende indekser er blevet tilføjet til `schema.prisma` for at optimere søge
 ```
 
 #### UserGroup Model
+
 ```prisma
 @@index([name])
 @@index([deletedAt])
@@ -143,8 +153,8 @@ Intelligent caching service der:
 
 ```typescript
 // Miljøvariabler
-SEARCH_CACHE_TTL=300000 // 5 minutter (standard)
-SEARCH_CACHE_MAX_SIZE=1000 // Maksimalt antal entries
+SEARCH_CACHE_TTL = 300000; // 5 minutter (standard)
+SEARCH_CACHE_MAX_SIZE = 1000; // Maksimalt antal entries
 ```
 
 ### Cache Strategier
@@ -234,10 +244,10 @@ constructor(
 
 async updateCourse(id: string, data: UpdateCourseDto) {
   const result = await this.prisma.course.update(...);
-  
+
   // Invalidér cache
   this.cacheInvalidation.invalidateCourseCache(id);
-  
+
   return result;
 }
 ```
@@ -245,12 +255,14 @@ async updateCourse(id: string, data: UpdateCourseDto) {
 ## Performance Forbedringer
 
 ### Før Optimering
+
 - Typisk søgetid: 500-1500ms
 - Ingen caching
 - Suboptimale database queries
 - Ingen performance monitoring
 
 ### Efter Optimering
+
 - Typisk søgetid: 50-200ms (første gang)
 - Cache hits: <10ms
 - Optimerede database queries med indekser

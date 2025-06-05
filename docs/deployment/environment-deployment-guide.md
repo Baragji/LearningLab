@@ -13,12 +13,14 @@ This guide provides detailed instructions for deploying the LearningLab applicat
 ### API Deployment (Local)
 
 1. Set up the local environment:
+
    ```bash
    cd /path/to/LearningLab
    cp apps/api/.env.example apps/api/.env
    ```
 
 2. Configure the development environment variables:
+
    ```
    DATABASE_URL=postgresql://postgres:postgres@localhost:5432/learninglab_dev
    JWT_SECRET=dev_jwt_secret
@@ -34,12 +36,14 @@ This guide provides detailed instructions for deploying the LearningLab applicat
 ### Web Deployment (Local)
 
 1. Set up the local environment:
+
    ```bash
    cd /path/to/LearningLab
    cp apps/web/.env.example apps/web/.env.local
    ```
 
 2. Configure the development environment variables:
+
    ```
    NEXT_PUBLIC_API_URL=http://localhost:3000/api
    ```
@@ -54,6 +58,7 @@ This guide provides detailed instructions for deploying the LearningLab applicat
 ### API Deployment (Render)
 
 1. Create a new Web Service in Render:
+
    - Connect to your GitHub repository
    - Select the branch for staging (e.g., `staging` or `develop`)
    - Set the build command: `cd ../.. && yarn install && yarn workspace api build`
@@ -61,6 +66,7 @@ This guide provides detailed instructions for deploying the LearningLab applicat
    - Set the root directory: `apps/api`
 
 2. Configure the following environment variables in Render:
+
    ```
    DATABASE_URL=<staging-database-connection-string>
    JWT_SECRET=<staging-jwt-secret>
@@ -74,12 +80,14 @@ This guide provides detailed instructions for deploying the LearningLab applicat
 ### Web Deployment (Vercel)
 
 1. Create a new project in Vercel:
+
    - Connect to your GitHub repository
    - Select the branch for staging (e.g., `staging` or `develop`)
    - Set the framework preset to Next.js
    - Set the root directory to `apps/web`
 
 2. Configure the following environment variables in Vercel:
+
    ```
    NEXT_PUBLIC_API_URL=<staging-api-url>/api
    ```
@@ -91,6 +99,7 @@ This guide provides detailed instructions for deploying the LearningLab applicat
 ### API Deployment (Render)
 
 1. Create a new Web Service in Render (or use the same service with production branch):
+
    - Connect to your GitHub repository
    - Select the main branch
    - Set the build command: `cd ../.. && yarn install && yarn workspace api build`
@@ -98,6 +107,7 @@ This guide provides detailed instructions for deploying the LearningLab applicat
    - Set the root directory: `apps/api`
 
 2. Configure the following environment variables in Render:
+
    ```
    DATABASE_URL=<production-database-connection-string>
    JWT_SECRET=<production-jwt-secret>
@@ -111,12 +121,14 @@ This guide provides detailed instructions for deploying the LearningLab applicat
 ### Web Deployment (Vercel)
 
 1. Create a new project in Vercel (or use the same project with production settings):
+
    - Connect to your GitHub repository
    - Select the main branch
    - Set the framework preset to Next.js
    - Set the root directory to `apps/web`
 
 2. Configure the following environment variables in Vercel:
+
    ```
    NEXT_PUBLIC_API_URL=<production-api-url>/api
    ```
@@ -130,16 +142,19 @@ For all environments, you can also use Docker as described in the Docker Deploym
 ## Environment-Specific Considerations
 
 ### Development
+
 - Use local database or Docker container
 - Enable detailed logging and debugging
 - Use shorter JWT expiration times for testing
 
 ### Staging
+
 - Use a separate database from production
 - Mirror production configuration as closely as possible
 - Enable more detailed logging than production
 
 ### Production
+
 - Use secure, managed database service
 - Implement proper secrets management
 - Enable minimal necessary logging

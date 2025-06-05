@@ -29,6 +29,7 @@ npx prisma migrate dev
 ```
 
 Dette vil:
+
 - Sammenligne den aktuelle databasetilstand med Prisma-skemaet
 - Generere en ny migrationsfil, hvis der er ændringer
 - Anvende migrationen på databasen
@@ -48,6 +49,7 @@ npx prisma migrate deploy
 ```
 
 Dette vil:
+
 - Anvende alle migrationer, der endnu ikke er anvendt på databasen
 - Ikke generere nye migrationsfiler
 - Køre i en sikker, ikke-interaktiv tilstand

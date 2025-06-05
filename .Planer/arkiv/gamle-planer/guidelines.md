@@ -82,6 +82,7 @@ LearningLab/
 ## Tech Stack
 
 ### Backend (API)
+
 - **Framework**: NestJS v10.3.10
 - **Sprog**: TypeScript v5.3.3
 - **Database**: PostgreSQL v15 med Prisma ORM v6.8.2
@@ -91,9 +92,10 @@ LearningLab/
 - **Rate Limiting**: @nestjs/throttler med Redis storage
 
 ### Frontend (Web)
+
 - **Framework**: Next.js v13.4.12
 - **Sprog**: TypeScript v5.1.6
-- **UI Biblioteker**: 
+- **UI Biblioteker**:
   - Material UI v7.1.0
   - Radix UI (forskellige komponenter)
   - Tailwind CSS v3.3.3
@@ -102,26 +104,30 @@ LearningLab/
 - **Komponent Bibliotek**: Eget UI bibliotek (workspace:ui)
 
 ### Delte Pakker
+
 - **Konfiguration**: ESLint v8/v9, Prettier v3.0.0, TypeScript konfigurationer
 - **Core**: Delte typer og utilities
 - **UI**: Delte UI komponenter
 
 ### DevOps & Infrastruktur
+
 - **Containerisering**: Docker med multi-stage builds
 - **Orkestrering**: Docker Compose
 - **CI/CD**: GitHub Actions
 - **Kvalitetssikring**: JetBrains Qodana
-- **Deployment**: 
+- **Deployment**:
   - API: Render
   - Web: Vercel
   - Lokal: Docker Compose med Nginx reverse proxy
 
 ### Test
+
 - **Unit Testing**: Jest v29.6.2
 - **E2E Testing**: Playwright v1.52.0
 - **API Testing**: Supertest v6.3.3
 
 ### Pakke Management
+
 - **Monorepo**: Turborepo v2.3.5
 - **Pakke Manager**: Yarn v4.9.1 med Workspaces
 
@@ -130,6 +136,7 @@ LearningLab/
 ### Setup
 
 1. Sørg for at have Node.js v22 installeret:
+
    ```bash
    # Tjek Node.js version
    node -v
@@ -137,11 +144,13 @@ LearningLab/
    ```
 
 2. Aktiver Corepack for at bruge Yarn v4:
+
    ```bash
    corepack enable
    ```
 
 3. Klon repository og installer afhængigheder:
+
    ```bash
    git clone <repository-url>
    cd LearningLab
@@ -161,6 +170,7 @@ LearningLab/
 ### Udvikling
 
 Start udviklingsmiljøet:
+
 ```bash
 yarn dev
 ```
@@ -168,11 +178,13 @@ yarn dev
 Dette vil starte både API og web applikationerne i udviklingstilstand med hot reloading.
 
 For at starte kun API:
+
 ```bash
 yarn workspace api dev
 ```
 
 For at starte kun web:
+
 ```bash
 yarn workspace web dev
 ```
@@ -187,21 +199,25 @@ yarn workspace web dev
 ## Test
 
 Kør tests:
+
 ```bash
 yarn test
 ```
 
 For kontinuerlig test under udvikling:
+
 ```bash
 yarn test:watch
 ```
 
 For CI/CD miljøer:
+
 ```bash
 yarn test:ci
 ```
 
 For E2E tests (web):
+
 ```bash
 yarn workspace web test:e2e
 ```
@@ -209,11 +225,13 @@ yarn workspace web test:e2e
 ## Build Proces
 
 For at bygge alle applikationer og pakker:
+
 ```bash
 yarn build
 ```
 
 For at bygge kun API:
+
 ```bash
 yarn build:api
 ```
@@ -234,22 +252,26 @@ docker-compose down
 ```
 
 Dette vil starte:
+
 - PostgreSQL database på port 5432
 - API service på port 3000 (internt)
 - Web applikation på port 3001 (internt)
 - Nginx reverse proxy på port 80 (eksponeret)
 
 Applikationen vil være tilgængelig på:
+
 - Web: http://localhost
 - API: http://localhost/api
 
 ### Cloud Deployment
 
 Projektet er konfigureret til deployment på:
+
 - **API**: Render
 - **Web**: Vercel
 
 Se detaljerede deployment guides i `/docs/deployment/` mappen:
+
 - Environment-specifikke deployment guides
 - CI/CD hemmeligheder og miljøvariabler
 - Deployment alignment guide
@@ -269,11 +291,13 @@ Se detaljerede deployment guides i `/docs/deployment/` mappen:
 ### Database Forbindelsesproblemer
 
 1. Sørg for at databasecontaineren kører:
+
    ```bash
    docker ps
    ```
 
 2. Tjek database logs:
+
    ```bash
    docker-compose logs postgres
    ```
@@ -285,6 +309,7 @@ Se detaljerede deployment guides i `/docs/deployment/` mappen:
 ### API Forbindelsesproblemer
 
 1. Tjek API logs:
+
    ```bash
    docker-compose logs api
    ```
@@ -295,6 +320,7 @@ Se detaljerede deployment guides i `/docs/deployment/` mappen:
 ### Web Applikationsproblemer
 
 1. Tjek web logs:
+
    ```bash
    docker-compose logs web
    ```
@@ -307,15 +333,18 @@ Se detaljerede deployment guides i `/docs/deployment/` mappen:
 Projektet bruger GitHub Actions til CI/CD:
 
 1. **Build og Test**: Kører på alle pull requests og pushes til main
+
    - Installerer afhængigheder
    - Bygger alle pakker og applikationer
    - Kører unit tests
    - Kører E2E tests med Playwright
 
 2. **Deploy til Render (API)**: Kører kun på pushes til main
+
    - Trigger et deploy via Render deploy hook
 
 3. **Deploy til Vercel (Web)**: Kører kun på pushes til main
+
    - Deployer web applikationen til Vercel
 
 4. **Kodekvalitet**: Kører Qodana kodekvalitetsanalyse

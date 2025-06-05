@@ -33,7 +33,7 @@ services:
       # Cache Configuration
       - CACHE_TTL=${CACHE_TTL:-60}
       - CACHE_MAX_ITEMS=${CACHE_MAX_ITEMS:-100}
-      # Throttling Configuration  
+      # Throttling Configuration
       - THROTTLE_TTL=${THROTTLE_TTL:-60000}
       - THROTTLE_LIMIT=${THROTTLE_LIMIT:-10}
       # Social Auth (Optional)

@@ -56,7 +56,10 @@ export class AIProviderService {
         return !!apiKey;
       }
     } catch (error) {
-      this.logger.error(`AI provider ${this.provider} is not available:`, (error as Error).message);
+      this.logger.error(
+        `AI provider ${this.provider} is not available:`,
+        (error as Error).message,
+      );
       return false;
     }
   }
@@ -104,12 +107,17 @@ export class AIProviderService {
             promptTokens: usage.promptTokens,
             completionTokens: usage.completionTokens,
           },
-          model: options?.model || this.configService.get<string>('OPENAI_MODEL', 'gpt-3.5-turbo'),
+          model:
+            options?.model ||
+            this.configService.get<string>('OPENAI_MODEL', 'gpt-3.5-turbo'),
           provider: 'openai',
         };
       }
     } catch (error) {
-      this.logger.error('Failed to generate completion:', (error as Error).message);
+      this.logger.error(
+        'Failed to generate completion:',
+        (error as Error).message,
+      );
       throw error;
     }
   }
@@ -157,12 +165,17 @@ export class AIProviderService {
             promptTokens: usage.promptTokens,
             completionTokens: usage.completionTokens,
           },
-          model: options?.model || this.configService.get<string>('OPENAI_MODEL', 'gpt-3.5-turbo'),
+          model:
+            options?.model ||
+            this.configService.get<string>('OPENAI_MODEL', 'gpt-3.5-turbo'),
           provider: 'openai',
         };
       }
     } catch (error) {
-      this.logger.error('Failed to generate chat completion:', (error as Error).message);
+      this.logger.error(
+        'Failed to generate chat completion:',
+        (error as Error).message,
+      );
       throw error;
     }
   }
@@ -178,7 +191,10 @@ export class AIProviderService {
         return await this.openaiService.getEmbedding(text);
       }
     } catch (error) {
-      this.logger.error('Failed to generate embedding:', (error as Error).message);
+      this.logger.error(
+        'Failed to generate embedding:',
+        (error as Error).message,
+      );
       throw error;
     }
   }
@@ -186,7 +202,10 @@ export class AIProviderService {
   /**
    * Generate multiple embeddings in batch
    */
-  async generateEmbeddings(texts: string[], model?: string): Promise<number[][]> {
+  async generateEmbeddings(
+    texts: string[],
+    model?: string,
+  ): Promise<number[][]> {
     try {
       if (this.provider === 'ollama') {
         return await this.ollamaService.generateEmbeddings(texts, model);
@@ -200,7 +219,10 @@ export class AIProviderService {
         return embeddings;
       }
     } catch (error) {
-      this.logger.error('Failed to generate embeddings:', (error as Error).message);
+      this.logger.error(
+        'Failed to generate embeddings:',
+        (error as Error).message,
+      );
       throw error;
     }
   }
@@ -235,10 +257,17 @@ ${content}
         const response = await this.ollamaService.generateCompletion(prompt);
         return JSON.parse(response);
       } else {
-        return await this.openaiService.generateQuestions(content, questionCount, difficulty);
+        return await this.openaiService.generateQuestions(
+          content,
+          questionCount,
+          difficulty,
+        );
       }
     } catch (error) {
-      this.logger.error('Failed to generate questions:', (error as Error).message);
+      this.logger.error(
+        'Failed to generate questions:',
+        (error as Error).message,
+      );
       throw error;
     }
   }
@@ -250,7 +279,7 @@ ${content}
     try {
       if (this.provider === 'ollama') {
         const models = await this.ollamaService.getModels();
-        return models.map(model => model.name);
+        return models.map((model) => model.name);
       } else {
         // Return common OpenAI models
         return [
@@ -262,7 +291,10 @@ ${content}
         ];
       }
     } catch (error) {
-      this.logger.error('Failed to get available models:', (error as Error).message);
+      this.logger.error(
+        'Failed to get available models:',
+        (error as Error).message,
+      );
       return [];
     }
   }
@@ -285,7 +317,10 @@ ${content}
     if (this.provider === 'ollama') {
       return this.ollamaService.getDefaultEmbeddingModel();
     } else {
-      return this.configService.get<string>('OPENAI_EMBEDDING_MODEL', 'text-embedding-ada-002');
+      return this.configService.get<string>(
+        'OPENAI_EMBEDDING_MODEL',
+        'text-embedding-ada-002',
+      );
     }
   }
 }

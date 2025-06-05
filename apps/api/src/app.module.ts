@@ -30,7 +30,10 @@ import { CommonModule } from './common/common.module';
 import { CacheModule } from '@nestjs/cache-manager';
 import { APP_INTERCEPTOR, APP_FILTER, APP_PIPE } from '@nestjs/core';
 import { SimpleCacheInterceptor } from './common/interceptors/simple-cache.interceptor';
-import { LoggingInterceptor, PerformanceInterceptor } from './interceptors/logging.interceptor';
+import {
+  LoggingInterceptor,
+  PerformanceInterceptor,
+} from './interceptors/logging.interceptor';
 import { GlobalExceptionFilter } from './filters/global-exception.filter';
 import { CustomValidationPipe } from './pipes/validation.pipe';
 import { ConfigModule } from './config/config.module';

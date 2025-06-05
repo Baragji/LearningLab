@@ -37,9 +37,7 @@ interface AuthenticatedRequest extends globalThis.Request {
 @ApiTags('Authentication')
 @Controller('auth')
 export class AuthController {
-  constructor(
-    private authService: AuthService,
-  ) {}
+  constructor(private authService: AuthService) {}
 
   @ApiOperation({ summary: 'Log ind med email og password' })
   @ApiBody({ type: LoginDto })
@@ -169,6 +167,4 @@ export class AuthController {
   ): Promise<{ access_token: string }> {
     return this.authService.refreshToken(refreshTokenDto.refresh_token);
   }
-
-
 }

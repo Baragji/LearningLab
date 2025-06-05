@@ -29,7 +29,7 @@ export class ContentFetcher {
     }
 
     const combinedContent = lesson.contentBlocks
-      .map(block => block.content)
+      .map((block) => block.content)
       .join('\n\n');
 
     if (!combinedContent.trim()) {
@@ -64,8 +64,8 @@ export class ContentFetcher {
     }
 
     const combinedContent = topic.lessons
-      .flatMap(lesson => lesson.contentBlocks)
-      .map(block => block.content)
+      .flatMap((lesson) => lesson.contentBlocks)
+      .map((block) => block.content)
       .join('\n\n');
 
     if (!combinedContent.trim()) {
@@ -106,9 +106,9 @@ export class ContentFetcher {
     }
 
     const combinedContent = course.topics
-      .flatMap(topic => topic.lessons)
-      .flatMap(lesson => lesson.contentBlocks)
-      .map(block => block.content)
+      .flatMap((topic) => topic.lessons)
+      .flatMap((lesson) => lesson.contentBlocks)
+      .map((block) => block.content)
       .join('\n\n');
 
     if (!combinedContent.trim()) {
@@ -128,19 +128,19 @@ export class ContentFetcher {
           where: { id: contentId },
           select: { title: true, description: true },
         });
-      
+
       case 'topic':
         return this.prisma.topic.findUnique({
           where: { id: contentId },
           select: { title: true, description: true },
         });
-      
+
       case 'course':
         return this.prisma.course.findUnique({
           where: { id: contentId },
           select: { title: true, description: true },
         });
-      
+
       default:
         return null;
     }

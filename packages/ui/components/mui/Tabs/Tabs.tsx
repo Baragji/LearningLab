@@ -1,57 +1,62 @@
 // packages/ui/components/mui/Tabs/Tabs.tsx
-import React from 'react';
-import { Tabs as MuiTabs, Tab as MuiTab, Box, TabsProps as MuiTabsProps } from '@mui/material';
+import React from "react";
+import {
+  Tabs as MuiTabs,
+  Tab as MuiTab,
+  Box,
+  TabsProps as MuiTabsProps,
+} from "@mui/material";
 
 export interface TabItem {
   /**
    * Label tekst for tab
    */
   label: string;
-  
+
   /**
    * Unik værdi for tab
    */
   value: string;
-  
+
   /**
    * Om tab er deaktiveret
    * @default false
    */
   disabled?: boolean;
-  
+
   /**
    * Ikon til visning i tab
    */
   icon?: React.ReactElement | string;
 }
 
-export interface TabsProps extends Omit<MuiTabsProps, 'onChange'> {
+export interface TabsProps extends Omit<MuiTabsProps, "onChange"> {
   /**
    * Array af tab-elementer
    */
   items: TabItem[];
-  
+
   /**
    * Aktiv tab-værdi
    */
   value: string;
-  
+
   /**
    * Callback når tab ændres
    */
   onChange: (value: string) => void;
-  
+
   /**
    * Orientering af tabs
    * @default 'horizontal'
    */
-  orientation?: 'horizontal' | 'vertical';
-  
+  orientation?: "horizontal" | "vertical";
+
   /**
    * Variant af tabs
    * @default 'standard'
    */
-  variant?: 'standard' | 'scrollable' | 'fullWidth';
+  variant?: "standard" | "scrollable" | "fullWidth";
 }
 
 /**
@@ -61,8 +66,8 @@ export const Tabs = ({
   items,
   value,
   onChange,
-  orientation = 'horizontal',
-  variant = 'standard',
+  orientation = "horizontal",
+  variant = "standard",
   ...props
 }: TabsProps) => {
   const handleChange = (_: React.SyntheticEvent, newValue: string) => {
@@ -83,7 +88,11 @@ export const Tabs = ({
           label={item.label}
           value={item.value}
           disabled={item.disabled}
-          icon={item.icon ? React.createElement(React.Fragment, null, item.icon) : undefined}
+          icon={
+            item.icon
+              ? React.createElement(React.Fragment, null, item.icon)
+              : undefined
+          }
           iconPosition="start"
         />
       ))}
@@ -96,12 +105,12 @@ export interface TabPanelProps {
    * Indhold i tab panel
    */
   children?: React.ReactNode;
-  
+
   /**
    * Aktiv tab-værdi
    */
   value: string;
-  
+
   /**
    * Tab-værdi for dette panel
    */

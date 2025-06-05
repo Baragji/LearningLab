@@ -345,9 +345,7 @@ export class SearchService {
             },
           },
         },
-        orderBy: query
-          ? [{ order: 'asc' }]
-          : { createdAt: 'desc' },
+        orderBy: query ? [{ order: 'asc' }] : { createdAt: 'desc' },
         skip: offset,
         take: type === 'all' ? Math.floor(limit / 5) : limit,
       });
@@ -386,9 +384,7 @@ export class SearchService {
             },
           },
         },
-        orderBy: query
-          ? [{ filename: 'asc' }]
-          : { createdAt: 'desc' },
+        orderBy: query ? [{ filename: 'asc' }] : { createdAt: 'desc' },
         skip: offset,
         take: type === 'all' ? Math.floor(limit / 5) : limit,
       });
@@ -405,7 +401,9 @@ export class SearchService {
 
     // Hvis type er 'all', beregn det samlede antal resultater med optimeret queries
     if (type === 'all') {
-      const courseCount = await this.prisma.course.count({ where: courseWhereBase });
+      const courseCount = await this.prisma.course.count({
+        where: courseWhereBase,
+      });
       const topicWhereFull: Prisma.TopicWhereInput = {
         deletedAt: null,
         course: {
@@ -428,9 +426,13 @@ export class SearchService {
           ],
         }),
       };
-      const topicCount = await this.prisma.topic.count({ where: topicWhereFull });
-      const lessonCount = await this.prisma.lesson.count({ where: lessonWhere });
-      
+      const topicCount = await this.prisma.topic.count({
+        where: topicWhereFull,
+      });
+      const lessonCount = await this.prisma.lesson.count({
+        where: lessonWhere,
+      });
+
       const materialWhereFull: Prisma.ContentBlockWhereInput = {
         deletedAt: null,
         lesson: {
@@ -456,8 +458,10 @@ export class SearchService {
           content: { contains: query, mode: 'insensitive' },
         }),
       };
-      const materialCount = await this.prisma.contentBlock.count({ where: materialWhereFull });
-      
+      const materialCount = await this.prisma.contentBlock.count({
+        where: materialWhereFull,
+      });
+
       const fileWhereFull: Prisma.FileWhereInput = {
         ...(query && {
           OR: [
@@ -469,14 +473,17 @@ export class SearchService {
         }),
       };
       const fileCount = await this.prisma.file.count({ where: fileWhereFull });
-      
-      total = courseCount + topicCount + lessonCount + materialCount + fileCount;
+
+      total =
+        courseCount + topicCount + lessonCount + materialCount + fileCount;
     }
 
     // Performance logging
     const searchEndTime = Date.now();
     const searchDuration = searchEndTime - searchStartTime;
-    this.logger.debug(`Search completed in ${searchDuration}ms. Results: courses=${courses.length}, topics=${topics.length}, lessons=${lessons.length}, materials=${materials.length}, files=${files.length}`);
+    this.logger.debug(
+      `Search completed in ${searchDuration}ms. Results: courses=${courses.length}, topics=${topics.length}, lessons=${lessons.length}, materials=${materials.length}, files=${files.length}`,
+    );
 
     // Beregn totale antal sider
     const totalPages = Math.ceil(total / limit);
@@ -565,14 +572,20 @@ export class SearchService {
   /**
    * Beregner en relevance score for et materiale baseret på søgeteksten
    */
-  private calculateMaterialRelevanceScore(material: any, query?: string): number {
+  private calculateMaterialRelevanceScore(
+    material: any,
+    query?: string,
+  ): number {
     if (!query) return 1;
 
     const lowerQuery = query.toLowerCase();
     let score = 1;
 
     // Tjek indhold for match
-    if (material.content && material.content.toLowerCase().includes(lowerQuery)) {
+    if (
+      material.content &&
+      material.content.toLowerCase().includes(lowerQuery)
+    ) {
       score += 3;
     }
 
@@ -582,8 +595,11 @@ export class SearchService {
     }
 
     // Tjek fil navn hvis der er en tilknyttet fil
-    if (material.file && material.file.filename && 
-        material.file.filename.toLowerCase().includes(lowerQuery)) {
+    if (
+      material.file &&
+      material.file.filename &&
+      material.file.filename.toLowerCase().includes(lowerQuery)
+    ) {
       score += 2;
     }
 
@@ -604,17 +620,26 @@ export class SearchService {
       score += 5;
     }
     // Tjek filnavn for delvist match
-    else if (file.filename && file.filename.toLowerCase().includes(lowerQuery)) {
+    else if (
+      file.filename &&
+      file.filename.toLowerCase().includes(lowerQuery)
+    ) {
       score += 3;
     }
 
     // Tjek originalt navn
-    if (file.originalName && file.originalName.toLowerCase().includes(lowerQuery)) {
+    if (
+      file.originalName &&
+      file.originalName.toLowerCase().includes(lowerQuery)
+    ) {
       score += 2;
     }
 
     // Tjek beskrivelse
-    if (file.description && file.description.toLowerCase().includes(lowerQuery)) {
+    if (
+      file.description &&
+      file.description.toLowerCase().includes(lowerQuery)
+    ) {
       score += 1;
     }
 

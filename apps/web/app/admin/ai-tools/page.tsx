@@ -1,14 +1,25 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { QuestionGenerator } from '../../../src/components/ai/QuestionGenerator';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../../src/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../../src/components/ui/tabs';
-import { Brain, Sparkles, Target, Zap } from 'lucide-react';
+import React from "react";
+import { QuestionGenerator } from "../../../src/components/ai/QuestionGenerator";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../../../src/components/ui/card";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "../../../src/components/ui/tabs";
+import { Brain, Sparkles, Target, Zap } from "lucide-react";
 
 export default function AIToolsPage() {
   const handleQuestionsGenerated = (questions: any[]) => {
-    console.log('Generated questions:', questions);
+    console.log("Generated questions:", questions);
     // Here you could save questions to database, show success message, etc.
   };
 
@@ -20,25 +31,38 @@ export default function AIToolsPage() {
           AI Værktøjer
         </h1>
         <p className="text-muted-foreground text-lg">
-          Avancerede AI-drevne værktøjer til automatisk indholdsoprettelse og spørgsmålsgenerering
+          Avancerede AI-drevne værktøjer til automatisk indholdsoprettelse og
+          spørgsmålsgenerering
         </p>
       </div>
 
       <Tabs defaultValue="question-generator" className="space-y-6">
         <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="question-generator" className="flex items-center gap-2">
+          <TabsTrigger
+            value="question-generator"
+            className="flex items-center gap-2"
+          >
             <Sparkles className="h-4 w-4" />
             Spørgsmålsgenerator
           </TabsTrigger>
-          <TabsTrigger value="content-analyzer" className="flex items-center gap-2">
+          <TabsTrigger
+            value="content-analyzer"
+            className="flex items-center gap-2"
+          >
             <Target className="h-4 w-4" />
             Indholdsanalyse
           </TabsTrigger>
-          <TabsTrigger value="quiz-optimizer" className="flex items-center gap-2">
+          <TabsTrigger
+            value="quiz-optimizer"
+            className="flex items-center gap-2"
+          >
             <Zap className="h-4 w-4" />
             Quiz Optimering
           </TabsTrigger>
-          <TabsTrigger value="learning-paths" className="flex items-center gap-2">
+          <TabsTrigger
+            value="learning-paths"
+            className="flex items-center gap-2"
+          >
             <Brain className="h-4 w-4" />
             Læringsstier
           </TabsTrigger>
@@ -56,14 +80,18 @@ export default function AIToolsPage() {
                 Indholdsanalyse
               </CardTitle>
               <CardDescription>
-                Analyser eksisterende indhold for at identificere læringshul og forbedringspotentiale
+                Analyser eksisterende indhold for at identificere læringshul og
+                forbedringspotentiale
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="text-center py-12 text-muted-foreground">
                 <Target className="h-12 w-12 mx-auto mb-4 opacity-50" />
                 <p>Indholdsanalyse værktøj kommer snart...</p>
-                <p className="text-sm mt-2">Dette værktøj vil analysere eksisterende lektioner og foreslå forbedringer</p>
+                <p className="text-sm mt-2">
+                  Dette værktøj vil analysere eksisterende lektioner og foreslå
+                  forbedringer
+                </p>
               </div>
             </CardContent>
           </Card>
@@ -77,14 +105,18 @@ export default function AIToolsPage() {
                 Quiz Optimering
               </CardTitle>
               <CardDescription>
-                Optimer eksisterende quizzer baseret på brugerperformance og AI-analyse
+                Optimer eksisterende quizzer baseret på brugerperformance og
+                AI-analyse
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="text-center py-12 text-muted-foreground">
                 <Zap className="h-12 w-12 mx-auto mb-4 opacity-50" />
                 <p>Quiz optimering værktøj kommer snart...</p>
-                <p className="text-sm mt-2">Dette værktøj vil analysere quiz-performance og foreslå forbedringer</p>
+                <p className="text-sm mt-2">
+                  Dette værktøj vil analysere quiz-performance og foreslå
+                  forbedringer
+                </p>
               </div>
             </CardContent>
           </Card>
@@ -98,14 +130,18 @@ export default function AIToolsPage() {
                 Personaliserede Læringsstier
               </CardTitle>
               <CardDescription>
-                Generer tilpassede læringsstier baseret på brugerens niveau og mål
+                Generer tilpassede læringsstier baseret på brugerens niveau og
+                mål
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="text-center py-12 text-muted-foreground">
                 <Brain className="h-12 w-12 mx-auto mb-4 opacity-50" />
                 <p>Læringsstier værktøj kommer snart...</p>
-                <p className="text-sm mt-2">Dette værktøj vil skabe personaliserede læringsstier for hver bruger</p>
+                <p className="text-sm mt-2">
+                  Dette værktøj vil skabe personaliserede læringsstier for hver
+                  bruger
+                </p>
               </div>
             </CardContent>
           </Card>
@@ -123,7 +159,8 @@ export default function AIToolsPage() {
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground">
-              Generer automatisk spørgsmål fra enhver tekst med avanceret AI-analyse og kvalitetsvurdering.
+              Generer automatisk spørgsmål fra enhver tekst med avanceret
+              AI-analyse og kvalitetsvurdering.
             </p>
           </CardContent>
         </Card>
@@ -137,7 +174,8 @@ export default function AIToolsPage() {
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground">
-              Analyser indhold for læringshul, sværhedsgrad og foreslå forbedringer baseret på AI-indsigter.
+              Analyser indhold for læringshul, sværhedsgrad og foreslå
+              forbedringer baseret på AI-indsigter.
             </p>
           </CardContent>
         </Card>
@@ -151,7 +189,8 @@ export default function AIToolsPage() {
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground">
-              Optimer quizzer og lektioner baseret på brugerdata og performance-metrics.
+              Optimer quizzer og lektioner baseret på brugerdata og
+              performance-metrics.
             </p>
           </CardContent>
         </Card>
@@ -165,7 +204,8 @@ export default function AIToolsPage() {
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground">
-              Skab tilpassede læringsstier og anbefalinger baseret på individuelle behov.
+              Skab tilpassede læringsstier og anbefalinger baseret på
+              individuelle behov.
             </p>
           </CardContent>
         </Card>

@@ -8,9 +8,7 @@
     "declarationMap": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "./src/*"
-      ],
+      "@/*": ["./src/*"],
       "@repo/core": ["../../packages/core/dist"],
       "@repo/core/*": ["../../packages/core/dist/*"],
       "@repo/config": ["../../packages/config/dist"],
@@ -37,9 +35,7 @@
     "app/**/*.tsx",
     ".next/types/**/*.ts"
   ],
-  "exclude": [
-    "node_modules"
-  ],
+  "exclude": ["node_modules"],
   "references": [
     {
       "path": "../../packages/ui"

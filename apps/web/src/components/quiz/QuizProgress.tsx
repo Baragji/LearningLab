@@ -1,5 +1,5 @@
-import React from 'react';
-import { Box, LinearProgress, Typography } from '@mui/material';
+import React from "react";
+import { Box, LinearProgress, Typography } from "@mui/material";
 
 interface QuizProgressProps {
   currentQuestion: number;
@@ -10,7 +10,7 @@ interface QuizProgressProps {
 const QuizProgress: React.FC<QuizProgressProps> = ({
   currentQuestion,
   totalQuestions,
-  answeredQuestions
+  answeredQuestions,
 }) => {
   // Calculate progress percentage
   const progressPercentage = (currentQuestion / totalQuestions) * 100;
@@ -18,7 +18,7 @@ const QuizProgress: React.FC<QuizProgressProps> = ({
 
   return (
     <Box sx={{ mt: 2, mb: 4 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+      <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
         <Typography variant="body2" color="text.secondary">
           Question {currentQuestion} of {totalQuestions}
         </Typography>
@@ -26,33 +26,33 @@ const QuizProgress: React.FC<QuizProgressProps> = ({
           {answeredQuestions} answered
         </Typography>
       </Box>
-      
-      <LinearProgress 
-        variant="determinate" 
-        value={progressPercentage} 
-        sx={{ 
-          height: 8, 
+
+      <LinearProgress
+        variant="determinate"
+        value={progressPercentage}
+        sx={{
+          height: 8,
           borderRadius: 4,
           mb: 1,
-          backgroundColor: 'grey.300',
-          '& .MuiLinearProgress-bar': {
+          backgroundColor: "grey.300",
+          "& .MuiLinearProgress-bar": {
             borderRadius: 4,
-          }
-        }} 
+          },
+        }}
       />
-      
-      <LinearProgress 
-        variant="determinate" 
-        value={answeredPercentage} 
+
+      <LinearProgress
+        variant="determinate"
+        value={answeredPercentage}
         color="success"
-        sx={{ 
-          height: 8, 
+        sx={{
+          height: 8,
           borderRadius: 4,
-          backgroundColor: 'grey.300',
-          '& .MuiLinearProgress-bar': {
+          backgroundColor: "grey.300",
+          "& .MuiLinearProgress-bar": {
             borderRadius: 4,
-          }
-        }} 
+          },
+        }}
       />
     </Box>
   );

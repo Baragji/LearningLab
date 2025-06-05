@@ -1,2 +1,2 @@
 // Re-export useAuth from AuthContext for backward compatibility
-export { useAuth } from './AuthContext';
+export { useAuth } from "./AuthContext";

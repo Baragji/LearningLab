@@ -12,7 +12,8 @@ import { Type } from 'class-transformer'; // Added for nested DTO transformation
 import { LessonDto } from '../lesson/lesson.dto'; // Assuming path, adjust if needed
 import { QuizDto } from '../quiz/quiz.dto'; // Assuming path, adjust if needed
 
-export class TopicDto { // Updated class name
+export class TopicDto {
+  // Updated class name
   @ApiProperty({
     description: 'Unik ID for topicet', // Updated description
     type: Number,
@@ -81,7 +82,8 @@ export class TopicDto { // Updated class name
   quizzes?: QuizDto[];
 }
 
-export class CreateTopicDto { // Updated class name
+export class CreateTopicDto {
+  // Updated class name
   @ApiProperty({
     description: 'Topicets titel', // Updated description
     type: String,
@@ -121,7 +123,8 @@ export class CreateTopicDto { // Updated class name
   courseId: number;
 }
 
-export class UpdateTopicDto { // Updated class name
+export class UpdateTopicDto {
+  // Updated class name
   @ApiPropertyOptional({
     description: 'Topicets titel', // Updated description
     type: String,
@@ -163,7 +166,8 @@ export class UpdateTopicDto { // Updated class name
   courseId?: number;
 }
 
-export class UpdateTopicsOrderDto { // Updated class name
+export class UpdateTopicsOrderDto {
+  // Updated class name
   @ApiProperty({
     description: "Array af topic-ID'er i den ønskede rækkefølge", // Updated description
     type: [Number],

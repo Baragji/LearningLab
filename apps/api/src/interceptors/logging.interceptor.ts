@@ -27,7 +27,7 @@ export class LoggingInterceptor implements NestInterceptor {
 
     // Log request
     this.logger.log(
-      `[REQUEST] ${method} ${url} - IP: ${ip} - User: ${userId} (${userRole}) - UserAgent: ${userAgent}`
+      `[REQUEST] ${method} ${url} - IP: ${ip} - User: ${userId} (${userRole}) - UserAgent: ${userAgent}`,
     );
 
     // Log request body for non-GET requests (excluding sensitive data)
@@ -43,30 +43,33 @@ export class LoggingInterceptor implements NestInterceptor {
         next: (data) => {
           const duration = Date.now() - startTime;
           const { statusCode } = response;
-          
+
           this.logger.log(
-            `[RESPONSE] ${method} ${url} - ${statusCode} - ${duration}ms - User: ${userId}`
+            `[RESPONSE] ${method} ${url} - ${statusCode} - ${duration}ms - User: ${userId}`,
           );
 
           // Log response data for development (excluding large responses)
           if (process.env.NODE_ENV === 'development' && data) {
             const responseSize = JSON.stringify(data).length;
-            if (responseSize < 1000) { // Only log small responses
+            if (responseSize < 1000) {
+              // Only log small responses
               this.logger.debug(`[RESPONSE DATA] ${JSON.stringify(data)}`);
             } else {
-              this.logger.debug(`[RESPONSE DATA] Large response (${responseSize} chars) - truncated`);
+              this.logger.debug(
+                `[RESPONSE DATA] Large response (${responseSize} chars) - truncated`,
+              );
             }
           }
         },
         error: (error) => {
           const duration = Date.now() - startTime;
           const statusCode = error.status || 500;
-          
+
           this.logger.error(
-            `[ERROR] ${method} ${url} - ${statusCode} - ${duration}ms - User: ${userId} - Error: ${error.message}`
+            `[ERROR] ${method} ${url} - ${statusCode} - ${duration}ms - User: ${userId} - Error: ${error.message}`,
           );
         },
-      })
+      }),
     );
   }
 
@@ -135,7 +138,7 @@ export class PerformanceInterceptor implements NestInterceptor {
 
           if (duration > this.slowRequestThreshold) {
             this.logger.warn(
-              `[SLOW REQUEST] ${method} ${url} - ${duration.toFixed(2)}ms (threshold: ${this.slowRequestThreshold}ms)`
+              `[SLOW REQUEST] ${method} ${url} - ${duration.toFixed(2)}ms (threshold: ${this.slowRequestThreshold}ms)`,
             );
           }
 
@@ -144,20 +147,20 @@ export class PerformanceInterceptor implements NestInterceptor {
             const memUsage = process.memoryUsage();
             this.logger.debug(
               `[MEMORY] RSS: ${(memUsage.rss / 1024 / 1024).toFixed(2)}MB, ` +
-              `Heap Used: ${(memUsage.heapUsed / 1024 / 1024).toFixed(2)}MB, ` +
-              `Heap Total: ${(memUsage.heapTotal / 1024 / 1024).toFixed(2)}MB`
+                `Heap Used: ${(memUsage.heapUsed / 1024 / 1024).toFixed(2)}MB, ` +
+                `Heap Total: ${(memUsage.heapTotal / 1024 / 1024).toFixed(2)}MB`,
             );
           }
         },
         error: () => {
           const endTime = process.hrtime.bigint();
           const duration = Number(endTime - startTime) / 1000000;
-          
+
           this.logger.error(
-            `[ERROR PERFORMANCE] ${method} ${url} - ${duration.toFixed(2)}ms`
+            `[ERROR PERFORMANCE] ${method} ${url} - ${duration.toFixed(2)}ms`,
           );
         },
-      })
+      }),
     );
   }
 }

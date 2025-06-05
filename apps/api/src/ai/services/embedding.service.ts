@@ -1,6 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { AIProviderService } from './ai-provider.service';
-import { VectorStoreService, VectorDocument, SearchResult } from './vector-store.service';
+import {
+  VectorStoreService,
+  VectorDocument,
+  SearchResult,
+} from './vector-store.service';
 import { v4 as uuidv4 } from 'uuid';
 
 export interface EmbeddingRequest {
@@ -54,12 +58,13 @@ export class EmbeddingService {
       };
 
       await this.vectorStoreService.addDocument(document);
-      
+
       this.logger.log(`Created and stored embedding for document: ${id}`);
       return id;
     } catch (error) {
       this.logger.error('Failed to create and store embedding', error);
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
       throw new Error(`Failed to create and store embedding: ${errorMessage}`);
     }
   }
@@ -67,12 +72,15 @@ export class EmbeddingService {
   /**
    * Perform semantic search using natural language query
    */
-  async semanticSearch(request: SemanticSearchRequest): Promise<SearchResult[]> {
+  async semanticSearch(
+    request: SemanticSearchRequest,
+  ): Promise<SearchResult[]> {
     try {
       const { query, limit = 10, threshold = 0.7, filters } = request;
 
       // Create embedding for the search query
-      const queryEmbedding = await this.aiProviderService.generateEmbedding(query);
+      const queryEmbedding =
+        await this.aiProviderService.generateEmbedding(query);
 
       // Search in vector store
       let results = await this.vectorStoreService.searchSimilar(
@@ -83,7 +91,7 @@ export class EmbeddingService {
 
       // Apply metadata filters if provided
       if (filters && Object.keys(filters).length > 0) {
-        results = results.filter(result => {
+        results = results.filter((result) => {
           for (const [key, value] of Object.entries(filters)) {
             if (result.document.metadata[key] !== value) {
               return false;
@@ -96,11 +104,14 @@ export class EmbeddingService {
       // Limit final results
       results = results.slice(0, limit);
 
-      this.logger.log(`Semantic search for "${query}" returned ${results.length} results`);
+      this.logger.log(
+        `Semantic search for "${query}" returned ${results.length} results`,
+      );
       return results;
     } catch (error) {
       this.logger.error('Failed to perform semantic search', error);
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
       throw new Error(`Failed to perform semantic search: ${errorMessage}`);
     }
   }
@@ -108,10 +119,15 @@ export class EmbeddingService {
   /**
    * Update an existing document's embedding
    */
-  async updateEmbedding(id: string, newContent: string, metadata?: Record<string, any>): Promise<boolean> {
+  async updateEmbedding(
+    id: string,
+    newContent: string,
+    metadata?: Record<string, any>,
+  ): Promise<boolean> {
     try {
       // Create new embedding
-      const embedding = await this.aiProviderService.generateEmbedding(newContent);
+      const embedding =
+        await this.aiProviderService.generateEmbedding(newContent);
 
       // Update document
       const updates: Partial<VectorDocument> = {
@@ -126,7 +142,7 @@ export class EmbeddingService {
       };
 
       const success = await this.vectorStoreService.updateDocument(id, updates);
-      
+
       if (success) {
         this.logger.log(`Updated embedding for document: ${id}`);
       } else {
@@ -136,7 +152,8 @@ export class EmbeddingService {
       return success;
     } catch (error) {
       this.logger.error(`Failed to update embedding for document ${id}`, error);
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
       throw new Error(`Failed to update embedding: ${errorMessage}`);
     }
   }
@@ -147,7 +164,7 @@ export class EmbeddingService {
   async deleteEmbedding(id: string): Promise<boolean> {
     try {
       const success = await this.vectorStoreService.deleteDocument(id);
-      
+
       if (success) {
         this.logger.log(`Deleted embedding for document: ${id}`);
       } else {
@@ -157,7 +174,8 @@ export class EmbeddingService {
       return success;
     } catch (error) {
       this.logger.error(`Failed to delete embedding for document ${id}`, error);
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
       throw new Error(`Failed to delete embedding: ${errorMessage}`);
     }
   }
@@ -183,12 +201,18 @@ export class EmbeddingService {
       );
 
       // Filter out the original document
-      const filteredResults = results.filter(result => result.document.id !== documentId);
-      
+      const filteredResults = results.filter(
+        (result) => result.document.id !== documentId,
+      );
+
       return filteredResults.slice(0, limit);
     } catch (error) {
-      this.logger.error(`Failed to find similar documents for ${documentId}`, error);
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      this.logger.error(
+        `Failed to find similar documents for ${documentId}`,
+        error,
+      );
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
       throw new Error(`Failed to find similar documents: ${errorMessage}`);
     }
   }
@@ -206,16 +230,21 @@ export class EmbeddingService {
         results.push(id);
       } catch (error) {
         this.logger.error(`Failed to process batch item:`, error);
-        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        const errorMessage =
+          error instanceof Error ? error.message : 'Unknown error';
         errors.push(errorMessage);
       }
     }
 
     if (errors.length > 0) {
-      this.logger.warn(`Batch processing completed with ${errors.length} errors`);
+      this.logger.warn(
+        `Batch processing completed with ${errors.length} errors`,
+      );
     }
 
-    this.logger.log(`Batch processed ${results.length}/${requests.length} documents successfully`);
+    this.logger.log(
+      `Batch processed ${results.length}/${requests.length} documents successfully`,
+    );
     return results;
   }
 
@@ -227,7 +256,8 @@ export class EmbeddingService {
       return await this.vectorStoreService.getDocument(id);
     } catch (error) {
       this.logger.error(`Failed to get embedding for document ${id}`, error);
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
       throw new Error(`Failed to get embedding: ${errorMessage}`);
     }
   }

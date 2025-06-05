@@ -1,5 +1,5 @@
 // packages/ui/components/mui/Dialog/Dialog.tsx
-import React from 'react';
+import React from "react";
 import {
   Dialog as MuiDialog,
   DialogProps as MuiDialogProps,
@@ -8,48 +8,48 @@ import {
   DialogContentText,
   DialogActions,
   Button,
-} from '@mui/material';
+} from "@mui/material";
 
-export interface DialogProps extends Omit<MuiDialogProps, 'title'> {
+export interface DialogProps extends Omit<MuiDialogProps, "title"> {
   /**
    * Titel på dialogen
    */
   title?: React.ReactNode;
-  
+
   /**
    * Beskrivelse eller undertitel på dialogen
    */
   description?: React.ReactNode;
-  
+
   /**
    * Indhold til footer-sektionen
    */
   footer?: React.ReactNode;
-  
+
   /**
    * Om der skal vises en luk-knap
    * @default true
    */
   closeButton?: boolean;
-  
+
   /**
    * Om der skal vises en bekræft-knap
    * @default false
    */
   confirmButton?: boolean;
-  
+
   /**
    * Tekst på bekræft-knappen
    * @default 'Bekræft'
    */
   confirmText?: string;
-  
+
   /**
    * Tekst på annuller-knappen
    * @default 'Annuller'
    */
   cancelText?: string;
-  
+
   /**
    * Callback når bekræft-knappen klikkes
    */
@@ -60,25 +60,28 @@ export interface DialogProps extends Omit<MuiDialogProps, 'title'> {
  * Dialog-komponent til at vise modalt indhold
  */
 export const Dialog = React.forwardRef<HTMLDivElement, DialogProps>(
-  ({
-    title,
-    description,
-    footer,
-    children,
-    closeButton = true,
-    confirmButton = false,
-    confirmText = 'Bekræft',
-    cancelText = 'Annuller',
-    onConfirm,
-    onClose,
-    ...props
-  }, ref) => {
+  (
+    {
+      title,
+      description,
+      footer,
+      children,
+      closeButton = true,
+      confirmButton = false,
+      confirmText = "Bekræft",
+      cancelText = "Annuller",
+      onConfirm,
+      onClose,
+      ...props
+    },
+    ref,
+  ) => {
     const handleConfirm = () => {
       if (onConfirm) {
         onConfirm();
       }
       if (onClose) {
-        onClose({}, 'backdropClick');
+        onClose({}, "backdropClick");
       }
     };
 
@@ -86,8 +89,8 @@ export const Dialog = React.forwardRef<HTMLDivElement, DialogProps>(
       <MuiDialog
         ref={ref}
         onClose={onClose}
-        aria-labelledby={title ? 'dialog-title' : undefined}
-        aria-describedby={description ? 'dialog-description' : undefined}
+        aria-labelledby={title ? "dialog-title" : undefined}
+        aria-describedby={description ? "dialog-description" : undefined}
         {...props}
       >
         {title && <DialogTitle id="dialog-title">{title}</DialogTitle>}
@@ -103,12 +106,16 @@ export const Dialog = React.forwardRef<HTMLDivElement, DialogProps>(
           <DialogActions>
             {footer}
             {closeButton && (
-              <Button onClick={(e) => onClose && onClose(e, 'backdropClick')}>
+              <Button onClick={(e) => onClose && onClose(e, "backdropClick")}>
                 {cancelText}
               </Button>
             )}
             {confirmButton && (
-              <Button onClick={handleConfirm} variant="contained" color="primary">
+              <Button
+                onClick={handleConfirm}
+                variant="contained"
+                color="primary"
+              >
                 {confirmText}
               </Button>
             )}
@@ -116,7 +123,7 @@ export const Dialog = React.forwardRef<HTMLDivElement, DialogProps>(
         )}
       </MuiDialog>
     );
-  }
+  },
 );
 
-Dialog.displayName = 'Dialog';
+Dialog.displayName = "Dialog";

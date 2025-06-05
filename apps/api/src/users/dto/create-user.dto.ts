@@ -115,6 +115,4 @@ export class CreateUserDto {
   @Type(() => Object)
   @IsObject({ message: 'Indstillinger skal være et objekt.' })
   settings?: UserSettings;
-
-
 }

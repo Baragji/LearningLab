@@ -62,7 +62,7 @@ export enum ContentBlockType {
   TEXT = "TEXT",
   IMAGE_URL = "IMAGE_URL",
   VIDEO_URL = "VIDEO_URL",
-  QUIZ_REF = "QUIZ_REF"
+  QUIZ_REF = "QUIZ_REF",
 }
 
 /**

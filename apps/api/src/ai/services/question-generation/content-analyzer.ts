@@ -22,7 +22,8 @@ export class ContentAnalyzer {
         [
           {
             role: 'system',
-            content: 'Du er en ekspert i uddannelsesindhold analyse. Returner altid valid JSON.',
+            content:
+              'Du er en ekspert i uddannelsesindhold analyse. Returner altid valid JSON.',
           },
           { role: 'user', content: prompt },
         ],
@@ -60,22 +61,29 @@ Returner kun JSON uden yderligere tekst:`;
   /**
    * Parse AI response til ContentAnalysis
    */
-  private parseAnalysisResponse(responseContent: string, content: string): ContentAnalysis {
+  private parseAnalysisResponse(
+    responseContent: string,
+    content: string,
+  ): ContentAnalysis {
     try {
       const parsed = JSON.parse(responseContent);
       return {
-        mainTopics: Array.isArray(parsed.mainTopics) 
-          ? parsed.mainTopics.slice(0, 5) 
+        mainTopics: Array.isArray(parsed.mainTopics)
+          ? parsed.mainTopics.slice(0, 5)
           : ['Generelt emne'],
-        keyTerms: Array.isArray(parsed.keyTerms) 
-          ? parsed.keyTerms.slice(0, 10) 
+        keyTerms: Array.isArray(parsed.keyTerms)
+          ? parsed.keyTerms.slice(0, 10)
           : ['grundlæggende'],
         complexity: this.validateComplexity(parsed.complexity),
         contentType: this.validateContentType(parsed.contentType),
-        estimatedReadingTime: parsed.estimatedReadingTime || this.estimateReadingTime(content),
+        estimatedReadingTime:
+          parsed.estimatedReadingTime || this.estimateReadingTime(content),
       };
     } catch (error) {
-      this.logger.warn('Kunne ikke parse content analysis, bruger fallback', error);
+      this.logger.warn(
+        'Kunne ikke parse content analysis, bruger fallback',
+        error,
+      );
       return this.getFallbackAnalysis(content);
     }
   }
@@ -83,9 +91,11 @@ Returner kun JSON uden yderligere tekst:`;
   /**
    * Valider kompleksitet værdi
    */
-  private validateComplexity(complexity: string): 'beginner' | 'intermediate' | 'advanced' {
+  private validateComplexity(
+    complexity: string,
+  ): 'beginner' | 'intermediate' | 'advanced' {
     const valid = ['beginner', 'intermediate', 'advanced'];
-    return valid.includes(complexity) ? complexity as any : 'beginner';
+    return valid.includes(complexity) ? (complexity as any) : 'beginner';
   }
 
   /**
@@ -93,7 +103,7 @@ Returner kun JSON uden yderligere tekst:`;
    */
   private validateContentType(contentType: string): 'text' | 'code' | 'mixed' {
     const valid = ['text', 'code', 'mixed'];
-    return valid.includes(contentType) ? contentType as any : 'text';
+    return valid.includes(contentType) ? (contentType as any) : 'text';
   }
 
   /**

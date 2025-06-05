@@ -54,13 +54,13 @@ describe('Node.js Version Requirements', () => {
   describe('Test Docker build with version', () => {
     // This is a more complex test that would actually build the Docker image
     // In a real CI environment, we would use Jest's done callback or async/await
-    
+
     it('should be able to build Docker image with Node.js 22', () => {
       // This is a simplified test that just checks if the Dockerfile exists
       // In a real test, you would use the Docker API or shell commands to build
       // and verify the image
       expect(fs.existsSync(dockerfilePath)).toBe(true);
-      
+
       // Mock test for Docker build success
       // In a real test, you would execute the Docker build command and check the result
       const mockDockerBuildSuccess = true;

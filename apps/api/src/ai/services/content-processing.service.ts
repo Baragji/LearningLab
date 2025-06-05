@@ -55,32 +55,34 @@ export class ContentProcessingService {
   ): Promise<ProcessedContent> {
     try {
       const contentId = `content_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-      
+
       // Analyze content
       const analysis = await this.analyzeContent(content);
-      
+
       // Split content into chunks
       const chunks = this.splitIntoChunks(content, contentId);
-      
+
       // Create embeddings for each chunk
       const embeddingIds: string[] = [];
-      
+
       for (const chunk of chunks) {
-        const embeddingId = await this.embeddingService.createAndStoreEmbedding({
-          content: chunk.content,
-          metadata: {
-            ...metadata,
-            ...chunk.metadata,
-            contentType: 'text',
-            analysis,
+        const embeddingId = await this.embeddingService.createAndStoreEmbedding(
+          {
+            content: chunk.content,
+            metadata: {
+              ...metadata,
+              ...chunk.metadata,
+              contentType: 'text',
+              analysis,
+            },
+            id: chunk.id,
           },
-          id: chunk.id,
-        });
+        );
         embeddingIds.push(embeddingId);
       }
 
       this.logger.log(`Processed text content with ${chunks.length} chunks`);
-      
+
       return {
         id: contentId,
         originalContent: content,
@@ -90,7 +92,8 @@ export class ContentProcessingService {
       };
     } catch (error) {
       this.logger.error('Failed to process text content', error);
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
       throw new Error(`Failed to process text content: ${errorMessage}`);
     }
   }
@@ -106,7 +109,7 @@ export class ContentProcessingService {
       // Read and parse PDF
       const dataBuffer = fs.readFileSync(filePath);
       const pdfData = await pdfParse(dataBuffer);
-      
+
       const enhancedMetadata = {
         ...metadata,
         fileName: path.basename(filePath),
@@ -119,7 +122,8 @@ export class ContentProcessingService {
       return await this.processTextContent(pdfData.text, enhancedMetadata);
     } catch (error) {
       this.logger.error(`Failed to process PDF file: ${filePath}`, error);
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
       throw new Error(`Failed to process PDF file: ${errorMessage}`);
     }
   }
@@ -163,22 +167,26 @@ Content:
 ${content.substring(0, 2000)}...
 `;
 
-      const response = await this.aiProviderService.generateChatCompletion([
+      const response = await this.aiProviderService.generateChatCompletion(
+        [
+          {
+            role: 'system',
+            content:
+              'You are an educational content analyst. Respond only with valid JSON.',
+          },
+          {
+            role: 'user',
+            content: prompt,
+          },
+        ],
         {
-          role: 'system',
-          content: 'You are an educational content analyst. Respond only with valid JSON.',
+          temperature: 0.3,
+          maxTokens: 1000,
         },
-        {
-          role: 'user',
-          content: prompt,
-        },
-      ], {
-        temperature: 0.3,
-        maxTokens: 1000,
-      });
+      );
 
       const analysis = JSON.parse(response.content);
-      
+
       // Add calculated fields
       const wordCount = content.split(/\s+/).length;
       const estimatedReadingTime = Math.ceil(wordCount / 200); // 200 words per minute
@@ -189,8 +197,11 @@ ${content.substring(0, 2000)}...
         estimatedReadingTime,
       };
     } catch (error) {
-      this.logger.warn('Failed to analyze content with AI, using fallback', error);
-      
+      this.logger.warn(
+        'Failed to analyze content with AI, using fallback',
+        error,
+      );
+
       // Fallback analysis
       const wordCount = content.split(/\s+/).length;
       return {
@@ -217,14 +228,14 @@ ${content.substring(0, 2000)}...
         currentPosition + this.maxChunkSize,
         content.length,
       );
-      
+
       // Try to break at a sentence or paragraph boundary
       let actualEndPosition = endPosition;
       if (endPosition < content.length) {
         const lastSentence = content.lastIndexOf('.', endPosition);
         const lastParagraph = content.lastIndexOf('\n\n', endPosition);
         const lastSpace = content.lastIndexOf(' ', endPosition);
-        
+
         // Use the best break point
         if (lastParagraph > currentPosition + this.maxChunkSize * 0.5) {
           actualEndPosition = lastParagraph + 2;
@@ -235,11 +246,13 @@ ${content.substring(0, 2000)}...
         }
       }
 
-      const chunkContent = content.substring(currentPosition, actualEndPosition).trim();
-      
+      const chunkContent = content
+        .substring(currentPosition, actualEndPosition)
+        .trim();
+
       if (chunkContent.length > 0) {
         const chunkId = `${parentId}_chunk_${chunkIndex}`;
-        
+
         chunks.push({
           id: chunkId,
           content: chunkContent,
@@ -252,7 +265,7 @@ ${content.substring(0, 2000)}...
             chunkType: this.determineChunkType(chunkContent),
           },
         });
-        
+
         chunkIndex++;
       }
 
@@ -270,24 +283,31 @@ ${content.substring(0, 2000)}...
   /**
    * Determine the type of content chunk
    */
-  private determineChunkType(content: string): 'paragraph' | 'section' | 'heading' | 'list' {
+  private determineChunkType(
+    content: string,
+  ): 'paragraph' | 'section' | 'heading' | 'list' {
     const trimmed = content.trim();
-    
+
     // Check for headings (lines that are short and don't end with punctuation)
-    if (trimmed.length < 100 && !trimmed.endsWith('.') && !trimmed.endsWith('!') && !trimmed.endsWith('?')) {
+    if (
+      trimmed.length < 100 &&
+      !trimmed.endsWith('.') &&
+      !trimmed.endsWith('!') &&
+      !trimmed.endsWith('?')
+    ) {
       return 'heading';
     }
-    
+
     // Check for lists (contains bullet points or numbered items)
     if (/^\s*[-*•]|^\s*\d+\./m.test(trimmed)) {
       return 'list';
     }
-    
+
     // Check for sections (contains multiple paragraphs)
     if (trimmed.includes('\n\n')) {
       return 'section';
     }
-    
+
     return 'paragraph';
   }
 
@@ -330,8 +350,11 @@ ${content.substring(0, 2000)}...
 
       // Combine chunks into full content
       const fullContent = chunks
-        .sort((a, b) => a.document.metadata.chunkIndex - b.document.metadata.chunkIndex)
-        .map(chunk => chunk.document.content)
+        .sort(
+          (a, b) =>
+            a.document.metadata.chunkIndex - b.document.metadata.chunkIndex,
+        )
+        .map((chunk) => chunk.document.content)
         .join('\n\n');
 
       // Generate questions
@@ -341,8 +364,12 @@ ${content.substring(0, 2000)}...
         difficulty,
       );
     } catch (error) {
-      this.logger.error(`Failed to generate questions for content ${contentId}`, error);
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      this.logger.error(
+        `Failed to generate questions for content ${contentId}`,
+        error,
+      );
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
       throw new Error(`Failed to generate questions: ${errorMessage}`);
     }
   }

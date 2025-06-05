@@ -1,4 +1,3 @@
-
 Her er en oversigt over de viste MCP-servere og deres funktioner i punktform:
 
 ### sequential-thinking
@@ -36,8 +35,6 @@ list_projects: Vis alle tilgængelige projekter. Brug dette værktøj til at opd
 read_files: Indlæs filer i arbejdshukommelsen. Du kan angive linjeområder ved ap...
 web_search: Søg på nettet ved hjælp af DuckDuckGo. Dette værktøj udfører en websøg...
 search_files: Søg rekursivt efter filer og mapper, der matcher et mønster. Se...
-
-
 
 ### filesystem
 

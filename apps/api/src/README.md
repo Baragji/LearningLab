@@ -30,11 +30,13 @@ src/
 
 ## Module Organization Guidelines
 
-1. **Feature-based Organization**: 
+1. **Feature-based Organization**:
+
    - Each major feature should have its own directory (e.g., `users/`, `quiz/`, `user-groups/`)
    - Feature directories should follow a consistent structure
 
 2. **Standard Module Structure**:
+
    ```
    feature-name/
    ├── dto/                # Data Transfer Objects
@@ -46,6 +48,7 @@ src/
    ```
 
 3. **Naming Conventions**:
+
    - Use kebab-case for directory names
    - Use camelCase for file names
    - Use PascalCase for class names

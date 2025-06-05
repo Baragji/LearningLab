@@ -12,7 +12,9 @@ export class SearchCacheInvalidationService {
    * Invalidate cache when a course is created, updated, or deleted
    */
   invalidateCourseCache(courseId?: string): void {
-    this.logger.debug(`Invalidating course cache${courseId ? ` for course ${courseId}` : ''}`);
+    this.logger.debug(
+      `Invalidating course cache${courseId ? ` for course ${courseId}` : ''}`,
+    );
     this.cacheService.invalidateByEntity('course', courseId);
     this.cacheService.invalidateByEntity('all'); // Also invalidate 'all' searches
   }
@@ -21,7 +23,9 @@ export class SearchCacheInvalidationService {
    * Invalidate cache when a topic is created, updated, or deleted
    */
   invalidateTopicCache(topicId?: string): void {
-    this.logger.debug(`Invalidating topic cache${topicId ? ` for topic ${topicId}` : ''}`);
+    this.logger.debug(
+      `Invalidating topic cache${topicId ? ` for topic ${topicId}` : ''}`,
+    );
     this.cacheService.invalidateByEntity('topic', topicId);
     this.cacheService.invalidateByEntity('all'); // Also invalidate 'all' searches
   }
@@ -30,7 +34,9 @@ export class SearchCacheInvalidationService {
    * Invalidate cache when a lesson is created, updated, or deleted
    */
   invalidateLessonCache(lessonId?: string): void {
-    this.logger.debug(`Invalidating lesson cache${lessonId ? ` for lesson ${lessonId}` : ''}`);
+    this.logger.debug(
+      `Invalidating lesson cache${lessonId ? ` for lesson ${lessonId}` : ''}`,
+    );
     this.cacheService.invalidateByEntity('lesson', lessonId);
     this.cacheService.invalidateByEntity('all'); // Also invalidate 'all' searches
   }
@@ -39,7 +45,9 @@ export class SearchCacheInvalidationService {
    * Invalidate cache when a material (ContentBlock) is created, updated, or deleted
    */
   invalidateMaterialCache(materialId?: string): void {
-    this.logger.debug(`Invalidating material cache${materialId ? ` for material ${materialId}` : ''}`);
+    this.logger.debug(
+      `Invalidating material cache${materialId ? ` for material ${materialId}` : ''}`,
+    );
     this.cacheService.invalidateByEntity('material', materialId);
     this.cacheService.invalidateByEntity('all'); // Also invalidate 'all' searches
   }
@@ -48,7 +56,9 @@ export class SearchCacheInvalidationService {
    * Invalidate cache when a file is created, updated, or deleted
    */
   invalidateFileCache(fileId?: string): void {
-    this.logger.debug(`Invalidating file cache${fileId ? ` for file ${fileId}` : ''}`);
+    this.logger.debug(
+      `Invalidating file cache${fileId ? ` for file ${fileId}` : ''}`,
+    );
     this.cacheService.invalidateByEntity('file', fileId);
     this.cacheService.invalidateByEntity('all'); // Also invalidate 'all' searches
   }
@@ -57,7 +67,9 @@ export class SearchCacheInvalidationService {
    * Invalidate cache when an education program is created, updated, or deleted
    */
   invalidateEducationProgramCache(programId?: string): void {
-    this.logger.debug(`Invalidating education program cache${programId ? ` for program ${programId}` : ''}`);
+    this.logger.debug(
+      `Invalidating education program cache${programId ? ` for program ${programId}` : ''}`,
+    );
     // Education program changes affect all entity types
     this.cacheService.clear();
   }
@@ -75,7 +87,7 @@ export class SearchCacheInvalidationService {
    */
   invalidateCacheByTags(tags: string[]): void {
     if (!tags || tags.length === 0) return;
-    
+
     this.logger.debug(`Invalidating cache for tags: ${tags.join(', ')}`);
     // For tag-based invalidation, we need to clear all cache since tags can affect any search
     this.cacheService.clear();

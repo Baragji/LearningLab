@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
-import { GetServerSidePropsContext } from 'next';
-import { parseCookies } from 'nookies';
-import Layout from '../../../src/components/layout/Layout';
-import { useAuth } from '../../../src/contexts/useAuth';
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/router";
+import { GetServerSidePropsContext } from "next";
+import { parseCookies } from "nookies";
+import Layout from "../../../src/components/layout/Layout";
+import { useAuth } from "../../../src/contexts/useAuth";
 
 interface Course {
   id: number;
@@ -28,23 +28,28 @@ const AdminCoursesPage: React.FC = () => {
       setIsLoading(true);
       setError(null);
       try {
-        const baseUrl = process.env.NEXT_PUBLIC_API_URL || '/api';
-        const response = await fetch(`${baseUrl}/courses?includeSubjectArea=true`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
+        const baseUrl = process.env.NEXT_PUBLIC_API_URL || "/api";
+        const response = await fetch(
+          `${baseUrl}/courses?includeSubjectArea=true`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
           },
-        });
+        );
 
         if (!response.ok) {
-          throw new Error(`Failed to fetch courses: ${response.status} ${response.statusText}`);
+          throw new Error(
+            `Failed to fetch courses: ${response.status} ${response.statusText}`,
+          );
         }
 
         const data = await response.json();
         setCourses(data);
       } catch (err: any) {
-        console.error('Error fetching courses:', err);
-        setError(err.message || 'Failed to fetch courses');
+        console.error("Error fetching courses:", err);
+        setError(err.message || "Failed to fetch courses");
       } finally {
         setIsLoading(false);
       }
@@ -54,29 +59,31 @@ const AdminCoursesPage: React.FC = () => {
   }, [token]);
 
   const handleDelete = async (id: number) => {
-    if (!confirm('Are you sure you want to delete this course?')) {
+    if (!confirm("Are you sure you want to delete this course?")) {
       return;
     }
 
     try {
-      const baseUrl = process.env.NEXT_PUBLIC_API_URL || '/api';
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL || "/api";
       const response = await fetch(`${baseUrl}/courses/${id}`, {
-        method: 'DELETE',
+        method: "DELETE",
         headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
         },
       });
 
       if (!response.ok) {
-        throw new Error(`Failed to delete course: ${response.status} ${response.statusText}`);
+        throw new Error(
+          `Failed to delete course: ${response.status} ${response.statusText}`,
+        );
       }
 
       // Remove the deleted course from the state
-      setCourses(courses.filter(course => course.id !== id));
+      setCourses(courses.filter((course) => course.id !== id));
     } catch (err: any) {
-      console.error('Error deleting course:', err);
-      setError(err.message || 'Failed to delete course');
+      console.error("Error deleting course:", err);
+      setError(err.message || "Failed to delete course");
     }
   };
 
@@ -84,9 +91,11 @@ const AdminCoursesPage: React.FC = () => {
     <Layout>
       <div className="space-y-6">
         <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Administrer Kurser</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+            Administrer Kurser
+          </h1>
           <button
-            onClick={() => router.push('/admin/courses/create')}
+            onClick={() => router.push("/admin/courses/create")}
             className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
           >
             Opret Nyt Kursus
@@ -98,7 +107,10 @@ const AdminCoursesPage: React.FC = () => {
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
           </div>
         ) : error ? (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+          <div
+            className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
+            role="alert"
+          >
             <strong className="font-bold">Fejl!</strong>
             <span className="block sm:inline"> {error}</span>
           </div>
@@ -121,12 +133,14 @@ const AdminCoursesPage: React.FC = () => {
                           {course.description}
                         </p>
                         <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
-                          Fagområde: {course.subjectArea?.name || 'Ukendt'}
+                          Fagområde: {course.subjectArea?.name || "Ukendt"}
                         </p>
                       </div>
                       <div className="flex space-x-2">
                         <button
-                          onClick={() => router.push(`/admin/courses/edit/${course.id}`)}
+                          onClick={() =>
+                            router.push(`/admin/courses/edit/${course.id}`)
+                          }
                           className="px-3 py-1 bg-blue-100 text-blue-700 dark:bg-blue-800 dark:text-blue-100 rounded-md hover:bg-blue-200 dark:hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                         >
                           Rediger
@@ -157,24 +171,26 @@ const isUserAuthenticated = (token: string | undefined): boolean => {
   return !!token;
 };
 
-export const getServerSideProps = async (context: GetServerSidePropsContext) => {
+export const getServerSideProps = async (
+  context: GetServerSidePropsContext,
+) => {
   // Hent cookies fra request
   const cookies = parseCookies(context);
-  
+
   // Hent auth-token fra cookie
-  const token = cookies['access_token'];
-  
+  const token = cookies["access_token"];
+
   // Valider token
   if (!isUserAuthenticated(token)) {
     // Hvis token ikke er gyldig eller mangler, redirect til login
     return {
       redirect: {
-        destination: '/login',
+        destination: "/login",
         permanent: false,
       },
     };
   }
-  
+
   // Hvis token er gyldig, fortsæt til siden
   return {
     props: {},

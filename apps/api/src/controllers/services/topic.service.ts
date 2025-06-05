@@ -12,10 +12,7 @@ import {
   PaginatedResult,
 } from '../../common/services/base.service';
 import { Topic, Lesson, Quiz } from '@prisma/client';
-import {
-  CreateTopicDto,
-  UpdateTopicDto,
-} from '../dto/topic/topic.dto';
+import { CreateTopicDto, UpdateTopicDto } from '../dto/topic/topic.dto';
 
 @Injectable()
 export class TopicService extends BaseService<Topic> {
@@ -47,7 +44,13 @@ export class TopicService extends BaseService<Topic> {
       deletedAt: null,
     };
 
-    return this.findAll({ ...options, include, filter, sort: 'order', order: 'asc' });
+    return this.findAll({
+      ...options,
+      include,
+      filter,
+      sort: 'order',
+      order: 'asc',
+    });
   }
 
   /**
@@ -166,7 +169,8 @@ export class TopicService extends BaseService<Topic> {
       id,
       {
         title: title !== undefined ? title : existingTopic.title,
-        description: description !== undefined ? description : existingTopic.description,
+        description:
+          description !== undefined ? description : existingTopic.description,
         order: order !== undefined ? order : existingTopic.order,
         courseId: courseId !== undefined ? courseId : existingTopic.courseId,
       },
@@ -182,11 +186,14 @@ export class TopicService extends BaseService<Topic> {
    */
   async deleteTopic(id: number, userId?: number): Promise<Topic> {
     // Tjek om topicet eksisterer
-    const existingTopic: Topic & { lessons?: Lesson[]; quizzes?: Quiz[] } = await this.findTopicById(id, true);
+    const existingTopic: Topic & { lessons?: Lesson[]; quizzes?: Quiz[] } =
+      await this.findTopicById(id, true);
 
     // Tjek om der er lektioner eller quizzer tilknyttet topicet
-    if ((existingTopic.lessons && existingTopic.lessons.length > 0) || 
-        (existingTopic.quizzes && existingTopic.quizzes.length > 0)) {
+    if (
+      (existingTopic.lessons && existingTopic.lessons.length > 0) ||
+      (existingTopic.quizzes && existingTopic.quizzes.length > 0)
+    ) {
       throw new BadRequestException(
         'Topicet kan ikke slettes, da der er lektioner eller quizzer tilknyttet. Slet venligst disse først.',
       );
@@ -196,7 +203,7 @@ export class TopicService extends BaseService<Topic> {
 
     // Opdater rækkefølgen af de resterende topics
     const remainingTopics = await this.prisma.topic.findMany({
-      where: { 
+      where: {
         courseId: existingTopic.courseId,
         deletedAt: null,
       },
@@ -245,25 +252,29 @@ export class TopicService extends BaseService<Topic> {
     }
 
     // Tjek om alle topic ID'er i topicIds faktisk tilhører kurset
-    const courseTopicIds = course.topics.map(topic => topic.id);
-    const allTopicIdsBelongToCourse = topicIds.every(id => courseTopicIds.includes(id));
+    const courseTopicIds = course.topics.map((topic) => topic.id);
+    const allTopicIdsBelongToCourse = topicIds.every((id) =>
+      courseTopicIds.includes(id),
+    );
     if (!allTopicIdsBelongToCourse) {
       throw new BadRequestException(
-        'En eller flere af de angivne topic-ID\'er tilhører ikke det specificerede kursus.',
+        "En eller flere af de angivne topic-ID'er tilhører ikke det specificerede kursus.",
       );
     }
-    
+
     // Tjek for duplikerede ID'er i topicIds
     const uniqueTopicIds = new Set(topicIds);
     if (uniqueTopicIds.size !== topicIds.length) {
-      throw new BadRequestException('Topic-ID\'er i den nye rækkefølge må ikke være duplikerede.');
+      throw new BadRequestException(
+        "Topic-ID'er i den nye rækkefølge må ikke være duplikerede.",
+      );
     }
 
     // Opdater rækkefølgen af topics
     const updates = topicIds.map((topicId, index) => {
       return this.prisma.topic.update({
         where: { id: topicId },
-        data: { 
+        data: {
           order: index + 1,
           updatedBy: userId || null,
           updatedAt: new Date(),

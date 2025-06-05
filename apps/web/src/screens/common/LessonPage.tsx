@@ -1,65 +1,55 @@
 // apps/web/src/screens/common/LessonPage.tsx
-import React, { useEffect } from 'react';
-import { useRouter } from 'next/router';
-import { 
-  Box, 
-  Typography, 
-  Container, 
-  Paper, 
-  Breadcrumbs, 
-  Link, 
+import React, { useEffect } from "react";
+import { useRouter } from "next/router";
+import {
+  Box,
+  Typography,
+  Container,
+  Paper,
+  Breadcrumbs,
+  Link,
   CircularProgress,
-  Button
-} from '@mui/material';
-import { 
-  useGetLessonByIdQuery, 
+  Button,
+} from "@mui/material";
+import {
+  useGetLessonByIdQuery,
   useGetContentBlocksByLessonIdQuery,
   useGetModuleByIdQuery,
   useGetCourseByIdQuery,
-  useGetSubjectAreaByIdQuery
-} from '../../store/services/api';
-import ContentBlockRenderer from '../../components/content/ContentBlockRenderer';
-import { ContentBlockType } from '@repo/core/src/types/pensum.types';
-import NavigateNextIcon from '@mui/icons-material/NavigateNext';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+  useGetSubjectAreaByIdQuery,
+} from "../../store/services/api";
+import ContentBlockRenderer from "../../components/content/ContentBlockRenderer";
+import { ContentBlockType } from "@repo/core/src/types/pensum.types";
+import NavigateNextIcon from "@mui/icons-material/NavigateNext";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 
 const LessonPage: React.FC = () => {
   const router = useRouter();
   const { lessonId } = router.query;
-  
-  const { 
-    data: lesson, 
-    isLoading: isLessonLoading, 
-    error: lessonError 
+
+  const {
+    data: lesson,
+    isLoading: isLessonLoading,
+    error: lessonError,
   } = useGetLessonByIdQuery(Number(lessonId));
-  
-  const { 
-    data: contentBlocks, 
-    isLoading: isContentBlocksLoading 
-  } = useGetContentBlocksByLessonIdQuery(Number(lessonId));
-  
-  const { 
-    data: module, 
-    isLoading: isModuleLoading 
-  } = useGetModuleByIdQuery(
-    lesson?.moduleId || 0, 
-    { skip: !lesson?.moduleId }
+
+  const { data: contentBlocks, isLoading: isContentBlocksLoading } =
+    useGetContentBlocksByLessonIdQuery(Number(lessonId));
+
+  const { data: module, isLoading: isModuleLoading } = useGetModuleByIdQuery(
+    lesson?.moduleId || 0,
+    { skip: !lesson?.moduleId },
   );
-  
-  const { 
-    data: course, 
-    isLoading: isCourseLoading 
-  } = useGetCourseByIdQuery(
-    module?.courseId || 0, 
-    { skip: !module?.courseId }
+
+  const { data: course, isLoading: isCourseLoading } = useGetCourseByIdQuery(
+    module?.courseId || 0,
+    { skip: !module?.courseId },
   );
-  
-  const { 
-    data: subjectArea 
-  } = useGetSubjectAreaByIdQuery(
-    course?.subjectAreaId || 0, 
-    { skip: !course?.subjectAreaId }
+
+  const { data: subjectArea } = useGetSubjectAreaByIdQuery(
+    course?.subjectAreaId || 0,
+    { skip: !course?.subjectAreaId },
   );
 
   // Sort content blocks by order
@@ -71,15 +61,28 @@ const LessonPage: React.FC = () => {
   // Find quiz reference if any
   const quizRef = React.useMemo(() => {
     if (!contentBlocks) return null;
-    const quizBlock = contentBlocks.find(block => block.type === ContentBlockType.QUIZ_REF);
+    const quizBlock = contentBlocks.find(
+      (block) => block.type === ContentBlockType.QUIZ_REF,
+    );
     return quizBlock ? Number(quizBlock.content) : null;
   }, [contentBlocks]);
 
-  const isLoading = isLessonLoading || isContentBlocksLoading || isModuleLoading || isCourseLoading;
+  const isLoading =
+    isLessonLoading ||
+    isContentBlocksLoading ||
+    isModuleLoading ||
+    isCourseLoading;
 
   if (isLoading) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "80vh",
+        }}
+      >
         <CircularProgress />
       </Box>
     );
@@ -104,14 +107,14 @@ const LessonPage: React.FC = () => {
   return (
     <Container maxWidth="lg" sx={{ mt: 4, mb: 8 }}>
       {/* Breadcrumbs */}
-      <Breadcrumbs 
-        separator={<NavigateNextIcon fontSize="small" />} 
+      <Breadcrumbs
+        separator={<NavigateNextIcon fontSize="small" />}
         aria-label="breadcrumb"
         sx={{ mb: 3 }}
       >
         {subjectArea && (
-          <Link 
-            color="inherit" 
+          <Link
+            color="inherit"
             href={`/subject-area/${subjectArea.id}`}
             underline="hover"
           >
@@ -119,20 +122,12 @@ const LessonPage: React.FC = () => {
           </Link>
         )}
         {course && (
-          <Link 
-            color="inherit" 
-            href={`/course/${course.id}`}
-            underline="hover"
-          >
+          <Link color="inherit" href={`/course/${course.id}`} underline="hover">
             {course.title}
           </Link>
         )}
         {module && (
-          <Link 
-            color="inherit" 
-            href={`/module/${module.id}`}
-            underline="hover"
-          >
+          <Link color="inherit" href={`/module/${module.id}`} underline="hover">
             {module.title}
           </Link>
         )}
@@ -143,7 +138,7 @@ const LessonPage: React.FC = () => {
         <Typography variant="h4" component="h1" gutterBottom>
           {lesson.title}
         </Typography>
-        
+
         <Typography variant="body1" color="text.secondary" paragraph>
           {lesson.description}
         </Typography>
@@ -155,10 +150,10 @@ const LessonPage: React.FC = () => {
         </Box>
 
         {quizRef && (
-          <Box sx={{ mt: 4, display: 'flex', justifyContent: 'center' }}>
-            <Button 
-              variant="contained" 
-              color="primary" 
+          <Box sx={{ mt: 4, display: "flex", justifyContent: "center" }}>
+            <Button
+              variant="contained"
+              color="primary"
               size="large"
               onClick={handleQuizStart}
             >
@@ -169,21 +164,25 @@ const LessonPage: React.FC = () => {
       </Paper>
 
       {/* Navigation buttons */}
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 4 }}>
-        <Button 
-          startIcon={<ArrowBackIcon />} 
+      <Box sx={{ display: "flex", justifyContent: "space-between", mt: 4 }}>
+        <Button
+          startIcon={<ArrowBackIcon />}
           onClick={() => router.push(`/module/${module?.id}`)}
         >
           Back to Module
         </Button>
-        
+
         {/* This would need to be enhanced with actual next lesson logic */}
-        <Button 
-          endIcon={<ArrowForwardIcon />} 
+        <Button
+          endIcon={<ArrowForwardIcon />}
           variant="contained"
-          onClick={() => quizRef ? router.push(`/quiz/${quizRef}`) : router.push(`/module/${module?.id}`)}
+          onClick={() =>
+            quizRef
+              ? router.push(`/quiz/${quizRef}`)
+              : router.push(`/module/${module?.id}`)
+          }
         >
-          {quizRef ? 'Continue to Quiz' : 'Back to Module'}
+          {quizRef ? "Continue to Quiz" : "Back to Module"}
         </Button>
       </Box>
     </Container>

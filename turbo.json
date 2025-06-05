@@ -1,19 +1,11 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "globalDependencies": ["**/.env", "**/.env.*"],
-  "globalEnv": [
-    "NODE_ENV",
-    "CI",
-    "SKIP_ENV_VALIDATION"
-  ],
+  "globalEnv": ["NODE_ENV", "CI", "SKIP_ENV_VALIDATION"],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": [
-        ".next/**",
-        "!.next/cache/**",
-        "dist/**"
-      ],
+      "outputs": [".next/**", "!.next/cache/**", "dist/**"],
       "env": ["NODE_ENV"]
     },
     "@repo/core#build": {
@@ -63,6 +55,11 @@
     "test:e2e:debug": {
       "cache": false,
       "persistent": true
+    },
+    "typecheck": {
+      "dependsOn": ["^build"],
+      "outputs": [],
+      "cache": false
     },
     "clean": {
       "cache": false

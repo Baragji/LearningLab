@@ -36,13 +36,15 @@ En MUI-baseret knap-komponent med følgende funktioner:
 - Ekstra props: `fullWidth`, `loadingText`
 
 ```tsx
-import { Button } from '@repo/ui';
+import { Button } from "@repo/ui";
 
 function MyComponent() {
   return (
     <>
       <Button>Default Button</Button>
-      <Button variant="outlined" color="secondary">Outlined Button</Button>
+      <Button variant="outlined" color="secondary">
+        Outlined Button
+      </Button>
       <Button isLoading>Loading Button</Button>
       <Button fullWidth>Full Width Button</Button>
     </>
@@ -60,22 +62,22 @@ En MUI-baseret tekstfelt-komponent med følgende funktioner:
 - Ekstra props: `fullWidth`, `helperText`
 
 ```tsx
-import { TextField } from '@repo/ui';
+import { TextField } from "@repo/ui";
 
 function MyComponent() {
   return (
     <>
       <TextField label="Standard Input" />
-      <TextField 
-        label="Email" 
-        type="email" 
+      <TextField
+        label="Email"
+        type="email"
         placeholder="Enter your email"
         helperText="We'll never share your email"
       />
-      <TextField 
-        label="Required Field" 
-        required 
-        error={!value} 
+      <TextField
+        label="Required Field"
+        required
+        error={!value}
         helperText={!value ? "This field is required" : ""}
       />
     </>
@@ -92,7 +94,7 @@ En MUI-baseret checkbox-komponent med følgende funktioner:
 - Ekstra props: `label`, `labelPlacement`
 
 ```tsx
-import { Checkbox } from '@repo/ui';
+import { Checkbox } from "@repo/ui";
 
 function MyComponent() {
   return (
@@ -115,25 +117,22 @@ En MUI-baseret select-komponent med følgende funktioner:
 - Ekstra props: `fullWidth`, `helperText`, `options`
 
 ```tsx
-import { Select } from '@repo/ui';
+import { Select } from "@repo/ui";
 
 function MyComponent() {
   const options = [
-    { value: 'option1', label: 'Option 1' },
-    { value: 'option2', label: 'Option 2' },
-    { value: 'option3', label: 'Option 3' },
+    { value: "option1", label: "Option 1" },
+    { value: "option2", label: "Option 2" },
+    { value: "option3", label: "Option 3" },
   ];
 
   return (
     <>
-      <Select 
-        label="Choose an option" 
-        options={options} 
-      />
-      <Select 
-        label="Required Field" 
-        required 
-        error={!value} 
+      <Select label="Choose an option" options={options} />
+      <Select
+        label="Required Field"
+        required
+        error={!value}
         helperText={!value ? "Please select an option" : ""}
         options={options}
       />
@@ -147,7 +146,7 @@ function MyComponent() {
 Komponentbiblioteket inkluderer et tilpasset MUI-tema, der kan bruges til at sikre konsistent styling på tværs af applikationen.
 
 ```tsx
-import { ThemeProvider, theme } from '@repo/ui';
+import { ThemeProvider, theme } from "@repo/ui";
 
 function MyApp({ Component, pageProps }) {
   return (
@@ -165,23 +164,28 @@ Se [MUI-tema dokumentationen](./mui-theme-documentation.md) for flere detaljer o
 Migreringen fra de eksisterende komponenter til MUI-baserede komponenter vil ske gradvist i følgende faser:
 
 1. **Fase 1: Forberedelse og planlægning** (Afsluttet)
+
    - Audit af eksisterende komponenter
    - Oprettelse af MUI-tema
    - Oprettelse af komponentbibliotek-struktur
 
 2. **Fase 2: Kernekomponenter**
+
    - Migrering af Button, TextField, Checkbox, Select
 
 3. **Fase 3: Layout og Navigation**
+
    - Migrering af Dialog/Modal, Tabs, Card, Layout-komponenter
 
 4. **Fase 4: Datavisning**
+
    - Migrering af Table, Progress/Loading
 
 5. **Fase 5: Øvrige komponenter**
    - Migrering af Notification/Alert, Ikoner, Badge, Separator, Textarea
 
 For hver komponent vil vi:
+
 1. Implementere en MUI-baseret version i packages/ui
 2. Tilføje unit tests
 3. Opdatere dokumentation

@@ -476,7 +476,7 @@ export class UserProgressController {
           }),
         ),
       ]);
-      
+
       const progressResults = await Promise.all(progressPromises);
 
       let totalLessons = 0;
@@ -502,7 +502,9 @@ export class UserProgressController {
         });
 
         topic.quizzes.forEach((quiz) => {
-          const quizProgress = progressResults.find((p) => p?.quizId === quiz.id);
+          const quizProgress = progressResults.find(
+            (p) => p?.quizId === quiz.id,
+          );
           if (quizProgress?.status === ProgressStatus.COMPLETED) {
             completedQuizzes++;
           } else if (quizProgress?.status === ProgressStatus.IN_PROGRESS) {
@@ -510,13 +512,13 @@ export class UserProgressController {
           }
         });
       });
-      
+
       const totalItems = totalLessons + totalQuizzes;
       const completedItems = completedLessons + completedQuizzes;
       const inProgressItems = inProgressLessons + inProgressQuizzes;
-      
-      const percentageComplete = (totalItems === 0) ? 0 : 
-        (completedItems / totalItems) * 100;
+
+      const percentageComplete =
+        totalItems === 0 ? 0 : (completedItems / totalItems) * 100;
 
       let currentStatus: ProgressStatus = ProgressStatus.NOT_STARTED;
       if (percentageComplete === 100) {
@@ -628,13 +630,13 @@ export class UserProgressController {
             }
           });
         });
-        
+
         const totalItems = totalLessons + totalQuizzes;
         const completedItems = completedLessons + completedQuizzes;
         const inProgressItems = inProgressLessons + inProgressQuizzes;
-        
-        const percentageComplete = (totalItems === 0) ? 0 :
-          (completedItems / totalItems) * 100;
+
+        const percentageComplete =
+          totalItems === 0 ? 0 : (completedItems / totalItems) * 100;
 
         let currentStatus: ProgressStatus = ProgressStatus.NOT_STARTED;
         if (percentageComplete === 100) {

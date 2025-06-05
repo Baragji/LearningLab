@@ -99,7 +99,7 @@ describe('QuestionGenerationService', () => {
       },
     ];
 
-    const mockEvaluatedQuestions = mockQuestions.map(q => ({
+    const mockEvaluatedQuestions = mockQuestions.map((q) => ({
       ...q,
       qualityScore: 85,
     }));
@@ -107,18 +107,24 @@ describe('QuestionGenerationService', () => {
     it('should generate questions successfully', async () => {
       contentAnalyzer.analyzeContent.mockResolvedValue(mockAnalysis);
       questionGenerator.generateQuestions.mockResolvedValue(mockQuestions);
-      qualityEvaluator.evaluateQuestions.mockResolvedValue(mockEvaluatedQuestions);
+      qualityEvaluator.evaluateQuestions.mockResolvedValue(
+        mockEvaluatedQuestions,
+      );
       aiUsageLogger.logUsage.mockResolvedValue(undefined);
 
       const result = await service.generateQuestionsFromContent(mockRequest);
 
-      expect(contentAnalyzer.analyzeContent).toHaveBeenCalledWith(mockRequest.content);
+      expect(contentAnalyzer.analyzeContent).toHaveBeenCalledWith(
+        mockRequest.content,
+      );
       expect(questionGenerator.generateQuestions).toHaveBeenCalledWith(
         mockRequest.content,
         mockAnalysis,
         mockRequest,
       );
-      expect(qualityEvaluator.evaluateQuestions).toHaveBeenCalledWith(mockQuestions);
+      expect(qualityEvaluator.evaluateQuestions).toHaveBeenCalledWith(
+        mockQuestions,
+      );
       expect(aiUsageLogger.logUsage).toHaveBeenCalledWith(
         'question_generation',
         mockRequest,
@@ -132,9 +138,9 @@ describe('QuestionGenerationService', () => {
       contentAnalyzer.analyzeContent.mockRejectedValue(error);
       aiUsageLogger.logUsage.mockResolvedValue(undefined);
 
-      await expect(service.generateQuestionsFromContent(mockRequest)).rejects.toThrow(
-        'Failed to generate questions: AI service unavailable',
-      );
+      await expect(
+        service.generateQuestionsFromContent(mockRequest),
+      ).rejects.toThrow('Failed to generate questions: AI service unavailable');
 
       expect(aiUsageLogger.logUsage).toHaveBeenCalledWith(
         'question_generation',
@@ -213,9 +219,7 @@ describe('QuestionGenerationService', () => {
           type: QuestionType.MULTIPLE_CHOICE,
           difficulty: Difficulty.BEGINNER,
           points: 1,
-          answerOptions: [
-            { text: 'Yes', isCorrect: true },
-          ], // Too few options
+          answerOptions: [{ text: 'Yes', isCorrect: true }], // Too few options
           qualityScore: 30, // Low quality
           reasoning: 'Poor question',
         },
@@ -233,10 +237,14 @@ describe('QuestionGenerationService', () => {
       const result = service.validateGeneratedQuestions(invalidQuestions);
 
       expect(result.valid).toBe(false);
-      expect(result.issues).toContain('Spørgsmål 1: Tekst er for kort eller mangler');
+      expect(result.issues).toContain(
+        'Spørgsmål 1: Tekst er for kort eller mangler',
+      );
       expect(result.issues).toContain('Spørgsmål 1: Mangler svarmuligheder');
       expect(result.issues).toContain('Spørgsmål 1: Lav kvalitetsscore (30)');
-      expect(result.issues).toContain('Spørgsmål 2: Mangler ordgrænser for essay');
+      expect(result.issues).toContain(
+        'Spørgsmål 2: Mangler ordgrænser for essay',
+      );
     });
   });
 
@@ -254,7 +262,10 @@ describe('QuestionGenerationService', () => {
 
       const result = await service.getUsageStatistics();
 
-      expect(aiUsageLogger.getUsageStats).toHaveBeenCalledWith(undefined, undefined);
+      expect(aiUsageLogger.getUsageStats).toHaveBeenCalledWith(
+        undefined,
+        undefined,
+      );
       expect(result).toEqual(mockStats);
     });
   });

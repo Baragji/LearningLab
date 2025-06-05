@@ -61,7 +61,9 @@ export class ErrorTestController {
   @ApiOperation({ summary: 'Test af UnauthorizedException' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   test401(): never {
-    throw new UnauthorizedException('Du er ikke autoriseret til at tilgå denne ressource');
+    throw new UnauthorizedException(
+      'Du er ikke autoriseret til at tilgå denne ressource',
+    );
   }
 
   /**

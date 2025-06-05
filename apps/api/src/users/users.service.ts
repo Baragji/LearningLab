@@ -15,11 +15,7 @@ import {
   User as PrismaGeneratedUserType,
   Role as PrismaGeneratedRoleType,
 } from '@prisma/client';
-import {
-  User as CoreUser,
-  Role as CoreRole,
-  Role,
-} from '@repo/core';
+import { User as CoreUser, Role as CoreRole, Role } from '@repo/core';
 import { ServerEnv } from '@repo/config';
 
 @Injectable()
@@ -63,8 +59,6 @@ export class UsersService {
       createdAt: new Date(user.createdAt),
       updatedAt: new Date(user.updatedAt),
     };
-
-
 
     return coreUser as Omit<CoreUser, 'passwordHash'>;
   }
@@ -110,13 +104,10 @@ export class UsersService {
       updatedBy: currentUserId || null,
     };
 
-
-
     // Hvis password er angivet, hash det (for normal login)
     if (password) {
       try {
         userData.passwordHash = await bcrypt.hash(password, this.saltRounds);
-
       } catch (error) {
         console.error('Fejl under hashing af password:', error);
         throw new InternalServerErrorException(

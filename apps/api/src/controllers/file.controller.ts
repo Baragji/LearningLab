@@ -14,12 +14,18 @@ import {
   Res,
   ParseIntPipe,
   BadRequestException,
-  NotFoundException
+  NotFoundException,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Response } from 'express';
 import { diskStorage } from 'multer';
-import { ApiTags, ApiOperation, ApiResponse, ApiConsumes, ApiBearerAuth } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiConsumes,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { FileUploadService } from '../services/file-upload.service';
 import * as fs from 'fs';
@@ -50,19 +56,21 @@ export class FileController {
         },
         filename: (req, file, cb) => {
           const fileUploadService = new FileUploadService(null as any);
-          const uniqueFilename = fileUploadService.generateUniqueFilename(file.originalname);
+          const uniqueFilename = fileUploadService.generateUniqueFilename(
+            file.originalname,
+          );
           cb(null, uniqueFilename);
-        }
+        },
       }),
       limits: {
-        fileSize: 50 * 1024 * 1024 // 50MB
-      }
-    })
+        fileSize: 50 * 1024 * 1024, // 50MB
+      },
+    }),
   )
   async uploadFile(
     @UploadedFile() file: Express.Multer.File,
     @Request() req: any,
-    @Body('description') description?: string
+    @Body('description') description?: string,
   ) {
     if (!file) {
       throw new BadRequestException('No file provided');
@@ -77,7 +85,7 @@ export class FileController {
       size: file.size,
       path: file.path,
       description,
-      uploadedBy: req.user.id
+      uploadedBy: req.user.id,
     });
 
     return {
@@ -90,14 +98,17 @@ export class FileController {
         size: savedFile.size,
         url: savedFile.url,
         description: savedFile.description,
-        createdAt: savedFile.createdAt
-      }
+        createdAt: savedFile.createdAt,
+      },
     };
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Get file information by ID' })
-  @ApiResponse({ status: 200, description: 'File information retrieved successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'File information retrieved successfully',
+  })
   @ApiResponse({ status: 404, description: 'File not found' })
   async getFile(@Param('id', ParseIntPipe) id: number) {
     const file = await this.fileUploadService.getFile(id);
@@ -109,13 +120,15 @@ export class FileController {
       size: file.size,
       url: file.url,
       description: file.description,
-      uploader: file.uploader ? {
-        id: file.uploader.id,
-        name: file.uploader.name,
-        email: file.uploader.email
-      } : null,
+      uploader: file.uploader
+        ? {
+            id: file.uploader.id,
+            name: file.uploader.name,
+            email: file.uploader.email,
+          }
+        : null,
       createdAt: file.createdAt,
-      updatedAt: file.updatedAt
+      updatedAt: file.updatedAt,
     };
   }
 
@@ -125,7 +138,7 @@ export class FileController {
   @ApiResponse({ status: 404, description: 'File not found' })
   async downloadFile(
     @Param('id', ParseIntPipe) id: number,
-    @Res() res: Response
+    @Res() res: Response,
   ) {
     const file = await this.fileUploadService.getFile(id);
     const filePath = this.fileUploadService.getFilePath(file.filename);
@@ -135,19 +148,25 @@ export class FileController {
     }
 
     res.setHeader('Content-Type', file.mimeType);
-    res.setHeader('Content-Disposition', `attachment; filename="${file.originalName}"`);
-    
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename="${file.originalName}"`,
+    );
+
     const fileStream = fs.createReadStream(filePath);
     fileStream.pipe(res);
   }
 
   @Get('user/my-files')
-  @ApiOperation({ summary: 'Get current user\'s files' })
-  @ApiResponse({ status: 200, description: 'User files retrieved successfully' })
+  @ApiOperation({ summary: "Get current user's files" })
+  @ApiResponse({
+    status: 200,
+    description: 'User files retrieved successfully',
+  })
   async getMyFiles(@Request() req: any) {
     const files = await this.fileUploadService.getFilesByUser(req.user.id);
     return {
-      files: files.map(file => ({
+      files: files.map((file) => ({
         id: file.id,
         filename: file.filename,
         originalName: file.originalName,
@@ -156,8 +175,8 @@ export class FileController {
         url: file.url,
         description: file.description,
         createdAt: file.createdAt,
-        updatedAt: file.updatedAt
-      }))
+        updatedAt: file.updatedAt,
+      })),
     };
   }
 
@@ -167,7 +186,7 @@ export class FileController {
   async searchFiles(
     @Query('q') query: string,
     @Query('my') myFiles: string,
-    @Request() req: any
+    @Request() req: any,
   ) {
     if (!query) {
       throw new BadRequestException('Search query is required');
@@ -175,9 +194,9 @@ export class FileController {
 
     const userId = myFiles === 'true' ? req.user.id : undefined;
     const files = await this.fileUploadService.searchFiles(query, userId);
-    
+
     return {
-      files: files.map(file => ({
+      files: files.map((file) => ({
         id: file.id,
         filename: file.filename,
         originalName: file.originalName,
@@ -185,31 +204,36 @@ export class FileController {
         size: file.size,
         url: file.url,
         description: file.description,
-        uploader: file.uploader ? {
-          id: file.uploader.id,
-          name: file.uploader.name,
-          email: file.uploader.email
-        } : null,
+        uploader: file.uploader
+          ? {
+              id: file.uploader.id,
+              name: file.uploader.name,
+              email: file.uploader.email,
+            }
+          : null,
         createdAt: file.createdAt,
-        updatedAt: file.updatedAt
-      }))
+        updatedAt: file.updatedAt,
+      })),
     };
   }
 
   @Patch(':id/description')
   @ApiOperation({ summary: 'Update file description' })
-  @ApiResponse({ status: 200, description: 'File description updated successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'File description updated successfully',
+  })
   @ApiResponse({ status: 404, description: 'File not found' })
   @ApiResponse({ status: 400, description: 'Bad request' })
   async updateFileDescription(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateDto: UpdateFileDescriptionDto,
-    @Request() req: any
+    @Request() req: any,
   ) {
     const file = await this.fileUploadService.updateFileDescription(
       id,
       updateDto.description,
-      req.user.id
+      req.user.id,
     );
 
     return {
@@ -219,8 +243,8 @@ export class FileController {
         filename: file.filename,
         originalName: file.originalName,
         description: file.description,
-        updatedAt: file.updatedAt
-      }
+        updatedAt: file.updatedAt,
+      },
     };
   }
 
@@ -229,13 +253,10 @@ export class FileController {
   @ApiResponse({ status: 200, description: 'File deleted successfully' })
   @ApiResponse({ status: 404, description: 'File not found' })
   @ApiResponse({ status: 400, description: 'Bad request' })
-  async deleteFile(
-    @Param('id', ParseIntPipe) id: number,
-    @Request() req: any
-  ) {
+  async deleteFile(@Param('id', ParseIntPipe) id: number, @Request() req: any) {
     await this.fileUploadService.deleteFile(id, req.user.id);
     return {
-      message: 'File deleted successfully'
+      message: 'File deleted successfully',
     };
   }
 }

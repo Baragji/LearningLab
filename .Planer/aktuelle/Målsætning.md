@@ -14,20 +14,20 @@ EducationProgram
                   └─ ContentBlock
 ```
 
-* **EducationProgram**
-  Tidligere *SubjectArea*. Repræsenterer et samlet uddannelsesforløb eller uddannelsesretning.
+- **EducationProgram**
+  Tidligere _SubjectArea_. Repræsenterer et samlet uddannelsesforløb eller uddannelsesretning.
 
-* **Course**
+- **Course**
   Indeholder et valgfrit heltalsfelt **semesterNumber** (Int?) for at angive placeringen i uddannelsens forløb.
 
-* **Topic**
-  Tidligere *Module*. Har mange-til-én-relation til Course og et felt **subjectCategory** baseret på den nye enum **FagCategory**
+- **Topic**
+  Tidligere _Module_. Har mange-til-én-relation til Course og et felt **subjectCategory** baseret på den nye enum **FagCategory**
   (`KEMI | BIOLOGI | DATABEHANDLING | ANDET`). Feltet er midlertidigt valgfrit af hensyn til eksisterende data.
 
-* **Lesson**
+- **Lesson**
   Nu koblet til Topic (mange Lesson-poster pr. Topic).
 
-* **ContentBlock**
+- **ContentBlock**
   Uændret relation til Lesson; bruges til at lagre selve læringsindholdet (tekst, video-refs, quizzer osv.).
 
 ---
@@ -62,15 +62,15 @@ Efter hver skemaændring køres `npx prisma generate` for at regenerere Prisma C
 
 #### 4. Datamigrering og fremtidige skridt
 
-* **subjectCategory-udfyldning** – Eksisterende Topic-poster (tidl. Module) mangler kategori. Feltet er midlertidigt valgfrit; en særskilt migreringsrutine skal senere tildele passende værdier eller bruge `ANDET` som default.
-* **Frontend** – Ingen tilpasninger er nødvendige i denne fase; komponenter refererer fortsat til GraphQL-/REST-endpoints, som nu blot eksponerer de omdøbte entiteter.
+- **subjectCategory-udfyldning** – Eksisterende Topic-poster (tidl. Module) mangler kategori. Feltet er midlertidigt valgfrit; en særskilt migreringsrutine skal senere tildele passende værdier eller bruge `ANDET` som default.
+- **Frontend** – Ingen tilpasninger er nødvendige i denne fase; komponenter refererer fortsat til GraphQL-/REST-endpoints, som nu blot eksponerer de omdøbte entiteter.
 
 ---
 
 #### 5. Praktiske noter
 
-* Branch-strategi: alle ændringer i fase 1 ligger i én feature-branch, så diff-review er overskueligt.
-* Testdækning: Enheds- og integrationstests er opdateret til nye modelnavne; CI‐pipelines kræver ingen yderligere tweaks.
-* Dokumentation: Denne oversigt bør ligge i repo-roden (`docs/architecture/learninglab_data_model.md`) for hurtig reference.
+- Branch-strategi: alle ændringer i fase 1 ligger i én feature-branch, så diff-review er overskueligt.
+- Testdækning: Enheds- og integrationstests er opdateret til nye modelnavne; CI‐pipelines kræver ingen yderligere tweaks.
+- Dokumentation: Denne oversigt bør ligge i repo-roden (`docs/architecture/learninglab_data_model.md`) for hurtig reference.
 
 Med denne struktur og navngivning som udgangspunkt kan efterfølgende udvikling fortsætte uden at skulle dechifrere historiske navne eller relateringsmønstre.

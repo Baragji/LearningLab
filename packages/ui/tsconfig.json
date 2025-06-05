@@ -10,8 +10,18 @@
     "skipLibCheck": true,
     "jsx": "react-jsx",
     "esModuleInterop": true,
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "types": ["jest", "@testing-library/jest-dom"]
   },
-  "include": ["index.tsx", "components/**/*.tsx", "src/types/**/*.d.ts", "components/**/*.ts", "utils/**/*.ts", "theme/**/*.ts"],
+  "include": [
+    "index.tsx",
+    "components/**/*.tsx",
+    "components/**/*.test.tsx",
+    "src/types/**/*.d.ts",
+    "components/**/*.ts",
+    "utils/**/*.ts",
+    "theme/**/*.ts",
+    "jest.setup.js"
+  ],
   "exclude": ["dist", "build", "node_modules"]
 }

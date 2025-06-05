@@ -3,6 +3,7 @@
 ## 🎯 Nuværende Status: Phase 1 Complete ✅
 
 Din grundlæggende applikation kører nu perfekt på Google Cloud Run:
+
 - **Live URL**: https://code-assistant-rag-1032418337364.europe-west1.run.app
 - **Health Check**: ✅ Fungerer
 - **API Docs**: ✅ Tilgængelig på `/docs`
@@ -11,6 +12,7 @@ Din grundlæggende applikation kører nu perfekt på Google Cloud Run:
 ## 📋 Phase 2: Fuld RAG Implementation
 
 ### 🎯 Mål for Phase 2:
+
 - Tilføj ChromaDB for vector storage
 - Integrer Ollama LLM
 - Implementér document processing
@@ -20,6 +22,7 @@ Din grundlæggende applikation kører nu perfekt på Google Cloud Run:
 ### 🛠️ Tekniske Opgaver:
 
 #### 1. Deploy Fuld RAG Version
+
 ```bash
 # Build og deploy med Ollama + ChromaDB
 cd gcp-migration
@@ -38,6 +41,7 @@ gcloud run deploy code-assistant-rag \
 ```
 
 #### 2. Test RAG Funktionalitet
+
 ```bash
 # Test document upload
 curl -X POST "https://code-assistant-rag-1032418337364.europe-west1.run.app/upload" \
@@ -50,6 +54,7 @@ curl -X POST "https://code-assistant-rag-1032418337364.europe-west1.run.app/quer
 ```
 
 #### 3. Performance Monitoring
+
 ```bash
 # Enable monitoring
 gcloud services enable monitoring.googleapis.com
@@ -62,12 +67,14 @@ gcloud run services logs tail code-assistant-rag --region=europe-west1
 ### 📊 Forventede Resultater:
 
 #### Performance Forbedringer:
+
 - **Før (lokal)**: 2-3 minutter per RAG query
 - **Efter (cloud)**: <10 sekunder per RAG query
 - **Vector Search**: <1 sekund
 - **LLM Inference**: 3-8 sekunder
 
 #### Resource Forbrug:
+
 - **Memory**: 4GB (op fra 2GB)
 - **CPU**: 2 cores (op fra 1)
 - **Storage**: Persistent for modeller
@@ -76,18 +83,21 @@ gcloud run services logs tail code-assistant-rag --region=europe-west1
 ## 🔄 Phase 3: Optimering (Fremtidige Forbedringer)
 
 ### Performance Optimering:
+
 - [ ] Model caching strategier
 - [ ] Intelligent chunking
 - [ ] Parallel processing
 - [ ] Response streaming
 
 ### Production Features:
+
 - [ ] Authentication & authorization
 - [ ] Rate limiting
 - [ ] Error handling & retry logic
 - [ ] Backup & disaster recovery
 
 ### Monitoring & Observability:
+
 - [ ] Custom metrics dashboard
 - [ ] Alert policies
 - [ ] Performance benchmarking
@@ -96,6 +106,7 @@ gcloud run services logs tail code-assistant-rag --region=europe-west1
 ## 🎯 Umiddelbare Handlinger
 
 ### 1. Test Nuværende Setup (5 min)
+
 ```bash
 # Besøg i browser
 open https://code-assistant-rag-1032418337364.europe-west1.run.app/docs
@@ -105,17 +116,21 @@ curl https://code-assistant-rag-1032418337364.europe-west1.run.app/health
 ```
 
 ### 2. Beslut om Phase 2 (nu eller senere)
+
 **Option A: Deploy nu**
+
 - Fuld RAG funktionalitet i dag
 - Test med rigtige dokumenter
 - Sammenlign performance med lokal setup
 
 **Option B: Test først**
+
 - Brug nuværende minimal setup
 - Planlæg Phase 2 deployment
 - Forbered test dokumenter
 
 ### 3. Overvåg Omkostninger
+
 ```bash
 # Check current usage
 gcloud billing budgets list
@@ -132,11 +147,13 @@ gcloud billing budgets create \
 ### Common Issues:
 
 1. **Service ikke tilgængelig**
+
    - Check Cloud Run status
    - Verify container health
    - Review deployment logs
 
 2. **Slow performance**
+
    - Increase memory allocation
    - Add more CPU cores
    - Check network latency
@@ -147,6 +164,7 @@ gcloud billing budgets create \
    - Implement request caching
 
 ### Useful Commands:
+
 ```bash
 # Service status
 gcloud run services describe code-assistant-rag --region=europe-west1
@@ -160,7 +178,7 @@ gcloud billing budgets list
 
 ## 🎯 Anbefaling
 
-**Anbefalet næste skridt**: 
+**Anbefalet næste skridt**:
 
 1. **Test nuværende setup** grundigt (15-30 min)
 2. **Deploy Phase 2** hvis alt fungerer som forventet

@@ -7,6 +7,7 @@ Du er en ekspert AI-udvikler der skal udføre en komplet, systematisk refaktorer
 ## 📋 KRITISKE KRAV - INGEN UNDTAGELSER
 
 ### Absolut Nul-Tolerance
+
 - **0 TypeScript fejl** - Hver fil skal kompilere fejlfrit
 - **0 ESLint fejl** - Perfekt code quality
 - **0 sikkerhedssårbarheder** - Komplet security audit
@@ -14,6 +15,7 @@ Du er en ekspert AI-udvikler der skal udføre en komplet, systematisk refaktorer
 - **0 test failures** - 100% test success rate
 
 ### Kvalitetsstandarder
+
 - **80%+ test coverage** - Omfattende testing
 - **Strict TypeScript** - Aktivér strict mode overalt
 - **Performance targets** - 50% hurtigere builds, 40% mindre bundles
@@ -22,6 +24,7 @@ Du er en ekspert AI-udvikler der skal udføre en komplet, systematisk refaktorer
 ## 📊 KODEBASE KONTEKST
 
 ### Nuværende Struktur
+
 ```
 learninglab-monorepo/ (668 filer)
 ├── apps/
@@ -37,6 +40,7 @@ learninglab-monorepo/ (668 filer)
 ```
 
 ### Hovedproblemer
+
 1. **UI Duplikering**: packages/ui (MUI) vs apps/web/src/components/ui (Shadcn)
 2. **Dependency Hell**: Inkonsistente versioner, sikkerhedssårbarheder
 3. **Legacy Pollution**: ~30% forældede filer
@@ -46,6 +50,7 @@ learninglab-monorepo/ (668 filer)
 ## 🗓️ IMPLEMENTERINGSSEKVENS (14 DAGE)
 
 ### FASE 1: FUNDAMENT (Dag 1-2)
+
 ```bash
 # DAG 1: Baseline & Backup
 1. git tag "baseline-$(date +%Y%m%d)"
@@ -61,6 +66,7 @@ learninglab-monorepo/ (668 filer)
 ```
 
 ### FASE 2: DEPENDENCY UPGRADE (Dag 3-4)
+
 ```bash
 # DAG 3: Core Frameworks
 1. nvm use 22.0.0 && echo "22.0.0" > .nvmrc
@@ -90,6 +96,7 @@ learninglab-monorepo/ (668 filer)
 ```
 
 ### FASE 3: UI KONSOLIDERING (Dag 5-9)
+
 ```bash
 # DAG 5-6: Komponent Enhancement
 1. Analysér packages/ui/components/mui/ vs apps/web/src/components/ui/
@@ -121,6 +128,7 @@ learninglab-monorepo/ (668 filer)
 ```
 
 ### FASE 4: DOCKER OPTIMERING (Dag 10-11)
+
 ```bash
 # DAG 10: Dockerfile Optimization
 1. Opret docker/api/Dockerfile med multi-stage build:
@@ -142,6 +150,7 @@ learninglab-monorepo/ (668 filer)
 ```
 
 ### FASE 5: TESTING & VALIDATION (Dag 12-13)
+
 ```bash
 # DAG 12: Comprehensive Testing
 1. yarn test:ci --coverage (kræv 80%+)
@@ -158,6 +167,7 @@ learninglab-monorepo/ (668 filer)
 ```
 
 ### FASE 6: FINALISERING (Dag 14)
+
 ```bash
 # DAG 14: Documentation & Deployment
 1. Opdatér alle README.md filer
@@ -170,6 +180,7 @@ learninglab-monorepo/ (668 filer)
 ## 🔧 SPECIFIKKE IMPLEMENTERINGSKRAV
 
 ### TypeScript Strict Mode
+
 ```json
 // tsconfig.json - SKAL implementeres
 {
@@ -186,6 +197,7 @@ learninglab-monorepo/ (668 filer)
 ```
 
 ### ESLint Configuration
+
 ```json
 // .eslintrc.js - SKAL være fejlfri
 {
@@ -203,6 +215,7 @@ learninglab-monorepo/ (668 filer)
 ```
 
 ### UI Component Standards
+
 ```typescript
 // Eksempel på korrekt komponent struktur
 import { Button as MuiButton, ButtonProps as MuiButtonProps } from '@mui/material';
@@ -217,7 +230,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   ({ variant = 'default', size = 'default', ...props }, ref) => {
     const muiVariant = mapShadcnToMuiVariant(variant);
     const muiSize = mapShadcnToMuiSize(size);
-    
+
     return (
       <MuiButton
         ref={ref}
@@ -233,6 +246,7 @@ Button.displayName = 'Button';
 ```
 
 ### Docker Best Practices
+
 ```dockerfile
 # Eksempel på korrekt Dockerfile struktur
 FROM node:22-alpine AS base
@@ -265,6 +279,7 @@ CMD ["node", "dist/main.js"]
 ## 🚨 KRITISKE FEJL DER SKAL UNDGÅS
 
 ### Absolutte Forbudte Handlinger
+
 1. **ALDRIG slet filer uden backup** - Brug git tags
 2. **ALDRIG ignorer test failures** - Fix alle fejl
 3. **ALDRIG commit med TypeScript fejl** - 0 tolerance
@@ -272,10 +287,11 @@ CMD ["node", "dist/main.js"]
 5. **ALDRIG bryd eksisterende API** - Backward compatibility
 
 ### Validation Efter Hver Ændring
+
 ```bash
 # SKAL køres efter hver større ændring
 yarn typecheck    # 0 fejl
-yarn lint         # 0 fejl  
+yarn lint         # 0 fejl
 yarn test:ci      # 100% pass
 yarn build        # Success
 yarn audit        # 0 high/critical
@@ -284,12 +300,14 @@ yarn audit        # 0 high/critical
 ## 📊 SUCCESS METRICS - MÅLBARE RESULTATER
 
 ### Performance Targets
+
 - **Build Time**: Fra nuværende til <5 minutter (50% forbedring)
 - **Bundle Size**: 40% reduktion i web bundle størrelse
 - **Startup Time**: <30 sekunder for alle services
 - **Memory Usage**: 30% reduktion i Docker memory footprint
 
 ### Quality Targets
+
 - **TypeScript Coverage**: 100% (strict mode aktiveret)
 - **Test Coverage**: 80%+ på alle packages
 - **ESLint Score**: 0 fejl, 0 warnings
@@ -297,6 +315,7 @@ yarn audit        # 0 high/critical
 - **Lighthouse Score**: 90+ på alle metrics
 
 ### Maintainability Targets
+
 - **File Reduction**: 30% færre filer (cleanup af legacy)
 - **Dependency Conflicts**: 0 version conflicts
 - **Code Duplication**: <5% duplicate code
@@ -305,12 +324,14 @@ yarn audit        # 0 high/critical
 ## 🔍 VALIDATION CHECKLIST
 
 ### Pre-Implementation Validation
+
 - [ ] Backup oprettet (git tag)
 - [ ] Baseline metrics dokumenteret
 - [ ] Development environment klar
 - [ ] Alle planer gennemgået
 
 ### Daily Validation (SKAL køres hver dag)
+
 ```bash
 #!/bin/bash
 echo "=== Daily Validation $(date) ==="
@@ -322,6 +343,7 @@ echo "Build status: $(yarn build >/dev/null 2>&1 && echo 'SUCCESS' || echo 'FAIL
 ```
 
 ### Final Validation (Dag 14)
+
 - [ ] 0 TypeScript fejl
 - [ ] 0 ESLint fejl
 - [ ] 0 test failures
@@ -336,6 +358,7 @@ echo "Build status: $(yarn build >/dev/null 2>&1 && echo 'SUCCESS' || echo 'FAIL
 ## 🎯 EXECUTION MINDSET
 
 ### Precision Requirements
+
 - **Læs hver plan grundigt** før implementering
 - **Følg sekvensen nøjagtigt** - ingen shortcuts
 - **Test efter hver ændring** - incremental validation
@@ -343,6 +366,7 @@ echo "Build status: $(yarn build >/dev/null 2>&1 && echo 'SUCCESS' || echo 'FAIL
 - **Backup før store ændringer** - safety first
 
 ### Problem-Solving Approach
+
 1. **Identificér root cause** - ikke bare symptoms
 2. **Research best practices** - brug web search for latest info
 3. **Implementér systematisk** - step by step
@@ -350,6 +374,7 @@ echo "Build status: $(yarn build >/dev/null 2>&1 && echo 'SUCCESS' || echo 'FAIL
 5. **Document learnings** - for future reference
 
 ### Quality Mindset
+
 - **Perfection over speed** - kvalitet er vigtigere end hastighed
 - **Measure twice, cut once** - tænk før du handler
 - **Leave it better** - forbedre alt du rører
@@ -369,4 +394,4 @@ Du har nu alle nødvendige planer og specifikationer. Din opgave er at:
 
 ---
 
-*Denne prompt sikrer præcis, systematisk og succesfuld implementering af den komplette refaktorering.*
+_Denne prompt sikrer præcis, systematisk og succesfuld implementering af den komplette refaktorering._

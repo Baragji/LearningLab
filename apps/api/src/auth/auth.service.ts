@@ -83,8 +83,6 @@ export class AuthService {
       settings: settings as Record<string, unknown> | null,
     };
 
-
-
     return coreUser as Omit<CoreUser, 'passwordHash'>;
   }
 
@@ -270,6 +268,4 @@ export class AuthService {
 
     return { message: 'Din adgangskode er blevet nulstillet med succes.' };
   }
-
-
 }

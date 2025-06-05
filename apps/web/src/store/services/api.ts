@@ -1,9 +1,9 @@
 // Filsti: apps/web/src/store/services/api.ts
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { 
-  Quiz, 
-  Question, 
-  AnswerOption, 
+import {
+  Quiz,
+  Question,
+  AnswerOption,
   QuizAttempt,
   StartQuizAttemptInput,
   SubmitAnswerInput,
@@ -14,7 +14,7 @@ import {
   Lesson,
   ContentBlock,
   SubjectArea,
-  ContentBlockType
+  ContentBlockType,
 } from "@repo/core";
 import { User } from "@repo/core";
 
@@ -23,20 +23,24 @@ import { User } from "@repo/core";
 const baseUrl = process.env.NEXT_PUBLIC_API_URL;
 
 // Detekter om vi er i et test-miljø
-const isTestEnvironment = process.env.NODE_ENV === 'test';
+const isTestEnvironment = process.env.NODE_ENV === "test";
 
 // I test-miljø, brug en mock URL eller /api som fallback
 // I produktions- eller udviklingsmiljø, log en advarsel hvis URL'en mangler
 if (!baseUrl && !isTestEnvironment) {
-  console.warn("ADVARSEL: NEXT_PUBLIC_API_URL er ikke sat. Bruger /api som fallback.");
+  console.warn(
+    "ADVARSEL: NEXT_PUBLIC_API_URL er ikke sat. Bruger /api som fallback.",
+  );
 }
 
 // Definer en custom fetch funktion der kan bruges i test-miljø
 const customFetch = (...args: Parameters<typeof fetch>) => {
   // Hvis vi er i et test-miljø og global.fetch ikke er tilgængelig,
   // returner en mock response eller brug en fetch polyfill
-  if (isTestEnvironment && typeof fetch === 'undefined') {
-    return Promise.resolve(new Response(JSON.stringify({ message: "Mock response for tests" })));
+  if (isTestEnvironment && typeof fetch === "undefined") {
+    return Promise.resolve(
+      new Response(JSON.stringify({ message: "Mock response for tests" })),
+    );
   }
 
   // Ellers brug den normale fetch
@@ -47,30 +51,31 @@ export const api = createApi({
   reducerPath: "baseApi",
   baseQuery: fetchBaseQuery({
     // Brug den hentede baseUrl med fallback baseret på miljø
-    baseUrl: baseUrl || (isTestEnvironment ? "http://mock-api-for-tests" : "/api"),
+    baseUrl:
+      baseUrl || (isTestEnvironment ? "http://mock-api-for-tests" : "/api"),
     // Brug custom fetch funktion for at håndtere test-miljøer
     fetchFn: customFetch,
-    credentials: 'include', // Inkluder cookies i requests
+    credentials: "include", // Inkluder cookies i requests
     prepareHeaders: (headers, { getState }) => {
       // Tilføj authorization header med JWT token hvis brugeren er logget ind
-      const token = localStorage.getItem('accessToken');
+      const token = localStorage.getItem("accessToken");
       if (token) {
-        headers.set('authorization', `Bearer ${token}`);
+        headers.set("authorization", `Bearer ${token}`);
       }
-      headers.set('Accept', 'application/json');
+      headers.set("Accept", "application/json");
       return headers;
     },
   }),
   tagTypes: [
-    'Quiz', 
-    'QuizAttempt', 
-    'UserProgress', 
-    'Course', 
-    'Module', 
-    'Lesson', 
-    'ContentBlock',
-    'SubjectArea',
-    'User'
+    "Quiz",
+    "QuizAttempt",
+    "UserProgress",
+    "Course",
+    "Module",
+    "Lesson",
+    "ContentBlock",
+    "SubjectArea",
+    "User",
   ],
   endpoints: (builder) => ({
     // Endpoint for at hente "Hello World" fra API'ets rod (/)
@@ -81,73 +86,85 @@ export const api = createApi({
     }),
 
     // Course endpoints
-    getCourses: builder.query<{
-      courses: Course[];
-      total: number;
-      hasMore: boolean;
-    }, {
-      search?: string;
-      educationProgramId?: number;
-      level?: string;
-      limit?: number;
-      offset?: number;
-    }>({
+    getCourses: builder.query<
+      {
+        courses: Course[];
+        total: number;
+        hasMore: boolean;
+      },
+      {
+        search?: string;
+        educationProgramId?: number;
+        level?: string;
+        limit?: number;
+        offset?: number;
+      }
+    >({
       query: (params) => ({
         url: "/courses",
         params,
       }),
-      providesTags: ['Course'],
+      providesTags: ["Course"],
     }),
 
     getCourseById: builder.query<Course, number>({
       query: (id) => ({
         url: `/courses/${id}`,
       }),
-      providesTags: (result, error, id) => [{ type: 'Course', id }],
+      providesTags: (result, error, id) => [{ type: "Course", id }],
     }),
 
     // Course enrollment endpoints
-    enrollInCourse: builder.mutation<{
-      message: string;
-      courseId: number;
-      enrolled: boolean;
-    }, number>({
+    enrollInCourse: builder.mutation<
+      {
+        message: string;
+        courseId: number;
+        enrolled: boolean;
+      },
+      number
+    >({
       query: (courseId) => ({
         url: `/courses/${courseId}/enroll`,
-        method: 'POST',
+        method: "POST",
       }),
       invalidatesTags: (result, error, courseId) => [
-        { type: 'Course', id: courseId },
-        'UserProgress',
+        { type: "Course", id: courseId },
+        "UserProgress",
       ],
     }),
 
-    unenrollFromCourse: builder.mutation<{
-      message: string;
-      courseId: number;
-      enrolled: boolean;
-    }, number>({
+    unenrollFromCourse: builder.mutation<
+      {
+        message: string;
+        courseId: number;
+        enrolled: boolean;
+      },
+      number
+    >({
       query: (courseId) => ({
         url: `/courses/${courseId}/enroll`,
-        method: 'DELETE',
+        method: "DELETE",
       }),
       invalidatesTags: (result, error, courseId) => [
-        { type: 'Course', id: courseId },
-        'UserProgress',
+        { type: "Course", id: courseId },
+        "UserProgress",
       ],
     }),
 
-    getCourseEnrollmentStatus: builder.query<{
-      courseId: number;
-      enrolled: boolean;
-      progress?: number;
-    }, number>({
+    getCourseEnrollmentStatus: builder.query<
+      {
+        courseId: number;
+        enrolled: boolean;
+        progress?: number;
+      },
+      number
+    >({
       query: (courseId) => ({
         url: `/courses/${courseId}/enrollment-status`,
       }),
       providesTags: (result, error, courseId) => [
-        { type: 'Course', id: courseId },
-        'UserProgress',
+        { type: "Course", id: courseId },
+        "UserProgress",
       ],
     }),
 
@@ -157,20 +174,20 @@ export const api = createApi({
         url: `/modules`,
         params: { courseId },
       }),
-      providesTags: (result) => 
-        result 
+      providesTags: (result) =>
+        result
           ? [
-              ...result.map(({ id }) => ({ type: 'Module' as const, id })),
-              { type: 'Module', id: 'LIST' },
+              ...result.map(({ id }) => ({ type: "Module" as const, id })),
+              { type: "Module", id: "LIST" },
             ]
-          : [{ type: 'Module', id: 'LIST' }],
+          : [{ type: "Module", id: "LIST" }],
     }),
 
     getModuleById: builder.query<Module, number>({
       query: (id) => ({
         url: `/modules/${id}`,
       }),
-      providesTags: (result, error, id) => [{ type: 'Module', id }],
+      providesTags: (result, error, id) => [{ type: "Module", id }],
     }),
 
     // Lesson endpoints
@@ -179,20 +196,20 @@ export const api = createApi({
         url: `/lessons`,
         params: { moduleId },
       }),
-      providesTags: (result) => 
-        result 
+      providesTags: (result) =>
+        result
           ? [
-              ...result.map(({ id }) => ({ type: 'Lesson' as const, id })),
-              { type: 'Lesson', id: 'LIST' },
+              ...result.map(({ id }) => ({ type: "Lesson" as const, id })),
+              { type: "Lesson", id: "LIST" },
             ]
-          : [{ type: 'Lesson', id: 'LIST' }],
+          : [{ type: "Lesson", id: "LIST" }],
     }),
 
     getLessonById: builder.query<Lesson, number>({
       query: (id) => ({
         url: `/lessons/${id}`,
       }),
-      providesTags: (result, error, id) => [{ type: 'Lesson', id }],
+      providesTags: (result, error, id) => [{ type: "Lesson", id }],
     }),
 
     // Content Block endpoints
@@ -201,13 +218,16 @@ export const api = createApi({
         url: `/content-blocks`,
         params: { lessonId },
       }),
-      providesTags: (result) => 
-        result 
+      providesTags: (result) =>
+        result
           ? [
-              ...result.map(({ id }) => ({ type: 'ContentBlock' as const, id })),
-              { type: 'ContentBlock', id: 'LIST' },
+              ...result.map(({ id }) => ({
+                type: "ContentBlock" as const,
+                id,
+              })),
+              { type: "ContentBlock", id: "LIST" },
             ]
-          : [{ type: 'ContentBlock', id: 'LIST' }],
+          : [{ type: "ContentBlock", id: "LIST" }],
     }),
 
     // Subject Area endpoints
@@ -215,14 +235,14 @@ export const api = createApi({
       query: () => ({
         url: "/subject-areas",
       }),
-      providesTags: ['SubjectArea'],
+      providesTags: ["SubjectArea"],
     }),
 
     getSubjectAreaById: builder.query<SubjectArea, number>({
       query: (id) => ({
         url: `/subject-areas/${id}`,
       }),
-      providesTags: (result, error, id) => [{ type: 'SubjectArea', id }],
+      providesTags: (result, error, id) => [{ type: "SubjectArea", id }],
     }),
 
     // Quiz endpoints
@@ -230,17 +250,21 @@ export const api = createApi({
       query: () => ({
         url: "/quizzes",
       }),
-      providesTags: ['Quiz'],
+      providesTags: ["Quiz"],
     }),
 
     getQuizById: builder.query<
-      { quiz: Quiz; questions: Question[]; answerOptions: Record<number, AnswerOption[]> },
+      {
+        quiz: Quiz;
+        questions: Question[];
+        answerOptions: Record<number, AnswerOption[]>;
+      },
       number
     >({
       query: (id) => ({
         url: `/quizzes/${id}`,
       }),
-      providesTags: (result, error, id) => [{ type: 'Quiz', id }],
+      providesTags: (result, error, id) => [{ type: "Quiz", id }],
     }),
 
     // Quiz attempt endpoints
@@ -250,7 +274,7 @@ export const api = createApi({
         method: "POST",
         body: data,
       }),
-      invalidatesTags: ['QuizAttempt'],
+      invalidatesTags: ["QuizAttempt"],
     }),
 
     submitAnswer: builder.mutation<void, SubmitAnswerInput>({
@@ -270,18 +294,22 @@ export const api = createApi({
         method: "POST",
         body: data,
       }),
-      invalidatesTags: ['QuizAttempt', 'UserProgress'],
+      invalidatesTags: ["QuizAttempt", "UserProgress"],
     }),
 
     // User progress endpoints
     getUserProgress: builder.query<
-      { courseProgress: number; completedLessons: number[]; quizResults: any[] },
+      {
+        courseProgress: number;
+        completedLessons: number[];
+        quizResults: any[];
+      },
       number
     >({
       query: (courseId) => ({
         url: `/user-progress/${courseId}`,
       }),
-      providesTags: ['UserProgress'],
+      providesTags: ["UserProgress"],
     }),
 
     // User courses endpoints
@@ -292,7 +320,7 @@ export const api = createApi({
       query: () => ({
         url: `/user-progress/courses`,
       }),
-      providesTags: ['UserProgress', 'Course'],
+      providesTags: ["UserProgress", "Course"],
     }),
 
     // User statistics endpoints
@@ -303,7 +331,7 @@ export const api = createApi({
       query: () => ({
         url: `/user-progress/statistics`,
       }),
-      providesTags: ['UserProgress'],
+      providesTags: ["UserProgress"],
     }),
 
     // User settings endpoints
@@ -311,19 +339,25 @@ export const api = createApi({
       query: () => ({
         url: `/users/me`,
       }),
-      providesTags: ['User'],
+      providesTags: ["User"],
     }),
 
-    updateUserProfile: builder.mutation<User, { name?: string; email?: string }>({
+    updateUserProfile: builder.mutation<
+      User,
+      { name?: string; email?: string }
+    >({
       query: (data) => ({
         url: `/users/profile`,
         method: "PATCH",
         body: data,
       }),
-      invalidatesTags: ['User'],
+      invalidatesTags: ["User"],
     }),
 
-    changePassword: builder.mutation<void, { currentPassword: string; newPassword: string }>({
+    changePassword: builder.mutation<
+      void,
+      { currentPassword: string; newPassword: string }
+    >({
       query: (data) => ({
         url: `/users/change-password`,
         method: "POST",
@@ -341,7 +375,7 @@ export const api = createApi({
   }),
 });
 
-export const { 
+export const {
   useHelloQuery,
   // Course hooks
   useGetCoursesQuery,
@@ -376,5 +410,5 @@ export const {
   useGetCurrentUserQuery,
   useUpdateUserProfileMutation,
   useChangePasswordMutation,
-  useRequestPasswordResetMutation
+  useRequestPasswordResetMutation,
 } = api;

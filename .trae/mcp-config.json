@@ -183,16 +183,44 @@
   },
   "deployment": {
     "phases": {
-      "1": ["filesystem", "git", "python-sandbox", "openapi", "email", "prompt-history", "vector-search"],
+      "1": [
+        "filesystem",
+        "git",
+        "python-sandbox",
+        "openapi",
+        "email",
+        "prompt-history",
+        "vector-search"
+      ],
       "2": ["jupyter", "data-analysis"],
       "3": ["grafana"],
       "4": ["kubernetes", "portainer"]
     },
     "auto_start": {
-      "development": ["filesystem", "git", "python-sandbox", "prompt-history", "vector-search", "code-lens"],
-      "testing": ["filesystem", "git", "python-sandbox", "openapi", "vector-search"],
+      "development": [
+        "filesystem",
+        "git",
+        "python-sandbox",
+        "prompt-history",
+        "vector-search",
+        "code-lens"
+      ],
+      "testing": [
+        "filesystem",
+        "git",
+        "python-sandbox",
+        "openapi",
+        "vector-search"
+      ],
       "production": ["kubernetes", "portainer", "grafana", "vector-search"],
-      "enterprise-mission": ["filesystem", "git", "python-sandbox", "vector-search", "code-lens", "prompt-history"]
+      "enterprise-mission": [
+        "filesystem",
+        "git",
+        "python-sandbox",
+        "vector-search",
+        "code-lens",
+        "prompt-history"
+      ]
     }
   },
   "enterprise_mission": {

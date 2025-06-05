@@ -5,7 +5,7 @@ This document identifies discrepancies between the information provided in `stac
 ## 1. Node.js Version
 
 - **In stackinfo.txt**: `"nodeVersion": "20.12.2"`
-- **Actual Implementation**: 
+- **Actual Implementation**:
   - `.node-version` file specifies `22`
   - `package.json` engines field specifies `"node": ">=22 <23"`
 
@@ -22,7 +22,7 @@ This is a major version difference. The project is using Next.js 13.4.12, not ve
 
 ## 3. Prisma Version
 
-- **In stackinfo.txt**: 
+- **In stackinfo.txt**:
   - `"versionCLI": "^5.22.0"`
   - `"versionClient": "^5.22.0"`
 - **Actual Implementation**: `"prisma": "6.8.2"` in the root package.json
@@ -66,6 +66,7 @@ While the actual implementation will include all the workspaces listed in stacki
 ## 7. Documentation Questions
 
 The "åbneSpørgsmål" (open questions) section in stackinfo.txt asks:
+
 - "Er .env.example template filer leveret for alle services?"
 
 Our investigation found that .env.example exists only for the API app, not for the web app.

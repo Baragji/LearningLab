@@ -11,7 +11,7 @@ export enum QuestionType {
   MATCHING = "MATCHING",
   DRAG_AND_DROP = "DRAG_AND_DROP",
   CODE = "CODE",
-  ESSAY = "ESSAY"
+  ESSAY = "ESSAY",
 }
 
 /**
@@ -20,7 +20,7 @@ export enum QuestionType {
 export enum ProgressStatus {
   NOT_STARTED = "NOT_STARTED",
   IN_PROGRESS = "IN_PROGRESS",
-  COMPLETED = "COMPLETED"
+  COMPLETED = "COMPLETED",
 }
 
 /**
@@ -234,7 +234,7 @@ export interface CreateQuestionBankItemInput {
 export interface ImportQuestionsInput {
   questionBankId: number;
   fileContent: string;
-  fileType: 'csv' | 'excel';
+  fileType: "csv" | "excel";
 }
 
 /**

@@ -50,10 +50,13 @@ interface RequestWithUser extends Request {
 @ApiTags('Education Programs')
 @Controller('education-programs')
 export class EducationProgramController {
-  constructor(private readonly educationProgramService: EducationProgramService) {}
+  constructor(
+    private readonly educationProgramService: EducationProgramService,
+  ) {}
 
   @ApiOperation({
-    summary: 'Hent alle uddannelsesprogrammer med paginering, sortering og filtrering',
+    summary:
+      'Hent alle uddannelsesprogrammer med paginering, sortering og filtrering',
   })
   @ApiQuery({
     name: 'page',
@@ -185,7 +188,8 @@ export class EducationProgramController {
   })
   @ApiResponse({
     status: 200,
-    description: 'Pagineret liste af uddannelsesprogrammer der matcher søgningen',
+    description:
+      'Pagineret liste af uddannelsesprogrammer der matcher søgningen',
     type: PaginatedEducationProgramResponseDto,
   })
   @ApiResponse({ status: 400, description: 'Ugyldig anmodning' })
@@ -226,12 +230,15 @@ export class EducationProgramController {
         filters.difficulty = difficulty;
       }
 
-      return await this.educationProgramService.searchEducationPrograms(searchTerm, {
-        page,
-        limit,
-        include,
-        filters,
-      });
+      return await this.educationProgramService.searchEducationPrograms(
+        searchTerm,
+        {
+          page,
+          limit,
+          include,
+          filters,
+        },
+      );
     } catch (error) {
       if (error instanceof BadRequestException) {
         throw error;
@@ -285,7 +292,8 @@ export class EducationProgramController {
   })
   @ApiQuery({
     name: 'contentTypes',
-    description: 'Filtrér efter indholdstyper (kommasepareret liste: course, topic, lesson)',
+    description:
+      'Filtrér efter indholdstyper (kommasepareret liste: course, topic, lesson)',
     type: String,
     required: false,
     isArray: true,
@@ -332,7 +340,9 @@ export class EducationProgramController {
       // Bestem hvilke indholdstyper der skal søges i
       let searchContentTypes: string[] = ['course', 'topic', 'lesson'];
       if (contentTypes && contentTypes.length > 0) {
-        searchContentTypes = Array.isArray(contentTypes) ? contentTypes : [contentTypes];
+        searchContentTypes = Array.isArray(contentTypes)
+          ? contentTypes
+          : [contentTypes];
       }
 
       return await this.educationProgramService.fullTextSearch(searchTerm, {
@@ -365,7 +375,10 @@ export class EducationProgramController {
     description: 'Det angivne uddannelsesprogram',
     type: EducationProgramDto,
   })
-  @ApiResponse({ status: 404, description: 'Uddannelsesprogrammet blev ikke fundet' })
+  @ApiResponse({
+    status: 404,
+    description: 'Uddannelsesprogrammet blev ikke fundet',
+  })
   @ApiResponse({ status: 500, description: 'Serverfejl' })
   @Get(':id')
   async getEducationProgramById(
@@ -382,7 +395,10 @@ export class EducationProgramController {
       if (error instanceof NotFoundException) {
         throw error;
       }
-      console.error(`Fejl ved hentning af uddannelsesprogram med id ${id}:`, error);
+      console.error(
+        `Fejl ved hentning af uddannelsesprogram med id ${id}:`,
+        error,
+      );
       throw new BadRequestException(
         'Der opstod en fejl ved hentning af uddannelsesprogrammet',
       );
@@ -390,7 +406,11 @@ export class EducationProgramController {
   }
 
   @ApiOperation({ summary: 'Hent et specifikt uddannelsesprogram ud fra slug' })
-  @ApiParam({ name: 'slug', description: 'Uddannelsesprogram slug', type: String })
+  @ApiParam({
+    name: 'slug',
+    description: 'Uddannelsesprogram slug',
+    type: String,
+  })
   @ApiQuery({
     name: 'includeCourses',
     description: 'Inkluder kurser i resultatet',
@@ -402,7 +422,10 @@ export class EducationProgramController {
     description: 'Det angivne uddannelsesprogram',
     type: EducationProgramDto,
   })
-  @ApiResponse({ status: 404, description: 'Uddannelsesprogrammet blev ikke fundet' })
+  @ApiResponse({
+    status: 404,
+    description: 'Uddannelsesprogrammet blev ikke fundet',
+  })
   @ApiResponse({ status: 500, description: 'Serverfejl' })
   @Get('slug/:slug')
   async getEducationProgramBySlug(
@@ -425,7 +448,10 @@ export class EducationProgramController {
       if (error instanceof NotFoundException) {
         throw error;
       }
-      console.error(`Fejl ved hentning af uddannelsesprogram med slug ${slug}:`, error);
+      console.error(
+        `Fejl ved hentning af uddannelsesprogram med slug ${slug}:`,
+        error,
+      );
       throw new BadRequestException(
         'Der opstod en fejl ved hentning af uddannelsesprogrammet',
       );
@@ -445,7 +471,8 @@ export class EducationProgramController {
   })
   @ApiResponse({
     status: 409,
-    description: 'Konflikt - Et uddannelsesprogram med dette slug eksisterer allerede',
+    description:
+      'Konflikt - Et uddannelsesprogram med dette slug eksisterer allerede',
   })
   @ApiResponse({ status: 401, description: 'Ikke autoriseret' })
   @ApiResponse({
@@ -496,7 +523,10 @@ export class EducationProgramController {
     status: 403,
     description: 'Forbudt - Kun admin kan opdatere uddannelsesprogrammer',
   })
-  @ApiResponse({ status: 404, description: 'Uddannelsesprogrammet blev ikke fundet' })
+  @ApiResponse({
+    status: 404,
+    description: 'Uddannelsesprogrammet blev ikke fundet',
+  })
   @ApiResponse({ status: 500, description: 'Serverfejl' })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -520,7 +550,10 @@ export class EducationProgramController {
       ) {
         throw error;
       }
-      console.error(`Fejl ved opdatering af uddannelsesprogram med id ${id}:`, error);
+      console.error(
+        `Fejl ved opdatering af uddannelsesprogram med id ${id}:`,
+        error,
+      );
       throw new BadRequestException(
         'Der opstod en fejl ved opdatering af uddannelsesprogrammet',
       );
@@ -544,7 +577,10 @@ export class EducationProgramController {
     status: 403,
     description: 'Forbudt - Kun admin kan slette uddannelsesprogrammer',
   })
-  @ApiResponse({ status: 404, description: 'Uddannelsesprogrammet blev ikke fundet' })
+  @ApiResponse({
+    status: 404,
+    description: 'Uddannelsesprogrammet blev ikke fundet',
+  })
   @ApiResponse({ status: 500, description: 'Serverfejl' })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -564,7 +600,10 @@ export class EducationProgramController {
       ) {
         throw error;
       }
-      console.error(`Fejl ved sletning af uddannelsesprogram med id ${id}:`, error);
+      console.error(
+        `Fejl ved sletning af uddannelsesprogram med id ${id}:`,
+        error,
+      );
       throw new BadRequestException(
         'Der opstod en fejl ved sletning af uddannelsesprogrammet',
       );
@@ -578,13 +617,19 @@ export class EducationProgramController {
     description: 'Uddannelsesprogrammet blev genoprettet',
     type: EducationProgramDto,
   })
-  @ApiResponse({ status: 400, description: 'Uddannelsesprogrammet er ikke slettet' })
+  @ApiResponse({
+    status: 400,
+    description: 'Uddannelsesprogrammet er ikke slettet',
+  })
   @ApiResponse({ status: 401, description: 'Ikke autoriseret' })
   @ApiResponse({
     status: 403,
     description: 'Forbudt - Kun admin kan genoprette uddannelsesprogrammer',
   })
-  @ApiResponse({ status: 404, description: 'Uddannelsesprogrammet blev ikke fundet' })
+  @ApiResponse({
+    status: 404,
+    description: 'Uddannelsesprogrammet blev ikke fundet',
+  })
   @ApiResponse({ status: 500, description: 'Serverfejl' })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -603,7 +648,10 @@ export class EducationProgramController {
       ) {
         throw error;
       }
-      console.error(`Fejl ved genopretning af uddannelsesprogram med id ${id}:`, error);
+      console.error(
+        `Fejl ved genopretning af uddannelsesprogram med id ${id}:`,
+        error,
+      );
       throw new BadRequestException(
         'Der opstod en fejl ved genopretning af uddannelsesprogrammet',
       );

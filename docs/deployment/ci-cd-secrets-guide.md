@@ -8,34 +8,34 @@ The following secrets need to be configured in your GitHub repository settings (
 
 ### Database Secrets
 
-| Secret Name | Description | Example |
-|-------------|-------------|---------|
+| Secret Name       | Description                                   | Example                                                          |
+| ----------------- | --------------------------------------------- | ---------------------------------------------------------------- |
 | `DATABASE_URL_CI` | Database connection string for CI environment | `postgresql://postgres:postgres@localhost:5432/learninglab_test` |
 
 ### JWT Secrets
 
-| Secret Name | Description | Example |
-|-------------|-------------|---------|
+| Secret Name     | Description                       | Example             |
+| --------------- | --------------------------------- | ------------------- |
 | `JWT_SECRET_CI` | JWT secret key for CI environment | `ci_jwt_secret_key` |
 
 ### Render Deployment
 
-| Secret Name | Description | Example |
-|-------------|-------------|---------|
+| Secret Name                  | Description                            | Example                                               |
+| ---------------------------- | -------------------------------------- | ----------------------------------------------------- |
 | `RENDER_DEPLOY_HOOK_URL_API` | Render deploy hook URL for API service | `https://api.render.com/deploy/srv-abc123?key=abcdef` |
 
 ### Vercel Deployment
 
-| Secret Name | Description | Example |
-|-------------|-------------|---------|
-| `VERCEL_TOKEN` | Vercel API token | `vercel_token_value` |
-| `VERCEL_ORG_ID` | Vercel organization ID | `team_abcdefg` |
-| `VERCEL_PROJECT_ID_WEB` | Vercel project ID for web app | `prj_abcdefg` |
+| Secret Name             | Description                   | Example              |
+| ----------------------- | ----------------------------- | -------------------- |
+| `VERCEL_TOKEN`          | Vercel API token              | `vercel_token_value` |
+| `VERCEL_ORG_ID`         | Vercel organization ID        | `team_abcdefg`       |
+| `VERCEL_PROJECT_ID_WEB` | Vercel project ID for web app | `prj_abcdefg`        |
 
 ### Code Quality
 
-| Secret Name | Description | Example |
-|-------------|-------------|---------|
+| Secret Name    | Description            | Example              |
+| -------------- | ---------------------- | -------------------- |
 | `QODANA_TOKEN` | JetBrains Qodana token | `qodana_token_value` |
 
 ## Environment Variables in CI/CD Workflow
@@ -47,10 +47,10 @@ The following environment variables are used in the CI/CD workflow files:
 ```yaml
 env:
   NEXT_PUBLIC_API_URL: http://localhost:5002/api # Used by web tests/build
-  DATABASE_URL: ${{ secrets.DATABASE_URL_CI }}   # Used by API tests/prisma
-  JWT_SECRET: ${{ secrets.JWT_SECRET_CI }}       # Used by API tests
-  JWT_EXPIRES_IN: "15m"                          # Used by API tests
-  SALT_ROUNDS: "10"                              # Used by API tests
+  DATABASE_URL: ${{ secrets.DATABASE_URL_CI }} # Used by API tests/prisma
+  JWT_SECRET: ${{ secrets.JWT_SECRET_CI }} # Used by API tests
+  JWT_EXPIRES_IN: "15m" # Used by API tests
+  SALT_ROUNDS: "10" # Used by API tests
 ```
 
 ### Vercel Deployment Job

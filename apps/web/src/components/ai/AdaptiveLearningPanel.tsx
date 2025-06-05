@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Separator } from '@/components/ui/separator';
+import React, { useState, useEffect } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Separator } from "@/components/ui/separator";
 import {
   Brain,
   Target,
@@ -26,20 +26,20 @@ import {
   Zap,
   BarChart3,
   Route,
-} from 'lucide-react';
-import { cn } from '@/lib/utils';
+} from "lucide-react";
+import { cn } from "@/lib/utils";
 
 // Types
 interface LearningRecommendation {
   userId: number;
   recommendedTopics: string[];
-  suggestedDifficulty: 'beginner' | 'intermediate' | 'advanced';
+  suggestedDifficulty: "beginner" | "intermediate" | "advanced";
   personalizedContent: {
     title: string;
     description: string;
     estimatedTime: number;
     difficulty: string;
-    priority: 'high' | 'medium' | 'low';
+    priority: "high" | "medium" | "low";
   }[];
   learningPath: {
     step: number;
@@ -67,7 +67,7 @@ interface UserPerformanceData {
   totalStudyTime: number;
   strengths: string[];
   weaknesses: string[];
-  difficultyLevel: 'beginner' | 'intermediate' | 'advanced';
+  difficultyLevel: "beginner" | "intermediate" | "advanced";
   streakDays: number;
   lastActivity: Date;
   topicsStudied?: string[];
@@ -79,11 +79,11 @@ interface LearningPathStep {
   description: string;
   topics: string[];
   estimatedWeeks: number;
-  difficulty: 'beginner' | 'intermediate' | 'advanced';
+  difficulty: "beginner" | "intermediate" | "advanced";
   prerequisites: string[];
   learningObjectives: string[];
   resources: {
-    type: 'video' | 'article' | 'quiz' | 'exercise';
+    type: "video" | "article" | "quiz" | "exercise";
     title: string;
     url?: string;
     duration?: number;
@@ -131,11 +131,13 @@ export function AdaptiveLearningPanel({
   onLearningPathStarted,
   className,
 }: AdaptiveLearningPanelProps) {
-  const [recommendations, setRecommendations] = useState<LearningRecommendation | null>(null);
-  const [learningPath, setLearningPath] = useState<PersonalizedLearningPath | null>(null);
+  const [recommendations, setRecommendations] =
+    useState<LearningRecommendation | null>(null);
+  const [learningPath, setLearningPath] =
+    useState<PersonalizedLearningPath | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState('recommendations');
+  const [activeTab, setActiveTab] = useState("recommendations");
 
   useEffect(() => {
     if (performanceHistory.length > 0) {
@@ -148,26 +150,26 @@ export function AdaptiveLearningPanel({
     setError(null);
 
     try {
-      const response = await fetch('/api/ai/adaptive/recommendations', {
-        method: 'POST',
+      const response = await fetch("/api/ai/adaptive/recommendations", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           userId,
           performanceHistory,
-          learningGoals: ['improve accuracy', 'learn new topics'],
+          learningGoals: ["improve accuracy", "learn new topics"],
         }),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to generate recommendations');
+        throw new Error("Failed to generate recommendations");
       }
 
       const data = await response.json();
       setRecommendations(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
       setIsLoading(false);
     }
@@ -178,10 +180,10 @@ export function AdaptiveLearningPanel({
     setError(null);
 
     try {
-      const response = await fetch('/api/ai/adaptive/learning-path', {
-        method: 'POST',
+      const response = await fetch("/api/ai/adaptive/learning-path", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           userId,
@@ -193,14 +195,14 @@ export function AdaptiveLearningPanel({
       });
 
       if (!response.ok) {
-        throw new Error('Failed to generate learning path');
+        throw new Error("Failed to generate learning path");
       }
 
       const data = await response.json();
       setLearningPath(data.data);
-      setActiveTab('learning-path');
+      setActiveTab("learning-path");
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
       setIsLoading(false);
     }
@@ -208,27 +210,27 @@ export function AdaptiveLearningPanel({
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'high':
-        return 'bg-red-100 text-red-800';
-      case 'medium':
-        return 'bg-yellow-100 text-yellow-800';
-      case 'low':
-        return 'bg-green-100 text-green-800';
+      case "high":
+        return "bg-red-100 text-red-800";
+      case "medium":
+        return "bg-yellow-100 text-yellow-800";
+      case "low":
+        return "bg-green-100 text-green-800";
       default:
-        return 'bg-gray-100 text-gray-800';
+        return "bg-gray-100 text-gray-800";
     }
   };
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
-      case 'beginner':
-        return 'bg-green-100 text-green-800';
-      case 'intermediate':
-        return 'bg-yellow-100 text-yellow-800';
-      case 'advanced':
-        return 'bg-red-100 text-red-800';
+      case "beginner":
+        return "bg-green-100 text-green-800";
+      case "intermediate":
+        return "bg-yellow-100 text-yellow-800";
+      case "advanced":
+        return "bg-red-100 text-red-800";
       default:
-        return 'bg-gray-100 text-gray-800';
+        return "bg-gray-100 text-gray-800";
     }
   };
 
@@ -238,12 +240,14 @@ export function AdaptiveLearningPanel({
     }
     const hours = Math.floor(minutes / 60);
     const remainingMinutes = minutes % 60;
-    return remainingMinutes > 0 ? `${hours}h ${remainingMinutes}m` : `${hours}h`;
+    return remainingMinutes > 0
+      ? `${hours}h ${remainingMinutes}m`
+      : `${hours}h`;
   };
 
   if (isLoading) {
     return (
-      <Card className={cn('w-full', className)}>
+      <Card className={cn("w-full", className)}>
         <CardContent className="p-6">
           <div className="flex items-center justify-center space-x-2">
             <Brain className="h-5 w-5 animate-pulse text-blue-500" />
@@ -258,7 +262,7 @@ export function AdaptiveLearningPanel({
 
   if (error) {
     return (
-      <Card className={cn('w-full', className)}>
+      <Card className={cn("w-full", className)}>
         <CardContent className="p-6">
           <Alert variant="destructive">
             <AlertTriangle className="h-4 w-4" />
@@ -270,7 +274,7 @@ export function AdaptiveLearningPanel({
   }
 
   return (
-    <div className={cn('space-y-6', className)}>
+    <div className={cn("space-y-6", className)}>
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
@@ -308,15 +312,24 @@ export function AdaptiveLearningPanel({
                     </CardHeader>
                     <CardContent>
                       <div className="flex flex-wrap gap-2 mb-4">
-                        {recommendations.recommendedTopics.map((topic, index) => (
-                          <Badge key={index} variant="outline">
-                            {topic}
-                          </Badge>
-                        ))}
+                        {recommendations.recommendedTopics.map(
+                          (topic, index) => (
+                            <Badge key={index} variant="outline">
+                              {topic}
+                            </Badge>
+                          ),
+                        )}
                       </div>
                       <div className="text-sm text-muted-foreground">
-                        Suggested difficulty: 
-                        <Badge className={cn('ml-2', getDifficultyColor(recommendations.suggestedDifficulty))}>
+                        Suggested difficulty:
+                        <Badge
+                          className={cn(
+                            "ml-2",
+                            getDifficultyColor(
+                              recommendations.suggestedDifficulty,
+                            ),
+                          )}
+                        >
                           {recommendations.suggestedDifficulty}
                         </Badge>
                       </div>
@@ -332,30 +345,43 @@ export function AdaptiveLearningPanel({
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-3">
-                      {recommendations.personalizedContent.map((content, index) => (
-                        <div key={index} className="border rounded-lg p-4 space-y-2">
-                          <div className="flex items-center justify-between">
-                            <h4 className="font-medium">{content.title}</h4>
-                            <div className="flex items-center space-x-2">
-                              <Badge className={getPriorityColor(content.priority)}>
-                                {content.priority}
-                              </Badge>
-                              <Badge className={getDifficultyColor(content.difficulty)}>
-                                {content.difficulty}
-                              </Badge>
+                      {recommendations.personalizedContent.map(
+                        (content, index) => (
+                          <div
+                            key={index}
+                            className="border rounded-lg p-4 space-y-2"
+                          >
+                            <div className="flex items-center justify-between">
+                              <h4 className="font-medium">{content.title}</h4>
+                              <div className="flex items-center space-x-2">
+                                <Badge
+                                  className={getPriorityColor(content.priority)}
+                                >
+                                  {content.priority}
+                                </Badge>
+                                <Badge
+                                  className={getDifficultyColor(
+                                    content.difficulty,
+                                  )}
+                                >
+                                  {content.difficulty}
+                                </Badge>
+                              </div>
+                            </div>
+                            <p className="text-sm text-muted-foreground">
+                              {content.description}
+                            </p>
+                            <div className="flex items-center space-x-4 text-xs text-muted-foreground">
+                              <div className="flex items-center space-x-1">
+                                <Clock className="h-3 w-3" />
+                                <span>
+                                  {formatDuration(content.estimatedTime)}
+                                </span>
+                              </div>
                             </div>
                           </div>
-                          <p className="text-sm text-muted-foreground">
-                            {content.description}
-                          </p>
-                          <div className="flex items-center space-x-4 text-xs text-muted-foreground">
-                            <div className="flex items-center space-x-1">
-                              <Clock className="h-3 w-3" />
-                              <span>{formatDuration(content.estimatedTime)}</span>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
+                        ),
+                      )}
                     </CardContent>
                   </Card>
 
@@ -370,17 +396,22 @@ export function AdaptiveLearningPanel({
                     <CardContent>
                       <ul className="space-y-2">
                         {recommendations.nextActions.map((action, index) => (
-                          <li key={index} className="flex items-start space-x-2">
+                          <li
+                            key={index}
+                            className="flex items-start space-x-2"
+                          >
                             <CheckCircle className="h-4 w-4 mt-0.5 text-green-500" />
                             <span className="text-sm">{action}</span>
                           </li>
                         ))}
                       </ul>
                       <Button
-                        onClick={() => generateLearningPath(
-                          recommendations.recommendedTopics,
-                          ['improve skills', 'learn new concepts']
-                        )}
+                        onClick={() =>
+                          generateLearningPath(
+                            recommendations.recommendedTopics,
+                            ["improve skills", "learn new concepts"],
+                          )
+                        }
                         className="w-full mt-4"
                       >
                         <Route className="h-4 w-4 mr-2" />
@@ -407,25 +438,40 @@ export function AdaptiveLearningPanel({
                     <CardContent className="space-y-4">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
-                          <h4 className="font-medium text-sm">Learning Style</h4>
+                          <h4 className="font-medium text-sm">
+                            Learning Style
+                          </h4>
                           <Badge variant="outline" className="text-sm">
                             {recommendations.adaptiveInsights.learningStyle}
                           </Badge>
                         </div>
                         <div className="space-y-2">
-                          <h4 className="font-medium text-sm">Optimal Difficulty</h4>
-                          <Badge className={getDifficultyColor(recommendations.adaptiveInsights.optimalDifficulty)}>
+                          <h4 className="font-medium text-sm">
+                            Optimal Difficulty
+                          </h4>
+                          <Badge
+                            className={getDifficultyColor(
+                              recommendations.adaptiveInsights
+                                .optimalDifficulty,
+                            )}
+                          >
                             {recommendations.adaptiveInsights.optimalDifficulty}
                           </Badge>
                         </div>
                       </div>
-                      
+
                       <div className="space-y-2">
-                        <h4 className="font-medium text-sm">Recommended Study Time</h4>
+                        <h4 className="font-medium text-sm">
+                          Recommended Study Time
+                        </h4>
                         <div className="flex items-center space-x-2">
                           <Clock className="h-4 w-4" />
                           <span className="text-sm">
-                            {formatDuration(recommendations.adaptiveInsights.recommendedStudyTime)} per day
+                            {formatDuration(
+                              recommendations.adaptiveInsights
+                                .recommendedStudyTime,
+                            )}{" "}
+                            per day
                           </span>
                         </div>
                       </div>
@@ -443,12 +489,17 @@ export function AdaptiveLearningPanel({
                       </CardHeader>
                       <CardContent>
                         <ul className="space-y-2">
-                          {recommendations.adaptiveInsights.strengths.map((strength, index) => (
-                            <li key={index} className="flex items-center space-x-2">
-                              <CheckCircle className="h-4 w-4 text-green-500" />
-                              <span className="text-sm">{strength}</span>
-                            </li>
-                          ))}
+                          {recommendations.adaptiveInsights.strengths.map(
+                            (strength, index) => (
+                              <li
+                                key={index}
+                                className="flex items-center space-x-2"
+                              >
+                                <CheckCircle className="h-4 w-4 text-green-500" />
+                                <span className="text-sm">{strength}</span>
+                              </li>
+                            ),
+                          )}
                         </ul>
                       </CardContent>
                     </Card>
@@ -462,12 +513,17 @@ export function AdaptiveLearningPanel({
                       </CardHeader>
                       <CardContent>
                         <ul className="space-y-2">
-                          {recommendations.adaptiveInsights.weaknesses.map((weakness, index) => (
-                            <li key={index} className="flex items-center space-x-2">
-                              <AlertTriangle className="h-4 w-4 text-red-500" />
-                              <span className="text-sm">{weakness}</span>
-                            </li>
-                          ))}
+                          {recommendations.adaptiveInsights.weaknesses.map(
+                            (weakness, index) => (
+                              <li
+                                key={index}
+                                className="flex items-center space-x-2"
+                              >
+                                <AlertTriangle className="h-4 w-4 text-red-500" />
+                                <span className="text-sm">{weakness}</span>
+                              </li>
+                            ),
+                          )}
                         </ul>
                       </CardContent>
                     </Card>
@@ -492,32 +548,46 @@ export function AdaptiveLearningPanel({
                       <p className="text-sm text-muted-foreground">
                         {learningPath.description}
                       </p>
-                      
+
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div className="text-center">
-                          <div className="text-2xl font-bold">{learningPath.totalDuration}</div>
-                          <div className="text-xs text-muted-foreground">weeks</div>
+                          <div className="text-2xl font-bold">
+                            {learningPath.totalDuration}
+                          </div>
+                          <div className="text-xs text-muted-foreground">
+                            weeks
+                          </div>
                         </div>
                         <div className="text-center">
-                          <div className="text-2xl font-bold">{learningPath.steps.length}</div>
-                          <div className="text-xs text-muted-foreground">steps</div>
+                          <div className="text-2xl font-bold">
+                            {learningPath.steps.length}
+                          </div>
+                          <div className="text-xs text-muted-foreground">
+                            steps
+                          </div>
                         </div>
                         <div className="text-center">
                           <div className="text-2xl font-bold">
                             {learningPath.successMetrics.completionRate}%
                           </div>
-                          <div className="text-xs text-muted-foreground">success rate</div>
+                          <div className="text-xs text-muted-foreground">
+                            success rate
+                          </div>
                         </div>
                       </div>
 
                       <div className="space-y-2">
-                        <h4 className="font-medium text-sm">Adaptive Features</h4>
+                        <h4 className="font-medium text-sm">
+                          Adaptive Features
+                        </h4>
                         <div className="flex flex-wrap gap-2">
                           {Object.entries(learningPath.adaptiveFeatures)
                             .filter(([_, enabled]) => enabled)
                             .map(([feature, _]) => (
                               <Badge key={feature} variant="outline">
-                                {feature.replace(/([A-Z])/g, ' $1').toLowerCase()}
+                                {feature
+                                  .replace(/([A-Z])/g, " $1")
+                                  .toLowerCase()}
                               </Badge>
                             ))}
                         </div>
@@ -535,7 +605,9 @@ export function AdaptiveLearningPanel({
                               {index + 1}
                             </div>
                             <span>{step.title}</span>
-                            <Badge className={getDifficultyColor(step.difficulty)}>
+                            <Badge
+                              className={getDifficultyColor(step.difficulty)}
+                            >
                               {step.difficulty}
                             </Badge>
                           </CardTitle>
@@ -547,51 +619,75 @@ export function AdaptiveLearningPanel({
 
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="space-y-2">
-                              <h4 className="font-medium text-sm">Topics Covered</h4>
+                              <h4 className="font-medium text-sm">
+                                Topics Covered
+                              </h4>
                               <div className="flex flex-wrap gap-1">
                                 {step.topics.map((topic, topicIndex) => (
-                                  <Badge key={topicIndex} variant="outline" className="text-xs">
+                                  <Badge
+                                    key={topicIndex}
+                                    variant="outline"
+                                    className="text-xs"
+                                  >
                                     {topic}
                                   </Badge>
                                 ))}
                               </div>
                             </div>
-                            
+
                             <div className="space-y-2">
                               <h4 className="font-medium text-sm">Duration</h4>
                               <div className="flex items-center space-x-2">
                                 <Calendar className="h-4 w-4" />
-                                <span className="text-sm">{step.estimatedWeeks} weeks</span>
+                                <span className="text-sm">
+                                  {step.estimatedWeeks} weeks
+                                </span>
                               </div>
                             </div>
                           </div>
 
                           {step.learningObjectives.length > 0 && (
                             <div className="space-y-2">
-                              <h4 className="font-medium text-sm">Learning Objectives</h4>
+                              <h4 className="font-medium text-sm">
+                                Learning Objectives
+                              </h4>
                               <ul className="space-y-1">
-                                {step.learningObjectives.map((objective, objIndex) => (
-                                  <li key={objIndex} className="text-sm text-muted-foreground flex items-start space-x-2">
-                                    <Target className="h-3 w-3 mt-1 flex-shrink-0" />
-                                    <span>{objective}</span>
-                                  </li>
-                                ))}
+                                {step.learningObjectives.map(
+                                  (objective, objIndex) => (
+                                    <li
+                                      key={objIndex}
+                                      className="text-sm text-muted-foreground flex items-start space-x-2"
+                                    >
+                                      <Target className="h-3 w-3 mt-1 flex-shrink-0" />
+                                      <span>{objective}</span>
+                                    </li>
+                                  ),
+                                )}
                               </ul>
                             </div>
                           )}
 
                           {step.milestones.length > 0 && (
                             <div className="space-y-2">
-                              <h4 className="font-medium text-sm">Milestones</h4>
+                              <h4 className="font-medium text-sm">
+                                Milestones
+                              </h4>
                               <div className="space-y-2">
-                                {step.milestones.map((milestone, milestoneIndex) => (
-                                  <div key={milestoneIndex} className="border-l-2 border-blue-200 pl-4">
-                                    <div className="font-medium text-sm">Week {milestone.week}</div>
-                                    <div className="text-sm text-muted-foreground">
-                                      {milestone.description}
+                                {step.milestones.map(
+                                  (milestone, milestoneIndex) => (
+                                    <div
+                                      key={milestoneIndex}
+                                      className="border-l-2 border-blue-200 pl-4"
+                                    >
+                                      <div className="font-medium text-sm">
+                                        Week {milestone.week}
+                                      </div>
+                                      <div className="text-sm text-muted-foreground">
+                                        {milestone.description}
+                                      </div>
                                     </div>
-                                  </div>
-                                ))}
+                                  ),
+                                )}
                               </div>
                             </div>
                           )}
@@ -613,12 +709,15 @@ export function AdaptiveLearningPanel({
                 <Card>
                   <CardContent className="p-6 text-center">
                     <Route className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                    <h3 className="font-medium mb-2">No Learning Path Generated</h3>
+                    <h3 className="font-medium mb-2">
+                      No Learning Path Generated
+                    </h3>
                     <p className="text-sm text-muted-foreground mb-4">
-                      Generate recommendations first to create a personalized learning path.
+                      Generate recommendations first to create a personalized
+                      learning path.
                     </p>
                     <Button
-                      onClick={() => setActiveTab('recommendations')}
+                      onClick={() => setActiveTab("recommendations")}
                       variant="outline"
                     >
                       View Recommendations

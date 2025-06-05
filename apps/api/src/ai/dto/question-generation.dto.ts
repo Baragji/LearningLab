@@ -1,4 +1,12 @@
-import { IsString, IsOptional, IsNumber, IsEnum, IsArray, Min, Max } from 'class-validator';
+import {
+  IsString,
+  IsOptional,
+  IsNumber,
+  IsEnum,
+  IsArray,
+  Min,
+  Max,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 import { QuestionType, Difficulty } from '@prisma/client';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
@@ -11,9 +19,9 @@ export class GenerateQuestionsDto {
   @IsString()
   content: string;
 
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'Type af indhold',
-    enum: ['lesson', 'topic', 'course'] 
+    enum: ['lesson', 'topic', 'course'],
   })
   @IsString()
   contentType: 'lesson' | 'topic' | 'course';
@@ -22,11 +30,11 @@ export class GenerateQuestionsDto {
   @IsString()
   contentId: string;
 
-  @ApiPropertyOptional({ 
+  @ApiPropertyOptional({
     description: 'Antal spørgsmål at generere',
     minimum: 1,
     maximum: 20,
-    default: 5 
+    default: 5,
   })
   @IsOptional()
   @IsNumber()
@@ -35,27 +43,27 @@ export class GenerateQuestionsDto {
   @Type(() => Number)
   numberOfQuestions?: number;
 
-  @ApiPropertyOptional({ 
+  @ApiPropertyOptional({
     description: 'Typer af spørgsmål at generere',
     enum: QuestionType,
-    isArray: true 
+    isArray: true,
   })
   @IsOptional()
   @IsArray()
   @IsEnum(QuestionType, { each: true })
   questionTypes?: QuestionType[];
 
-  @ApiPropertyOptional({ 
+  @ApiPropertyOptional({
     description: 'Målsværhedsgrad',
-    enum: Difficulty 
+    enum: Difficulty,
   })
   @IsOptional()
   @IsEnum(Difficulty)
   targetDifficulty?: Difficulty;
 
-  @ApiPropertyOptional({ 
+  @ApiPropertyOptional({
     description: 'Fokusområder for spørgsmålene',
-    isArray: true 
+    isArray: true,
   })
   @IsOptional()
   @IsArray()
@@ -67,11 +75,11 @@ export class GenerateQuestionsDto {
  * DTO for generering af spørgsmål fra lesson/topic/course
  */
 export class GenerateQuestionsOptionsDto {
-  @ApiPropertyOptional({ 
+  @ApiPropertyOptional({
     description: 'Antal spørgsmål at generere',
     minimum: 1,
     maximum: 20,
-    default: 5 
+    default: 5,
   })
   @IsOptional()
   @IsNumber()
@@ -80,27 +88,27 @@ export class GenerateQuestionsOptionsDto {
   @Type(() => Number)
   numberOfQuestions?: number;
 
-  @ApiPropertyOptional({ 
+  @ApiPropertyOptional({
     description: 'Typer af spørgsmål at generere',
     enum: QuestionType,
-    isArray: true 
+    isArray: true,
   })
   @IsOptional()
   @IsArray()
   @IsEnum(QuestionType, { each: true })
   questionTypes?: QuestionType[];
 
-  @ApiPropertyOptional({ 
+  @ApiPropertyOptional({
     description: 'Målsværhedsgrad',
-    enum: Difficulty 
+    enum: Difficulty,
   })
   @IsOptional()
   @IsEnum(Difficulty)
   targetDifficulty?: Difficulty;
 
-  @ApiPropertyOptional({ 
+  @ApiPropertyOptional({
     description: 'Fokusområder for spørgsmålene',
-    isArray: true 
+    isArray: true,
   })
   @IsOptional()
   @IsArray()
@@ -115,60 +123,60 @@ export class GeneratedQuestionDto {
   @ApiProperty({ description: 'Spørgsmålstekst' })
   text: string;
 
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'Type af spørgsmål',
-    enum: QuestionType 
+    enum: QuestionType,
   })
   type: QuestionType;
 
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'Sværhedsgrad',
-    enum: Difficulty 
+    enum: Difficulty,
   })
   difficulty: Difficulty;
 
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'Point for spørgsmålet',
     minimum: 1,
-    maximum: 10 
+    maximum: 10,
   })
   points: number;
 
-  @ApiPropertyOptional({ 
+  @ApiPropertyOptional({
     description: 'Svarmuligheder (kun for MULTIPLE_CHOICE)',
     type: 'array',
     items: {
       type: 'object',
       properties: {
         text: { type: 'string' },
-        isCorrect: { type: 'boolean' }
-      }
-    }
+        isCorrect: { type: 'boolean' },
+      },
+    },
   })
   answerOptions?: {
     text: string;
     isCorrect: boolean;
   }[];
 
-  @ApiPropertyOptional({ 
-    description: 'Minimum antal ord for essay (kun for ESSAY)' 
+  @ApiPropertyOptional({
+    description: 'Minimum antal ord for essay (kun for ESSAY)',
   })
   essayMinWords?: number;
 
-  @ApiPropertyOptional({ 
-    description: 'Maximum antal ord for essay (kun for ESSAY)' 
+  @ApiPropertyOptional({
+    description: 'Maximum antal ord for essay (kun for ESSAY)',
   })
   essayMaxWords?: number;
 
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'Kvalitetsscore (0-100)',
     minimum: 0,
-    maximum: 100 
+    maximum: 100,
   })
   qualityScore: number;
 
-  @ApiProperty({ 
-    description: 'Forklaring på hvorfor spørgsmålet er relevant' 
+  @ApiProperty({
+    description: 'Forklaring på hvorfor spørgsmålet er relevant',
   })
   reasoning: string;
 }
@@ -180,9 +188,9 @@ export class QuestionGenerationResponseDto {
   @ApiProperty({ description: 'Om genereringen lykkedes' })
   success: boolean;
 
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'Genererede spørgsmål',
-    type: [GeneratedQuestionDto] 
+    type: [GeneratedQuestionDto],
   })
   questions: GeneratedQuestionDto[];
 
@@ -192,9 +200,9 @@ export class QuestionGenerationResponseDto {
   @ApiPropertyOptional({ description: 'Besked om genereringen' })
   message?: string;
 
-  @ApiPropertyOptional({ 
+  @ApiPropertyOptional({
     description: 'Metadata om genereringen',
-    type: 'object' 
+    type: 'object',
   })
   metadata?: {
     contentType: string;

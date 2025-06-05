@@ -1,14 +1,14 @@
 // packages/ui/components/Notification/NotificationProvider.tsx
-import React, { createContext, useContext, useState, ReactNode } from 'react';
-import { Notification, NotificationType } from './Notification';
+import React, { createContext, useContext, useState, ReactNode } from "react";
+import { Notification, NotificationType } from "./Notification";
 
 export type NotificationPosition =
-  | 'top-right'
-  | 'top-left'
-  | 'bottom-right'
-  | 'bottom-left'
-  | 'top-center'
-  | 'bottom-center';
+  | "top-right"
+  | "top-left"
+  | "bottom-right"
+  | "bottom-left"
+  | "top-center"
+  | "bottom-center";
 
 export interface NotificationItem {
   id: string;
@@ -35,34 +35,34 @@ interface NotificationContextValue {
   success: (
     title: string,
     message?: string,
-    opts?: Partial<Omit<ShowNotificationOptions, 'type' | 'title' | 'message'>>,
+    opts?: Partial<Omit<ShowNotificationOptions, "type" | "title" | "message">>,
   ) => string;
   error: (
     title: string,
     message?: string,
-    opts?: Partial<Omit<ShowNotificationOptions, 'type' | 'title' | 'message'>>,
+    opts?: Partial<Omit<ShowNotificationOptions, "type" | "title" | "message">>,
   ) => string;
   warning: (
     title: string,
     message?: string,
-    opts?: Partial<Omit<ShowNotificationOptions, 'type' | 'title' | 'message'>>,
+    opts?: Partial<Omit<ShowNotificationOptions, "type" | "title" | "message">>,
   ) => string;
   info: (
     title: string,
     message?: string,
-    opts?: Partial<Omit<ShowNotificationOptions, 'type' | 'title' | 'message'>>,
+    opts?: Partial<Omit<ShowNotificationOptions, "type" | "title" | "message">>,
   ) => string;
 }
 
 const NotificationContext = createContext<NotificationContextValue>({
   notifications: [],
-  showNotification: () => '',
+  showNotification: () => "",
   hideNotification: () => {},
   clearAllNotifications: () => {},
-  success: () => '',
-  error: () => '',
-  warning: () => '',
-  info: () => '',
+  success: () => "",
+  error: () => "",
+  warning: () => "",
+  info: () => "",
 });
 
 export const useNotification = () => useContext(NotificationContext);
@@ -121,7 +121,9 @@ class NotificationManager {
     (
       title: string,
       message?: string,
-      opts?: Partial<Omit<ShowNotificationOptions, 'type' | 'title' | 'message'>>,
+      opts?: Partial<
+        Omit<ShowNotificationOptions, "type" | "title" | "message">
+      >,
     ) =>
       this.add({ type, title, message, ...opts });
 }
@@ -129,7 +131,7 @@ class NotificationManager {
 export function NotificationProvider({
   children,
   maxNotifications = 5,
-  defaultPosition = 'top-right',
+  defaultPosition = "top-right",
   defaultDuration = 5000,
 }: NotificationProviderProps) {
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
@@ -157,13 +159,13 @@ export function NotificationProvider({
   // Bestem CSS klasser baseret på position
   const classesFor = (pos: NotificationPosition): string =>
     ({
-      'top-right': 'top-4 right-4 items-end',
-      'top-left': 'top-4 left-4 items-start',
-      'bottom-right': 'bottom-4 right-4 items-end',
-      'bottom-left': 'bottom-4 left-4 items-start',
-      'top-center': 'top-4 left-1/2 -translate-x-1/2 items-center',
-      'bottom-center': 'bottom-4 left-1/2 -translate-x-1/2 items-center',
-    }[pos] || 'top-4 right-4 items-end');
+      "top-right": "top-4 right-4 items-end",
+      "top-left": "top-4 left-4 items-start",
+      "bottom-right": "bottom-4 right-4 items-end",
+      "bottom-left": "bottom-4 left-4 items-start",
+      "top-center": "top-4 left-1/2 -translate-x-1/2 items-center",
+      "bottom-center": "bottom-4 left-1/2 -translate-x-1/2 items-center",
+    })[pos] || "top-4 right-4 items-end";
 
   const entries = Object.entries(grouped) as [
     NotificationPosition,
@@ -175,10 +177,10 @@ export function NotificationProvider({
     showNotification: manager.add,
     hideNotification: manager.remove,
     clearAllNotifications: manager.removeAll,
-    success: manager.createTypedNotification('success'),
-    error: manager.createTypedNotification('error'),
-    warning: manager.createTypedNotification('warning'),
-    info: manager.createTypedNotification('info'),
+    success: manager.createTypedNotification("success"),
+    error: manager.createTypedNotification("error"),
+    warning: manager.createTypedNotification("warning"),
+    info: manager.createTypedNotification("info"),
   };
 
   return (

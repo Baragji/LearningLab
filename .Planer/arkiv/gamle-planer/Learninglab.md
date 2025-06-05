@@ -3,7 +3,7 @@ Her er en gennemgang af din vision, punkt for punkt, med en vurdering af, hvad d
 
 Vision – Kort fortalt:
 
-"Starte en færdig platform med én kommando." 
+"Starte en færdig platform med én kommando."
 
 Status: Delvist implementeret.
 Evidens:
@@ -11,7 +11,7 @@ Du har docker-compose.yml til at starte services samlet (API, web, database, Ngi
 Rod package.json har dev scriptet npx turbo run dev, som starter udviklingsservere for alle apps. Vi har lige fået dette til at virke for API'en.
 Dockerfile.api og Dockerfile.web eksisterer for at bygge containeriserede versioner af apps.
 Mangler/Overvejelser: "Færdig platform" indebærer, at alle kernefunktioner fra visionen er implementeret og stabile. Én kommando til produktion deployment (udover lokal Docker) kunne være en del af CLI-generatoren.
-"Genbruges til forskellige fag (fx laborant, medicin)." 
+"Genbruges til forskellige fag (fx laborant, medicin)."
 
 Status: Fundament til stede, men fag-specifik tilpasning er ikke fuldt implementeret.
 Evidens:
@@ -19,16 +19,16 @@ Monorepo-struktur med packages/core, packages/ui, packages/config tillader genbr
 SubjectArea modellen i Prisma (apps/api/prisma/schema.prisma) kan repræsentere forskellige fagområder.
 Seedpensum.txt og apps/api/prisma/seed.ts viser en metode til at indlæse pensum-data, som potentielt kan tilpasses pr. fag.
 Mangler/Overvejelser: Konkret mekanisme for "presets" (f.eks. "laborant") i CLI-generatoren mangler. Tematisering og indhold skal kunne variere markant pr. fag.
-"Spare tid ved at eliminere manuel opsætning." 
+"Spare tid ved at eliminere manuel opsætning."
 
 Status: Godt på vej.
 Evidens: Brugen af Turborepo, Docker, en fælles struktur og scripts (som i package-scripts.js) reducerer manuel opsætning.
 Mangler/Overvejelser: CLI-generatoren er nøglen til fuld automatisering for nye instanser.
-"Templaten inkluderer frontend, backend, genbrugelige komponenter og værktøjer til hurtig opsætning (TurboRepo, monorepo m.m.)." 
+"Templaten inkluderer frontend, backend, genbrugelige komponenter og værktøjer til hurtig opsætning (TurboRepo, monorepo m.m.)."
 
 Status: Fuldt implementeret.
-Evidens: Hele strukturen i repomix-output.xml bekræfter dette: apps/api, apps/web, packages/*, turbo.json, Yarn workspaces.
-"Kørende platform med quiz, AI, temaer og login." 
+Evidens: Hele strukturen i repomix-output.xml bekræfter dette: apps/api, apps/web, packages/\*, turbo.json, Yarn workspaces.
+"Kørende platform med quiz, AI, temaer og login."
 
 Quiz:
 Status: Delvist implementeret (godt fundament).
@@ -44,12 +44,12 @@ Mangler/Overvejelser: Dynamisk skift af temaer "baseret på bruger/emne" er ikke
 Login:
 Status: Fuldt implementeret.
 Evidens: Omfattende auth modul i apps/api/src/auth/ med JWT, Passport, local strategy, guards (LocalAuthGuard, JwtAuthGuard). Frontend har login-sider (apps/web/pages/login.tsx, apps/web/src/screens/auth/login/login.tsx) og AuthContext.tsx. Social login (GitHub, Google) er forberedt i config og guards.
-"CLI-generator: fx npx create-solid-wow --preset laborant." 
+"CLI-generator: fx npx create-solid-wow --preset laborant."
 
 Status: Basis til stede, men "preset"-funktionalitet mangler.
 Evidens: packages/create-solid-wow/ eksisterer med en index.ts, hvilket indikerer starten på en CLI-pakke.
 Mangler/Overvejelser: Logikken for at håndtere presets og generere en fuld, tilpasset platform mangler.
-"Understøttelse af Docker og AI-integration." 
+"Understøttelse af Docker og AI-integration."
 
 Docker:
 Status: Fuldt implementeret.
@@ -60,35 +60,33 @@ Brainstorm – Funktioner i platformen:
 
 1. Læringsstruktur:
 
-"Kursus > Fag > Emne > Lektion." 
+"Kursus > Fag > Emne > Lektion."
 
 Status: Delvist implementeret (modeller findes, men "Fag" og "Emne" hierarkiet er ikke direkte i Prisma som separate modeller. SubjectArea -> Course -> Module -> Lesson er implementeret).
 Evidens: Prisma-modeller: SubjectArea, Course, Module, Lesson. Tilhørende controllers og DTO'er findes.
 Mangler/Overvejelser: Visionen nævner "Fag" og "Emne" som separate niveauer. SubjectArea kan dække "Fag". Module dækker måske "Emne", men det bør afklares. Hvis der ønskes et dybere hierarki, skal datamodellen udvides.
-"Tilknyt materiale (PDF, video mm.) pr. emne." 
+"Tilknyt materiale (PDF, video mm.) pr. emne."
 
 Status: Delvist implementeret.
 Evidens: ContentBlock modellen med ContentBlockType enum (TEXT, IMAGE_URL, VIDEO_URL, QUIZ_REF, CODE, FILE, EMBED, INTERACTIVE). ContentBlockRenderer.tsx i frontend håndterer nogle af disse.
 Mangler/Overvejelser: Fuld UI/backend-logik for alle typer, især FILE (upload/håndtering af PDF'er) og INTERACTIVE. Tilknytning "pr. emne" afhænger af definitionen af "Emne" (se forrige punkt).
-"Quizzer og interaktive opgaver (H5P)." 
+"Quizzer og interaktive opgaver (H5P)."
 
 Status: Quizzer er godt på vej. Interaktive opgaver (H5P) er ikke implementeret.
 Evidens: Se "Quiz" under "Kørende platform". ContentBlockType har INTERACTIVE og QUIZ_REF.
 Mangler/Overvejelser: H5P-integration kræver specifikke biblioteker og en server-side komponent til at hoste/afspille H5P-indhold.
-"Spaced repetition, SCORM/xAPI, LTI-integration." 
+"Spaced repetition, SCORM/xAPI, LTI-integration."
 
 Status: Ikke implementeret.
 Evidens: Ingen kode eller biblioteker i repomix-output.xml, der peger på disse teknologier.
-Mangler/Overvejelser: Dette er avancerede LMS-funktioner, der kræver betydelig specialiseret udvikling.
-2. AI-funktioner: 
+Mangler/Overvejelser: Dette er avancerede LMS-funktioner, der kræver betydelig specialiseret udvikling. 2. AI-funktioner:
 
 "Automatisk spørgsmålsgenerering ud fra materiale."
 "Feedback på quizzer, adaptive quizzer og personlig chatbot."
 "Visualisering af læringsforløb (skill tree)."
 Status for alle AI-punkter: Ikke implementeret.
 Evidens: Ingen specifik kode i repomix-output.xml.
-Mangler/Overvejelser: Kræver integration med AI-modeller/API'er, design af prompts, og UI til interaktion. "Skill tree" kræver også datastruktur og UI-komponenter.
-3. UI/UX og “Wow-effekter”: 
+Mangler/Overvejelser: Kræver integration med AI-modeller/API'er, design af prompts, og UI til interaktion. "Skill tree" kræver også datastruktur og UI-komponenter. 3. UI/UX og “Wow-effekter”:
 
 "Moderne design (glassmorphism, animationer)."
 
@@ -109,8 +107,7 @@ Status: Noget forberedelse er lavet.
 Evidens: apps/web/src/utils/offlineSync.ts, apps/web/src/hooks/useOfflineStatus.ts, OfflineIndicator.tsx, OfflineQuizNotification.tsx.
 Mangler/Overvejelser: Fuld funktionalitet og robusthed af offline quiz-afvikling og synkronisering.
 Haptisk feedback:
-Status: Ikke implementeret (og svært at se i kode alene, da det primært er en frontend/device feature).
-4. Gamification: 
+Status: Ikke implementeret (og svært at se i kode alene, da det primært er en frontend/device feature). 4. Gamification:
 
 "XP, badges, leaderboards og fremskridtsringe."
 
@@ -127,13 +124,11 @@ Mangler/Overvejelser: Logik for tildeling af badges, beregning/visning af leader
 
 Status: Basis for notifikationer til stede.
 Evidens: packages/ui/components/Notification/ (dog markeret som legacy i UI audit) og useNotification i EnhancedNotificationExample (apps/web/src/components/common/UIExamples.tsx).
-Mangler/Overvejelser: Real-time aspekt (WebSockets) og specifik logik for XP-tips mangler.
-5. Social læring: 
+Mangler/Overvejelser: Real-time aspekt (WebSockets) og specifik logik for XP-tips mangler. 5. Social læring:
 
 "Diskussioner pr. emne og realtidssamarbejde om quizzer."
 Status: Ikke implementeret.
-Evidens: Ingen modeller eller komponenter for diskussioner/fora eller realtidssamarbejde.
-6. Admin-værktøjer: 
+Evidens: Ingen modeller eller komponenter for diskussioner/fora eller realtidssamarbejde. 6. Admin-værktøjer:
 
 "Bruger- og pensumadministration."
 
@@ -146,8 +141,7 @@ Mangler/Overvejelser: UI for al pensumadministration skal muligvis udbygges og g
 
 Status: Primært ikke implementeret.
 Evidens: QuestionImportService (apps/api/src/services/question-import.service.ts) tillader import af spørgsmål fra CSV/Excel, hvilket kan være et skridt mod "upload til AI". scripts/security-audit.js antyder fokus på sikkerhed.
-Mangler/Overvejelser: Specifikke AI-upload funktioner, analyse-dashboards, nudging-mekanismer.
-7. Tilgængelighed: 
+Mangler/Overvejelser: Specifikke AI-upload funktioner, analyse-dashboards, nudging-mekanismer. 7. Tilgængelighed:
 
 "WCAG 2.2 AA-compliance."
 

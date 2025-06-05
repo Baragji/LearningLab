@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from '../persistence/prisma/prisma.service';
 import { ContentBlock, ContentBlockType, File } from '@prisma/client';
 
@@ -49,24 +53,30 @@ export interface MaterialWithFile extends ContentBlock {
 export class MaterialService {
   constructor(private prisma: PrismaService) {}
 
-  async createMaterial(createDto: CreateMaterialDto): Promise<MaterialWithFile> {
+  async createMaterial(
+    createDto: CreateMaterialDto,
+  ): Promise<MaterialWithFile> {
     // Verify lesson exists
     const lesson = await this.prisma.lesson.findUnique({
-      where: { id: createDto.lessonId }
+      where: { id: createDto.lessonId },
     });
 
     if (!lesson) {
-      throw new NotFoundException(`Lesson with ID ${createDto.lessonId} not found`);
+      throw new NotFoundException(
+        `Lesson with ID ${createDto.lessonId} not found`,
+      );
     }
 
     // If fileId is provided, verify file exists
     if (createDto.fileId) {
       const file = await this.prisma.file.findUnique({
-        where: { id: createDto.fileId }
+        where: { id: createDto.fileId },
       });
 
       if (!file) {
-        throw new NotFoundException(`File with ID ${createDto.fileId} not found`);
+        throw new NotFoundException(
+          `File with ID ${createDto.fileId} not found`,
+        );
       }
     }
 
@@ -75,7 +85,7 @@ export class MaterialService {
     if (order === undefined) {
       const lastMaterial = await this.prisma.contentBlock.findFirst({
         where: { lessonId: createDto.lessonId },
-        orderBy: { order: 'desc' }
+        orderBy: { order: 'desc' },
       });
       order = lastMaterial ? lastMaterial.order + 1 : 0;
     }
@@ -87,7 +97,7 @@ export class MaterialService {
         order,
         lessonId: createDto.lessonId,
         fileId: createDto.fileId,
-        createdBy: createDto.createdBy
+        createdBy: createDto.createdBy,
       },
       include: {
         file: true,
@@ -98,14 +108,14 @@ export class MaterialService {
                 course: {
                   select: {
                     id: true,
-                    title: true
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
+                    title: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
     });
 
     return material;
@@ -123,14 +133,14 @@ export class MaterialService {
                 course: {
                   select: {
                     id: true,
-                    title: true
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
+                    title: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
     });
 
     if (!material) {
@@ -143,7 +153,7 @@ export class MaterialService {
   async getMaterialsByLesson(lessonId: number): Promise<MaterialWithFile[]> {
     // Verify lesson exists
     const lesson = await this.prisma.lesson.findUnique({
-      where: { id: lessonId }
+      where: { id: lessonId },
     });
 
     if (!lesson) {
@@ -168,21 +178,21 @@ export class MaterialService {
                 course: {
                   select: {
                     id: true,
-                    title: true
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
+                    title: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
     });
   }
 
   async getMaterialsByTopic(topicId: number): Promise<MaterialWithFile[]> {
     // Verify topic exists
     const topic = await this.prisma.topic.findUnique({
-      where: { id: topicId }
+      where: { id: topicId },
     });
 
     if (!topic) {
@@ -192,12 +202,58 @@ export class MaterialService {
     return this.prisma.contentBlock.findMany({
       where: {
         lesson: {
-          topicId
-        }
+          topicId,
+        },
+      },
+      orderBy: [{ lesson: { order: 'asc' } }, { order: 'asc' }],
+      include: {
+        file: true,
+        lesson: {
+          select: {
+            id: true,
+            title: true,
+            order: true,
+            topic: {
+              select: {
+                id: true,
+                title: true,
+                order: true,
+                course: {
+                  select: {
+                    id: true,
+                    title: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+  }
+
+  async getMaterialsByCourse(courseId: number): Promise<MaterialWithFile[]> {
+    // Verify course exists
+    const course = await this.prisma.course.findUnique({
+      where: { id: courseId },
+    });
+
+    if (!course) {
+      throw new NotFoundException(`Course with ID ${courseId} not found`);
+    }
+
+    return this.prisma.contentBlock.findMany({
+      where: {
+        lesson: {
+          topic: {
+            courseId,
+          },
+        },
       },
       orderBy: [
+        { lesson: { topic: { order: 'asc' } } },
         { lesson: { order: 'asc' } },
-        { order: 'asc' }
+        { order: 'asc' },
       ],
       include: {
         file: true,
@@ -221,63 +277,17 @@ export class MaterialService {
             },
           },
         },
-      }
-    });
-  }
-
-  async getMaterialsByCourse(courseId: number): Promise<MaterialWithFile[]> {
-    // Verify course exists
-    const course = await this.prisma.course.findUnique({
-      where: { id: courseId }
-    });
-
-    if (!course) {
-      throw new NotFoundException(`Course with ID ${courseId} not found`);
-    }
-
-    return this.prisma.contentBlock.findMany({
-      where: {
-        lesson: {
-          topic: {
-            courseId
-          }
-        }
       },
-      orderBy: [
-        { lesson: { topic: { order: 'asc' } } },
-        { lesson: { order: 'asc' } },
-        { order: 'asc' }
-      ],
-      include: {
-        file: true,
-        lesson: {
-          select: {
-            id: true,
-            title: true,
-            order: true,
-            topic: {
-              select: {
-                id: true,
-                title: true,
-                order: true,
-                course: {
-                  select: {
-                    id: true,
-                    title: true,
-                  },
-                },
-              },
-            },
-          },
-        }
-      }
     });
   }
 
-  async updateMaterial(id: number, updateDto: UpdateMaterialDto): Promise<MaterialWithFile> {
+  async updateMaterial(
+    id: number,
+    updateDto: UpdateMaterialDto,
+  ): Promise<MaterialWithFile> {
     // Verify material exists
     const existingMaterial = await this.prisma.contentBlock.findUnique({
-      where: { id }
+      where: { id },
     });
 
     if (!existingMaterial) {
@@ -287,11 +297,13 @@ export class MaterialService {
     // If fileId is provided, verify file exists
     if (updateDto.fileId) {
       const file = await this.prisma.file.findUnique({
-        where: { id: updateDto.fileId }
+        where: { id: updateDto.fileId },
       });
 
       if (!file) {
-        throw new NotFoundException(`File with ID ${updateDto.fileId} not found`);
+        throw new NotFoundException(
+          `File with ID ${updateDto.fileId} not found`,
+        );
       }
     }
 
@@ -302,7 +314,7 @@ export class MaterialService {
         ...(updateDto.content !== undefined && { content: updateDto.content }),
         ...(updateDto.order !== undefined && { order: updateDto.order }),
         ...(updateDto.fileId !== undefined && { fileId: updateDto.fileId }),
-        updatedBy: updateDto.updatedBy
+        updatedBy: updateDto.updatedBy,
       },
       include: {
         file: true,
@@ -313,14 +325,14 @@ export class MaterialService {
                 course: {
                   select: {
                     id: true,
-                    title: true
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
+                    title: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
     });
 
     return material;
@@ -330,10 +342,10 @@ export class MaterialService {
     const { materials, updatedBy } = bulkUpdateDto;
 
     // Verify all materials exist
-    const materialIds = materials.map(m => m.id);
+    const materialIds = materials.map((m) => m.id);
     const existingMaterials = await this.prisma.contentBlock.findMany({
       where: { id: { in: materialIds } },
-      select: { id: true }
+      select: { id: true },
     });
 
     if (existingMaterials.length !== materialIds.length) {
@@ -342,22 +354,22 @@ export class MaterialService {
 
     // Update orders in a transaction
     await this.prisma.$transaction(
-      materials.map(material =>
+      materials.map((material) =>
         this.prisma.contentBlock.update({
           where: { id: material.id },
           data: {
             order: material.order,
-            updatedBy
-          }
-        })
-      )
+            updatedBy,
+          },
+        }),
+      ),
     );
   }
 
   async deleteMaterial(id: number): Promise<void> {
     // Verify material exists
     const material = await this.prisma.contentBlock.findUnique({
-      where: { id }
+      where: { id },
     });
 
     if (!material) {
@@ -365,17 +377,20 @@ export class MaterialService {
     }
 
     await this.prisma.contentBlock.delete({
-      where: { id }
+      where: { id },
     });
   }
 
-  async duplicateMaterial(id: number, createdBy: number): Promise<MaterialWithFile> {
+  async duplicateMaterial(
+    id: number,
+    createdBy: number,
+  ): Promise<MaterialWithFile> {
     const originalMaterial = await this.getMaterialById(id);
 
     // Get next order for the same lesson
     const lastMaterial = await this.prisma.contentBlock.findFirst({
       where: { lessonId: originalMaterial.lessonId },
-      orderBy: { order: 'desc' }
+      orderBy: { order: 'desc' },
     });
     const newOrder = lastMaterial ? lastMaterial.order + 1 : 0;
 
@@ -386,7 +401,7 @@ export class MaterialService {
         order: newOrder,
         lessonId: originalMaterial.lessonId,
         fileId: originalMaterial.fileId,
-        createdBy
+        createdBy,
       },
       include: {
         file: true,
@@ -397,32 +412,35 @@ export class MaterialService {
                 course: {
                   select: {
                     id: true,
-                    title: true
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
+                    title: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
     });
 
     return duplicatedMaterial;
   }
 
-  async searchMaterials(query: string, courseId?: number): Promise<MaterialWithFile[]> {
+  async searchMaterials(
+    query: string,
+    courseId?: number,
+  ): Promise<MaterialWithFile[]> {
     const whereClause: any = {
       content: {
         contains: query,
-        mode: 'insensitive'
-      }
+        mode: 'insensitive',
+      },
     };
 
     if (courseId) {
       whereClause.lesson = {
         topic: {
-          courseId
-        }
+          courseId,
+        },
       };
     }
 
@@ -438,14 +456,14 @@ export class MaterialService {
                 course: {
                   select: {
                     id: true,
-                    title: true
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
+                    title: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
     });
   }
 }

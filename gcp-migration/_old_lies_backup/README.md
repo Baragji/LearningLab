@@ -17,6 +17,7 @@ Dette dokument beskriver den succesfulde migration af Code Assistant + RAG setup
 **Til**: Google Cloud setup med hurtig RAG (<5 sekunder per query)
 
 ### Nuværende Setup (Lokal)
+
 - **Code Assistant**: Rust-baseret fra stippi/code-assistant
 - **LLM**: Ollama med llama3.1:8b (4.9 GB)
 - **Embeddings**: nomic-embed-text (274 MB)
@@ -24,6 +25,7 @@ Dette dokument beskriver den succesfulde migration af Code Assistant + RAG setup
 - **Integration**: MCP til Trae IDE
 
 ### Målsetup (Google Cloud)
+
 - **Platform**: Google Cloud Run med GPU support
 - **Container**: Ollama + Code Assistant i samme container
 - **Database**: ChromaDB for hurtigere vector search
@@ -35,12 +37,14 @@ Dette dokument beskriver den succesfulde migration af Code Assistant + RAG setup
 Med dit 2000kr Google Cloud kredit:
 
 ### Option 1: Med GPU (NVIDIA L4)
+
 - **Månedlig omkostning**: ~340kr
 - **Varighed**: 6 måneder
 - **Performance**: Optimal (hurtigste inference)
 
 ### Option 2: Kun CPU (optimeret)
-- **Månedlig omkostning**: ~75kr  
+
+- **Månedlig omkostning**: ~75kr
 - **Varighed**: 27 måneder
 - **Performance**: God (acceptable for de fleste use cases)
 
@@ -62,21 +66,25 @@ Med dit 2000kr Google Cloud kredit:
 ## 🚀 Migrationsstrategi
 
 ### Fase 1: Container Setup
+
 1. Dockerize eksisterende Ollama + Code Assistant
 2. Integrer ChromaDB som vector database
 3. Test lokalt før cloud deployment
 
 ### Fase 2: Cloud Deployment
+
 1. Deploy til Google Cloud Run
 2. Konfigurer persistent storage
 3. Setup auto-scaling policies
 
 ### Fase 3: Performance Optimering
+
 1. Benchmark RAG performance
 2. Optimér chunking strategi
 3. Implementér intelligent caching
 
 ### Fase 4: Production Ready
+
 1. Setup monitoring og alerts
 2. Implementér backup strategier
 3. Dokumentér deployment proces
@@ -84,6 +92,7 @@ Med dit 2000kr Google Cloud kredit:
 ## ✅ Deployment Status
 
 ### Phase 1: Grundlæggende Setup (COMPLETED ✅)
+
 - [x] Google Cloud projekt oprettet (`code-assistant-rag`)
 - [x] Docker image bygget og pushed til GCR
 - [x] Cloud Run service deployeret succesfuldt
@@ -93,6 +102,7 @@ Med dit 2000kr Google Cloud kredit:
 - [x] Automatisk skalering aktiveret (0-10 instanser)
 
 ### Phase 2: MCP Server Implementation (COMPLETED ✅)
+
 - [x] MCP Protocol implementation færdig
 - [x] Standalone MCP server deployeret
 - [x] Alle MCP endpoints fungerer perfekt
@@ -102,6 +112,7 @@ Med dit 2000kr Google Cloud kredit:
 - [x] Graceful fallback når RAG engine ikke tilgængelig
 
 ### 🔧 Nuværende Teknisk Setup:
+
 - **Platform**: Google Cloud Run (Managed)
 - **Region**: europe-west1 (Belgien)
 - **Resources**: 2GB RAM, 1 CPU per instans
@@ -113,6 +124,7 @@ Med dit 2000kr Google Cloud kredit:
 ## 📋 Næste Skridt
 
 ### 1. Test MCP Server Funktionalitet ✅
+
 ```bash
 # Test health endpoint
 curl https://code-assistant-rag-1032418337364.europe-west1.run.app/health
@@ -132,20 +144,24 @@ open https://code-assistant-rag-1032418337364.europe-west1.run.app/docs
 ```
 
 ### 2. Integration med Trae IDE (READY FOR TESTING)
+
 MCP serveren er nu klar til integration med Trae IDE:
+
 - **MCP Endpoint**: `https://code-assistant-rag-1032418337364.europe-west1.run.app/mcp`
 - **Protocol Version**: `2024-11-05`
 - **Available Tools**: `analyze_code`, `search_codebase`, `generate_code`, `explain_code`
 
 ### 3. Phase 3: Fuld RAG Implementation (OPTIONAL)
+
 - [ ] ChromaDB integration for vector storage
-- [ ] Ollama LLM integration  
+- [ ] Ollama LLM integration
 - [ ] Document processing (PDF, DOCX, Markdown)
 - [ ] Embedding generation og semantisk søgning
 - [ ] File upload endpoints
 - [ ] Persistent model storage
 
 ### 4. Deployment Commands for Fuld RAG:
+
 ```bash
 # Build og deploy fuld RAG version
 docker buildx build --platform linux/amd64 -f Dockerfile.bestpractice \
@@ -164,12 +180,14 @@ gcloud run deploy code-assistant-rag \
 ## 💰 Aktuel Omkostningsstatus
 
 ### Nuværende MCP Server Setup:
+
 - **Estimeret**: 10-25 DKK/måned (normal brug)
 - **Google Cloud Kredit**: 2000 DKK tilgængeligt
 - **Forventet levetid**: 6-16 måneder
 - **Resources**: 2GB RAM, 1 CPU (optimeret for MCP)
 
 ### Med Fuld RAG (Phase 3):
+
 - **Estimeret**: 75-200 DKK/måned afhængig af brug
 - **Stadig inden for budget**: Ja, 10+ måneder dækning
 - **Resources**: 4GB RAM, 2 CPU + Ollama modeller
@@ -177,6 +195,7 @@ gcloud run deploy code-assistant-rag \
 ## 🛠️ Lokalt Development
 
 ### Test MCP Server Lokalt:
+
 ```bash
 # Clone og test
 git clone <repository-url>
@@ -194,6 +213,7 @@ curl -X POST http://localhost:8080/mcp \
 ```
 
 ### Direkte Python Development:
+
 ```bash
 # Kør direkte med Python
 cd gcp-migration
@@ -224,6 +244,7 @@ gcp-migration/
 ## 🐛 Troubleshooting
 
 ### Useful Commands:
+
 ```bash
 # Service status
 gcloud run services describe code-assistant-rag --region=europe-west1
@@ -239,6 +260,7 @@ python3 test_deployment.py
 ```
 
 ### Common Issues:
+
 - **MCP endpoint 404**: Ensure you're using the correct endpoint `/mcp`
 - **Health check fails**: Check if container is starting properly
 - **Tool calls fail**: RAG engine not available - this is expected in current setup
@@ -246,6 +268,7 @@ python3 test_deployment.py
 ## 🎯 MCP Integration Guide
 
 ### For Trae IDE Integration:
+
 1. **Server URL**: `https://code-assistant-rag-1032418337364.europe-west1.run.app/mcp`
 2. **Protocol**: HTTP POST requests
 3. **Content-Type**: `application/json`
@@ -257,6 +280,7 @@ python3 test_deployment.py
    - `resources/read` - Read resource content
 
 ### Example MCP Client Code:
+
 ```python
 import requests
 

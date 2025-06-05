@@ -18,18 +18,18 @@ The migration process involves:
 
 ```tsx
 // Before
-import { Button } from '@learninglab/ui';
+import { Button } from "@learninglab/ui";
 
 <Button variant="default" size="default" fullWidth isLoading>
   Loading...
-</Button>
+</Button>;
 
 // After
-import { Button } from '@learninglab/ui';
+import { Button } from "@learninglab/ui";
 
 <Button variant="default" size="default" fullWidth isLoading>
   Loading...
-</Button>
+</Button>;
 ```
 
 The API is fully compatible, so no changes are needed. The component is now using MUI under the hood.
@@ -38,18 +38,18 @@ The API is fully compatible, so no changes are needed. The component is now usin
 
 ```tsx
 // Before
-import { AppButton } from '@/components/ui/AppButton';
+import { AppButton } from "@/components/ui/AppButton";
 
 <AppButton variant="default" size="default" asChild>
   <a href="https://example.com">Link</a>
-</AppButton>
+</AppButton>;
 
 // After
-import { Button } from '@learninglab/ui';
+import { Button } from "@learninglab/ui";
 
 <Button variant="default" size="default" asChild>
   <a href="https://example.com">Link</a>
-</Button>
+</Button>;
 ```
 
 Simply replace `AppButton` with `Button` from the UI package.
@@ -60,27 +60,24 @@ Simply replace `AppButton` with `Button` from the UI package.
 
 ```tsx
 // Before
-import { Input } from '@/components/ui/input';
+import { Input } from "@/components/ui/input";
 
-<Input 
-  type="text" 
-  className="custom-class" 
-  placeholder="Enter text" 
-/>
+<Input type="text" className="custom-class" placeholder="Enter text" />;
 
 // After
-import { TextField } from '@learninglab/ui';
+import { TextField } from "@learninglab/ui";
 
-<TextField 
-  type="text" 
-  className="custom-class" 
-  placeholder="Enter text" 
+<TextField
+  type="text"
+  className="custom-class"
+  placeholder="Enter text"
   variant="outlined"
   fullWidth
-/>
+/>;
 ```
 
 The main differences are:
+
 1. The component name changes from `Input` to `TextField`
 2. The new component has built-in label support
 3. The new component has built-in helper text support
@@ -95,25 +92,26 @@ The main differences are:
 
 ```tsx
 // Before
-import { Checkbox } from '@/components/ui/checkbox';
+import { Checkbox } from "@/components/ui/checkbox";
 
-<Checkbox 
-  className="custom-class" 
+<Checkbox
+  className="custom-class"
   checked={isChecked}
   onCheckedChange={setIsChecked}
-/>
+/>;
 
 // After
-import { Checkbox } from '@learninglab/ui';
+import { Checkbox } from "@learninglab/ui";
 
-<Checkbox 
-  className="custom-class" 
+<Checkbox
+  className="custom-class"
   checked={isChecked}
   onChange={(e) => setIsChecked(e.target.checked)}
-/>
+/>;
 ```
 
 The main differences are:
+
 1. The component is now based on Material UI instead of Radix UI
 2. `onCheckedChange` is replaced with `onChange`
 3. The new component has built-in label support
@@ -126,7 +124,7 @@ The main differences are:
 
 ```tsx
 // Before
-import { 
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -143,24 +141,25 @@ import {
     <SelectItem value="option2">Option 2</SelectItem>
     <SelectItem value="option3">Option 3</SelectItem>
   </SelectContent>
-</Select>
+</Select>;
 
 // After
-import { Select } from '@learninglab/ui';
+import { Select } from "@learninglab/ui";
 
-<Select 
-  onChange={(e) => setValue(e.target.value)} 
+<Select
+  onChange={(e) => setValue(e.target.value)}
   defaultValue={value}
   placeholder="Select an option"
   options={[
-    { value: 'option1', label: 'Option 1' },
-    { value: 'option2', label: 'Option 2' },
-    { value: 'option3', label: 'Option 3' },
+    { value: "option1", label: "Option 1" },
+    { value: "option2", label: "Option 2" },
+    { value: "option3", label: "Option 3" },
   ]}
-/>
+/>;
 ```
 
 The main differences are:
+
 1. The component is now based on Material UI instead of Radix UI
 2. The component structure is simplified - no need for separate trigger, content, and item components
 3. Options are passed as an array instead of as children

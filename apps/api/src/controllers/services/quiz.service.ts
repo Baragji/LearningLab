@@ -12,14 +12,8 @@ import {
   PaginatedResult,
 } from '../../common/services/base.service';
 import { Quiz, Question, AnswerOption, QuestionType } from '@prisma/client';
-import {
-  CreateQuizDto,
-  UpdateQuizDto,
-} from '../dto/quiz/quiz.dto';
-import {
-  CreateQuestionDto,
-  UpdateQuestionDto,
-} from '../dto/quiz/question.dto';
+import { CreateQuizDto, UpdateQuizDto } from '../dto/quiz/quiz.dto';
+import { CreateQuestionDto, UpdateQuestionDto } from '../dto/quiz/question.dto';
 import {
   CreateAnswerOptionDto,
   UpdateAnswerOptionDto,
@@ -285,7 +279,9 @@ export class QuizService extends BaseService<Quiz> {
             ? updateQuizDto.questionBankCategory
             : existingQuiz.questionBankCategory,
         tags:
-          updateQuizDto.tags !== undefined ? updateQuizDto.tags : existingQuiz.tags,
+          updateQuizDto.tags !== undefined
+            ? updateQuizDto.tags
+            : existingQuiz.tags,
       },
       userId,
     );
@@ -300,12 +296,12 @@ export class QuizService extends BaseService<Quiz> {
   async deleteQuiz(id: number, userId?: number): Promise<Quiz> {
     // Tjek om quizzen eksisterer
     const existingQuiz = await this.findById(id);
-    
+
     // Hent alle spørgsmål for quizzen
     const questions = await this.prisma.question.findMany({
-      where: { quizId: id }
+      where: { quizId: id },
     });
-    
+
     // Slet alle svar på spørgsmål i quizzen
     if (questions && questions.length > 0) {
       for (const question of questions) {
@@ -416,7 +412,8 @@ export class QuizService extends BaseService<Quiz> {
       where: { id },
       data: {
         text: text || existingQuestion.text,
-        type: type !== undefined ? (type as QuestionType) : existingQuestion.type,
+        type:
+          type !== undefined ? (type as QuestionType) : existingQuestion.type,
         updatedBy: userId || null,
         updatedAt: new Date(),
       },
@@ -436,7 +433,10 @@ export class QuizService extends BaseService<Quiz> {
    * @param userId ID på brugeren der sletter spørgsmålet
    * @returns Besked om at spørgsmålet er slettet
    */
-  async deleteQuestion(id: number, userId?: number): Promise<{ message: string }> {
+  async deleteQuestion(
+    id: number,
+    userId?: number,
+  ): Promise<{ message: string }> {
     // Tjek om spørgsmålet eksisterer
     const existingQuestion = await this.prisma.question.findUnique({
       where: { id },
@@ -533,9 +533,7 @@ export class QuizService extends BaseService<Quiz> {
       data: {
         text: text !== undefined ? text : existingAnswerOption.text,
         isCorrect:
-          isCorrect !== undefined
-            ? isCorrect
-            : existingAnswerOption.isCorrect,
+          isCorrect !== undefined ? isCorrect : existingAnswerOption.isCorrect,
         updatedBy: userId || null,
       },
     });
@@ -549,7 +547,10 @@ export class QuizService extends BaseService<Quiz> {
    * @param userId ID på brugeren der sletter svarmuligheden
    * @returns Besked om at svarmuligheden er slettet
    */
-  async deleteAnswerOption(id: number, userId?: number): Promise<{ message: string }> {
+  async deleteAnswerOption(
+    id: number,
+    userId?: number,
+  ): Promise<{ message: string }> {
     // Tjek om svarmuligheden eksisterer
     const existingAnswerOption = await this.prisma.answerOption.findUnique({
       where: { id },

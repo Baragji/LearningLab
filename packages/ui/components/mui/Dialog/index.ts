@@ -1,2 +1,2 @@
 // packages/ui/components/mui/Dialog/index.ts
-export * from './Dialog';
+export * from "./Dialog";

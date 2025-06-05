@@ -10,15 +10,20 @@ import {
   UseGuards,
   Request,
   ParseIntPipe,
-  BadRequestException
+  BadRequestException,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import {
   MaterialService,
   CreateMaterialDto,
   UpdateMaterialDto,
-  BulkUpdateOrderDto
+  BulkUpdateOrderDto,
 } from '../services/material.service';
 import { ContentBlockType } from '@prisma/client';
 
@@ -58,11 +63,11 @@ export class MaterialController {
   @ApiResponse({ status: 404, description: 'Lesson not found' })
   async createMaterial(
     @Body() createDto: CreateMaterialRequestDto,
-    @Request() req: any
+    @Request() req: any,
   ) {
     const material = await this.materialService.createMaterial({
       ...createDto,
-      createdBy: req.user.id
+      createdBy: req.user.id,
     });
 
     return {
@@ -73,29 +78,37 @@ export class MaterialController {
         content: material.content,
         order: material.order,
         lessonId: material.lessonId,
-        file: material.file ? {
-          id: material.file.id,
-          filename: material.file.filename,
-          originalName: material.file.originalName,
-          mimeType: material.file.mimeType,
-          size: material.file.size,
-          url: material.file.url
-        } : null,
-        lesson: material.lesson ? {
-          id: material.lesson.id,
-          title: material.lesson.title,
-          topic: material.lesson.topic ? {
-            id: material.lesson.topic.id,
-            title: material.lesson.topic.title,
-            course: material.lesson.topic.course ? {
-              id: material.lesson.topic.course.id,
-              title: material.lesson.topic.course.title
-            } : null
-          } : null
-        } : null,
+        file: material.file
+          ? {
+              id: material.file.id,
+              filename: material.file.filename,
+              originalName: material.file.originalName,
+              mimeType: material.file.mimeType,
+              size: material.file.size,
+              url: material.file.url,
+            }
+          : null,
+        lesson: material.lesson
+          ? {
+              id: material.lesson.id,
+              title: material.lesson.title,
+              topic: material.lesson.topic
+                ? {
+                    id: material.lesson.topic.id,
+                    title: material.lesson.topic.title,
+                    course: material.lesson.topic.course
+                      ? {
+                          id: material.lesson.topic.course.id,
+                          title: material.lesson.topic.course.title,
+                        }
+                      : null,
+                  }
+                : null,
+            }
+          : null,
         createdAt: material.createdAt,
-        updatedAt: material.updatedAt
-      }
+        updatedAt: material.updatedAt,
+      },
     };
   }
 
@@ -112,28 +125,36 @@ export class MaterialController {
       content: material.content,
       order: material.order,
       lessonId: material.lessonId,
-      file: material.file ? {
-        id: material.file.id,
-        filename: material.file.filename,
-        originalName: material.file.originalName,
-        mimeType: material.file.mimeType,
-        size: material.file.size,
-        url: material.file.url
-      } : null,
-      lesson: material.lesson ? {
-        id: material.lesson.id,
-        title: material.lesson.title,
-        topic: material.lesson.topic ? {
-          id: material.lesson.topic.id,
-          title: material.lesson.topic.title,
-          course: material.lesson.topic.course ? {
-            id: material.lesson.topic.course.id,
-            title: material.lesson.topic.course.title
-          } : null
-        } : null
-      } : null,
+      file: material.file
+        ? {
+            id: material.file.id,
+            filename: material.file.filename,
+            originalName: material.file.originalName,
+            mimeType: material.file.mimeType,
+            size: material.file.size,
+            url: material.file.url,
+          }
+        : null,
+      lesson: material.lesson
+        ? {
+            id: material.lesson.id,
+            title: material.lesson.title,
+            topic: material.lesson.topic
+              ? {
+                  id: material.lesson.topic.id,
+                  title: material.lesson.topic.title,
+                  course: material.lesson.topic.course
+                    ? {
+                        id: material.lesson.topic.course.id,
+                        title: material.lesson.topic.course.title,
+                      }
+                    : null,
+                }
+              : null,
+          }
+        : null,
       createdAt: material.createdAt,
-      updatedAt: material.updatedAt
+      updatedAt: material.updatedAt,
     };
   }
 
@@ -141,27 +162,31 @@ export class MaterialController {
   @ApiOperation({ summary: 'Get materials by lesson ID' })
   @ApiResponse({ status: 200, description: 'Materials retrieved successfully' })
   @ApiResponse({ status: 404, description: 'Lesson not found' })
-  async getMaterialsByLesson(@Param('lessonId', ParseIntPipe) lessonId: number) {
+  async getMaterialsByLesson(
+    @Param('lessonId', ParseIntPipe) lessonId: number,
+  ) {
     const materials = await this.materialService.getMaterialsByLesson(lessonId);
 
     return {
-      materials: materials.map(material => ({
+      materials: materials.map((material) => ({
         id: material.id,
         type: material.type,
         content: material.content,
         order: material.order,
         lessonId: material.lessonId,
-        file: material.file ? {
-          id: material.file.id,
-          filename: material.file.filename,
-          originalName: material.file.originalName,
-          mimeType: material.file.mimeType,
-          size: material.file.size,
-          url: material.file.url
-        } : null,
+        file: material.file
+          ? {
+              id: material.file.id,
+              filename: material.file.filename,
+              originalName: material.file.originalName,
+              mimeType: material.file.mimeType,
+              size: material.file.size,
+              url: material.file.url,
+            }
+          : null,
         createdAt: material.createdAt,
-        updatedAt: material.updatedAt
-      }))
+        updatedAt: material.updatedAt,
+      })),
     };
   }
 
@@ -173,28 +198,32 @@ export class MaterialController {
     const materials = await this.materialService.getMaterialsByTopic(topicId);
 
     return {
-      materials: materials.map(material => ({
+      materials: materials.map((material) => ({
         id: material.id,
         type: material.type,
         content: material.content,
         order: material.order,
         lessonId: material.lessonId,
-        file: material.file ? {
-          id: material.file.id,
-          filename: material.file.filename,
-          originalName: material.file.originalName,
-          mimeType: material.file.mimeType,
-          size: material.file.size,
-          url: material.file.url
-        } : null,
-        lesson: material.lesson ? {
-          id: material.lesson.id,
-          title: material.lesson.title,
-          order: material.lesson.order
-        } : null,
+        file: material.file
+          ? {
+              id: material.file.id,
+              filename: material.file.filename,
+              originalName: material.file.originalName,
+              mimeType: material.file.mimeType,
+              size: material.file.size,
+              url: material.file.url,
+            }
+          : null,
+        lesson: material.lesson
+          ? {
+              id: material.lesson.id,
+              title: material.lesson.title,
+              order: material.lesson.order,
+            }
+          : null,
         createdAt: material.createdAt,
-        updatedAt: material.updatedAt
-      }))
+        updatedAt: material.updatedAt,
+      })),
     };
   }
 
@@ -202,36 +231,44 @@ export class MaterialController {
   @ApiOperation({ summary: 'Get materials by course ID' })
   @ApiResponse({ status: 200, description: 'Materials retrieved successfully' })
   @ApiResponse({ status: 404, description: 'Course not found' })
-  async getMaterialsByCourse(@Param('courseId', ParseIntPipe) courseId: number) {
+  async getMaterialsByCourse(
+    @Param('courseId', ParseIntPipe) courseId: number,
+  ) {
     const materials = await this.materialService.getMaterialsByCourse(courseId);
 
     return {
-      materials: materials.map(material => ({
+      materials: materials.map((material) => ({
         id: material.id,
         type: material.type,
         content: material.content,
         order: material.order,
         lessonId: material.lessonId,
-        file: material.file ? {
-          id: material.file.id,
-          filename: material.file.filename,
-          originalName: material.file.originalName,
-          mimeType: material.file.mimeType,
-          size: material.file.size,
-          url: material.file.url
-        } : null,
-        lesson: material.lesson ? {
-          id: material.lesson.id,
-          title: material.lesson.title,
-          topic: material.lesson.topic ? {
-            id: material.lesson.topic.id,
-            title: material.lesson.topic.title,
-            order: material.lesson.topic.order
-          } : null
-        } : null,
+        file: material.file
+          ? {
+              id: material.file.id,
+              filename: material.file.filename,
+              originalName: material.file.originalName,
+              mimeType: material.file.mimeType,
+              size: material.file.size,
+              url: material.file.url,
+            }
+          : null,
+        lesson: material.lesson
+          ? {
+              id: material.lesson.id,
+              title: material.lesson.title,
+              topic: material.lesson.topic
+                ? {
+                    id: material.lesson.topic.id,
+                    title: material.lesson.topic.title,
+                    order: material.lesson.topic.order,
+                  }
+                : null,
+            }
+          : null,
         createdAt: material.createdAt,
-        updatedAt: material.updatedAt
-      }))
+        updatedAt: material.updatedAt,
+      })),
     };
   }
 
@@ -243,11 +280,11 @@ export class MaterialController {
   async updateMaterial(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateDto: UpdateMaterialRequestDto,
-    @Request() req: any
+    @Request() req: any,
   ) {
     const material = await this.materialService.updateMaterial(id, {
       ...updateDto,
-      updatedBy: req.user.id
+      updatedBy: req.user.id,
     });
 
     return {
@@ -258,38 +295,45 @@ export class MaterialController {
         content: material.content,
         order: material.order,
         lessonId: material.lessonId,
-        file: material.file ? {
-          id: material.file.id,
-          filename: material.file.filename,
-          originalName: material.file.originalName,
-          mimeType: material.file.mimeType,
-          size: material.file.size,
-          url: material.file.url
-        } : null,
-        updatedAt: material.updatedAt
-      }
+        file: material.file
+          ? {
+              id: material.file.id,
+              filename: material.file.filename,
+              originalName: material.file.originalName,
+              mimeType: material.file.mimeType,
+              size: material.file.size,
+              url: material.file.url,
+            }
+          : null,
+        updatedAt: material.updatedAt,
+      },
     };
   }
 
   @Put('bulk/order')
   @ApiOperation({ summary: 'Bulk update material order' })
-  @ApiResponse({ status: 200, description: 'Material order updated successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Material order updated successfully',
+  })
   @ApiResponse({ status: 400, description: 'Bad request' })
   async bulkUpdateOrder(
     @Body() bulkUpdateDto: BulkUpdateOrderRequestDto,
-    @Request() req: any
+    @Request() req: any,
   ) {
     if (!bulkUpdateDto.materials || bulkUpdateDto.materials.length === 0) {
-      throw new BadRequestException('Materials array is required and cannot be empty');
+      throw new BadRequestException(
+        'Materials array is required and cannot be empty',
+      );
     }
 
     await this.materialService.bulkUpdateOrder({
       materials: bulkUpdateDto.materials,
-      updatedBy: req.user.id
+      updatedBy: req.user.id,
     });
 
     return {
-      message: 'Material order updated successfully'
+      message: 'Material order updated successfully',
     };
   }
 
@@ -299,9 +343,12 @@ export class MaterialController {
   @ApiResponse({ status: 404, description: 'Material not found' })
   async duplicateMaterial(
     @Param('id', ParseIntPipe) id: number,
-    @Request() req: any
+    @Request() req: any,
   ) {
-    const material = await this.materialService.duplicateMaterial(id, req.user.id);
+    const material = await this.materialService.duplicateMaterial(
+      id,
+      req.user.id,
+    );
 
     return {
       message: 'Material duplicated successfully',
@@ -311,16 +358,18 @@ export class MaterialController {
         content: material.content,
         order: material.order,
         lessonId: material.lessonId,
-        file: material.file ? {
-          id: material.file.id,
-          filename: material.file.filename,
-          originalName: material.file.originalName,
-          mimeType: material.file.mimeType,
-          size: material.file.size,
-          url: material.file.url
-        } : null,
-        createdAt: material.createdAt
-      }
+        file: material.file
+          ? {
+              id: material.file.id,
+              filename: material.file.filename,
+              originalName: material.file.originalName,
+              mimeType: material.file.mimeType,
+              size: material.file.size,
+              url: material.file.url,
+            }
+          : null,
+        createdAt: material.createdAt,
+      },
     };
   }
 
@@ -331,7 +380,7 @@ export class MaterialController {
   async deleteMaterial(@Param('id', ParseIntPipe) id: number) {
     await this.materialService.deleteMaterial(id);
     return {
-      message: 'Material deleted successfully'
+      message: 'Material deleted successfully',
     };
   }
 
@@ -340,7 +389,7 @@ export class MaterialController {
   @ApiResponse({ status: 200, description: 'Materials retrieved successfully' })
   async searchMaterials(
     @Query('q') query: string,
-    @Query('courseId') courseId?: string
+    @Query('courseId') courseId?: string,
   ) {
     if (!query) {
       throw new BadRequestException('Search query is required');
@@ -351,38 +400,49 @@ export class MaterialController {
       throw new BadRequestException('Invalid course ID');
     }
 
-    const materials = await this.materialService.searchMaterials(query, courseIdNum);
+    const materials = await this.materialService.searchMaterials(
+      query,
+      courseIdNum,
+    );
 
     return {
-      materials: materials.map(material => ({
+      materials: materials.map((material) => ({
         id: material.id,
         type: material.type,
         content: material.content,
         order: material.order,
         lessonId: material.lessonId,
-        file: material.file ? {
-          id: material.file.id,
-          filename: material.file.filename,
-          originalName: material.file.originalName,
-          mimeType: material.file.mimeType,
-          size: material.file.size,
-          url: material.file.url
-        } : null,
-        lesson: material.lesson ? {
-          id: material.lesson.id,
-          title: material.lesson.title,
-          topic: material.lesson.topic ? {
-            id: material.lesson.topic.id,
-            title: material.lesson.topic.title,
-            course: material.lesson.topic.course ? {
-              id: material.lesson.topic.course.id,
-              title: material.lesson.topic.course.title
-            } : null
-          } : null
-        } : null,
+        file: material.file
+          ? {
+              id: material.file.id,
+              filename: material.file.filename,
+              originalName: material.file.originalName,
+              mimeType: material.file.mimeType,
+              size: material.file.size,
+              url: material.file.url,
+            }
+          : null,
+        lesson: material.lesson
+          ? {
+              id: material.lesson.id,
+              title: material.lesson.title,
+              topic: material.lesson.topic
+                ? {
+                    id: material.lesson.topic.id,
+                    title: material.lesson.topic.title,
+                    course: material.lesson.topic.course
+                      ? {
+                          id: material.lesson.topic.course.id,
+                          title: material.lesson.topic.course.title,
+                        }
+                      : null,
+                  }
+                : null,
+            }
+          : null,
         createdAt: material.createdAt,
-        updatedAt: material.updatedAt
-      }))
+        updatedAt: material.updatedAt,
+      })),
     };
   }
 }

@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { useRouter } from 'next/router';
-import Layout from '../../../src/components/layout/Layout';
-import axios from 'axios';
-import { toast } from 'react-hot-toast';
+import React, { useState, useEffect, useCallback } from "react";
+import { useRouter } from "next/router";
+import Layout from "../../../src/components/layout/Layout";
+import axios from "axios";
+import { toast } from "react-hot-toast";
 
 interface UserGroup {
   id: number;
@@ -29,7 +29,7 @@ const UserGroupsPage: React.FC = () => {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const [total, setTotal] = useState(0);
-  const [filter, setFilter] = useState('');
+  const [filter, setFilter] = useState("");
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [groupToDelete, setGroupToDelete] = useState<number | null>(null);
 
@@ -45,8 +45,10 @@ const UserGroupsPage: React.FC = () => {
       setTotal(response.data.total);
       setError(null);
     } catch (err) {
-      console.error('Error fetching user groups:', err);
-      setError('Der opstod en fejl ved hentning af brugergrupper. Prøv igen senere.');
+      console.error("Error fetching user groups:", err);
+      setError(
+        "Der opstod en fejl ved hentning af brugergrupper. Prøv igen senere.",
+      );
     } finally {
       setLoading(false);
     }
@@ -58,7 +60,7 @@ const UserGroupsPage: React.FC = () => {
 
   // Handle create new group
   const handleCreateGroup = () => {
-    router.push('/admin/user-groups/create');
+    router.push("/admin/user-groups/create");
   };
 
   // Handle edit group
@@ -80,14 +82,14 @@ const UserGroupsPage: React.FC = () => {
   // Confirm delete
   const confirmDelete = async () => {
     if (!groupToDelete) return;
-    
+
     try {
       await axios.delete(`/api/user-groups/${groupToDelete}`);
-      toast.success('Brugergruppe slettet');
+      toast.success("Brugergruppe slettet");
       fetchUserGroups();
     } catch (err) {
-      console.error('Error deleting user group:', err);
-      toast.error('Der opstod en fejl ved sletning af brugergruppen');
+      console.error("Error deleting user group:", err);
+      toast.error("Der opstod en fejl ved sletning af brugergruppen");
     } finally {
       setIsDeleteModalOpen(false);
       setGroupToDelete(null);
@@ -98,7 +100,9 @@ const UserGroupsPage: React.FC = () => {
     <Layout>
       <div className="space-y-6">
         <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Brugergrupper</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+            Brugergrupper
+          </h1>
           <button
             onClick={handleCreateGroup}
             className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -134,19 +138,34 @@ const UserGroupsPage: React.FC = () => {
             <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
               <thead className="bg-gray-50 dark:bg-gray-800">
                 <tr>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+                  >
                     Navn
                   </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+                  >
                     Beskrivelse
                   </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+                  >
                     Antal brugere
                   </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+                  >
                     Oprettet
                   </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+                  >
                     Handlinger
                   </th>
                 </tr>
@@ -154,13 +173,19 @@ const UserGroupsPage: React.FC = () => {
               <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
                 {userGroups.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
+                    <td
+                      colSpan={5}
+                      className="px-6 py-4 text-center text-gray-500 dark:text-gray-400"
+                    >
                       Ingen brugergrupper fundet
                     </td>
                   </tr>
                 ) : (
                   userGroups.map((group) => (
-                    <tr key={group.id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
+                    <tr
+                      key={group.id}
+                      className="hover:bg-gray-50 dark:hover:bg-gray-800"
+                    >
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm font-medium text-gray-900 dark:text-white">
                           {group.name}
@@ -168,14 +193,14 @@ const UserGroupsPage: React.FC = () => {
                       </td>
                       <td className="px-6 py-4">
                         <div className="text-sm text-gray-500 dark:text-gray-400 line-clamp-2">
-                          {group.description || 'Ingen beskrivelse'}
+                          {group.description || "Ingen beskrivelse"}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                         {group._count?.users || 0}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                        {new Date(group.createdAt).toLocaleDateString('da-DK')}
+                        {new Date(group.createdAt).toLocaleDateString("da-DK")}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         <button
@@ -209,7 +234,8 @@ const UserGroupsPage: React.FC = () => {
         {userGroups.length > 0 && (
           <div className="flex justify-between items-center">
             <div className="text-sm text-gray-700 dark:text-gray-300">
-              Viser {(page - 1) * limit + 1} til {Math.min(page * limit, total)} af {total} brugergrupper
+              Viser {(page - 1) * limit + 1} til {Math.min(page * limit, total)}{" "}
+              af {total} brugergrupper
             </div>
             <div className="flex space-x-2">
               <button
@@ -217,8 +243,8 @@ const UserGroupsPage: React.FC = () => {
                 disabled={page === 1}
                 className={`px-3 py-1 rounded-md ${
                   page === 1
-                    ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                    : 'bg-blue-600 text-white hover:bg-blue-700'
+                    ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                    : "bg-blue-600 text-white hover:bg-blue-700"
                 }`}
               >
                 Forrige
@@ -228,8 +254,8 @@ const UserGroupsPage: React.FC = () => {
                 disabled={page * limit >= total}
                 className={`px-3 py-1 rounded-md ${
                   page * limit >= total
-                    ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                    : 'bg-blue-600 text-white hover:bg-blue-700'
+                    ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                    : "bg-blue-600 text-white hover:bg-blue-700"
                 }`}
               >
                 Næste
@@ -246,7 +272,8 @@ const UserGroupsPage: React.FC = () => {
                 Bekræft sletning
               </h3>
               <p className="text-gray-600 dark:text-gray-300 mb-6">
-                Er du sikker på, at du vil slette denne brugergruppe? Denne handling kan ikke fortrydes.
+                Er du sikker på, at du vil slette denne brugergruppe? Denne
+                handling kan ikke fortrydes.
               </p>
               <div className="flex justify-end space-x-3">
                 <button

@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
-import Layout from '../../../../src/components/layout/Layout';
-import { useAuth } from '../../../../src/contexts/useAuth';
-import { GetServerSidePropsContext } from 'next';
-import { parseCookies } from 'nookies';
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/router";
+import Layout from "../../../../src/components/layout/Layout";
+import { useAuth } from "../../../../src/contexts/useAuth";
+import { GetServerSidePropsContext } from "next";
+import { parseCookies } from "nookies";
 
 interface Course {
   id: number;
@@ -23,10 +23,10 @@ const EditModulePage: React.FC = () => {
   const router = useRouter();
   const { id } = router.query;
   const { token } = useAuth();
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
   const [order, setOrder] = useState<number>(1);
-  const [courseId, setCourseId] = useState<number | ''>('');
+  const [courseId, setCourseId] = useState<number | "">("");
   const [courses, setCourses] = useState<Course[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -35,38 +35,42 @@ const EditModulePage: React.FC = () => {
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        const baseUrl = process.env.NEXT_PUBLIC_API_URL || '/api';
+        const baseUrl = process.env.NEXT_PUBLIC_API_URL || "/api";
         const response = await fetch(`${baseUrl}/courses`, {
           headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
           },
         });
 
         if (!response.ok) {
-          throw new Error(`Failed to fetch courses: ${response.status} ${response.statusText}`);
+          throw new Error(
+            `Failed to fetch courses: ${response.status} ${response.statusText}`,
+          );
         }
 
         const data = await response.json();
         setCourses(data);
       } catch (err: any) {
-        console.error('Error fetching courses:', err);
-        setError(err.message || 'Failed to fetch courses');
+        console.error("Error fetching courses:", err);
+        setError(err.message || "Failed to fetch courses");
       }
     };
 
     const fetchModule = async () => {
       try {
-        const baseUrl = process.env.NEXT_PUBLIC_API_URL || '/api';
+        const baseUrl = process.env.NEXT_PUBLIC_API_URL || "/api";
         const response = await fetch(`${baseUrl}/modules/${id}`, {
           headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
           },
         });
 
         if (!response.ok) {
-          throw new Error(`Failed to fetch module: ${response.status} ${response.statusText}`);
+          throw new Error(
+            `Failed to fetch module: ${response.status} ${response.statusText}`,
+          );
         }
 
         const data: Module = await response.json();
@@ -75,8 +79,8 @@ const EditModulePage: React.FC = () => {
         setOrder(data.order);
         setCourseId(data.courseId);
       } catch (err: any) {
-        console.error('Error fetching module:', err);
-        setError(err.message || 'Failed to fetch module');
+        console.error("Error fetching module:", err);
+        setError(err.message || "Failed to fetch module");
       } finally {
         setIsLoading(false);
       }
@@ -84,8 +88,8 @@ const EditModulePage: React.FC = () => {
 
     if (id) {
       setIsLoading(true);
-      Promise.all([fetchCourses(), fetchModule()]).catch(err => {
-        console.error('Error in parallel fetching:', err);
+      Promise.all([fetchCourses(), fetchModule()]).catch((err) => {
+        console.error("Error in parallel fetching:", err);
         setIsLoading(false);
       });
     }
@@ -93,9 +97,9 @@ const EditModulePage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!title || !description || !courseId) {
-      setError('Alle felter skal udfyldes');
+      setError("Alle felter skal udfyldes");
       return;
     }
 
@@ -103,12 +107,12 @@ const EditModulePage: React.FC = () => {
     setError(null);
 
     try {
-      const baseUrl = process.env.NEXT_PUBLIC_API_URL || '/api';
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL || "/api";
       const response = await fetch(`${baseUrl}/modules/${id}`, {
-        method: 'PATCH',
+        method: "PATCH",
         headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           title,
@@ -120,20 +124,21 @@ const EditModulePage: React.FC = () => {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || `Failed to update module: ${response.status} ${response.statusText}`);
+        throw new Error(
+          errorData.message ||
+            `Failed to update module: ${response.status} ${response.statusText}`,
+        );
       }
 
-      router.push('/admin/modules');
+      router.push("/admin/modules");
     } catch (err: any) {
-      console.error('Error updating module:', err);
-      setError(err.message || 'Failed to update module');
+      console.error("Error updating module:", err);
+      setError(err.message || "Failed to update module");
     } finally {
       setIsSubmitting(false);
     }
   };
 
-
-  
   if (isLoading) {
     return (
       <Layout>
@@ -148,7 +153,9 @@ const EditModulePage: React.FC = () => {
     <Layout>
       <div className="space-y-6">
         <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Rediger Modul</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+            Rediger Modul
+          </h1>
           <button
             onClick={() => router.back()}
             className="px-4 py-2 bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-200 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
@@ -158,15 +165,24 @@ const EditModulePage: React.FC = () => {
         </div>
 
         {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+          <div
+            className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
+            role="alert"
+          >
             <strong className="font-bold">Fejl!</strong>
             <span className="block sm:inline"> {error}</span>
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-800 shadow rounded-lg p-6 space-y-6">
+        <form
+          onSubmit={handleSubmit}
+          className="bg-white dark:bg-gray-800 shadow rounded-lg p-6 space-y-6"
+        >
           <div>
-            <label htmlFor="title" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            <label
+              htmlFor="title"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+            >
               Titel
             </label>
             <input
@@ -181,7 +197,10 @@ const EditModulePage: React.FC = () => {
           </div>
 
           <div>
-            <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            <label
+              htmlFor="description"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+            >
               Beskrivelse
             </label>
             <textarea
@@ -196,7 +215,10 @@ const EditModulePage: React.FC = () => {
           </div>
 
           <div>
-            <label htmlFor="order" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            <label
+              htmlFor="order"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+            >
               Rækkefølge
             </label>
             <input
@@ -214,7 +236,10 @@ const EditModulePage: React.FC = () => {
           </div>
 
           <div>
-            <label htmlFor="courseId" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            <label
+              htmlFor="courseId"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+            >
               Kursus
             </label>
             <select
@@ -224,7 +249,9 @@ const EditModulePage: React.FC = () => {
               className="mt-1 block w-full border border-gray-300 dark:border-gray-700 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
               required
             >
-              <option value="" disabled>Vælg kursus</option>
+              <option value="" disabled>
+                Vælg kursus
+              </option>
               {courses.map((course) => (
                 <option key={course.id} value={course.id}>
                   {course.title}
@@ -238,10 +265,10 @@ const EditModulePage: React.FC = () => {
               type="submit"
               disabled={isSubmitting}
               className={`px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
-                isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
+                isSubmitting ? "opacity-50 cursor-not-allowed" : ""
               }`}
             >
-              {isSubmitting ? 'Gemmer...' : 'Gem Ændringer'}
+              {isSubmitting ? "Gemmer..." : "Gem Ændringer"}
             </button>
           </div>
         </form>
@@ -256,24 +283,26 @@ const isUserAuthenticated = (token: string | undefined): boolean => {
   return !!token;
 };
 
-export const getServerSideProps = async (context: GetServerSidePropsContext) => {
+export const getServerSideProps = async (
+  context: GetServerSidePropsContext,
+) => {
   // Hent cookies fra request
   const cookies = parseCookies(context);
-  
+
   // Hent token fra access_token cookie
   const token = cookies.access_token;
-  
+
   // Valider token
   if (!isUserAuthenticated(token)) {
     // Hvis token ikke er gyldig eller mangler, redirect til login
     return {
       redirect: {
-        destination: '/login',
+        destination: "/login",
         permanent: false,
       },
     };
   }
-  
+
   // Hvis token er gyldig, returner props
   return {
     props: {},

@@ -19,6 +19,7 @@
 ### Web Package
 
 1. **Environment Variable Missing**:
+
    - Error: "FEJL: NEXT_PUBLIC_API_URL er ikke sat. API-kald vil fejle." in `src/store/services/api.ts` (line 28:11)
    - This indicates that the API URL environment variable is not set during tests, which could lead to API calls failing.
 
@@ -41,6 +42,7 @@ No critical build issues were found. The build process completed successfully fo
 ### Test Issues
 
 1. **Environment Variables in Tests**:
+
    - Set up a mock environment for tests that includes necessary environment variables like `NEXT_PUBLIC_API_URL`.
    - Consider using a `.env.test` file or setting environment variables programmatically in test setup.
 
@@ -51,14 +53,17 @@ No critical build issues were found. The build process completed successfully fo
 ### General Recommendations
 
 1. **Improve Test Coverage**:
+
    - The web package has minimal tests (only one test for the login component).
    - Consider adding more tests for critical components and functionality.
 
 2. **Update Dependencies**:
+
    - Turbo is outdated (v1.10.12) and an update is available (v2.5.3).
    - Consider updating dependencies to benefit from bug fixes and new features.
 
 3. **Standardize Error Handling**:
+
    - The API error messages are in Danish. Consider standardizing error messages in one language (preferably English) for consistency.
 
 4. **Environment Variable Management**:

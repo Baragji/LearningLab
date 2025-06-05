@@ -2,7 +2,7 @@ Logbog for Potentielle Tilføjelser til Master-Prompt Manual
 Dette dokument bruges til at holde styr på nye fejlscenarier, AI Masterprompts og løsningsskabeloner, der identificeres undervejs, og som potentielt skal tilføjes til den officielle Master-Prompt Manual for LearningLab.
 
 Fejl ID: TS-006 (Forslag) - TS6059: File ... is not under 'rootDir'
-Kontekst: Opstod da apps/api blev startet med yarn dev (via nest start --watch). Fejlen indikerer, at TypeScript-kompilatoren forsøger at inkludere kildekodsfiler fra delte packages/* (f.eks. @repo/core) direkte, i stedet for deres kompilerede dist-output, hvilket er i konflikt med apps/api/tsconfig.build.json's "rootDir": "src" indstilling.
+Kontekst: Opstod da apps/api blev startet med yarn dev (via nest start --watch). Fejlen indikerer, at TypeScript-kompilatoren forsøger at inkludere kildekodsfiler fra delte packages/\* (f.eks. @repo/core) direkte, i stedet for deres kompilerede dist-output, hvilket er i konflikt med apps/api/tsconfig.build.json's "rootDir": "src" indstilling.
 
 Trigger-tekst / Fejlkode (Eksempel):
 
@@ -13,9 +13,10 @@ AI Masterprompt (Udkast):
 Min NestJS API (`apps/api`) fejler under `yarn dev` (som kører `nest start --watch`) med TypeScript-fejlen `TS6059: File '.../packages/core/src/index.ts' is not under 'rootDir' '.../apps/api/src'`. Dette sker, selvom `rootDir` er sat til "src" i `apps/api/tsconfig.build.json`. Fejlen indikerer, at compileren forsøger at inkludere kildekodsfiler fra `@repo/core` og `@repo/config` direkte, i stedet for deres kompilerede output.
 
 Analyser følgende for at finde årsagen og foreslå en løsning:
+
 1.  **`paths` aliaser i `apps/api/tsconfig.build.json`:** Bekræft, at `paths` for `@repo/core` og `@repo/config` peger på deres respektive `dist`-mapper (f.eks. `../../packages/core/dist`) og ikke `src`-mapperne. Hvis de peger på `src`, ret dem til at pege på `dist`.
 2.  **Projekt Referencer (`references`):** Har `apps/api/tsconfig.build.json` (eller den `tsconfig.json` den udvider) korrekte `references` til `packages/core` og `packages/config`? Dette hjælper TypeScript med at forstå build-afhængigheder og sikrer, at de korrekte `dist`-outputs bruges.
-3.  **Build-orden med Turborepo:** Hvordan sikrer `dev`-scriptet i `apps/api/package.json` (og den overordnede `turbo run dev`-kommando), at `@repo/core` og `@repo/config` er bygget, og deres `dist`-mapper er opdaterede, *før* `api`-projektet kompileres? Skal `turbo.json` `pipeline` for `dev`-scriptet justeres for at inkludere afhængighedernes `build`-task?
+3.  **Build-orden med Turborepo:** Hvordan sikrer `dev`-scriptet i `apps/api/package.json` (og den overordnede `turbo run dev`-kommando), at `@repo/core` og `@repo/config` er bygget, og deres `dist`-mapper er opdaterede, _før_ `api`-projektet kompileres? Skal `turbo.json` `pipeline` for `dev`-scriptet justeres for at inkludere afhængighedernes `build`-task?
 4.  **`extends`-kæde for `tsconfig.build.json`:** Overvej om `apps/api/tsconfig.build.json` arver korrekt fra en base-konfiguration, der evt. allerede definerer de korrekte `paths` til `dist`-mapper.
 
 Foreslå en patch til `apps/api/tsconfig.build.json` og/eller `turbo.json` for at løse `TS6059`-fejlen ved at sikre, at `api`-projektet bruger de kompilerede `dist`-outputs fra sine interne pakkeafhængigheder.
@@ -54,28 +55,28 @@ Hypotesen er, at `@repo/config` og/eller `@repo/core` ikke konsekvent bygger der
 Analyser og ret følgende for at sikre korrekt build-output fra `@repo/config` og `@repo/core`:
 
 1.  **For `packages/config`:**
-    a.  I `packages/config/package.json`:
-        i.  Sikr, at `scripts.build` er: `"tsc -p tsconfig.json"`.
-        ii. Ret `scripts.clean` til: `"rimraf dist tsconfig.tsbuildinfo"`.
-    b.  I `packages/config/tsconfig.json`:
-        i.  Bekræft `compilerOptions.outDir` er `"dist"` (eller `"./dist"`).
-        ii. Bekræft `compilerOptions.rootDir` er `"src"` (eller `"./src"`).
-        iii.Bekræft `compilerOptions.composite` er `true`.
-        iv. Bekræft `compilerOptions.noEmit` er `false`.
+    a. I `packages/config/package.json`:
+    i. Sikr, at `scripts.build` er: `"tsc -p tsconfig.json"`.
+    ii. Ret `scripts.clean` til: `"rimraf dist tsconfig.tsbuildinfo"`.
+    b. I `packages/config/tsconfig.json`:
+    i. Bekræft `compilerOptions.outDir` er `"dist"` (eller `"./dist"`).
+    ii. Bekræft `compilerOptions.rootDir` er `"src"` (eller `"./src"`).
+    iii.Bekræft `compilerOptions.composite` er `true`.
+    iv. Bekræft `compilerOptions.noEmit` er `false`.
 
 2.  **For `packages/core`:**
-    a.  I `packages/core/package.json`:
-        i.  **VIGTIGT:** Ret `scripts.build` fra f.eks. "tsc --outDir dist..." til præcis: `"tsc -p tsconfig.json"`.
-        ii. Ret `scripts.clean` til: `"rimraf dist tsconfig.tsbuildinfo"`.
-    b.  I `packages/core/tsconfig.json`:
-        i.  Bekræft `compilerOptions.outDir` er `"./dist"`.
-        ii. Bekræft `compilerOptions.rootDir` er `"./src"`.
-        iii.Bekræft `compilerOptions.composite` er `true`.
-        iv. Hvis `noEmit` er specificeret, sikr den er `false`.
+    a. I `packages/core/package.json`:
+    i. **VIGTIGT:** Ret `scripts.build` fra f.eks. "tsc --outDir dist..." til præcis: `"tsc -p tsconfig.json"`.
+    ii. Ret `scripts.clean` til: `"rimraf dist tsconfig.tsbuildinfo"`.
+    b. I `packages/core/tsconfig.json`:
+    i. Bekræft `compilerOptions.outDir` er `"./dist"`.
+    ii. Bekræft `compilerOptions.rootDir` er `"./src"`.
+    iii.Bekræft `compilerOptions.composite` er `true`.
+    iv. Hvis `noEmit` er specificeret, sikr den er `false`.
 
 3.  **For `apps/api` (Verifikation):**
-    a.  I `apps/api/package.json`: Opdater `scripts.clean` til også at inkludere `tsconfig.tsbuildinfo` (f.eks. `"rimraf dist coverage .turbo tsconfig.tsbuildinfo"`).
-    b.  I `apps/api/tsconfig.build.json`: Dobbelttjek `paths` og `references` for korrekthed.
+    a. I `apps/api/package.json`: Opdater `scripts.clean` til også at inkludere `tsconfig.tsbuildinfo` (f.eks. `"rimraf dist coverage .turbo tsconfig.tsbuildinfo"`).
+    b. I `apps/api/tsconfig.build.json`: Dobbelttjek `paths` og `references` for korrekthed.
 
 **Udførsel og Verifikation (fra workspace-mapper og rod):**
 Foreslå at køre `yarn clean` og derefter `yarn build` i `packages/config/` og `packages/core/` mapperne. Verificer manuelt (eller via `view_folder`), at deres `dist/`-mapper oprettes med det forventede indhold (`index.js`, `index.d.ts`, etc.).
@@ -97,8 +98,7 @@ Testsekvens: yarn clean (rod) -> yarn install (rod) -> yarn workspace @repo/conf
 
 (Her kan vi tilføje flere, efterhånden som de dukker op)
 
-
- Det er en imponerende og grundig fejlsøgningsproces, du (eller AI-agenten) har været igennem! Det er et perfekt eksempel på, hvordan man systematisk identificerer og løser et komplekst problem.
+Det er en imponerende og grundig fejlsøgningsproces, du (eller AI-agenten) har været igennem! Det er et perfekt eksempel på, hvordan man systematisk identificerer og løser et komplekst problem.
 
 Opsummering af den succesfulde løsning:
 

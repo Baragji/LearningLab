@@ -56,7 +56,7 @@ interface RequestWithUser extends ExpressRequest {
 export class QuizController {
   constructor(
     private readonly quizService: QuizService,
-    private readonly prisma: PrismaService
+    private readonly prisma: PrismaService,
   ) {}
 
   @ApiOperation({ summary: 'Hent alle quizzer' })
@@ -164,10 +164,7 @@ export class QuizController {
         orderBy: { title: 'asc' },
       });
     } catch (error) {
-      console.error(
-        `Fejl ved hentning af quizzer for emne ${topicId}:`,
-        error,
-      );
+      console.error(`Fejl ved hentning af quizzer for emne ${topicId}:`, error);
       throw new BadRequestException(
         'Der opstod en fejl ved hentning af quizzer',
       );

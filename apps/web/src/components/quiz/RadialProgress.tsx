@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 interface RadialProgressProps {
   percentage: number;
@@ -17,16 +17,16 @@ const RadialProgress: React.FC<RadialProgressProps> = ({
   const radius = (size - strokeWidth) / 2;
   const circumference = radius * 2 * Math.PI;
   const strokeDashoffset = circumference - (percentage / 100) * circumference;
-  
+
   // Center position
   const center = size / 2;
-  
+
   // Determine color based on passed status
   const getColor = () => {
-    if (passed) return '#10B981'; // Green for passed
-    return '#EF4444'; // Red for failed
+    if (passed) return "#10B981"; // Green for passed
+    return "#EF4444"; // Red for failed
   };
-  
+
   return (
     <div className="relative inline-flex flex-col items-center justify-center">
       <svg
@@ -45,7 +45,7 @@ const RadialProgress: React.FC<RadialProgressProps> = ({
           strokeWidth={strokeWidth}
           className="dark:stroke-gray-700"
         />
-        
+
         {/* Progress circle */}
         <circle
           cx={center}
@@ -60,14 +60,14 @@ const RadialProgress: React.FC<RadialProgressProps> = ({
           className="transition-all duration-500 ease-in-out"
         />
       </svg>
-      
+
       {/* Percentage text */}
       <div className="absolute flex flex-col items-center justify-center">
         <span className="text-3xl font-bold text-gray-900 dark:text-white">
           {percentage}%
         </span>
         <span className="text-sm text-gray-500 dark:text-gray-400">
-          {passed ? 'Bestået' : 'Ikke bestået'}
+          {passed ? "Bestået" : "Ikke bestået"}
         </span>
       </div>
     </div>

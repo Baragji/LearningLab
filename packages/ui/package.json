@@ -12,6 +12,7 @@
     "test:watch": "jest --watch",
     "test:ci": "jest --ci",
     "lint": "eslint . --ext .ts,.tsx",
+    "typecheck": "tsc --noEmit",
     "build": "echo 'No build step required for UI package'",
     "clean": "rimraf coverage"
   },

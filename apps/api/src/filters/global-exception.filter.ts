@@ -26,7 +26,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     if (exception instanceof HttpException) {
       status = exception.getStatus();
       const exceptionResponse = exception.getResponse();
-      
+
       if (typeof exceptionResponse === 'string') {
         message = exceptionResponse;
       } else if (typeof exceptionResponse === 'object') {
@@ -37,13 +37,13 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     // Handle Prisma errors
     else if (exception instanceof Prisma.PrismaClientKnownRequestError) {
       status = HttpStatus.BAD_REQUEST;
-      
+
       switch (exception.code) {
         case 'P2002':
           message = 'A record with this data already exists';
           details = {
             field: exception.meta?.target,
-            constraint: 'unique_constraint'
+            constraint: 'unique_constraint',
           };
           break;
         case 'P2025':
@@ -54,21 +54,22 @@ export class GlobalExceptionFilter implements ExceptionFilter {
           message = 'Foreign key constraint failed';
           details = {
             field: exception.meta?.field_name,
-            constraint: 'foreign_key_constraint'
+            constraint: 'foreign_key_constraint',
           };
           break;
         case 'P2014':
-          message = 'The change you are trying to make would violate the required relation';
+          message =
+            'The change you are trying to make would violate the required relation';
           details = {
             relation: exception.meta?.relation_name,
-            constraint: 'required_relation_constraint'
+            constraint: 'required_relation_constraint',
           };
           break;
         default:
           message = 'Database operation failed';
           details = {
             code: exception.code,
-            meta: exception.meta
+            meta: exception.meta,
           };
       }
     }
@@ -78,7 +79,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       message = 'Invalid data provided';
       details = {
         type: 'validation_error',
-        originalMessage: exception.message
+        originalMessage: exception.message,
       };
     }
     // Handle other errors
@@ -86,14 +87,15 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       message = exception.message;
       details = {
         name: exception.name,
-        stack: process.env.NODE_ENV === 'development' ? exception.stack : undefined
+        stack:
+          process.env.NODE_ENV === 'development' ? exception.stack : undefined,
       };
     }
 
     // Log the error
     this.logger.error(
       `${request.method} ${request.url} - ${status} - ${message}`,
-      exception instanceof Error ? exception.stack : exception
+      exception instanceof Error ? exception.stack : exception,
     );
 
     // Send error response
@@ -106,10 +108,11 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       ...(details && { details }),
       ...(process.env.NODE_ENV === 'development' && {
         debug: {
-          originalError: exception instanceof Error ? exception.message : exception,
-          stack: exception instanceof Error ? exception.stack : undefined
-        }
-      })
+          originalError:
+            exception instanceof Error ? exception.message : exception,
+          stack: exception instanceof Error ? exception.stack : undefined,
+        },
+      }),
     };
 
     response.status(status).json(errorResponse);

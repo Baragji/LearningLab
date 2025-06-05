@@ -1,6 +1,6 @@
-import { NextApiRequest, NextApiResponse } from 'next';
-import { getServerSession } from 'next-auth/next';
-import { authOptions } from '../auth/[...nextauth]';
+import { NextApiRequest, NextApiResponse } from "next";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "../auth/[...nextauth]";
 
 /**
  * AI Feedback API Route
@@ -8,31 +8,32 @@ import { authOptions } from '../auth/[...nextauth]';
  */
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse,
 ) {
   // Check authentication
   const session = await getServerSession(req, res, authOptions);
   if (!session) {
-    return res.status(401).json({ error: 'Unauthorized' });
+    return res.status(401).json({ error: "Unauthorized" });
   }
 
   const { method } = req;
 
   try {
     switch (method) {
-      case 'POST':
+      case "POST":
         return await handleGenerateFeedback(req, res);
-      case 'GET':
+      case "GET":
         return await handleGetFeedbackHistory(req, res);
       default:
-        res.setHeader('Allow', ['POST', 'GET']);
+        res.setHeader("Allow", ["POST", "GET"]);
         return res.status(405).json({ error: `Method ${method} not allowed` });
     }
   } catch (error) {
-    console.error('AI Feedback API Error:', error);
-    return res.status(500).json({ 
-      error: 'Internal server error',
-      message: process.env.NODE_ENV === 'development' ? error.message : undefined
+    console.error("AI Feedback API Error:", error);
+    return res.status(500).json({
+      error: "Internal server error",
+      message:
+        process.env.NODE_ENV === "development" ? error.message : undefined,
     });
   }
 }
@@ -42,30 +43,33 @@ export default async function handler(
  */
 async function handleGenerateFeedback(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse,
 ) {
   const { quizId, answers, userId } = req.body;
 
   if (!quizId || !answers || !userId) {
-    return res.status(400).json({ 
-      error: 'Missing required fields: quizId, answers, userId' 
+    return res.status(400).json({
+      error: "Missing required fields: quizId, answers, userId",
     });
   }
 
   try {
     // Call backend AI service
-    const response = await fetch(`${process.env.API_BASE_URL}/ai/feedback/generate`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.API_SECRET_KEY}`,
+    const response = await fetch(
+      `${process.env.API_BASE_URL}/ai/feedback/generate`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${process.env.API_SECRET_KEY}`,
+        },
+        body: JSON.stringify({
+          quizId,
+          answers,
+          userId,
+        }),
       },
-      body: JSON.stringify({
-        quizId,
-        answers,
-        userId,
-      }),
-    });
+    );
 
     if (!response.ok) {
       throw new Error(`Backend API error: ${response.status}`);
@@ -74,10 +78,11 @@ async function handleGenerateFeedback(
     const feedbackData = await response.json();
     return res.status(200).json(feedbackData);
   } catch (error) {
-    console.error('Generate feedback error:', error);
-    return res.status(500).json({ 
-      error: 'Failed to generate AI feedback',
-      message: process.env.NODE_ENV === 'development' ? error.message : undefined
+    console.error("Generate feedback error:", error);
+    return res.status(500).json({
+      error: "Failed to generate AI feedback",
+      message:
+        process.env.NODE_ENV === "development" ? error.message : undefined,
     });
   }
 }
@@ -87,13 +92,13 @@ async function handleGenerateFeedback(
  */
 async function handleGetFeedbackHistory(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse,
 ) {
   const { userId, limit = 10, offset = 0 } = req.query;
 
   if (!userId) {
-    return res.status(400).json({ 
-      error: 'Missing required parameter: userId' 
+    return res.status(400).json({
+      error: "Missing required parameter: userId",
     });
   }
 
@@ -102,11 +107,11 @@ async function handleGetFeedbackHistory(
     const response = await fetch(
       `${process.env.API_BASE_URL}/ai/feedback/history?userId=${userId}&limit=${limit}&offset=${offset}`,
       {
-        method: 'GET',
+        method: "GET",
         headers: {
-          'Authorization': `Bearer ${process.env.API_SECRET_KEY}`,
+          Authorization: `Bearer ${process.env.API_SECRET_KEY}`,
         },
-      }
+      },
     );
 
     if (!response.ok) {
@@ -116,10 +121,11 @@ async function handleGetFeedbackHistory(
     const historyData = await response.json();
     return res.status(200).json(historyData);
   } catch (error) {
-    console.error('Get feedback history error:', error);
-    return res.status(500).json({ 
-      error: 'Failed to retrieve feedback history',
-      message: process.env.NODE_ENV === 'development' ? error.message : undefined
+    console.error("Get feedback history error:", error);
+    return res.status(500).json({
+      error: "Failed to retrieve feedback history",
+      message:
+        process.env.NODE_ENV === "development" ? error.message : undefined,
     });
   }
 }

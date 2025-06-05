@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import { Slider } from '@/components/ui/slider';
-import { Switch } from '@/components/ui/switch';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Separator } from '@/components/ui/separator';
+import React, { useState, useEffect } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { Slider } from "@/components/ui/slider";
+import { Switch } from "@/components/ui/switch";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Separator } from "@/components/ui/separator";
 import {
   Settings,
   TrendingUp,
@@ -28,13 +28,13 @@ import {
   Minus,
   RefreshCw,
   Activity,
-} from 'lucide-react';
-import { cn } from '@/lib/utils';
+} from "lucide-react";
+import { cn } from "@/lib/utils";
 
 // Types
 interface DifficultyAnalysis {
-  currentLevel: 'beginner' | 'intermediate' | 'advanced';
-  recommendedLevel: 'beginner' | 'intermediate' | 'advanced';
+  currentLevel: "beginner" | "intermediate" | "advanced";
+  recommendedLevel: "beginner" | "intermediate" | "advanced";
   confidenceScore: number;
   performanceMetrics: {
     accuracy: number;
@@ -44,7 +44,7 @@ interface DifficultyAnalysis {
   };
   adjustmentReasons: string[];
   suggestedActions: {
-    action: 'increase' | 'decrease' | 'maintain';
+    action: "increase" | "decrease" | "maintain";
     reason: string;
     impact: string;
   }[];
@@ -85,7 +85,7 @@ interface RealTimeAdjustment {
   };
   nextAdjustment: {
     predicted: boolean;
-    direction: 'up' | 'down' | 'maintain';
+    direction: "up" | "down" | "maintain";
     confidence: number;
   };
 }
@@ -117,14 +117,16 @@ export function DifficultyAdjustmentPanel({
   const [analysis, setAnalysis] = useState<DifficultyAnalysis | null>(null);
   const [questionConfig, setQuestionConfig] = useState<QuestionConfiguration>({
     difficultyLevel: 5,
-    questionTypes: ['multiple-choice', 'true-false'],
+    questionTypes: ["multiple-choice", "true-false"],
     timeLimit: 60,
     hintsEnabled: true,
     multipleAttempts: false,
     adaptiveScoring: true,
     conceptWeights: {},
   });
-  const [realTimeData, setRealTimeData] = useState<RealTimeAdjustment | null>(null);
+  const [realTimeData, setRealTimeData] = useState<RealTimeAdjustment | null>(
+    null,
+  );
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [autoAdjustEnabled, setAutoAdjustEnabled] = useState(true);
@@ -147,10 +149,10 @@ export function DifficultyAdjustmentPanel({
     setError(null);
 
     try {
-      const response = await fetch('/api/ai/difficulty/analyze', {
-        method: 'POST',
+      const response = await fetch("/api/ai/difficulty/analyze", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           userId,
@@ -159,13 +161,13 @@ export function DifficultyAdjustmentPanel({
       });
 
       if (!response.ok) {
-        throw new Error('Failed to analyze difficulty');
+        throw new Error("Failed to analyze difficulty");
       }
 
       const data = await response.json();
       setAnalysis(data.analysis);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
       setIsLoading(false);
     }
@@ -176,10 +178,10 @@ export function DifficultyAdjustmentPanel({
     setError(null);
 
     try {
-      const response = await fetch('/api/ai/difficulty/adjust', {
-        method: 'POST',
+      const response = await fetch("/api/ai/difficulty/adjust", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           userId,
@@ -190,17 +192,17 @@ export function DifficultyAdjustmentPanel({
       });
 
       if (!response.ok) {
-        throw new Error('Failed to adjust difficulty');
+        throw new Error("Failed to adjust difficulty");
       }
 
       const data = await response.json();
-      setQuestionConfig(prev => ({ ...prev, difficultyLevel: newLevel }));
+      setQuestionConfig((prev) => ({ ...prev, difficultyLevel: newLevel }));
       onDifficultyChanged?.(newLevel);
-      
+
       // Refresh analysis
       await analyzeDifficulty();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
       setIsLoading(false);
     }
@@ -210,10 +212,10 @@ export function DifficultyAdjustmentPanel({
     if (!currentSession) return;
 
     try {
-      const response = await fetch('/api/ai/difficulty/real-time', {
-        method: 'POST',
+      const response = await fetch("/api/ai/difficulty/real-time", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           sessionId: currentSession.sessionId,
@@ -226,7 +228,7 @@ export function DifficultyAdjustmentPanel({
         setRealTimeData(data.realTimeData);
       }
     } catch (err) {
-      console.error('Failed to monitor real-time performance:', err);
+      console.error("Failed to monitor real-time performance:", err);
     }
   };
 
@@ -235,10 +237,10 @@ export function DifficultyAdjustmentPanel({
     setError(null);
 
     try {
-      const response = await fetch('/api/ai/difficulty/question-config', {
-        method: 'POST',
+      const response = await fetch("/api/ai/difficulty/question-config", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           userId,
@@ -252,41 +254,47 @@ export function DifficultyAdjustmentPanel({
       });
 
       if (!response.ok) {
-        throw new Error('Failed to generate question configuration');
+        throw new Error("Failed to generate question configuration");
       }
 
       const data = await response.json();
       setQuestionConfig(data.configuration);
       onSettingsUpdated?.(data.configuration);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
       setIsLoading(false);
     }
   };
 
   const getDifficultyColor = (level: string | number) => {
-    const numLevel = typeof level === 'string' ? 
-      (level === 'beginner' ? 3 : level === 'intermediate' ? 6 : 9) : level;
-    
-    if (numLevel <= 3) return 'bg-green-100 text-green-800';
-    if (numLevel <= 6) return 'bg-yellow-100 text-yellow-800';
-    return 'bg-red-100 text-red-800';
+    const numLevel =
+      typeof level === "string"
+        ? level === "beginner"
+          ? 3
+          : level === "intermediate"
+            ? 6
+            : 9
+        : level;
+
+    if (numLevel <= 3) return "bg-green-100 text-green-800";
+    if (numLevel <= 6) return "bg-yellow-100 text-yellow-800";
+    return "bg-red-100 text-red-800";
   };
 
   const getDifficultyLabel = (level: number) => {
-    if (level <= 3) return 'Beginner';
-    if (level <= 6) return 'Intermediate';
-    return 'Advanced';
+    if (level <= 3) return "Beginner";
+    if (level <= 6) return "Intermediate";
+    return "Advanced";
   };
 
   const getActionIcon = (action: string) => {
     switch (action) {
-      case 'increase':
+      case "increase":
         return <ArrowUp className="h-4 w-4 text-red-500" />;
-      case 'decrease':
+      case "decrease":
         return <ArrowDown className="h-4 w-4 text-green-500" />;
-      case 'maintain':
+      case "maintain":
         return <Minus className="h-4 w-4 text-blue-500" />;
       default:
         return <Activity className="h-4 w-4" />;
@@ -295,7 +303,7 @@ export function DifficultyAdjustmentPanel({
 
   if (isLoading && !analysis) {
     return (
-      <Card className={cn('w-full', className)}>
+      <Card className={cn("w-full", className)}>
         <CardContent className="p-6">
           <div className="flex items-center justify-center space-x-2">
             <Settings className="h-5 w-5 animate-spin text-blue-500" />
@@ -310,7 +318,7 @@ export function DifficultyAdjustmentPanel({
 
   if (error) {
     return (
-      <Card className={cn('w-full', className)}>
+      <Card className={cn("w-full", className)}>
         <CardContent className="p-6">
           <Alert variant="destructive">
             <AlertTriangle className="h-4 w-4" />
@@ -322,7 +330,7 @@ export function DifficultyAdjustmentPanel({
   }
 
   return (
-    <div className={cn('space-y-6', className)}>
+    <div className={cn("space-y-6", className)}>
       {/* Current Difficulty Status */}
       <Card>
         <CardHeader>
@@ -336,19 +344,27 @@ export function DifficultyAdjustmentPanel({
             <>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="text-center">
-                  <div className="text-sm text-muted-foreground mb-1">Current Level</div>
+                  <div className="text-sm text-muted-foreground mb-1">
+                    Current Level
+                  </div>
                   <Badge className={getDifficultyColor(analysis.currentLevel)}>
                     {analysis.currentLevel}
                   </Badge>
                 </div>
                 <div className="text-center">
-                  <div className="text-sm text-muted-foreground mb-1">Recommended</div>
-                  <Badge className={getDifficultyColor(analysis.recommendedLevel)}>
+                  <div className="text-sm text-muted-foreground mb-1">
+                    Recommended
+                  </div>
+                  <Badge
+                    className={getDifficultyColor(analysis.recommendedLevel)}
+                  >
                     {analysis.recommendedLevel}
                   </Badge>
                 </div>
                 <div className="text-center">
-                  <div className="text-sm text-muted-foreground mb-1">Confidence</div>
+                  <div className="text-sm text-muted-foreground mb-1">
+                    Confidence
+                  </div>
                   <div className="text-lg font-bold">
                     {Math.round(analysis.confidenceScore * 100)}%
                   </div>
@@ -360,29 +376,47 @@ export function DifficultyAdjustmentPanel({
                 <h4 className="font-medium text-sm">Performance Metrics</h4>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <div className="space-y-1">
-                    <div className="text-xs text-muted-foreground">Accuracy</div>
-                    <Progress value={analysis.performanceMetrics.accuracy} className="h-2" />
+                    <div className="text-xs text-muted-foreground">
+                      Accuracy
+                    </div>
+                    <Progress
+                      value={analysis.performanceMetrics.accuracy}
+                      className="h-2"
+                    />
                     <div className="text-xs font-medium">
                       {Math.round(analysis.performanceMetrics.accuracy)}%
                     </div>
                   </div>
                   <div className="space-y-1">
                     <div className="text-xs text-muted-foreground">Speed</div>
-                    <Progress value={analysis.performanceMetrics.speed} className="h-2" />
+                    <Progress
+                      value={analysis.performanceMetrics.speed}
+                      className="h-2"
+                    />
                     <div className="text-xs font-medium">
                       {Math.round(analysis.performanceMetrics.speed)}%
                     </div>
                   </div>
                   <div className="space-y-1">
-                    <div className="text-xs text-muted-foreground">Consistency</div>
-                    <Progress value={analysis.performanceMetrics.consistency} className="h-2" />
+                    <div className="text-xs text-muted-foreground">
+                      Consistency
+                    </div>
+                    <Progress
+                      value={analysis.performanceMetrics.consistency}
+                      className="h-2"
+                    />
                     <div className="text-xs font-medium">
                       {Math.round(analysis.performanceMetrics.consistency)}%
                     </div>
                   </div>
                   <div className="space-y-1">
-                    <div className="text-xs text-muted-foreground">Improvement</div>
-                    <Progress value={analysis.performanceMetrics.improvement} className="h-2" />
+                    <div className="text-xs text-muted-foreground">
+                      Improvement
+                    </div>
+                    <Progress
+                      value={analysis.performanceMetrics.improvement}
+                      className="h-2"
+                    />
                     <div className="text-xs font-medium">
                       {Math.round(analysis.performanceMetrics.improvement)}%
                     </div>
@@ -406,14 +440,19 @@ export function DifficultyAdjustmentPanel({
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <label className="text-sm font-medium">Difficulty Level</label>
-              <Badge className={getDifficultyColor(questionConfig.difficultyLevel)}>
+              <Badge
+                className={getDifficultyColor(questionConfig.difficultyLevel)}
+              >
                 {getDifficultyLabel(questionConfig.difficultyLevel)}
               </Badge>
             </div>
             <Slider
               value={[questionConfig.difficultyLevel]}
               onValueChange={(value) => {
-                setQuestionConfig(prev => ({ ...prev, difficultyLevel: value[0] }));
+                setQuestionConfig((prev) => ({
+                  ...prev,
+                  difficultyLevel: value[0],
+                }));
               }}
               max={10}
               min={1}
@@ -442,7 +481,9 @@ export function DifficultyAdjustmentPanel({
 
           {autoAdjustEnabled && (
             <div className="space-y-2">
-              <label className="text-sm font-medium">Adjustment Sensitivity</label>
+              <label className="text-sm font-medium">
+                Adjustment Sensitivity
+              </label>
               <Slider
                 value={adjustmentSensitivity}
                 onValueChange={setAdjustmentSensitivity}
@@ -460,10 +501,12 @@ export function DifficultyAdjustmentPanel({
 
           <div className="flex space-x-2">
             <Button
-              onClick={() => adjustDifficulty(
-                questionConfig.difficultyLevel,
-                'Manual adjustment'
-              )}
+              onClick={() =>
+                adjustDifficulty(
+                  questionConfig.difficultyLevel,
+                  "Manual adjustment",
+                )
+              }
               disabled={isLoading}
               className="flex-1"
             >
@@ -500,7 +543,9 @@ export function DifficultyAdjustmentPanel({
               <div key={index} className="border rounded-lg p-4 space-y-2">
                 <div className="flex items-center space-x-2">
                   {getActionIcon(suggestion.action)}
-                  <span className="font-medium capitalize">{suggestion.action} Difficulty</span>
+                  <span className="font-medium capitalize">
+                    {suggestion.action} Difficulty
+                  </span>
                 </div>
                 <p className="text-sm text-muted-foreground">
                   {suggestion.reason}
@@ -512,11 +557,12 @@ export function DifficultyAdjustmentPanel({
                   size="sm"
                   variant="outline"
                   onClick={() => {
-                    const newLevel = suggestion.action === 'increase' 
-                      ? Math.min(10, questionConfig.difficultyLevel + 1)
-                      : suggestion.action === 'decrease'
-                      ? Math.max(1, questionConfig.difficultyLevel - 1)
-                      : questionConfig.difficultyLevel;
+                    const newLevel =
+                      suggestion.action === "increase"
+                        ? Math.min(10, questionConfig.difficultyLevel + 1)
+                        : suggestion.action === "decrease"
+                          ? Math.max(1, questionConfig.difficultyLevel - 1)
+                          : questionConfig.difficultyLevel;
                     adjustDifficulty(newLevel, suggestion.reason);
                   }}
                   disabled={isLoading}
@@ -548,7 +594,12 @@ export function DifficultyAdjustmentPanel({
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold">
-                  {Math.round((realTimeData.performanceWindow.correct / realTimeData.performanceWindow.total) * 100)}%
+                  {Math.round(
+                    (realTimeData.performanceWindow.correct /
+                      realTimeData.performanceWindow.total) *
+                      100,
+                  )}
+                  %
                 </div>
                 <div className="text-xs text-muted-foreground">Accuracy</div>
               </div>
@@ -570,19 +621,22 @@ export function DifficultyAdjustmentPanel({
               <div className="space-y-2">
                 <h4 className="font-medium text-sm">Recent Adjustments</h4>
                 <div className="space-y-2 max-h-32 overflow-y-auto">
-                  {realTimeData.adjustmentsMade.slice(-3).map((adjustment, index) => (
-                    <div key={index} className="text-xs border rounded p-2">
-                      <div className="flex items-center justify-between">
-                        <span>Question {adjustment.questionNumber}</span>
-                        <span className="text-muted-foreground">
-                          {adjustment.oldDifficulty} → {adjustment.newDifficulty}
-                        </span>
+                  {realTimeData.adjustmentsMade
+                    .slice(-3)
+                    .map((adjustment, index) => (
+                      <div key={index} className="text-xs border rounded p-2">
+                        <div className="flex items-center justify-between">
+                          <span>Question {adjustment.questionNumber}</span>
+                          <span className="text-muted-foreground">
+                            {adjustment.oldDifficulty} →{" "}
+                            {adjustment.newDifficulty}
+                          </span>
+                        </div>
+                        <div className="text-muted-foreground mt-1">
+                          {adjustment.reason}
+                        </div>
                       </div>
-                      <div className="text-muted-foreground mt-1">
-                        {adjustment.reason}
-                      </div>
-                    </div>
-                  ))}
+                    ))}
                 </div>
               </div>
             )}
@@ -591,8 +645,10 @@ export function DifficultyAdjustmentPanel({
               <Alert>
                 <Brain className="h-4 w-4" />
                 <AlertDescription>
-                  AI predicts next adjustment: <strong>{realTimeData.nextAdjustment.direction}</strong> 
-                  (confidence: {Math.round(realTimeData.nextAdjustment.confidence * 100)}%)
+                  AI predicts next adjustment:{" "}
+                  <strong>{realTimeData.nextAdjustment.direction}</strong>
+                  (confidence:{" "}
+                  {Math.round(realTimeData.nextAdjustment.confidence * 100)}%)
                 </AlertDescription>
               </Alert>
             )}

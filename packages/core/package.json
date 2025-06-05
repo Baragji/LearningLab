@@ -10,6 +10,7 @@
     "clean": "rimraf dist tsconfig.tsbuildinfo",
     "prebuild": "yarn clean",
     "lint": "eslint . --ext .ts,.tsx",
+    "typecheck": "tsc --noEmit",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:ci": "jest --ci"

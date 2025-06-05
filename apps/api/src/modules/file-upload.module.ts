@@ -13,8 +13,9 @@ import { PrismaService } from '../persistence/prisma/prisma.service';
     MulterModule.registerAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => {
-        const uploadPath = configService.get<string>('UPLOAD_PATH') || './uploads';
-        
+        const uploadPath =
+          configService.get<string>('UPLOAD_PATH') || './uploads';
+
         // Ensure upload directory exists
         if (!existsSync(uploadPath)) {
           mkdirSync(uploadPath, { recursive: true });
@@ -25,7 +26,7 @@ import { PrismaService } from '../persistence/prisma/prisma.service';
             destination: (req, file, cb) => {
               // Create subdirectories based on file type
               let subDir = 'misc';
-              
+
               if (file.mimetype.startsWith('image/')) {
                 subDir = 'images';
               } else if (file.mimetype.startsWith('video/')) {
@@ -43,21 +44,24 @@ import { PrismaService } from '../persistence/prisma/prisma.service';
               ) {
                 subDir = 'documents';
               }
-              
+
               const fullPath = join(uploadPath, subDir);
-              
+
               // Ensure subdirectory exists
               if (!existsSync(fullPath)) {
                 mkdirSync(fullPath, { recursive: true });
               }
-              
+
               cb(null, fullPath);
             },
             filename: (req, file, cb) => {
               // Generate unique filename
-              const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+              const uniqueSuffix =
+                Date.now() + '-' + Math.round(Math.random() * 1e9);
               const ext = extname(file.originalname);
-              const name = file.originalname.replace(ext, '').replace(/[^a-zA-Z0-9]/g, '-');
+              const name = file.originalname
+                .replace(ext, '')
+                .replace(/[^a-zA-Z0-9]/g, '-');
               cb(null, `${uniqueSuffix}-${name}${ext}`);
             },
           }),
@@ -85,7 +89,7 @@ import { PrismaService } from '../persistence/prisma/prisma.service';
               'audio/mpeg',
               'audio/wav',
             ];
-            
+
             if (allowedMimeTypes.includes(file.mimetype)) {
               cb(null, true);
             } else {

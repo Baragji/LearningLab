@@ -3,10 +3,12 @@
 ## 📊 NUVÆRENDE UI SITUATION
 
 ### Duplikerede UI Systemer
+
 1. **packages/ui/components/mui/** - MUI-baserede komponenter
 2. **apps/web/src/components/ui/** - Shadcn/ui komponenter
 
 ### Problemanalyse
+
 - **Inkonsistent design**: To forskellige design systemer
 - **Duplikeret kode**: Samme funktionalitet implementeret to gange
 - **Maintenance overhead**: Dobbelt vedligeholdelse
@@ -16,7 +18,9 @@
 ## 🎯 KONSOLIDERINGSSTRATEGI
 
 ### Beslutning: MUI som Primært System
+
 **Rationale:**
+
 - Mere mature og stabil
 - Bedre accessibility support
 - Omfattende komponent bibliotek
@@ -24,6 +28,7 @@
 - Aktiv community og support
 
 ### Migration Approach
+
 1. **Audit og mapping** af eksisterende komponenter
 2. **Merge funktionalitet** fra Shadcn til MUI komponenter
 3. **Gradvis migration** af imports
@@ -33,30 +38,33 @@
 ## 📋 KOMPONENT MAPPING
 
 ### Direkte Mappings
-| Shadcn Component | MUI Component | Action |
-|------------------|---------------|---------|
-| `button.tsx` | `mui/Button/Button.tsx` | Merge styling options |
-| `card.tsx` | `mui/Card/Card.tsx` | Merge variants |
-| `dialog.tsx` | `mui/Dialog/Dialog.tsx` | Merge functionality |
-| `input.tsx` | `mui/TextField/TextField.tsx` | Merge input types |
-| `select.tsx` | `mui/Select/Select.tsx` | Merge options |
-| `table.tsx` | `mui/Table/Table.tsx` | Merge table features |
-| `tabs.tsx` | `mui/Tabs/Tabs.tsx` | Merge tab variants |
-| `checkbox.tsx` | `mui/Checkbox/Checkbox.tsx` | Merge states |
-| `progress.tsx` | `mui/Progress/Progress.tsx` | Merge progress types |
+
+| Shadcn Component | MUI Component                 | Action                |
+| ---------------- | ----------------------------- | --------------------- |
+| `button.tsx`     | `mui/Button/Button.tsx`       | Merge styling options |
+| `card.tsx`       | `mui/Card/Card.tsx`           | Merge variants        |
+| `dialog.tsx`     | `mui/Dialog/Dialog.tsx`       | Merge functionality   |
+| `input.tsx`      | `mui/TextField/TextField.tsx` | Merge input types     |
+| `select.tsx`     | `mui/Select/Select.tsx`       | Merge options         |
+| `table.tsx`      | `mui/Table/Table.tsx`         | Merge table features  |
+| `tabs.tsx`       | `mui/Tabs/Tabs.tsx`           | Merge tab variants    |
+| `checkbox.tsx`   | `mui/Checkbox/Checkbox.tsx`   | Merge states          |
+| `progress.tsx`   | `mui/Progress/Progress.tsx`   | Merge progress types  |
 
 ### Nye Komponenter (kun i Shadcn)
-| Component | Action |
-|-----------|---------|
-| `alert.tsx` | Migrate til `mui/Alert/` |
-| `badge.tsx` | Create new `mui/Badge/` |
-| `label.tsx` | Integrate med TextField |
-| `separator.tsx` | Create new `mui/Divider/` |
-| `textarea.tsx` | Extend TextField component |
+
+| Component       | Action                     |
+| --------------- | -------------------------- |
+| `alert.tsx`     | Migrate til `mui/Alert/`   |
+| `badge.tsx`     | Create new `mui/Badge/`    |
+| `label.tsx`     | Integrate med TextField    |
+| `separator.tsx` | Create new `mui/Divider/`  |
+| `textarea.tsx`  | Extend TextField component |
 
 ### Specielle Komponenter
-| Component | Action |
-|-----------|---------|
+
+| Component       | Action               |
+| --------------- | -------------------- |
 | `AppButton.tsx` | Merge med MUI Button |
 
 ## 🔧 DETALJERET MIGRATION PLAN
@@ -64,6 +72,7 @@
 ### Fase 1: Audit og Forberedelse (Dag 1)
 
 #### 1.1 Komponent Inventory
+
 ```bash
 # Generer komponent liste
 find apps/web/src/components/ui -name "*.tsx" -exec basename {} \; > shadcn-components.txt
@@ -71,6 +80,7 @@ find packages/ui/components/mui -name "*.tsx" -exec basename {} \; > mui-compone
 ```
 
 #### 1.2 Usage Analysis
+
 ```bash
 # Find alle imports af UI komponenter
 grep -r "from.*components/ui" apps/web/src/ > ui-imports.txt
@@ -80,6 +90,7 @@ grep -r "from.*@repo/ui" apps/web/src/ > mui-imports.txt
 ### Fase 2: Komponent Enhancement (Dag 2-3)
 
 #### 2.1 Button Component Enhancement
+
 ```typescript
 // packages/ui/components/mui/Button/Button.tsx
 import { Button as MuiButton, ButtonProps as MuiButtonProps } from '@mui/material';
@@ -96,7 +107,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     // Mapping logic mellem Shadcn og MUI variants
     const muiVariant = mapShadcnToMuiVariant(variant);
     const muiSize = mapShadcnToMuiSize(size);
-    
+
     return (
       <MuiButton
         ref={ref}
@@ -110,6 +121,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 ```
 
 #### 2.2 Card Component Enhancement
+
 ```typescript
 // packages/ui/components/mui/Card/Card.tsx
 import { Card as MuiCard, CardContent, CardHeader, CardActions } from '@mui/material';
@@ -135,6 +147,7 @@ export const CardFooter = ({ children, ...props }) => (
 ### Fase 3: Nye Komponenter (Dag 4)
 
 #### 3.1 Badge Component
+
 ```typescript
 // packages/ui/components/mui/Badge/Badge.tsx
 import { Chip, ChipProps } from '@mui/material';
@@ -150,6 +163,7 @@ export const Badge = ({ variant = 'default', ...props }: BadgeProps) => {
 ```
 
 #### 3.2 Separator Component
+
 ```typescript
 // packages/ui/components/mui/Separator/Separator.tsx
 import { Divider, DividerProps } from '@mui/material';
@@ -166,6 +180,7 @@ export const Separator = ({ orientation = 'horizontal', ...props }: SeparatorPro
 ### Fase 4: Import Migration (Dag 5-6)
 
 #### 4.1 Automated Import Replacement
+
 ```bash
 # Script til at erstatte imports
 #!/bin/bash
@@ -178,8 +193,9 @@ find apps/web/src -name "*.tsx" -o -name "*.ts" | xargs sed -i '' \
 ```
 
 #### 4.2 Manual Migration Checklist
+
 - [ ] Button imports
-- [ ] Card imports  
+- [ ] Card imports
 - [ ] Dialog imports
 - [ ] Input/TextField imports
 - [ ] Select imports
@@ -194,6 +210,7 @@ find apps/web/src -name "*.tsx" -o -name "*.ts" | xargs sed -i '' \
 ### Fase 5: Testing & Validation (Dag 7)
 
 #### 5.1 Component Testing
+
 ```bash
 # Test alle UI komponenter
 yarn workspace ui test
@@ -201,6 +218,7 @@ yarn workspace web test
 ```
 
 #### 5.2 Visual Regression Testing
+
 ```bash
 # Storybook visual tests
 yarn storybook:build
@@ -208,6 +226,7 @@ yarn test:visual
 ```
 
 #### 5.3 E2E Testing
+
 ```bash
 # Playwright tests
 yarn test:e2e
@@ -216,12 +235,14 @@ yarn test:e2e
 ### Fase 6: Cleanup (Dag 8)
 
 #### 6.1 Remove Shadcn Components
+
 ```bash
 # Fjern gamle Shadcn komponenter
 rm -rf apps/web/src/components/ui/
 ```
 
 #### 6.2 Update Package Dependencies
+
 ```json
 // apps/web/package.json - Fjern Shadcn dependencies
 {
@@ -238,6 +259,7 @@ rm -rf apps/web/src/components/ui/
 ## 📁 NY UI STRUKTUR
 
 ### Packages/UI Organisation
+
 ```
 packages/ui/
 ├── components/
@@ -265,20 +287,22 @@ packages/ui/
 ```
 
 ### Export Strategy
+
 ```typescript
 // packages/ui/index.tsx
-export * from './components/base';
-export * from './components/composite';
-export * from './components/layout';
-export * from './components/feedback';
-export * from './hooks';
-export * from './utils';
-export { theme } from './theme';
+export * from "./components/base";
+export * from "./components/composite";
+export * from "./components/layout";
+export * from "./components/feedback";
+export * from "./hooks";
+export * from "./utils";
+export { theme } from "./theme";
 ```
 
 ## 🧪 TESTING STRATEGI
 
 ### Unit Tests
+
 ```typescript
 // Eksempel test struktur
 describe('Button Component', () => {
@@ -290,6 +314,7 @@ describe('Button Component', () => {
 ```
 
 ### Integration Tests
+
 ```typescript
 // Test komponent integration
 describe('Form Components Integration', () => {
@@ -306,6 +331,7 @@ describe('Form Components Integration', () => {
 ```
 
 ### Visual Tests
+
 ```typescript
 // Storybook stories for visual testing
 export default {
@@ -325,12 +351,14 @@ export const AllVariants = () => (
 ## 📋 IMPLEMENTATION CHECKLIST
 
 ### Pre-Migration
+
 - [ ] Backup nuværende UI komponenter
 - [ ] Dokumenter nuværende usage patterns
 - [ ] Setup visual regression testing
 - [ ] Create component inventory
 
 ### Phase 1: Enhancement
+
 - [ ] Enhance Button component
 - [ ] Enhance Card component
 - [ ] Enhance Dialog component
@@ -342,12 +370,14 @@ export const AllVariants = () => (
 - [ ] Enhance Progress component
 
 ### Phase 2: New Components
+
 - [ ] Create Badge component
 - [ ] Create Separator component
 - [ ] Create enhanced Alert component
 - [ ] Create Textarea component
 
 ### Phase 3: Migration
+
 - [ ] Update all Button imports
 - [ ] Update all Card imports
 - [ ] Update all Dialog imports
@@ -356,6 +386,7 @@ export const AllVariants = () => (
 - [ ] Update all feedback component imports
 
 ### Phase 4: Testing
+
 - [ ] Unit tests pass
 - [ ] Integration tests pass
 - [ ] Visual regression tests pass
@@ -363,6 +394,7 @@ export const AllVariants = () => (
 - [ ] Performance benchmarks
 
 ### Phase 5: Cleanup
+
 - [ ] Remove Shadcn components
 - [ ] Remove unused dependencies
 - [ ] Update documentation
@@ -371,6 +403,7 @@ export const AllVariants = () => (
 ## 🚀 SUCCESS METRICS
 
 ### Technical
+
 - [ ] Single UI system
 - [ ] 100% component test coverage
 - [ ] 0 visual regressions
@@ -378,12 +411,14 @@ export const AllVariants = () => (
 - [ ] Build time improvement
 
 ### User Experience
+
 - [ ] Consistent design language
 - [ ] Improved accessibility scores
 - [ ] Better performance metrics
 - [ ] Responsive design maintained
 
 ### Developer Experience
+
 - [ ] Clear component API
 - [ ] Comprehensive documentation
 - [ ] Easy to use and extend
@@ -391,4 +426,4 @@ export const AllVariants = () => (
 
 ---
 
-*Denne plan sikrer en systematisk og sikker konsolidering af UI komponenter med minimal disruption.*
+_Denne plan sikrer en systematisk og sikker konsolidering af UI komponenter med minimal disruption._

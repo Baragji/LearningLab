@@ -84,7 +84,9 @@ export class TopicController {
         quizzes: includeQuizzes,
       };
 
-      const result = await this.topicService.findTopicsByCourse(courseId, { include });
+      const result = await this.topicService.findTopicsByCourse(courseId, {
+        include,
+      });
       return result.data;
     } catch (error) {
       if (error instanceof NotFoundException) {
@@ -200,7 +202,11 @@ export class TopicController {
     @Request() req: RequestWithUser,
   ): Promise<TopicDto> {
     try {
-      return await this.topicService.updateTopic(id, updateTopicDto, req.userId);
+      return await this.topicService.updateTopic(
+        id,
+        updateTopicDto,
+        req.userId,
+      );
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw error;

@@ -1,10 +1,10 @@
 // apps/web/pages/settings.tsx
-import React, { useState, useRef } from 'react';
-import Head from 'next/head';
-import Link from 'next/link';
-import Image from 'next/image';
-import { useAuth } from '../src/contexts/AuthContext';
-import ProtectedRoute from '../src/components/auth/ProtectedRoute';
+import React, { useState, useRef } from "react";
+import Head from "next/head";
+import Link from "next/link";
+import Image from "next/image";
+import { useAuth } from "../src/contexts/AuthContext";
+import ProtectedRoute from "../src/components/auth/ProtectedRoute";
 
 const SettingsPage: React.FC = () => {
   const { user } = useAuth();
@@ -12,15 +12,15 @@ const SettingsPage: React.FC = () => {
 
   // Form states
   const [profileForm, setProfileForm] = useState({
-    name: user?.name || '',
-    email: user?.email || '',
-    bio: '',
+    name: user?.name || "",
+    email: user?.email || "",
+    bio: "",
   });
 
   const [passwordForm, setPasswordForm] = useState({
-    currentPassword: '',
-    newPassword: '',
-    confirmPassword: '',
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
   });
 
   const [notificationSettings, setNotificationSettings] = useState({
@@ -29,7 +29,7 @@ const SettingsPage: React.FC = () => {
   });
 
   const [privacySettings, setPrivacySettings] = useState({
-    profileVisibility: 'public',
+    profileVisibility: "public",
   });
 
   const [appearanceSettings, setAppearanceSettings] = useState({
@@ -56,55 +56,57 @@ const SettingsPage: React.FC = () => {
   React.useEffect(() => {
     if (user) {
       setProfileForm({
-        name: user.name || '',
-        email: user.email || '',
-        bio: '',
+        name: user.name || "",
+        email: user.email || "",
+        bio: "",
       });
     }
   }, [user]);
 
   // Handle profile form changes
-  const handleProfileChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleProfileChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
     const { name, value } = e.target;
-    setProfileForm(prev => ({
+    setProfileForm((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   // Handle password form changes
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setPasswordForm(prev => ({
+    setPasswordForm((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   // Handle notification settings changes
   const handleNotificationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, checked } = e.target;
-    setNotificationSettings(prev => ({
+    setNotificationSettings((prev) => ({
       ...prev,
-      [name]: checked
+      [name]: checked,
     }));
   };
 
   // Handle privacy settings changes
   const handlePrivacyChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setPrivacySettings(prev => ({
+    setPrivacySettings((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   // Handle appearance settings changes
   const handleAppearanceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, checked } = e.target;
-    setAppearanceSettings(prev => ({
+    setAppearanceSettings((prev) => ({
       ...prev,
-      [name]: checked
+      [name]: checked,
     }));
   };
 
@@ -134,11 +136,11 @@ const SettingsPage: React.FC = () => {
       // await uploadProfileImage(formData);
 
       // Simulate API call with a timeout
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      await new Promise((resolve) => setTimeout(resolve, 1500));
 
       setProfileUpdateStatus({
         success: true,
-        message: 'Profilbillede uploadet med succes!'
+        message: "Profilbillede uploadet med succes!",
       });
 
       // Clear status after 3 seconds
@@ -148,7 +150,8 @@ const SettingsPage: React.FC = () => {
     } catch (error) {
       setProfileUpdateStatus({
         success: false,
-        message: 'Der opstod en fejl ved upload af profilbillede. Prøv igen senere.'
+        message:
+          "Der opstod en fejl ved upload af profilbillede. Prøv igen senere.",
       });
     } finally {
       setIsUploadingImage(false);
@@ -169,11 +172,11 @@ const SettingsPage: React.FC = () => {
       // });
 
       // Simulate API call with a timeout
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
 
       setProfileUpdateStatus({
         success: true,
-        message: 'Profil opdateret med succes!'
+        message: "Profil opdateret med succes!",
       });
 
       // Clear status after 3 seconds
@@ -183,7 +186,8 @@ const SettingsPage: React.FC = () => {
     } catch (error) {
       setProfileUpdateStatus({
         success: false,
-        message: 'Der opstod en fejl ved opdatering af profilen. Prøv igen senere.'
+        message:
+          "Der opstod en fejl ved opdatering af profilen. Prøv igen senere.",
       });
     } finally {
       setIsUpdatingProfile(false);
@@ -198,7 +202,7 @@ const SettingsPage: React.FC = () => {
     if (passwordForm.newPassword !== passwordForm.confirmPassword) {
       setPasswordChangeStatus({
         success: false,
-        message: 'De nye adgangskoder matcher ikke.'
+        message: "De nye adgangskoder matcher ikke.",
       });
       return;
     }
@@ -213,18 +217,18 @@ const SettingsPage: React.FC = () => {
       // });
 
       // Simulate API call with a timeout
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
 
       setPasswordChangeStatus({
         success: true,
-        message: 'Adgangskode ændret med succes!'
+        message: "Adgangskode ændret med succes!",
       });
 
       // Clear form and status after 3 seconds
       setPasswordForm({
-        currentPassword: '',
-        newPassword: '',
-        confirmPassword: '',
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: "",
       });
 
       setTimeout(() => {
@@ -233,7 +237,8 @@ const SettingsPage: React.FC = () => {
     } catch (error) {
       setPasswordChangeStatus({
         success: false,
-        message: 'Der opstod en fejl ved ændring af adgangskoden. Kontroller din nuværende adgangskode og prøv igen.'
+        message:
+          "Der opstod en fejl ved ændring af adgangskoden. Kontroller din nuværende adgangskode og prøv igen.",
       });
     } finally {
       setIsChangingPassword(false);
@@ -249,11 +254,13 @@ const SettingsPage: React.FC = () => {
       // await updateNotificationSettings(notificationSettings);
 
       // Simulate API call with a timeout
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      alert('Notifikationsindstillinger gemt!');
+      alert("Notifikationsindstillinger gemt!");
     } catch (error) {
-      alert('Der opstod en fejl ved opdatering af notifikationsindstillinger. Prøv igen senere.');
+      alert(
+        "Der opstod en fejl ved opdatering af notifikationsindstillinger. Prøv igen senere.",
+      );
     }
   };
 
@@ -266,11 +273,13 @@ const SettingsPage: React.FC = () => {
       // await updatePrivacySettings(privacySettings);
 
       // Simulate API call with a timeout
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      alert('Privatindstillinger gemt!');
+      alert("Privatindstillinger gemt!");
     } catch (error) {
-      alert('Der opstod en fejl ved opdatering af privatindstillinger. Prøv igen senere.');
+      alert(
+        "Der opstod en fejl ved opdatering af privatindstillinger. Prøv igen senere.",
+      );
     }
   };
 
@@ -283,11 +292,13 @@ const SettingsPage: React.FC = () => {
       // await updateAppearanceSettings(appearanceSettings);
 
       // Simulate API call with a timeout
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      alert('Udseendeindstillinger gemt!');
+      alert("Udseendeindstillinger gemt!");
     } catch (error) {
-      alert('Der opstod en fejl ved opdatering af udseendeindstillinger. Prøv igen senere.');
+      alert(
+        "Der opstod en fejl ved opdatering af udseendeindstillinger. Prøv igen senere.",
+      );
     }
   };
 
@@ -298,12 +309,16 @@ const SettingsPage: React.FC = () => {
       </Head>
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Indstillinger</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+            Indstillinger
+          </h1>
         </div>
 
         {/* Profile Image Section */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-8">
-          <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-4">Profilbillede</h2>
+          <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-4">
+            Profilbillede
+          </h2>
 
           <div className="flex items-center">
             <div
@@ -311,10 +326,23 @@ const SettingsPage: React.FC = () => {
               onClick={handleProfileImageClick}
             >
               {profileImage ? (
-                <Image src={profileImage} alt="Profilbillede" layout="fill" objectFit="cover" />
+                <Image
+                  src={profileImage}
+                  alt="Profilbillede"
+                  layout="fill"
+                  objectFit="cover"
+                />
               ) : (
-                <svg className="w-12 h-12" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" fillRule="evenodd" />
+                <svg
+                  className="w-12 h-12"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                    clipRule="evenodd"
+                    fillRule="evenodd"
+                  />
                 </svg>
               )}
               {isUploadingImage && (
@@ -326,17 +354,22 @@ const SettingsPage: React.FC = () => {
             <input
               type="file"
               ref={fileInputRef}
-              style={{ display: 'none' }}
+              style={{ display: "none" }}
               accept="image/*"
               onChange={handleFileChange}
             />
             <div className="ml-6">
-              <h3 className="text-lg font-medium text-gray-800 dark:text-white">Upload profilbillede</h3>
+              <h3 className="text-lg font-medium text-gray-800 dark:text-white">
+                Upload profilbillede
+              </h3>
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                Klik på billedet for at uploade et nyt profilbillede. Maksimal filstørrelse: 5MB.
+                Klik på billedet for at uploade et nyt profilbillede. Maksimal
+                filstørrelse: 5MB.
               </p>
               {profileUpdateStatus.message && (
-                <div className={`mt-2 p-2 text-sm rounded ${profileUpdateStatus.success ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                <div
+                  className={`mt-2 p-2 text-sm rounded ${profileUpdateStatus.success ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}
+                >
                   {profileUpdateStatus.message}
                 </div>
               )}
@@ -347,11 +380,16 @@ const SettingsPage: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Profile Settings */}
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-            <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-4">Profiloplysninger</h2>
+            <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-4">
+              Profiloplysninger
+            </h2>
 
             <form onSubmit={handleProfileSubmit}>
               <div className="mb-4">
-                <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label
+                  htmlFor="name"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                >
                   Navn
                 </label>
                 <input
@@ -365,7 +403,10 @@ const SettingsPage: React.FC = () => {
               </div>
 
               <div className="mb-4">
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                >
                   Email
                 </label>
                 <input
@@ -380,7 +421,10 @@ const SettingsPage: React.FC = () => {
               </div>
 
               <div className="mb-6">
-                <label htmlFor="bio" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label
+                  htmlFor="bio"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                >
                   Biografi
                 </label>
                 <textarea
@@ -395,7 +439,9 @@ const SettingsPage: React.FC = () => {
               </div>
 
               {profileUpdateStatus.message && (
-                <div className={`mb-4 p-3 rounded ${profileUpdateStatus.success ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                <div
+                  className={`mb-4 p-3 rounded ${profileUpdateStatus.success ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}
+                >
                   {profileUpdateStatus.message}
                 </div>
               )}
@@ -407,24 +453,47 @@ const SettingsPage: React.FC = () => {
               >
                 {isUpdatingProfile ? (
                   <span className="flex items-center justify-center">
-                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    <svg
+                      className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
                     </svg>
                     Opdaterer...
                   </span>
-                ) : 'Opdater Profil'}
+                ) : (
+                  "Opdater Profil"
+                )}
               </button>
             </form>
           </div>
 
           {/* Password Settings */}
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-            <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-4">Skift Adgangskode</h2>
+            <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-4">
+              Skift Adgangskode
+            </h2>
 
             <form onSubmit={handlePasswordSubmit}>
               <div className="mb-4">
-                <label htmlFor="currentPassword" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label
+                  htmlFor="currentPassword"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                >
                   Nuværende Adgangskode
                 </label>
                 <input
@@ -439,7 +508,10 @@ const SettingsPage: React.FC = () => {
               </div>
 
               <div className="mb-4">
-                <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label
+                  htmlFor="newPassword"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                >
                   Ny Adgangskode
                 </label>
                 <input
@@ -455,7 +527,10 @@ const SettingsPage: React.FC = () => {
               </div>
 
               <div className="mb-6">
-                <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label
+                  htmlFor="confirmPassword"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                >
                   Bekræft Ny Adgangskode
                 </label>
                 <input
@@ -471,7 +546,9 @@ const SettingsPage: React.FC = () => {
               </div>
 
               {passwordChangeStatus.message && (
-                <div className={`mb-4 p-3 rounded ${passwordChangeStatus.success ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                <div
+                  className={`mb-4 p-3 rounded ${passwordChangeStatus.success ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}
+                >
                   {passwordChangeStatus.message}
                 </div>
               )}
@@ -483,18 +560,39 @@ const SettingsPage: React.FC = () => {
               >
                 {isChangingPassword ? (
                   <span className="flex items-center justify-center">
-                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    <svg
+                      className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
                     </svg>
                     Ændrer...
                   </span>
-                ) : 'Skift Adgangskode'}
+                ) : (
+                  "Skift Adgangskode"
+                )}
               </button>
             </form>
 
             <div className="mt-4 text-center">
-              <Link href="/forgot-password" className="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
+              <Link
+                href="/forgot-password"
+                className="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+              >
                 Glemt din adgangskode?
               </Link>
             </div>
@@ -502,7 +600,9 @@ const SettingsPage: React.FC = () => {
 
           {/* Notification Settings */}
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-            <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-4">Notifikationsindstillinger</h2>
+            <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-4">
+              Notifikationsindstillinger
+            </h2>
 
             <form onSubmit={handleNotificationSubmit}>
               <div className="mb-4">
@@ -519,7 +619,8 @@ const SettingsPage: React.FC = () => {
                   </span>
                 </label>
                 <p className="mt-1 text-xs text-gray-500 dark:text-gray-400 ml-6">
-                  Modtag notifikationer om nye kurser, beskeder og aktiviteter via email.
+                  Modtag notifikationer om nye kurser, beskeder og aktiviteter
+                  via email.
                 </p>
               </div>
 
@@ -537,7 +638,8 @@ const SettingsPage: React.FC = () => {
                   </span>
                 </label>
                 <p className="mt-1 text-xs text-gray-500 dark:text-gray-400 ml-6">
-                  Modtag notifikationer direkte i din browser, når du er på platformen.
+                  Modtag notifikationer direkte i din browser, når du er på
+                  platformen.
                 </p>
               </div>
 
@@ -552,11 +654,16 @@ const SettingsPage: React.FC = () => {
 
           {/* Privacy Settings */}
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-            <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-4">Privatindstillinger</h2>
+            <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-4">
+              Privatindstillinger
+            </h2>
 
             <form onSubmit={handlePrivacySubmit}>
               <div className="mb-6">
-                <label htmlFor="profileVisibility" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label
+                  htmlFor="profileVisibility"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                >
                   Profilsynlighed
                 </label>
                 <select
@@ -566,12 +673,17 @@ const SettingsPage: React.FC = () => {
                   onChange={handlePrivacyChange}
                   className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
-                  <option value="public">Offentlig (alle kan se din profil)</option>
+                  <option value="public">
+                    Offentlig (alle kan se din profil)
+                  </option>
                   <option value="registered">Kun registrerede brugere</option>
-                  <option value="private">Privat (kun dig og administratorer)</option>
+                  <option value="private">
+                    Privat (kun dig og administratorer)
+                  </option>
                 </select>
                 <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                  Vælg hvem der kan se din profil og dine aktiviteter på platformen.
+                  Vælg hvem der kan se din profil og dine aktiviteter på
+                  platformen.
                 </p>
               </div>
 
@@ -586,7 +698,9 @@ const SettingsPage: React.FC = () => {
 
           {/* Appearance Settings */}
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 col-span-1 md:col-span-2">
-            <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-4">Udseendeindstillinger</h2>
+            <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-4">
+              Udseendeindstillinger
+            </h2>
 
             <form onSubmit={handleAppearanceSubmit}>
               <div className="mb-6">
@@ -603,7 +717,8 @@ const SettingsPage: React.FC = () => {
                   </span>
                 </label>
                 <p className="mt-1 text-xs text-gray-500 dark:text-gray-400 ml-6">
-                  Aktivér mørkt tema for en mere behagelig oplevelse i mørke omgivelser.
+                  Aktivér mørkt tema for en mere behagelig oplevelse i mørke
+                  omgivelser.
                 </p>
               </div>
 

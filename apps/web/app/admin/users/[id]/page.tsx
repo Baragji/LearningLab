@@ -1,46 +1,49 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
-import Image from 'next/image';
-import { useAuth } from '@/contexts/AuthContext';
-import { AppButton as Button } from '@/components/ui/AppButton';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
-} from '@/components/ui/select';
-import { 
-  Card, 
-  CardContent, 
-  CardDescription, 
-  CardFooter, 
-  CardHeader, 
-  CardTitle 
-} from '@/components/ui/card';
-import { 
-  Tabs, 
-  TabsContent, 
-  TabsList, 
-  TabsTrigger 
-} from '@/components/ui/tabs';
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogHeader, 
-  DialogTitle, 
-  DialogFooter 
-} from '@/components/ui/dialog';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
-import { toast } from 'sonner';
-import { Loader2, ArrowLeft, Save, Trash2, UserCog, Key, ShieldAlert } from 'lucide-react';
-import { Role } from '@repo/core';
+import React, { useState, useEffect, useCallback } from "react";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
+import { useAuth } from "@/contexts/AuthContext";
+import { AppButton as Button } from "@/components/ui/AppButton";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { toast } from "sonner";
+import {
+  Loader2,
+  ArrowLeft,
+  Save,
+  Trash2,
+  UserCog,
+  Key,
+  ShieldAlert,
+} from "lucide-react";
+import { Role } from "@repo/core";
 
 // Brugertype
 interface User {
@@ -67,103 +70,114 @@ const UserEditPage = ({ params }: { params: { id: string } }) => {
   const { user, isAuthenticated, isLoading, apiClient } = useAuth();
   const router = useRouter();
   const userId = parseInt(params.id);
-  
+
   // State for user data
   const [userData, setUserData] = useState<User | null>(null);
   const [isLoadingUser, setIsLoadingUser] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-  
+
   // State for user groups
   const [userGroups, setUserGroups] = useState<UserGroup[]>([]);
-  const [userGroupMemberships, setUserGroupMemberships] = useState<number[]>([]);
+  const [userGroupMemberships, setUserGroupMemberships] = useState<number[]>(
+    [],
+  );
   const [isLoadingGroups, setIsLoadingGroups] = useState(true);
-  
+
   // State for form data
   const [formData, setFormData] = useState({
-    email: '',
-    name: '',
+    email: "",
+    name: "",
     role: Role.STUDENT,
-    profileImage: '',
-    bio: '',
+    profileImage: "",
+    bio: "",
     socialLinks: {
-      twitter: '',
-      linkedin: '',
-      github: '',
-      website: ''
-    }
+      twitter: "",
+      linkedin: "",
+      github: "",
+      website: "",
+    },
   });
-  
+
   // State for password change
   const [passwordData, setPasswordData] = useState({
-    newPassword: '',
-    confirmPassword: ''
+    newPassword: "",
+    confirmPassword: "",
   });
-  
+
   // State for dialogs
-  const [isDeleteConfirmDialogOpen, setIsDeleteConfirmDialogOpen] = useState(false);
-  const [isResetPasswordDialogOpen, setIsResetPasswordDialogOpen] = useState(false);
-  
+  const [isDeleteConfirmDialogOpen, setIsDeleteConfirmDialogOpen] =
+    useState(false);
+  const [isResetPasswordDialogOpen, setIsResetPasswordDialogOpen] =
+    useState(false);
+
   // Redirect if not authenticated or not admin
   useEffect(() => {
-    if (!isLoading && (!isAuthenticated || (user && user.role !== Role.ADMIN))) {
-      toast.error('Du har ikke adgang til denne side');
-      router.push('/');
+    if (
+      !isLoading &&
+      (!isAuthenticated || (user && user.role !== Role.ADMIN))
+    ) {
+      toast.error("Du har ikke adgang til denne side");
+      router.push("/");
     }
   }, [isAuthenticated, isLoading, user, router]);
-  
+
   // Fetch user data
   const fetchUserData = useCallback(async () => {
     if (!apiClient) return;
-    
+
     setIsLoadingUser(true);
     try {
       const response = await apiClient.get(`/api/users/${userId}`);
       setUserData(response.data);
-      
+
       // Initialize form data
       setFormData({
         email: response.data.email,
-        name: response.data.name || '',
+        name: response.data.name || "",
         role: response.data.role,
-        profileImage: response.data.profileImage || '',
-        bio: response.data.bio || '',
+        profileImage: response.data.profileImage || "",
+        bio: response.data.bio || "",
         socialLinks: {
-          twitter: response.data.socialLinks?.twitter || '',
-          linkedin: response.data.socialLinks?.linkedin || '',
-          github: response.data.socialLinks?.github || '',
-          website: response.data.socialLinks?.website || ''
-        }
+          twitter: response.data.socialLinks?.twitter || "",
+          linkedin: response.data.socialLinks?.linkedin || "",
+          github: response.data.socialLinks?.github || "",
+          website: response.data.socialLinks?.website || "",
+        },
       });
     } catch (error) {
-      console.error('Fejl ved hentning af bruger:', error);
-      toast.error('Der opstod en fejl ved hentning af brugeren');
-      router.push('/admin/users');
+      console.error("Fejl ved hentning af bruger:", error);
+      toast.error("Der opstod en fejl ved hentning af brugeren");
+      router.push("/admin/users");
     } finally {
       setIsLoadingUser(false);
     }
   }, [apiClient, userId, router]);
-  
+
   // Fetch user groups
   const fetchUserGroups = useCallback(async () => {
     if (!apiClient) return;
-    
+
     setIsLoadingGroups(true);
     try {
       // Fetch all groups
-      const groupsResponse = await apiClient.get('/api/user-groups');
+      const groupsResponse = await apiClient.get("/api/user-groups");
       setUserGroups(groupsResponse.data.userGroups);
-      
+
       // Fetch user's group memberships
-      const membershipsResponse = await apiClient.get(`/api/users/${userId}/groups`);
-      setUserGroupMemberships(membershipsResponse.data.map((group: UserGroup) => group.id));
+      const membershipsResponse = await apiClient.get(
+        `/api/users/${userId}/groups`,
+      );
+      setUserGroupMemberships(
+        membershipsResponse.data.map((group: UserGroup) => group.id),
+      );
     } catch (error) {
-      console.error('Fejl ved hentning af brugergrupper:', error);
-      toast.error('Der opstod en fejl ved hentning af brugergrupper');
+      console.error("Fejl ved hentning af brugergrupper:", error);
+      toast.error("Der opstod en fejl ved hentning af brugergrupper");
     } finally {
       setIsLoadingGroups(false);
     }
   }, [apiClient, userId]);
-  
+
   // Fetch data on component mount
   useEffect(() => {
     if (isAuthenticated && user?.role === Role.ADMIN) {
@@ -171,49 +185,51 @@ const UserEditPage = ({ params }: { params: { id: string } }) => {
       fetchUserGroups();
     }
   }, [isAuthenticated, user, userId, fetchUserData, fetchUserGroups]);
-  
+
   // Handle form input change
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
-  
+
   // Handle social links change
   const handleSocialLinkChange = (network: string, value: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       socialLinks: {
         ...prev.socialLinks,
-        [network]: value
-      }
+        [network]: value,
+      },
     }));
   };
-  
+
   // Handle role change
   const handleRoleChange = (value: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      role: value as Role
+      role: value as Role,
     }));
   };
-  
+
   // Handle password input change
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setPasswordData(prev => ({
+    setPasswordData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
-  
+
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!apiClient) return;
-    
+
     setIsSaving(true);
     try {
       const updateData = {
@@ -222,88 +238,94 @@ const UserEditPage = ({ params }: { params: { id: string } }) => {
         role: formData.role,
         profileImage: formData.profileImage || null,
         bio: formData.bio || null,
-        socialLinks: Object.entries(formData.socialLinks).reduce((acc, [key, value]) => {
-          if (value) acc[key] = value;
-          return acc;
-        }, {} as Record<string, string>)
+        socialLinks: Object.entries(formData.socialLinks).reduce(
+          (acc, [key, value]) => {
+            if (value) acc[key] = value;
+            return acc;
+          },
+          {} as Record<string, string>,
+        ),
       };
-      
+
       const response = await apiClient.put(`/api/users/${userId}`, updateData);
       setUserData(response.data);
-      toast.success('Bruger opdateret');
+      toast.success("Bruger opdateret");
     } catch (error) {
-      console.error('Fejl ved opdatering af bruger:', error);
-      toast.error('Der opstod en fejl ved opdatering af brugeren');
+      console.error("Fejl ved opdatering af bruger:", error);
+      toast.error("Der opstod en fejl ved opdatering af brugeren");
     } finally {
       setIsSaving(false);
     }
   };
-  
+
   // Handle password reset
   const handlePasswordReset = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!apiClient) return;
-    
+
     if (passwordData.newPassword !== passwordData.confirmPassword) {
-      toast.error('Adgangskoderne matcher ikke');
+      toast.error("Adgangskoderne matcher ikke");
       return;
     }
-    
+
     try {
       await apiClient.post(`/api/users/${userId}/reset-password`, {
-        newPassword: passwordData.newPassword
+        newPassword: passwordData.newPassword,
       });
-      
-      toast.success('Adgangskode ændret');
+
+      toast.success("Adgangskode ændret");
       setIsResetPasswordDialogOpen(false);
       setPasswordData({
-        newPassword: '',
-        confirmPassword: ''
+        newPassword: "",
+        confirmPassword: "",
       });
     } catch (error) {
-      console.error('Fejl ved nulstilling af adgangskode:', error);
-      toast.error('Der opstod en fejl ved nulstilling af adgangskoden');
+      console.error("Fejl ved nulstilling af adgangskode:", error);
+      toast.error("Der opstod en fejl ved nulstilling af adgangskoden");
     }
   };
-  
+
   // Handle user deletion
   const handleDeleteUser = async () => {
     if (!apiClient) return;
-    
+
     try {
       await apiClient.delete(`/api/users/${userId}`);
-      toast.success('Bruger slettet');
-      router.push('/admin/users');
+      toast.success("Bruger slettet");
+      router.push("/admin/users");
     } catch (error) {
-      console.error('Fejl ved sletning af bruger:', error);
-      toast.error('Der opstod en fejl ved sletning af brugeren');
+      console.error("Fejl ved sletning af bruger:", error);
+      toast.error("Der opstod en fejl ved sletning af brugeren");
     }
   };
-  
+
   // Handle group membership toggle
-  const handleGroupMembershipToggle = async (groupId: number, isMember: boolean) => {
+  const handleGroupMembershipToggle = async (
+    groupId: number,
+    isMember: boolean,
+  ) => {
     if (!apiClient) return;
-    
+
     try {
       if (isMember) {
         // Remove from group
         await apiClient.delete(`/api/user-groups/${groupId}/users/${userId}`);
-        setUserGroupMemberships(prev => prev.filter(id => id !== groupId));
-        toast.success('Bruger fjernet fra gruppen');
+        setUserGroupMemberships((prev) => prev.filter((id) => id !== groupId));
+        toast.success("Bruger fjernet fra gruppen");
       } else {
         // Add to group
         await apiClient.post(`/api/user-groups/${groupId}/users`, {
-          userIds: [userId]
+          userIds: [userId],
         });
-        setUserGroupMemberships(prev => [...prev, groupId]);
-        toast.success('Bruger tilføjet til gruppen');
+        setUserGroupMemberships((prev) => [...prev, groupId]);
+        toast.success("Bruger tilføjet til gruppen");
       }
     } catch (error) {
-      console.error('Fejl ved ændring af gruppemedlemskab:', error);
-      toast.error('Der opstod en fejl ved ændring af gruppemedlemskab');
+      console.error("Fejl ved ændring af gruppemedlemskab:", error);
+      toast.error("Der opstod en fejl ved ændring af gruppemedlemskab");
     }
   };
-  
+
   // If loading or not authenticated, show loading
   if (isLoading || !isAuthenticated || (user && user.role !== Role.ADMIN)) {
     return (
@@ -312,23 +334,25 @@ const UserEditPage = ({ params }: { params: { id: string } }) => {
       </div>
     );
   }
-  
+
   return (
     <div className="container mx-auto py-8">
       <div className="flex items-center mb-6">
-        <Button 
-          variant="ghost" 
-          onClick={() => router.push('/admin/users')}
+        <Button
+          variant="ghost"
+          onClick={() => router.push("/admin/users")}
           className="mr-4"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
           Tilbage
         </Button>
         <h1 className="text-3xl font-bold">
-          {isLoadingUser ? 'Indlæser bruger...' : `Rediger bruger: ${userData?.name || userData?.email}`}
+          {isLoadingUser
+            ? "Indlæser bruger..."
+            : `Rediger bruger: ${userData?.name || userData?.email}`}
         </h1>
       </div>
-      
+
       {isLoadingUser ? (
         <div className="flex justify-center py-12">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -344,57 +368,73 @@ const UserEditPage = ({ params }: { params: { id: string } }) => {
               <CardContent className="flex flex-col items-center text-center">
                 <div className="relative w-32 h-32 rounded-full overflow-hidden border-4 border-gray-200 dark:border-gray-700">
                   {formData.profileImage ? (
-                    <Image 
-                      src={formData.profileImage} 
-                      alt={formData.name || formData.email} 
-                      layout="fill" 
-                      objectFit="cover" 
+                    <Image
+                      src={formData.profileImage}
+                      alt={formData.name || formData.email}
+                      layout="fill"
+                      objectFit="cover"
                     />
                   ) : (
                     <div className="w-full h-full bg-gray-300 flex items-center justify-center text-gray-500 text-4xl">
-                      {formData.name ? formData.name.charAt(0).toUpperCase() : formData.email.charAt(0).toUpperCase()}
+                      {formData.name
+                        ? formData.name.charAt(0).toUpperCase()
+                        : formData.email.charAt(0).toUpperCase()}
                     </div>
                   )}
                 </div>
-                <h3 className="text-xl font-semibold">{userData?.name || 'Unavngivet'}</h3>
+                <h3 className="text-xl font-semibold">
+                  {userData?.name || "Unavngivet"}
+                </h3>
                 <p className="text-muted-foreground mb-2">{userData?.email}</p>
-                <Badge variant={
-                  userData?.role === Role.ADMIN 
-                    ? 'destructive' 
-                    : userData?.role === Role.TEACHER 
-                      ? 'default' 
-                      : 'secondary'
-                }>
-                  {userData?.role === Role.ADMIN 
-                    ? 'Administrator' 
-                    : userData?.role === Role.TEACHER 
-                      ? 'Underviser' 
-                      : 'Studerende'}
+                <Badge
+                  variant={
+                    userData?.role === Role.ADMIN
+                      ? "destructive"
+                      : userData?.role === Role.TEACHER
+                        ? "default"
+                        : "secondary"
+                  }
+                >
+                  {userData?.role === Role.ADMIN
+                    ? "Administrator"
+                    : userData?.role === Role.TEACHER
+                      ? "Underviser"
+                      : "Studerende"}
                 </Badge>
-                
+
                 <Separator className="my-4" />
-                
+
                 <div className="w-full text-left">
                   <p className="text-sm text-muted-foreground mb-1">Oprettet</p>
-                  <p className="mb-3">{new Date(userData?.createdAt || '').toLocaleDateString('da-DK')}</p>
-                  
-                  <p className="text-sm text-muted-foreground mb-1">Sidst opdateret</p>
-                  <p className="mb-3">{new Date(userData?.updatedAt || '').toLocaleDateString('da-DK')}</p>
+                  <p className="mb-3">
+                    {new Date(userData?.createdAt || "").toLocaleDateString(
+                      "da-DK",
+                    )}
+                  </p>
+
+                  <p className="text-sm text-muted-foreground mb-1">
+                    Sidst opdateret
+                  </p>
+                  <p className="mb-3">
+                    {new Date(userData?.updatedAt || "").toLocaleDateString(
+                      "da-DK",
+                    )}
+                  </p>
                 </div>
-                
+
                 <Separator className="my-4" />
-                
+
                 <div className="flex flex-col gap-2 w-full">
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     onClick={() => setIsResetPasswordDialogOpen(true)}
                     className="w-full"
                   >
                     <Key className="h-4 w-4 mr-2" />
                     Nulstil adgangskode
                   </Button>
-                  <Button 
-                    variant="destructive" 
+                  <Button
+                    variant="destructive"
                     onClick={() => setIsDeleteConfirmDialogOpen(true)}
                     className="w-full"
                   >
@@ -405,12 +445,15 @@ const UserEditPage = ({ params }: { params: { id: string } }) => {
               </CardContent>
             </Card>
           </div>
-          
+
           {/* Main content */}
           <div className="md:col-span-2">
             <Tabs defaultValue="profile">
               <TabsList className="mb-6">
-                <TabsTrigger value="profile" className="flex items-center gap-2">
+                <TabsTrigger
+                  value="profile"
+                  className="flex items-center gap-2"
+                >
                   <UserCog size={16} />
                   <span>Profil</span>
                 </TabsTrigger>
@@ -419,7 +462,7 @@ const UserEditPage = ({ params }: { params: { id: string } }) => {
                   <span>Grupper & Tilladelser</span>
                 </TabsTrigger>
               </TabsList>
-              
+
               {/* Profil tab */}
               <TabsContent value="profile">
                 <Card>
@@ -452,7 +495,7 @@ const UserEditPage = ({ params }: { params: { id: string } }) => {
                           />
                         </div>
                       </div>
-                      
+
                       <div className="space-y-2">
                         <Label htmlFor="role">Rolle</Label>
                         <Select
@@ -463,13 +506,19 @@ const UserEditPage = ({ params }: { params: { id: string } }) => {
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value={Role.STUDENT}>Studerende</SelectItem>
-                            <SelectItem value={Role.TEACHER}>Underviser</SelectItem>
-                            <SelectItem value={Role.ADMIN}>Administrator</SelectItem>
+                            <SelectItem value={Role.STUDENT}>
+                              Studerende
+                            </SelectItem>
+                            <SelectItem value={Role.TEACHER}>
+                              Underviser
+                            </SelectItem>
+                            <SelectItem value={Role.ADMIN}>
+                              Administrator
+                            </SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
-                      
+
                       <div className="space-y-2">
                         <Label htmlFor="profileImage">Profilbillede URL</Label>
                         <Input
@@ -480,7 +529,7 @@ const UserEditPage = ({ params }: { params: { id: string } }) => {
                           placeholder="https://..."
                         />
                       </div>
-                      
+
                       <div className="space-y-2">
                         <Label htmlFor="bio">Biografi</Label>
                         <Textarea
@@ -492,43 +541,68 @@ const UserEditPage = ({ params }: { params: { id: string } }) => {
                           rows={4}
                         />
                       </div>
-                      
+
                       <div>
                         <Label>Sociale links</Label>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
                           <div className="space-y-2">
-                            <Label htmlFor="twitter" className="text-sm">Twitter</Label>
+                            <Label htmlFor="twitter" className="text-sm">
+                              Twitter
+                            </Label>
                             <Input
                               id="twitter"
                               value={formData.socialLinks.twitter}
-                              onChange={(e) => handleSocialLinkChange('twitter', e.target.value)}
+                              onChange={(e) =>
+                                handleSocialLinkChange(
+                                  "twitter",
+                                  e.target.value,
+                                )
+                              }
                               placeholder="https://twitter.com/username"
                             />
                           </div>
                           <div className="space-y-2">
-                            <Label htmlFor="linkedin" className="text-sm">LinkedIn</Label>
+                            <Label htmlFor="linkedin" className="text-sm">
+                              LinkedIn
+                            </Label>
                             <Input
                               id="linkedin"
                               value={formData.socialLinks.linkedin}
-                              onChange={(e) => handleSocialLinkChange('linkedin', e.target.value)}
+                              onChange={(e) =>
+                                handleSocialLinkChange(
+                                  "linkedin",
+                                  e.target.value,
+                                )
+                              }
                               placeholder="https://linkedin.com/in/username"
                             />
                           </div>
                           <div className="space-y-2">
-                            <Label htmlFor="github" className="text-sm">GitHub</Label>
+                            <Label htmlFor="github" className="text-sm">
+                              GitHub
+                            </Label>
                             <Input
                               id="github"
                               value={formData.socialLinks.github}
-                              onChange={(e) => handleSocialLinkChange('github', e.target.value)}
+                              onChange={(e) =>
+                                handleSocialLinkChange("github", e.target.value)
+                              }
                               placeholder="https://github.com/username"
                             />
                           </div>
                           <div className="space-y-2">
-                            <Label htmlFor="website" className="text-sm">Hjemmeside</Label>
+                            <Label htmlFor="website" className="text-sm">
+                              Hjemmeside
+                            </Label>
                             <Input
                               id="website"
                               value={formData.socialLinks.website}
-                              onChange={(e) => handleSocialLinkChange('website', e.target.value)}
+                              onChange={(e) =>
+                                handleSocialLinkChange(
+                                  "website",
+                                  e.target.value,
+                                )
+                              }
                               placeholder="https://example.com"
                             />
                           </div>
@@ -553,7 +627,7 @@ const UserEditPage = ({ params }: { params: { id: string } }) => {
                   </form>
                 </Card>
               </TabsContent>
-              
+
               {/* Grupper tab */}
               <TabsContent value="groups">
                 <Card>
@@ -571,9 +645,9 @@ const UserEditPage = ({ params }: { params: { id: string } }) => {
                     ) : userGroups.length === 0 ? (
                       <div className="text-center py-8 text-muted-foreground">
                         <p>Ingen brugergrupper fundet</p>
-                        <Button 
-                          variant="link" 
-                          onClick={() => router.push('/admin/users?tab=groups')}
+                        <Button
+                          variant="link"
+                          onClick={() => router.push("/admin/users?tab=groups")}
                           className="mt-2"
                         >
                           Opret en brugergruppe
@@ -582,11 +656,13 @@ const UserEditPage = ({ params }: { params: { id: string } }) => {
                     ) : (
                       <div className="space-y-4">
                         {userGroups.map((group) => {
-                          const isMember = userGroupMemberships.includes(group.id);
+                          const isMember = userGroupMemberships.includes(
+                            group.id,
+                          );
                           return (
-                            <div 
-                              key={group.id} 
-                              className={`p-4 rounded-lg border ${isMember ? 'bg-muted/50' : ''}`}
+                            <div
+                              key={group.id}
+                              className={`p-4 rounded-lg border ${isMember ? "bg-muted/50" : ""}`}
                             >
                               <div className="flex justify-between items-start">
                                 <div>
@@ -600,9 +676,14 @@ const UserEditPage = ({ params }: { params: { id: string } }) => {
                                 <Button
                                   variant={isMember ? "default" : "outline"}
                                   size="sm"
-                                  onClick={() => handleGroupMembershipToggle(group.id, isMember)}
+                                  onClick={() =>
+                                    handleGroupMembershipToggle(
+                                      group.id,
+                                      isMember,
+                                    )
+                                  }
                                 >
-                                  {isMember ? 'Fjern' : 'Tilføj'}
+                                  {isMember ? "Fjern" : "Tilføj"}
                                 </Button>
                               </div>
                             </div>
@@ -617,9 +698,12 @@ const UserEditPage = ({ params }: { params: { id: string } }) => {
           </div>
         </div>
       )}
-      
+
       {/* Bekræft sletning dialog */}
-      <Dialog open={isDeleteConfirmDialogOpen} onOpenChange={setIsDeleteConfirmDialogOpen}>
+      <Dialog
+        open={isDeleteConfirmDialogOpen}
+        onOpenChange={setIsDeleteConfirmDialogOpen}
+      >
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>Bekræft sletning</DialogTitle>
@@ -631,7 +715,10 @@ const UserEditPage = ({ params }: { params: { id: string } }) => {
             </p>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsDeleteConfirmDialogOpen(false)}>
+            <Button
+              variant="outline"
+              onClick={() => setIsDeleteConfirmDialogOpen(false)}
+            >
               Annuller
             </Button>
             <Button variant="destructive" onClick={handleDeleteUser}>
@@ -640,9 +727,12 @@ const UserEditPage = ({ params }: { params: { id: string } }) => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-      
+
       {/* Nulstil adgangskode dialog */}
-      <Dialog open={isResetPasswordDialogOpen} onOpenChange={setIsResetPasswordDialogOpen}>
+      <Dialog
+        open={isResetPasswordDialogOpen}
+        onOpenChange={setIsResetPasswordDialogOpen}
+      >
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>Nulstil adgangskode</DialogTitle>
@@ -673,12 +763,13 @@ const UserEditPage = ({ params }: { params: { id: string } }) => {
               </div>
             </div>
             <DialogFooter>
-              <Button variant="outline" onClick={() => setIsResetPasswordDialogOpen(false)}>
+              <Button
+                variant="outline"
+                onClick={() => setIsResetPasswordDialogOpen(false)}
+              >
                 Annuller
               </Button>
-              <Button type="submit">
-                Nulstil adgangskode
-              </Button>
+              <Button type="submit">Nulstil adgangskode</Button>
             </DialogFooter>
           </form>
         </DialogContent>

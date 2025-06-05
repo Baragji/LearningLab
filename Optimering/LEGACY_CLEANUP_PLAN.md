@@ -3,6 +3,7 @@
 ## 📊 IDENTIFICEREDE FORÆLDEDE FILER
 
 ### Backup & Legacy Directories
+
 ```
 gcp-migration/_old_lies_backup/ # Gamle backup filer - kan fjernes
 .qodo/                         # Qodo AI filer - kan fjernes hvis ikke brugt
@@ -11,12 +12,14 @@ gcp-migration/_old_lies_backup/ # Gamle backup filer - kan fjernes
 ```
 
 ### Duplikerede Konfigurationsfiler
+
 ```
 .env.example                   # Duplikeret i apps/
 nginx.conf                     # Duplikeret i packages/config/
 ```
 
 ### Forældede Scripts
+
 ```
 install-code-assistant.sh      # Gamle installation scripts
 install-code-assistant-fixed.sh
@@ -24,6 +27,7 @@ fix-metal-compilation.sh       # Metal compilation fix - kan fjernes efter fix
 ```
 
 ### Test & Development Filer
+
 ```
 test_rag/                      # Test filer for RAG - evaluer
 fast_rag.py                    # Standalone RAG script - kan fjernes
@@ -31,6 +35,7 @@ mission_control.py             # Mission control script - evaluer
 ```
 
 ### Documentation Overload
+
 ```
 Agentopsætning.md             # Agent setup - konsolider
 MCPEnterprise_Agent_Prompt.md # MCP prompts - konsolider
@@ -41,15 +46,19 @@ METAL_COMPILATION_FIX.md      # Fix dokumentation - fjern efter fix
 ## 🎯 CLEANUP STRATEGI
 
 ### Fase 1: Sikker Fjernelse (Dag 1)
+
 Filer der sikkert kan fjernes uden påvirkning af funktionalitet
 
 ### Fase 2: Evaluering (Dag 2)
+
 Filer der kræver evaluering før fjernelse
 
 ### Fase 3: Konsolidering (Dag 3)
+
 Duplikerede filer der skal konsolideres
 
 ### Fase 4: Arkivering (Dag 4)
+
 Vigtige filer der skal arkiveres i stedet for fjernes
 
 ## 📋 DETALJERET CLEANUP PLAN
@@ -57,12 +66,14 @@ Vigtige filer der skal arkiveres i stedet for fjernes
 ### Fase 1: Sikker Fjernelse
 
 #### 1.1 Backup Directories
+
 ```bash
 # Fjern gamle backup filer
 rm -rf gcp-migration/_old_lies_backup/
 ```
 
 #### 1.2 Build Artifacts
+
 ```bash
 # Fjern build cache og artifacts
 rm -rf .turbo/
@@ -78,6 +89,7 @@ rm -rf packages/*/coverage/
 ```
 
 #### 1.3 Temporary Files
+
 ```bash
 # Fjern log filer
 find . -name "*.log" -type f -delete
@@ -93,6 +105,7 @@ find . -name "Thumbs.db" -type f -delete
 ### Fase 2: Evaluering & Conditional Cleanup
 
 #### 2.1 Development Tools
+
 ```bash
 # Evaluer om disse tools stadig bruges:
 # .qodo/ - Qodo AI integration
@@ -110,6 +123,7 @@ find .trae -type f -atime -30 2>/dev/null && echo "TRAE recently accessed" || ec
 ```
 
 #### 2.2 Scripts Evaluation
+
 ```bash
 # Evaluer scripts for aktuel relevans
 scripts_to_evaluate=(
@@ -133,6 +147,7 @@ done
 ### Fase 3: Konsolidering
 
 #### 3.1 Environment Files
+
 ```bash
 # Konsolider .env.example filer
 # Root .env.example skal være master
@@ -153,6 +168,7 @@ rm -f apps/web/.env.example
 ```
 
 #### 3.2 Configuration Files
+
 ```bash
 # Konsolider nginx konfiguration
 # Behold kun packages/config/nginx.conf
@@ -168,6 +184,7 @@ fi
 ```
 
 #### 3.3 Documentation Consolidation
+
 ```bash
 # Opret docs/archive/ for gamle dokumenter
 mkdir -p docs/archive/
@@ -183,6 +200,7 @@ mv Agentopsætning.md docs/archive/
 ### Fase 4: Arkivering
 
 #### 4.1 Opret Arkiv Struktur
+
 ```bash
 mkdir -p archive/{scripts,docs,configs,tests}
 
@@ -195,12 +213,14 @@ mv mission_control.py archive/scripts/
 ```
 
 #### 4.2 Opret Archive README
+
 ```markdown
 # Archive Directory
 
 Dette directory indeholder filer der er fjernet fra aktiv brug men bevaret for reference.
 
 ## Scripts
+
 - `install-code-assistant*.sh` - Gamle installation scripts
 - `fix-metal-compilation.sh` - Metal compilation fix
 - `test_agent_readiness.py` - Agent readiness test
@@ -208,21 +228,25 @@ Dette directory indeholder filer der er fjernet fra aktiv brug men bevaret for r
 - `mission_control.py` - Mission control script
 
 ## Documentation
+
 - `MCPEnterprise_Agent_Prompt.md` - MCP Enterprise agent prompts
 - `MCP_CODE_ASSISTANT_TEST_RAPPORT.md` - Test rapporter
 - `METAL_COMPILATION_FIX.md` - Metal compilation fix dokumentation
 - `Agentopsætning.md` - Agent setup guide
 
 ## Configs
+
 - Gamle konfigurationsfiler der er blevet konsolideret
 
 ## Tests
+
 - Forældede test filer og test data
 ```
 
 ## 🔍 AUTOMATED CLEANUP SCRIPT
 
 ### cleanup.sh
+
 ```bash
 #!/bin/bash
 
@@ -332,12 +356,12 @@ if [ -f apps/api/.env.example ] && [ -f apps/web/.env.example ]; then
         echo "# Web Environment Variables"
         cat apps/web/.env.example
     } >> .env.example.temp
-    
+
     # Remove duplicates and sort
     sort .env.example.temp | uniq > .env.example.consolidated
     mv .env.example.consolidated .env.example
     rm .env.example.temp
-    
+
     # Remove duplicated files
     rm -f apps/api/.env.example
     rm -f apps/web/.env.example
@@ -363,6 +387,7 @@ echo "   git commit -m 'feat: comprehensive codebase cleanup'"
 ## 📊 CLEANUP METRICS
 
 ### Before Cleanup
+
 ```bash
 # Measure current state
 echo "📊 Before Cleanup Metrics:"
@@ -373,6 +398,7 @@ echo "Git repo size: $(du -sh .git | cut -f1)"
 ```
 
 ### After Cleanup
+
 ```bash
 # Measure after cleanup
 echo "📊 After Cleanup Metrics:"
@@ -386,18 +412,21 @@ echo "Archived files: $(find archive -type f | wc -l)"
 ## 📋 IMPLEMENTATION CHECKLIST
 
 ### Pre-Cleanup
+
 - [ ] Create git backup tag
 - [ ] Document current state
 - [ ] Verify git status is clean
 - [ ] Run baseline tests
 
 ### Phase 1: Safe Removals
-- [ ] Remove _old_lies_backup/
+
+- [ ] Remove \_old_lies_backup/
 - [ ] Remove build artifacts
 - [ ] Remove temporary files
 - [ ] Remove OS specific files
 
 ### Phase 2: Conditional Cleanup
+
 - [ ] Evaluate .qodo/ usage
 - [ ] Evaluate .repomix/ usage
 - [ ] Evaluate .trae/ usage
@@ -405,6 +434,7 @@ echo "Archived files: $(find archive -type f | wc -l)"
 - [ ] Remove unused tools
 
 ### Phase 3: Archiving
+
 - [ ] Create archive structure
 - [ ] Archive legacy scripts
 - [ ] Archive old documentation
@@ -412,6 +442,7 @@ echo "Archived files: $(find archive -type f | wc -l)"
 - [ ] Create archive README
 
 ### Phase 4: Consolidation
+
 - [ ] Consolidate .env files
 - [ ] Consolidate nginx configs
 - [ ] Consolidate documentation
@@ -419,6 +450,7 @@ echo "Archived files: $(find archive -type f | wc -l)"
 - [ ] Test functionality
 
 ### Post-Cleanup
+
 - [ ] Run tests to verify functionality
 - [ ] Update documentation
 - [ ] Commit changes
@@ -428,18 +460,21 @@ echo "Archived files: $(find archive -type f | wc -l)"
 ## 🚀 SUCCESS CRITERIA
 
 ### File Reduction
+
 - [ ] 30%+ reduction in total files
 - [ ] 50%+ reduction in repository size
 - [ ] Elimination of duplicate files
 - [ ] Clear archive organization
 
 ### Maintainability
+
 - [ ] Cleaner project structure
 - [ ] Reduced confusion
 - [ ] Better organization
 - [ ] Updated documentation
 
 ### Performance
+
 - [ ] Faster git operations
 - [ ] Faster builds
 - [ ] Reduced disk usage
@@ -447,4 +482,4 @@ echo "Archived files: $(find archive -type f | wc -l)"
 
 ---
 
-*Denne plan sikrer en systematisk og sikker oprydning af forældede filer med bevarelse af vigtig historik.*
+_Denne plan sikrer en systematisk og sikker oprydning af forældede filer med bevarelse af vigtig historik._

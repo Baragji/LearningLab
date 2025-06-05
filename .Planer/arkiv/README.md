@@ -9,6 +9,7 @@ Denne mappe indeholder arkiverede planer og dokumenter fra LearningLab projektet
 ## Arkiverede Filer
 
 ### Gamle Implementeringsplaner
+
 - `Fase1.md` - Oprindelig Fase 1 plan, erstattet af ny faseinddelt struktur
 - `revisedplan.txt` - Revideret plan fra tidligere iteration
 - `Prismaopdatering.txt` - Gammel Prisma opdateringsplan
@@ -20,25 +21,30 @@ Denne mappe indeholder arkiverede planer og dokumenter fra LearningLab projektet
 - `E1-MVP-UI-Plan.md` - Gammel MVP UI plan
 
 ### Gamle Retningslinjer og Guidelines
+
 - `guidelines.md` - Gamle projektretningslinjer
 - `guidelines-alignment-plan.md` - Gammel retningslinje alignment plan
 - `Jira style.txt` - Gammel Jira formatering guide
 
 ### Gamle Debug og Code Review
+
 - `debugging-plan.md` - Gammel debugging plan
 - `debugging-improvement-plan.md` - Gammel debugging forbedringsplan
 - `code-review-issues.md` - Gamle code review problemer
 
 ### Gamle Backlogs og Sprints
+
 - `backlog.txt` - Gammel backlog
 - `Sprint2.txt` - Gammel sprint 2 plan
 - `Plan.txt` - Generel gammel plan
 
 ### Gamle Vision og Brainstorm
+
 - `vision.txt` - Gammel vision beskrivelse
 - `Vision&brainstom.txt` - Gammel vision og brainstorm
 
 ### Gamle Stack og Status Rapporter
+
 - `stackinfo.txt` - Gammel stack information
 - `stackinfo-mismatch-report.md` - Gammel stack mismatch rapport
 - `stackudvkiling` - Gammel stack udvikling info
@@ -51,11 +57,13 @@ Denne mappe indeholder arkiverede planer og dokumenter fra LearningLab projektet
 For opdaterede og aktive planer, se:
 
 ### Primære Dokumenter (Rod niveau)
+
 - **`vision.txt`** - Overordnet vision og mål
 - **`KOMPLET_VISION_ANALYSE.md`** - Detaljeret status analyse (45% færdig)
 - **`FASEINDDELT_IMPLEMENTERINGSPLAN.md`** - Komplet implementeringsplan (4 faser)
 
 ### Sekundære Dokumenter (.Udviklingsplaner/aktuelle/)
+
 - **`Blueprint.md`** - Teknisk arkitektur reference
 - **`Målsætning.md`** - Grundlæggende målsætninger
 - **`PrismaKonsolideringsplan.md`** - Database-specifik plan
@@ -81,4 +89,4 @@ Alle arkiverede filer er stadig tilgængelige for læsning og reference. De bør
 
 ---
 
-*Arkiveret som del af LearningLab plan konsolidering - Januar 2025*
+_Arkiveret som del af LearningLab plan konsolidering - Januar 2025_

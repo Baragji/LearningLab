@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import { Textarea } from '@/components/ui/textarea';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import React, { useState, useEffect } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { Textarea } from "@/components/ui/textarea";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   Brain,
   MessageSquare,
@@ -19,8 +19,8 @@ import {
   Lightbulb,
   BookOpen,
   ArrowRight,
-} from 'lucide-react';
-import { cn } from '@/lib/utils';
+} from "lucide-react";
+import { cn } from "@/lib/utils";
 
 // Types
 interface FeedbackResponse {
@@ -70,7 +70,7 @@ export function AIFeedbackPanel({
   const [feedback, setFeedback] = useState<FeedbackResponse | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [assistanceQuery, setAssistanceQuery] = useState('');
+  const [assistanceQuery, setAssistanceQuery] = useState("");
   const [assistance, setAssistance] = useState<LearningAssistance | null>(null);
   const [showAssistance, setShowAssistance] = useState(false);
 
@@ -86,10 +86,10 @@ export function AIFeedbackPanel({
     setError(null);
 
     try {
-      const response = await fetch('/api/ai/feedback/generate', {
-        method: 'POST',
+      const response = await fetch("/api/ai/feedback/generate", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           userId,
@@ -104,14 +104,14 @@ export function AIFeedbackPanel({
       });
 
       if (!response.ok) {
-        throw new Error('Failed to generate feedback');
+        throw new Error("Failed to generate feedback");
       }
 
       const feedbackData = await response.json();
       setFeedback(feedbackData);
       onFeedbackReceived?.(feedbackData);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
       setIsLoading(false);
     }
@@ -124,26 +124,26 @@ export function AIFeedbackPanel({
     setError(null);
 
     try {
-      const response = await fetch('/api/ai/feedback/assistance', {
-        method: 'POST',
+      const response = await fetch("/api/ai/feedback/assistance", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           userId,
-          topic: quizAnswer?.questionTopic || 'General',
+          topic: quizAnswer?.questionTopic || "General",
           question: assistanceQuery,
         }),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to get learning assistance');
+        throw new Error("Failed to get learning assistance");
       }
 
       const assistanceData = await response.json();
       setAssistance(assistanceData.data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
       setIsLoading(false);
     }
@@ -158,14 +158,14 @@ export function AIFeedbackPanel({
   };
 
   const getConfidenceColor = (confidence: number) => {
-    if (confidence >= 80) return 'text-green-600';
-    if (confidence >= 60) return 'text-yellow-600';
-    return 'text-red-600';
+    if (confidence >= 80) return "text-green-600";
+    if (confidence >= 60) return "text-yellow-600";
+    return "text-red-600";
   };
 
   if (isLoading) {
     return (
-      <Card className={cn('w-full', className)}>
+      <Card className={cn("w-full", className)}>
         <CardContent className="p-6">
           <div className="flex items-center justify-center space-x-2">
             <Brain className="h-5 w-5 animate-pulse text-blue-500" />
@@ -180,7 +180,7 @@ export function AIFeedbackPanel({
 
   if (error) {
     return (
-      <Card className={cn('w-full', className)}>
+      <Card className={cn("w-full", className)}>
         <CardContent className="p-6">
           <Alert variant="destructive">
             <XCircle className="h-4 w-4" />
@@ -192,21 +192,19 @@ export function AIFeedbackPanel({
   }
 
   return (
-    <div className={cn('space-y-4', className)}>
+    <div className={cn("space-y-4", className)}>
       {/* Main Feedback Card */}
       {feedback && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               {getFeedbackIcon(feedback.isCorrect)}
-              <span>
-                {feedback.isCorrect ? 'Correct!' : 'Not Quite Right'}
-              </span>
+              <span>{feedback.isCorrect ? "Correct!" : "Not Quite Right"}</span>
               <Badge
-                variant={feedback.isCorrect ? 'default' : 'secondary'}
+                variant={feedback.isCorrect ? "default" : "secondary"}
                 className={cn(
-                  'ml-auto',
-                  getConfidenceColor(feedback.confidence)
+                  "ml-auto",
+                  getConfidenceColor(feedback.confidence),
                 )}
               >
                 {feedback.confidence}% confidence
@@ -247,7 +245,10 @@ export function AIFeedbackPanel({
                 </h4>
                 <ul className="space-y-1">
                   {feedback.learningTips.map((tip, index) => (
-                    <li key={index} className="text-sm text-muted-foreground flex items-start space-x-2">
+                    <li
+                      key={index}
+                      className="text-sm text-muted-foreground flex items-start space-x-2"
+                    >
                       <ArrowRight className="h-3 w-3 mt-1 flex-shrink-0" />
                       <span>{tip}</span>
                     </li>
@@ -265,7 +266,10 @@ export function AIFeedbackPanel({
                 </h4>
                 <ul className="space-y-1">
                   {feedback.suggestions.map((suggestion, index) => (
-                    <li key={index} className="text-sm text-muted-foreground flex items-start space-x-2">
+                    <li
+                      key={index}
+                      className="text-sm text-muted-foreground flex items-start space-x-2"
+                    >
                       <ArrowRight className="h-3 w-3 mt-1 flex-shrink-0" />
                       <span>{suggestion}</span>
                     </li>
@@ -297,7 +301,10 @@ export function AIFeedbackPanel({
                 </h4>
                 <ul className="space-y-1">
                   {feedback.nextSteps.map((step, index) => (
-                    <li key={index} className="text-sm text-muted-foreground flex items-start space-x-2">
+                    <li
+                      key={index}
+                      className="text-sm text-muted-foreground flex items-start space-x-2"
+                    >
                       <ArrowRight className="h-3 w-3 mt-1 flex-shrink-0" />
                       <span>{step}</span>
                     </li>
@@ -358,7 +365,10 @@ export function AIFeedbackPanel({
                   <h4 className="font-medium">Suggestions</h4>
                   <ul className="space-y-1">
                     {assistance.suggestions.map((suggestion, index) => (
-                      <li key={index} className="text-sm text-muted-foreground flex items-start space-x-2">
+                      <li
+                        key={index}
+                        className="text-sm text-muted-foreground flex items-start space-x-2"
+                      >
                         <ArrowRight className="h-3 w-3 mt-1 flex-shrink-0" />
                         <span>{suggestion}</span>
                       </li>
@@ -385,7 +395,10 @@ export function AIFeedbackPanel({
                   <h4 className="font-medium">Recommended Resources</h4>
                   <ul className="space-y-1">
                     {assistance.resources.map((resource, index) => (
-                      <li key={index} className="text-sm text-muted-foreground flex items-start space-x-2">
+                      <li
+                        key={index}
+                        className="text-sm text-muted-foreground flex items-start space-x-2"
+                      >
                         <BookOpen className="h-3 w-3 mt-1 flex-shrink-0" />
                         <span>{resource}</span>
                       </li>
