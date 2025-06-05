@@ -47,14 +47,18 @@ En moderne uddannelsesplatform bygget med NestJS, Next.js og Prisma.
 ## 📁 Projekt Struktur
 
 ```
-learninglab/
+learninglab-monorepo/
 ├── apps/
-│   ├── api/          # NestJS backend API
+│   ├── api/          # NestJS backend
 │   └── web/          # Next.js frontend
-├── packages/         # Delte pakker
-├── prisma/           # Database schema og migrationer
-├── scripts/          # Utility scripts
-└── docs/            # Dokumentation
+├── packages/
+│   ├── ui/           # Shared UI components (MUI-based)
+│   ├── core/         # Shared types and utilities
+│   ├── config/       # ESLint, Tailwind, PostCSS config
+│   └── tsconfig/     # TypeScript configurations
+├── prisma/           # Database schema and migrations
+├── docker/           # Docker configuration
+└── scripts/          # Utility scripts
 ```
 
 ## 🛠️ Tilgængelige Scripts

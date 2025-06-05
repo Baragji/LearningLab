@@ -47,14 +47,14 @@ describe('UsersController', () => {
       email: 'newuser@example.com',
       password: 'password123',
       name: 'New User',
-      role: CoreRole.USER,
+      role: CoreRole.STUDENT,
     };
 
     const expectedUserResult: Omit<CoreUser, 'passwordHash'> = {
       id: 2,
       email: 'newuser@example.com',
       name: 'New User',
-      role: CoreRole.USER,
+      role: CoreRole.STUDENT,
       createdAt: new Date(),
       updatedAt: new Date(),
     };

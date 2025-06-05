@@ -15,9 +15,10 @@
   ],
   "scripts": {
     "build": "tsc -p tsconfig.json",
+    "clean": "rimraf dist tsconfig.tsbuildinfo",
+    "prebuild": "yarn clean",
     "lint": "eslint . --ext .ts,.tsx",
-    "typecheck": "tsc --noEmit",
-    "clean": "rimraf dist tsconfig.tsbuildinfo"
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "eslint-config-next": "^13.4.12",

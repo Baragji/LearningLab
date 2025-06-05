@@ -188,7 +188,7 @@ export class AIProviderService {
       if (this.provider === 'ollama') {
         return await this.ollamaService.generateEmbedding(text, model);
       } else {
-        return await this.openaiService.getEmbedding(text);
+        return await this.openaiService.createEmbedding(text);
       }
     } catch (error) {
       this.logger.error(
@@ -213,7 +213,7 @@ export class AIProviderService {
         // For OpenAI, generate embeddings one by one
         const embeddings: number[][] = [];
         for (const text of texts) {
-          const embedding = await this.openaiService.getEmbedding(text);
+          const embedding = await this.openaiService.createEmbedding(text);
           embeddings.push(embedding);
         }
         return embeddings;

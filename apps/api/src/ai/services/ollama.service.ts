@@ -220,7 +220,7 @@ export class OllamaService {
         (error as Error).message,
       );
 
-      if (error.response?.status === 404) {
+      if ((error as any).response?.status === 404) {
         throw new HttpException(
           `Model '${model}' not found. Please install it using: ollama pull ${model}`,
           HttpStatus.NOT_FOUND,
@@ -273,7 +273,7 @@ export class OllamaService {
         (error as Error).message,
       );
 
-      if (error.response?.status === 404) {
+      if ((error as any).response?.status === 404) {
         throw new HttpException(
           `Embedding model '${embeddingModel}' not found. Please install it using: ollama pull ${embeddingModel}`,
           HttpStatus.NOT_FOUND,

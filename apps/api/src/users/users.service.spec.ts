@@ -36,11 +36,19 @@ const mockPrismaUserResult: PrismaGeneratedUserType = {
   email: 'test@example.com',
   passwordHash: 'hashedpassword',
   name: 'Test User',
-  role: 'USER' as PrismaGeneratedRoleType,
+  role: 'STUDENT' as PrismaGeneratedRoleType,
+  profileImage: null,
+  bio: null,
+  socialLinks: null,
+  settings: null,
+  xp: 0,
   createdAt: new Date(),
   updatedAt: new Date(),
+  deletedAt: null,
   passwordResetToken: null,
   passwordResetExpires: null,
+  createdBy: 1,
+  updatedBy: 1,
 };
 
 const mockConfigService = {
@@ -96,7 +104,7 @@ describe('UsersService', () => {
       email: 'test@example.com',
       password: 'password123',
       name: 'Test User',
-      role: CoreRole.USER,
+      role: CoreRole.STUDENT,
     };
 
     it('should create and return a user if email does not exist', async () => {

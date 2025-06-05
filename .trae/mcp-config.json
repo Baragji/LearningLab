@@ -1,5 +1,4 @@
 {
-  "$schema": "https://schema.anthropic.com/mcp/config.json",
   "version": "1.0.0",
   "description": "MCP Server Configuration for LearningLab Platform",
   "servers": {
