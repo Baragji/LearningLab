@@ -101,16 +101,16 @@ npx @next/bundle-analyzer
 #### Dag 3: Core Framework Upgrades
 ```bash
 # 1. Node.js upgrade
-nvm install 20.18.0
-nvm use 20.18.0
-echo "20.18.0" > .nvmrc
+nvm install 22.0.0
+nvm use 22.0.0
+echo "22.0.0" > .nvmrc
 
 # 2. React ecosystem
-yarn add react@18.3.1 react-dom@18.3.1
-yarn add -D @types/react@18.3.1 @types/react-dom@18.3.1
+yarn add react@18.2.0 react-dom@18.2.0
+yarn add -D @types/react@18.2.18 @types/react-dom@18.2.18
 
 # 3. Next.js upgrade
-yarn workspace web add next@14.2.15
+yarn workspace web add next@14.2.0
 
 # 4. Test efter hver upgrade
 yarn typecheck && yarn build

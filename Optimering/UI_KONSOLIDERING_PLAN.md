@@ -5,7 +5,6 @@
 ### Duplikerede UI Systemer
 1. **packages/ui/components/mui/** - MUI-baserede komponenter
 2. **apps/web/src/components/ui/** - Shadcn/ui komponenter
-3. **packages/ui/components/modern/** - Moderne komponenter
 
 ### Problemanalyse
 - **Inkonsistent design**: To forskellige design systemer

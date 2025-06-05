@@ -2,7 +2,7 @@
 
 ## 🎯 MISSION STATEMENT
 
-Du er en ekspert AI-udvikler der skal udføre en komplet, systematisk refaktorering af LearningLab monorepo'et. Din opgave er at transformere en 698-fil kodebase til en fejlfri, optimeret og production-ready platform gennem præcis implementering af de udarbejdede planer.
+Du er en ekspert AI-udvikler der skal udføre en komplet, systematisk refaktorering af LearningLab monorepo'et. Din opgave er at transformere en 668-fil kodebase til en fejlfri, optimeret og production-ready platform gennem præcis implementering af de udarbejdede planer.
 
 ## 📋 KRITISKE KRAV - INGEN UNDTAGELSER
 
@@ -23,12 +23,12 @@ Du er en ekspert AI-udvikler der skal udføre en komplet, systematisk refaktorer
 
 ### Nuværende Struktur
 ```
-learninglab-monorepo/ (698 filer)
+learninglab-monorepo/ (668 filer)
 ├── apps/
 │   ├── api/ (NestJS 10.3.10, Node.js 22)
 │   └── web/ (Next.js 13.4.12, React 18.2.0)
 ├── packages/
-│   ├── ui/ (MUI 7.1.0 komponenter)
+│   ├── ui/ (MUI 5.14.3 komponenter)
 │   ├── core/ (Delte typer)
 │   ├── config/ (ESLint, Tailwind)
 │   ├── tsconfig/ (TypeScript configs)
@@ -63,10 +63,10 @@ learninglab-monorepo/ (698 filer)
 ### FASE 2: DEPENDENCY UPGRADE (Dag 3-4)
 ```bash
 # DAG 3: Core Frameworks
-1. nvm use 20.18.0 && echo "20.18.0" > .nvmrc
-2. yarn add react@18.3.1 react-dom@18.3.1
-3. yarn add -D @types/react@18.3.1 @types/react-dom@18.3.1
-4. yarn workspace web add next@14.2.15
+1. nvm use 22.0.0 && echo "22.0.0" > .nvmrc
+2. yarn add react@18.2.0 react-dom@18.2.0
+3. yarn add -D @types/react@18.2.18 @types/react-dom@18.2.18
+4. yarn workspace web add next@14.2.0
 5. Test: yarn typecheck && yarn build
 
 # DAG 4: Backend & Lock Versions
@@ -75,14 +75,14 @@ learninglab-monorepo/ (698 filer)
 3. Implementér resolutions i root package.json:
    {
      "resolutions": {
-       "react": "18.3.1",
-       "react-dom": "18.3.1",
-       "@types/react": "18.3.1",
-       "@types/react-dom": "18.3.1",
-       "typescript": "5.4.5",
-       "next": "14.2.15",
-       "@nestjs/core": "11.1.1",
-       "@nestjs/common": "11.1.1"
+      "react": "18.2.0",
+      "react-dom": "18.2.0",
+      "@types/react": "18.2.18",
+      "@types/react-dom": "18.2.18",
+      "typescript": "5.4.5",
+      "next": "14.2.0",
+      "@nestjs/core": "11.1.1",
+      "@nestjs/common": "11.1.1"
      }
    }
 4. rm yarn.lock && yarn install
@@ -124,7 +124,7 @@ learninglab-monorepo/ (698 filer)
 ```bash
 # DAG 10: Dockerfile Optimization
 1. Opret docker/api/Dockerfile med multi-stage build:
-   - Base: node:20-alpine
+   - Base: node:22-alpine
    - Security: non-root user, dumb-init
    - Cache: --mount=type=cache optimizations
    - Size: production dependencies only
@@ -235,7 +235,7 @@ Button.displayName = 'Button';
 ### Docker Best Practices
 ```dockerfile
 # Eksempel på korrekt Dockerfile struktur
-FROM node:20-alpine AS base
+FROM node:22-alpine AS base
 WORKDIR /app
 RUN apk update && apk upgrade && \
     apk add --no-cache openssl dumb-init && \

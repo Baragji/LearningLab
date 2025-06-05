@@ -73,7 +73,7 @@ docker/
 #### docker/api/Dockerfile
 ```dockerfile
 # Multi-stage build for optimal size and security
-FROM node:20-alpine AS base
+FROM node:22-alpine AS base
 WORKDIR /app
 
 # Install security updates and required packages
@@ -168,7 +168,7 @@ build
 
 #### docker/web/Dockerfile
 ```dockerfile
-FROM node:20-alpine AS base
+FROM node:22-alpine AS base
 WORKDIR /app
 
 # Install security updates

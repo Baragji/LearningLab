@@ -4,12 +4,10 @@
 
 ### Backup & Legacy Directories
 ```
-.git_backup/                    # Git backup filer - kan fjernes
 gcp-migration/_old_lies_backup/ # Gamle backup filer - kan fjernes
 .qodo/                         # Qodo AI filer - kan fjernes hvis ikke brugt
 .repomix/                      # Repomix bundles - kan fjernes
 .trae/                         # TRAE agent filer - evaluer om nødvendige
-rag_env/                       # Python virtual environment - kan fjernes
 ```
 
 ### Duplikerede Konfigurationsfiler
@@ -60,14 +58,8 @@ Vigtige filer der skal arkiveres i stedet for fjernes
 
 #### 1.1 Backup Directories
 ```bash
-# Fjern git backup (efter verifikation af git status)
-rm -rf .git_backup/
-
 # Fjern gamle backup filer
 rm -rf gcp-migration/_old_lies_backup/
-
-# Fjern Python virtual environment (kan genskabes)
-rm -rf rag_env/
 ```
 
 #### 1.2 Build Artifacts
@@ -249,9 +241,7 @@ echo "🗑️  Phase 1: Safe Removals"
 
 # Remove backup directories
 echo "Removing backup directories..."
-rm -rf .git_backup/
 rm -rf gcp-migration/_old_lies_backup/
-rm -rf rag_env/
 
 # Remove build artifacts
 echo "Removing build artifacts..."
@@ -402,9 +392,7 @@ echo "Archived files: $(find archive -type f | wc -l)"
 - [ ] Run baseline tests
 
 ### Phase 1: Safe Removals
-- [ ] Remove .git_backup/
 - [ ] Remove _old_lies_backup/
-- [ ] Remove rag_env/
 - [ ] Remove build artifacts
 - [ ] Remove temporary files
 - [ ] Remove OS specific files

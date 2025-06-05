@@ -5,17 +5,17 @@
 ### Core Framework Versions
 | Package | Nuværende | Anbefalet | Grund |
 |---------|-----------|-----------|-------|
-| React | 18.2.0 | 18.3.1 | Seneste stabile, bedre performance |
-| Next.js | 13.4.12 | 14.2.15 | App Router forbedringer, Turbopack |
-| NestJS | 10.3.10 | 11.1.1 | Node.js 20+ support, bedre performance |
+| React | 18.2.0 | 18.2.0 | Seneste stabile version |
+| Next.js | 13.4.12 | 14.2.0 | App Router forbedringer, HMR optimeringer |
+| NestJS | 10.3.10 | 11.1.1 | Bedre performance og Node.js 22 support |
 | TypeScript | 5.3.3 | 5.4.5 | Bedre type inference, bug fixes |
-| Node.js | 22.x | 20.x LTS | Stabilitet over bleeding edge |
+| Node.js | 22.x | 22.x LTS | Stabil og moderne runtime |
 
 ### UI & Styling
 | Package | Nuværende | Anbefalet | Grund |
 |---------|-----------|-----------|-------|
-| @mui/material | 7.1.0 | 6.1.6 | Stabil version, bedre React 18 support |
-| @emotion/react | 11.14.0 | 11.13.3 | Kompatibilitet med MUI 6.x |
+| @mui/material | 5.14.3 | 6.1.6 | Planlagt opgradering til MUI 6 |
+| @emotion/react | 11.11.1 | 11.13.3 | Kompatibilitet med MUI 6.x |
 | Tailwind CSS | - | 3.4.15 | Hvis vi beholder Shadcn komponenter |
 
 ### Database & ORM
