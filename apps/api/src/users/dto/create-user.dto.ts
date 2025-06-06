@@ -14,12 +14,8 @@ import {
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Role } from '@repo/core'; // Importer Role enum fra @repo/core
 import { Type } from 'class-transformer';
-import { SocialLinks, socialLinksSchema } from '../schemas/social-links.schema';
-import {
-  UserSettings,
-  userSettingsSchema,
-} from '../schemas/user-settings.schema';
-import { ZodValidationPipe } from '../../common/pipes/zod-validation.pipe';
+import { SocialLinks } from '../schemas/social-links.schema';
+import { UserSettings } from '../schemas/user-settings.schema';
 
 export class CreateUserDto {
   @ApiProperty({

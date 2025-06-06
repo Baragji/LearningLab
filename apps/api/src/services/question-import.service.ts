@@ -4,7 +4,7 @@ import { PrismaService } from '../persistence/prisma/prisma.service';
 import { QuestionType, Difficulty } from '@prisma/client';
 import csv from 'csv-parser';
 import * as fs from 'fs';
-import * as path from 'path';
+
 import * as XLSX from 'xlsx';
 import { Readable } from 'stream';
 

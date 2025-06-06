@@ -1,9 +1,8 @@
 // apps/api/src/users/users.module.ts
-import { Module, forwardRef } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
 import { PersistenceModule } from '../persistence/persistence.module'; // Importer PersistenceModule, der indeholder PrismaService
-import { AuthModule } from '../auth/auth.module'; // Import af AuthModule for at demonstrere håndtering af cirkulære afhængigheder
 
 @Module({
   imports: [

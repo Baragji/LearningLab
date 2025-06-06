@@ -110,13 +110,17 @@ export class UsersService {
         userData.passwordHash = await bcrypt.hash(password, this.saltRounds);
       } catch (error) {
         console.error('Fejl under hashing af password:', error);
-        throw new InternalServerErrorException(
-          'Der opstod en intern fejl under brugeroprettelse (hashing).',
-        );
+        throw new InternalServerErrorException({
+          message: 'Failed to create user',
+          code: 'USER_CREATION_FAILED',
+        });
       }
     } else {
       // Password er påkrævet
-      throw new BadRequestException('Password er påkrævet for login.');
+      throw new BadRequestException({
+        message: 'Password required for login',
+        code: 'MISSING_PASSWORD',
+      });
     }
 
     try {

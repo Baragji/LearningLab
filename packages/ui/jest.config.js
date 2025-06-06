@@ -4,10 +4,18 @@ const config = {
   testEnvironment: "jsdom",
   testMatch: ["**/*.test.tsx", "**/*.test.ts"],
   moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json", "node"],
+  extensionsToTreatAsEsm: [".ts", ".tsx"],
+  globals: {
+    "ts-jest": {
+      useESM: true,
+      tsconfig: "tsconfig.json",
+    },
+  },
   transform: {
     "^.+\\.(ts|tsx)$": [
       "ts-jest",
       {
+        useESM: true,
         tsconfig: "tsconfig.json",
       },
     ],
