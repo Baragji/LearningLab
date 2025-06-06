@@ -20,6 +20,15 @@ Denne mappe indeholder arkiverede planer og dokumenter fra LearningLab projektet
 - `improvement-plan.md` - Gammel forbedringsplan
 - `E1-MVP-UI-Plan.md` - Gammel MVP UI plan
 
+### Gamle Optimeringsplaner
+Disse optimeringsplaner blev flyttet hertil fra `README.START.HER/Optimering` og bruges kun til historisk reference.
+- `DOCKER_OPTIMERING_PLAN.md`
+- `LEGACY_CLEANUP_PLAN.md`
+- `DEPENDENCY_UPGRADE_PLAN.md`
+- `UI_KONSOLIDERING_PLAN.md`
+- `KOMPLET_REFAKTORERING_PLAN.md`
+- `MASTER_IMPLEMENTERING_PLAN.md`
+
 ### Gamle Retningslinjer og Guidelines
 
 - `guidelines.md` - Gamle projektretningslinjer
