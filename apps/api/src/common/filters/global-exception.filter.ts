@@ -92,8 +92,6 @@ export class GlobalExceptionFilter implements ExceptionFilter {
 
       if (typeof exceptionResponse === 'object' && exceptionResponse !== null) {
         message = (exceptionResponse as any).message || message;
-        errorCode = (exceptionResponse as any).code || errorCode;
-        details = (exceptionResponse as any).errors || details;
 
         // Gem detaljerede fejloplysninger til udvikling
         if (!this.isProduction) {
@@ -104,7 +102,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       }
 
       // Map HTTP status til ErrorCode
-      errorCode = statusToErrorCodeMap[status] || errorCode;
+      errorCode = statusToErrorCodeMap[status] || ErrorCode.UNKNOWN_ERROR;
     } else if (exception instanceof Error) {
       // Standard JavaScript Error
       message = this.isProduction
