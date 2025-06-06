@@ -8,6 +8,7 @@ import asyncio
 import json
 import logging
 import os
+from contextlib import asynccontextmanager
 from typing import Any, Dict, List, Optional
 from fastapi import FastAPI, HTTPException, Request, Depends
 from fastapi.responses import JSONResponse
@@ -32,19 +33,38 @@ except ImportError:
             return {"status": "healthy"}
     class MCPMetrics:
         def __init__(self):
-            pass
+            import time
+            self.start_time = time.time()
+            self.request_count = 0
+            self.rag_operations = 0
+            self.successful_requests = 0
+            self.failed_requests = 0
+            
         def record_request(self, method: str, success: bool = True):
-            pass
+            self.request_count += 1
+            if success:
+                self.successful_requests += 1
+            else:
+                self.failed_requests += 1
+                
         def record_rag_operation(self, operation: str, success: bool = True):
-            pass
+            self.rag_operations += 1
+            
         def get_metrics(self):
-            return {}
+            import time
+            uptime = time.time() - self.start_time
+            return {
+                "request_count": self.request_count,
+                "successful_requests": self.successful_requests,
+                "failed_requests": self.failed_requests,
+                "rag_operations": self.rag_operations,
+                "uptime_seconds": round(uptime, 2),
+                "success_rate": round(self.successful_requests / max(self.request_count, 1) * 100, 2)
+            }
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
-app = FastAPI(title="Code Assistant MCP Server with RAG", version="2.0.0")
 
 # Global instances
 rag_engine = None
@@ -52,10 +72,12 @@ health_checker = None
 mcp_metrics = None
 security = HTTPBearer(auto_error=False)
 
-@app.on_event("startup")
-async def startup_event():
-    """Initialize services on startup"""
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Manage application lifespan"""
     global rag_engine, health_checker, mcp_metrics
+    
+    # Startup
     try:
         # Initialize enterprise modules
         health_checker = HealthChecker()
@@ -77,6 +99,17 @@ async def startup_event():
             rag_engine = None
     except Exception as e:
         logger.error(f"❌ Startup error: {e}")
+    
+    yield
+    
+    # Shutdown
+    logger.info("🛑 Shutting down MCP Server")
+
+app = FastAPI(
+    title="Code Assistant MCP Server with RAG", 
+    version="2.0.0",
+    lifespan=lifespan
+)
 
 @app.get("/health")
 async def health_check():

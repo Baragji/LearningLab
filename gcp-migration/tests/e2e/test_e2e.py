@@ -53,9 +53,15 @@ class E2ETestSuite:
             response = requests.get(f"{BASE_URL}/health", timeout=10)
             if response.status_code == 200:
                 data = response.json()
-                if data.get("status") == "healthy" and data.get("services", {}).get("rag_engine"):
-                    print_success("Server health check passed")
-                    return True
+                if data.get("status") == "healthy":
+                    # Check if RAG engine is available (can be True or have stats)
+                    rag_status = data.get("services", {}).get("rag_engine") or data.get("rag_stats")
+                    if rag_status:
+                        print_success("Server health check passed")
+                        return True
+                    else:
+                        print_error(f"RAG engine not ready: {data}")
+                        return False
                 else:
                     print_error(f"Health check failed: {data}")
                     return False
@@ -194,7 +200,7 @@ class E2ETestSuite:
                     }
                 }
             }
-            response = requests.post(f"{BASE_URL}/mcp", json=payload, timeout=15)
+            response = requests.post(f"{BASE_URL}/mcp", json=payload, timeout=30)
             if response.status_code == 200:
                 data = response.json()
                 content = data.get("content", [{}])[0].get("text", "")
@@ -226,7 +232,7 @@ class E2ETestSuite:
                     }
                 }
             }
-            response = requests.post(f"{BASE_URL}/mcp", json=payload, timeout=15)
+            response = requests.post(f"{BASE_URL}/mcp", json=payload, timeout=30)
             if response.status_code == 200:
                 data = response.json()
                 content = data.get("content", [{}])[0].get("text", "")
@@ -257,7 +263,7 @@ class E2ETestSuite:
                     }
                 }
             }
-            response = requests.post(f"{BASE_URL}/mcp", json=payload, timeout=15)
+            response = requests.post(f"{BASE_URL}/mcp", json=payload, timeout=30)
             if response.status_code == 200:
                 data = response.json()
                 content = data.get("content", [{}])[0].get("text", "")

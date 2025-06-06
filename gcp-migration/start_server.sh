@@ -7,10 +7,10 @@ echo "🚀 Starting MCP Server with RAG Engine..."
 echo "============================================"
 
 # Check if we're in the right directory
-if [ ! -f "src/mcp_server_with_rag.py" ]; then
+if [ ! -f "src/api/mcp_server_with_rag.py" ]; then
     echo "❌ Error: Please run this script from the gcp-migration directory"
     echo "   Current directory: $(pwd)"
-    echo "   Expected files: src/mcp_server_with_rag.py"
+    echo "   Expected files: src/api/mcp_server_with_rag.py"
     exit 1
 fi
 
@@ -91,5 +91,4 @@ echo "🛑 Press Ctrl+C to stop the server"
 echo "============================================"
 
 # Start the server
-cd src
-python3 mcp_server_with_rag.py
+python3 src/api/mcp_server_with_rag.py
