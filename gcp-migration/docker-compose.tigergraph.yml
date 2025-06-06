@@ -1,0 +1,80 @@
+version: '3.8'
+
+services:
+  # TigerGraph Database
+  tigergraph:
+    image: tigergraph/tigergraph:3.9.3
+    container_name: rag-tigergraph
+    ports:
+      - "9000:9000"    # GraphStudio
+      - "14240:14240"  # REST API
+      - "22:22"        # SSH
+    volumes:
+      - tigergraph_data:/home/tigergraph/mydata
+      - ./configs/tigergraph:/home/tigergraph/configs
+    environment:
+      - TG_USER=tigergraph
+      - TG_PASSWORD=${TIGERGRAPH_PASSWORD:-tigergraph123}
+      - TG_LICENSE_KEY=${TIGERGRAPH_LICENSE_KEY:-}
+    ulimits:
+      nofile:
+        soft: 1000000
+        hard: 1000000
+    networks:
+      - graph_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/api/ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Redis for graph query caching
+  redis-graph:
+    image: redis:7-alpine
+    container_name: rag-redis-graph
+    ports:
+      - "6381:6379"
+    volumes:
+      - redis_graph_data:/data
+    command: redis-server --appendonly yes --maxmemory 1gb --maxmemory-policy allkeys-lru
+    networks:
+      - graph_network
+    restart: unless-stopped
+
+  # Graph Analytics Service
+  graph-analytics:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.graph-analytics
+    container_name: rag-graph-analytics
+    ports:
+      - "8080:8080"
+    environment:
+      - TIGERGRAPH_HOST=tigergraph
+      - TIGERGRAPH_PORT=14240
+      - REDIS_HOST=redis-graph
+      - REDIS_PORT=6379
+      - LOG_LEVEL=INFO
+    depends_on:
+      - tigergraph
+      - redis-graph
+    networks:
+      - graph_network
+    restart: unless-stopped
+    volumes:
+      - ./src:/app/src
+      - ./configs:/app/configs
+
+volumes:
+  tigergraph_data:
+    driver: local
+  redis_graph_data:
+    driver: local
+
+networks:
+  graph_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.21.0.0/16

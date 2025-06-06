@@ -1,0 +1,322 @@
+// TigerGraph Schema Definition for RAG Knowledge Graph
+// This file defines the complete graph schema for code knowledge representation
+
+// Create the graph
+CREATE GRAPH RAGKnowledgeGraph()
+
+// Use the graph
+USE GRAPH RAGKnowledgeGraph
+
+// ============================================================================
+// VERTEX TYPES
+// ============================================================================
+
+// Code File vertex - represents source code files
+CREATE VERTEX CodeFile (
+    PRIMARY_ID id STRING,
+    file_path STRING,
+    file_name STRING,
+    file_type STRING,
+    language STRING,
+    size_bytes INT,
+    lines_of_code INT,
+    created_at DATETIME,
+    modified_at DATETIME,
+    content_hash STRING,
+    embedding LIST<FLOAT>,
+    summary STRING
+) WITH STATS="OUTDEGREE_BY_EDGETYPE", PRIMARY_ID_AS_ATTRIBUTE="true"
+
+// Function vertex - represents functions and methods
+CREATE VERTEX Function (
+    PRIMARY_ID id STRING,
+    function_name STRING,
+    signature STRING,
+    return_type STRING,
+    parameters STRING,
+    docstring STRING,
+    complexity INT,
+    lines_of_code INT,
+    start_line INT,
+    end_line INT,
+    embedding LIST<FLOAT>,
+    is_public BOOL,
+    is_async BOOL
+) WITH STATS="OUTDEGREE_BY_EDGETYPE", PRIMARY_ID_AS_ATTRIBUTE="true"
+
+// Class vertex - represents classes and interfaces
+CREATE VERTEX Class (
+    PRIMARY_ID id STRING,
+    class_name STRING,
+    base_classes STRING,
+    interfaces STRING,
+    docstring STRING,
+    method_count INT,
+    property_count INT,
+    start_line INT,
+    end_line INT,
+    embedding LIST<FLOAT>,
+    is_abstract BOOL,
+    access_modifier STRING
+) WITH STATS="OUTDEGREE_BY_EDGETYPE", PRIMARY_ID_AS_ATTRIBUTE="true"
+
+// Variable vertex - represents variables and constants
+CREATE VERTEX Variable (
+    PRIMARY_ID id STRING,
+    variable_name STRING,
+    variable_type STRING,
+    scope STRING,
+    is_constant BOOL,
+    default_value STRING,
+    line_number INT
+) WITH STATS="OUTDEGREE_BY_EDGETYPE", PRIMARY_ID_AS_ATTRIBUTE="true"
+
+// Concept vertex - represents abstract concepts and topics
+CREATE VERTEX Concept (
+    PRIMARY_ID id STRING,
+    concept_name STRING,
+    description STRING,
+    category STRING,
+    confidence FLOAT,
+    embedding LIST<FLOAT>,
+    frequency INT,
+    importance FLOAT
+) WITH STATS="OUTDEGREE_BY_EDGETYPE", PRIMARY_ID_AS_ATTRIBUTE="true"
+
+// Documentation vertex - represents documentation content
+CREATE VERTEX Documentation (
+    PRIMARY_ID id STRING,
+    title STRING,
+    content STRING,
+    doc_type STRING,
+    format STRING,
+    embedding LIST<FLOAT>,
+    created_at DATETIME,
+    updated_at DATETIME,
+    author STRING
+) WITH STATS="OUTDEGREE_BY_EDGETYPE", PRIMARY_ID_AS_ATTRIBUTE="true"
+
+// Test vertex - represents test cases
+CREATE VERTEX Test (
+    PRIMARY_ID id STRING,
+    test_name STRING,
+    test_type STRING,
+    test_framework STRING,
+    assertions INT,
+    coverage_percentage FLOAT,
+    execution_time FLOAT,
+    status STRING
+) WITH STATS="OUTDEGREE_BY_EDGETYPE", PRIMARY_ID_AS_ATTRIBUTE="true"
+
+// Dependency vertex - represents external dependencies
+CREATE VERTEX Dependency (
+    PRIMARY_ID id STRING,
+    package_name STRING,
+    version STRING,
+    dependency_type STRING,
+    license STRING,
+    description STRING,
+    homepage STRING,
+    is_dev_dependency BOOL
+) WITH STATS="OUTDEGREE_BY_EDGETYPE", PRIMARY_ID_AS_ATTRIBUTE="true"
+
+// Repository vertex - represents code repositories
+CREATE VERTEX Repository (
+    PRIMARY_ID id STRING,
+    repo_name STRING,
+    repo_url STRING,
+    language STRING,
+    stars INT,
+    forks INT,
+    created_at DATETIME,
+    updated_at DATETIME,
+    description STRING
+) WITH STATS="OUTDEGREE_BY_EDGETYPE", PRIMARY_ID_AS_ATTRIBUTE="true"
+
+// Commit vertex - represents git commits
+CREATE VERTEX Commit (
+    PRIMARY_ID id STRING,
+    commit_hash STRING,
+    author STRING,
+    message STRING,
+    timestamp DATETIME,
+    files_changed INT,
+    lines_added INT,
+    lines_deleted INT
+) WITH STATS="OUTDEGREE_BY_EDGETYPE", PRIMARY_ID_AS_ATTRIBUTE="true"
+
+// ============================================================================
+// EDGE TYPES
+// ============================================================================
+
+// Contains relationship - file contains function/class
+CREATE DIRECTED EDGE Contains (
+    FROM CodeFile,
+    TO Function|Class|Variable,
+    relationship_type STRING,
+    confidence FLOAT
+) WITH REVERSE_EDGE="ContainedIn"
+
+// Calls relationship - function calls another function
+CREATE DIRECTED EDGE Calls (
+    FROM Function,
+    TO Function,
+    call_count INT,
+    call_type STRING,
+    line_number INT,
+    is_recursive BOOL
+) WITH REVERSE_EDGE="CalledBy"
+
+// Inherits relationship - class inherits from another class
+CREATE DIRECTED EDGE Inherits (
+    FROM Class,
+    TO Class,
+    inheritance_type STRING,
+    override_count INT
+) WITH REVERSE_EDGE="InheritedBy"
+
+// Implements relationship - class implements interface
+CREATE DIRECTED EDGE Implements (
+    FROM Class,
+    TO Class,
+    interface_methods INT
+) WITH REVERSE_EDGE="ImplementedBy"
+
+// Uses relationship - function uses variable/dependency
+CREATE DIRECTED EDGE Uses (
+    FROM Function,
+    TO Variable|Dependency,
+    usage_type STRING,
+    import_statement STRING,
+    frequency INT
+) WITH REVERSE_EDGE="UsedBy"
+
+// Documents relationship - documentation describes code
+CREATE DIRECTED EDGE Documents (
+    FROM Documentation,
+    TO Function|Class|CodeFile,
+    relevance_score FLOAT,
+    doc_section STRING
+) WITH REVERSE_EDGE="DocumentedBy"
+
+// Tests relationship - test tests function/class
+CREATE DIRECTED EDGE Tests (
+    FROM Test,
+    TO Function|Class,
+    test_coverage FLOAT,
+    test_type STRING
+) WITH REVERSE_EDGE="TestedBy"
+
+// DependsOn relationship - module depends on another
+CREATE DIRECTED EDGE DependsOn (
+    FROM CodeFile,
+    TO Dependency,
+    dependency_type STRING,
+    version_constraint STRING
+) WITH REVERSE_EDGE="RequiredBy"
+
+// SimilarTo relationship - semantic similarity
+CREATE UNDIRECTED EDGE SimilarTo (
+    FROM Function,
+    TO Function,
+    similarity_score FLOAT,
+    similarity_type STRING,
+    algorithm STRING
+)
+
+// References relationship - code references concept
+CREATE DIRECTED EDGE References (
+    FROM Function|Class|CodeFile,
+    TO Concept,
+    reference_strength FLOAT,
+    context STRING
+) WITH REVERSE_EDGE="ReferencedBy"
+
+// Modifies relationship - commit modifies file
+CREATE DIRECTED EDGE Modifies (
+    FROM Commit,
+    TO CodeFile,
+    change_type STRING,
+    lines_changed INT
+) WITH REVERSE_EDGE="ModifiedBy"
+
+// AuthoredBy relationship - code authored by developer
+CREATE DIRECTED EDGE AuthoredBy (
+    FROM Function|Class|CodeFile,
+    TO STRING,  // Developer name as string
+    contribution_percentage FLOAT,
+    last_modified DATETIME
+)
+
+// ============================================================================
+// LOADING JOBS (for data import)
+// ============================================================================
+
+// Loading job for code files
+CREATE LOADING JOB load_code_files FOR GRAPH RAGKnowledgeGraph {
+    DEFINE FILENAME file_data;
+    
+    LOAD file_data TO VERTEX CodeFile VALUES (
+        $"id",
+        $"file_path",
+        $"file_name", 
+        $"file_type",
+        $"language",
+        $"size_bytes",
+        $"lines_of_code",
+        $"created_at",
+        $"modified_at",
+        $"content_hash",
+        SPLIT($"embedding", ","),
+        $"summary"
+    ) USING SEPARATOR=",", HEADER="true", EOL="\n";
+}
+
+// Loading job for functions
+CREATE LOADING JOB load_functions FOR GRAPH RAGKnowledgeGraph {
+    DEFINE FILENAME func_data;
+    
+    LOAD func_data TO VERTEX Function VALUES (
+        $"id",
+        $"function_name",
+        $"signature",
+        $"return_type",
+        $"parameters",
+        $"docstring",
+        $"complexity",
+        $"lines_of_code",
+        $"start_line",
+        $"end_line",
+        SPLIT($"embedding", ","),
+        $"is_public",
+        $"is_async"
+    ) USING SEPARATOR=",", HEADER="true", EOL="\n";
+}
+
+// Loading job for relationships
+CREATE LOADING JOB load_relationships FOR GRAPH RAGKnowledgeGraph {
+    DEFINE FILENAME edge_data;
+    
+    LOAD edge_data TO EDGE Contains VALUES (
+        $"from_id",
+        $"to_id",
+        $"relationship_type",
+        $"confidence"
+    ) USING SEPARATOR=",", HEADER="true", EOL="\n";
+    
+    LOAD edge_data TO EDGE Calls VALUES (
+        $"from_id",
+        $"to_id", 
+        $"call_count",
+        $"call_type",
+        $"line_number",
+        $"is_recursive"
+    ) USING SEPARATOR=",", HEADER="true", EOL="\n";
+}
+
+// ============================================================================
+// UTILITY QUERIES
+// ============================================================================
+
+// Install all queries
+INSTALL QUERY ALL
