@@ -20,6 +20,7 @@ from typing import Dict, List, Any, Optional, Tuple
 from dataclasses import dataclass, field
 
 from .planner.query_planner import QueryPlanner, QueryPlan, QueryComplexity, RetrievalStrategy, SynthesisStrategy
+from .prompts import get_prompt
 from .retriever.retriever_agent import RetrieverAgent, RetrievalResult
 from .synthesizer.synthesizer_agent import SynthesizerAgent, SynthesisResult
 from .validator.validator_agent import ValidatorAgent, ValidationResult
@@ -71,6 +72,10 @@ class AgenticRAG:
         self.retriever_agent = retriever_agent
         self.synthesizer_agent = synthesizer_agent
         self.validator_agent = validator_agent
+
+        # Load prompt templates for agent guidance
+        self.planner_prompt = get_prompt("query_planner")
+        self.synthesizer_prompt = get_prompt("synthesizer")
         
         # Performance metrics
         self._total_queries = 0
@@ -96,13 +101,17 @@ class AgenticRAG:
         self._total_queries += 1
         
         logger.info(f"Processing query: {context.query}")
-        
+
+        # Attach prompt templates to context so downstream agents can leverage them
+        context.additional_context["planner_prompt"] = self.planner_prompt
+        context.additional_context["synthesizer_prompt"] = self.synthesizer_prompt
+
         try:
             # 1. Plan the query execution
             logger.debug("Creating query plan")
             query_plan = await self.query_planner.create_plan(
-                context.query, 
-                context=context.user_context
+                context.query,
+                context={**context.user_context, "prompt": self.planner_prompt}
             )
             
             logger.info(f"Query complexity: {query_plan.complexity}")
@@ -118,7 +127,7 @@ class AgenticRAG:
                 context.query,
                 retrieval_results,
                 query_plan.synthesis_strategy,
-                context=context.user_context
+                context={**context.user_context, "prompt": self.synthesizer_prompt}
             )
             
             # 4. Validate and refine answer

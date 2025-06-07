@@ -12,6 +12,11 @@ from dataclasses import dataclass
 
 from .tigergraph_client import TigerGraphClient
 
+try:
+    from .nebula_client import NebulaGraphClient  # type: ignore
+except Exception:  # pragma: no cover - optional dependency
+    NebulaGraphClient = Any
+
 logger = logging.getLogger(__name__)
 
 @dataclass
@@ -273,5 +278,29 @@ class VectorToGraphMigrator:
         
         # Use graph client to create edges
         edge_count = await self.graph_client.upsert_edges("CONTAINS", edges)
-        
+
         return edge_count
+
+
+class NebulaGraphMigrator:
+    """Simple migrator for moving data into NebulaGraph."""
+
+    def __init__(self, nebula_client: NebulaGraphClient):
+        self.nebula_client = nebula_client
+
+    async def bulk_import(self, vertices: List[Dict[str, Any]], edges: List[Dict[str, Any]]) -> bool:
+        """Bulk import vertices and edges into NebulaGraph."""
+        await self.nebula_client.upsert_vertices(vertices)
+        await self.nebula_client.upsert_edges(edges)
+        return True
+
+    async def migrate_from_tigergraph(self, tg_client: TigerGraphClient) -> MigrationStats:
+        """Migrate all data from TigerGraph to NebulaGraph."""
+        stats = MigrationStats()
+        data = await tg_client.export_graph()
+        vertices = data.get("vertices", [])
+        edges = data.get("edges", [])
+        stats.nodes_created = len(vertices)
+        stats.edges_created = len(edges)
+        await self.bulk_import(vertices, edges)
+        return stats
