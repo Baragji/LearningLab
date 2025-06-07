@@ -8,9 +8,7 @@
         "/Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab"
       ],
       "env": {
-        "MCP_FILESYSTEM_ALLOWED_DIRS": "/Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab",
-        "MCP_FILESYSTEM_DENIED_PATTERNS": "*.env,*.key,node_modules/*,dist/*,.git/*,*.log",
-        "MCP_FILESYSTEM_READ_ONLY_DIRS": "/Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/.Planer"
+        "MCP_FILESYSTEM_ALLOWED_DIRS": "/Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab"
       },
       "fromGalleryId": "modelcontextprotocol.servers_filesystem"
     },
@@ -138,17 +136,6 @@
         "TASK_MANAGER_FILE_PATH": "/Users/Yousef_1/Documents/tasks.json"
       },
       "fromGalleryId": "kazuph.mcp-taskmanager"
-    },
-    "codegen-mcp": {
-      "command": "uvx",
-      "args": [
-        "--from",
-        "git+https://github.com/codegen-sh/codegen-sdk.git#egg=codegen-mcp-server&subdirectory=codegen-examples/examples/codegen-mcp-server",
-        "codegen-mcp-server"
-      ],
-      "disabled": true,
-      "autoApprove": [],
-      "fromGalleryId": "codegen-sh.codegen-sdk_codegen-mcp-server"
     },
     "github-mcp": {
       "command": "npx",
