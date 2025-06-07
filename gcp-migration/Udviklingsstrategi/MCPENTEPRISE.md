@@ -70,7 +70,7 @@ Her er en detaljeret trin-for-trin plan (på dansk), som du kan sende til din AI
 
 5. **Implementer caching af query­embeddings og retrieve­resultater**
 
-   - Tilføj en simpel LRU-cache (fx `functools.lru_cache`) eller en Redis-cache til at gemme seneste N queries’ embedding + retrieve-hits. 
+   - Tilføj en simpel LRU-cache (fx `functools.lru_cache`) eller en Redis-cache til at gemme seneste N queries’ embedding + retrieve-hits.
    - I `retrieve_code(query, top_k)` kan I for eksempel:
 
      ```python
@@ -101,7 +101,7 @@ Her er en detaljeret trin-for-trin plan (på dansk), som du kan sende til din AI
              raise HTTPException(status_code=403, detail="Invalid token")
      ```
 
-   - Anvend FastAPI’s `Depends(verify_token)` på `/mcp`-endpointet. 
+   - Anvend FastAPI’s `Depends(verify_token)` på `/mcp`-endpointet.
    - Udvid hver `handle_tool_call(...)` med try/except-blokke, der indfanger:
 
      - `openai.OpenAIError` → Returner JSON-RPC error med `code = -32000` (server error) og detalje fra exception.

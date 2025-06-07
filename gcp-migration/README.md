@@ -75,22 +75,48 @@ cp .env.example .env
 # Edit .env and add your OPENAI_API_KEY
 ```
 
-### 2. Install Dependencies:
+### 2. Set Up Virtual Environment and Install Dependencies:
+
+Modern macOS requires using a virtual environment to install Python packages:
 
 ```bash
+# Create a virtual environment
+python3 -m venv venv
+
+# Activate the virtual environment
+source venv/bin/activate  # On macOS/Linux
+# or
+venv\Scripts\activate     # On Windows
+
+# Install dependencies in the virtual environment
 pip install -r requirements.txt
 ```
 
+> **Note:** For detailed instructions on virtual environment setup, see [VENV_SETUP.md](./VENV_SETUP.md)
+
 ### 3. Start MCP Server with RAG:
+
+Make sure your virtual environment is activated, then run:
 
 ```bash
 cd src
 python mcp_server_with_rag.py
 ```
 
-### 4. Run Complete E2E Tests:
+> **Important:** Always ensure your virtual environment is activated (you'll see `(venv)` in your terminal prompt) before running any Python commands.
+
+### 4. Run Tests:
+
+With your virtual environment activated, run the tests:
 
 ```bash
+# Quick syntax test (verifies imports and basic functionality)
+python test_syntax.py
+
+# Comprehensive Agentic RAG test (tests more components)
+python test_agentic_rag_comprehensive.py
+
+# Full end-to-end test (requires OpenAI API key)
 python test_e2e.py
 ```
 
@@ -167,6 +193,17 @@ curl -X POST http://localhost:8080/mcp \
 - RAG document indexing ✅ (smart chunking)
 - Embeddings pipeline ✅ (OpenAI integration)
 - LLM responses ✅ (gpt-3.5-turbo via OpenAI)
+
+## 👩‍💻 **For Developers:**
+
+If you're looking to extend this system with new features, check out these resources:
+
+- [Getting Started Guide](./GETTING_STARTED.md) - Quick start guide for new developers (start here!)
+- [Developer Guide](./DEVELOPER_GUIDE.md) - Comprehensive guide for adding new features
+- [Virtual Environment Setup](./VENV_SETUP.md) - Detailed instructions for setting up your development environment
+- [Test Suite](./test_agentic_rag_comprehensive.py) - Comprehensive tests to ensure system integrity
+
+These guides provide detailed information on the system architecture, extension points, and best practices for development.
 
 ## 🎯 **What's Been Completed:**
 
