@@ -16,7 +16,7 @@ import json
 from src.agents.agentic_rag import create_agentic_rag, RAGContext
 from src.graph.query_engine import GraphQueryEngine
 from src.graph.tigergraph_client import TigerGraphClient, GraphConfig
-from src.rag_engine_openai import RAGEngine
+from src.core.rag_engine_openai import RAGEngine
 
 # Configure logging
 logging.basicConfig(
