@@ -11,12 +11,14 @@ The RetrieverAgent executes retrieval steps from QueryPlanner with:
 import asyncio
 import logging
 from dataclasses import dataclass
-from typing import List, Dict, Any, Optional, Union
+from typing import List, Dict, Any, Optional, Union, TYPE_CHECKING
 from datetime import datetime
 
 from ..planner.query_planner import RetrievalStep, RetrievalStrategy
-from ...graph.query_engine import GraphQueryEngine
-from ...graph.tigergraph_client import TigerGraphClient
+
+if TYPE_CHECKING:
+    from ...graph.query_engine import GraphQueryEngine
+    from ...graph.tigergraph_client import TigerGraphClient
 
 logger = logging.getLogger(__name__)
 
@@ -46,7 +48,7 @@ class RetrieverAgent:
     - ITERATIVE: Multi-round refinement based on results
     """
     
-    def __init__(self, query_engine: GraphQueryEngine, graph_client: TigerGraphClient):
+    def __init__(self, query_engine: "GraphQueryEngine", graph_client: "TigerGraphClient"):
         self.query_engine = query_engine
         self.graph_client = graph_client
         self.retrieval_cache = {}

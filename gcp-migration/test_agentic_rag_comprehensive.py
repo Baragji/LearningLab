@@ -141,7 +141,8 @@ async def initialize_test_environment():
     await rag_engine.initialize()
     
     # Add sample documents if needed
-    if rag_engine.document_count() < 5:
+    stats = await rag_engine.get_codebase_stats()
+    if stats.get('total_documents', 0) < 5:
         logger.info("Adding sample documents for testing...")
         
         # Sample documents
@@ -175,10 +176,12 @@ async def initialize_test_environment():
         
         for doc in sample_docs:
             await rag_engine.add_document(
-                content=doc["content"],
-                file_path=doc["file_path"],
-                file_type=doc["file_type"],
-                project="test"
+            content=doc["content"],
+            metadata={
+            "file_path": doc["file_path"],
+            "file_type": doc["file_type"],
+            "project": "test"
+            }
             )
         
         logger.info(f"Added {len(sample_docs)} sample documents for testing")

@@ -209,7 +209,8 @@ async def main():
     agentic_rag, rag_engine = await initialize_components()
     
     # Check for demo documents
-    if rag_engine.document_count() < 5:
+    stats = await rag_engine.get_codebase_stats()
+    if stats.get('total_documents', 0) < 5:
         print("\nAdding sample documents for demonstration...")
         
         # Add some sample documents
@@ -244,9 +245,11 @@ async def main():
         for doc in sample_docs:
             await rag_engine.add_document(
                 content=doc["content"],
-                file_path=doc["file_path"],
-                file_type=doc["file_type"],
-                project="demo"
+                metadata={
+                    "file_path": doc["file_path"],
+                    "file_type": doc["file_type"],
+                    "project": "demo"
+                }
             )
         
         print(f"Added {len(sample_docs)} sample documents for demonstration\n")

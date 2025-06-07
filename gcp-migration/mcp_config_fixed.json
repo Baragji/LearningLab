@@ -1,0 +1,18 @@
+{
+  "mcpServers": {
+    "learninglab-rag-server": {
+      "command": "python",
+      "args": [
+        "/Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/gcp-migration/src/api/mcp_server_stdio.py"
+      ],
+      "env": {
+        "OPENAI_API_KEY": "${OPENAI_API_KEY}",
+        "CHROMADB_PATH": "/Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/gcp-migration/data/chromadb",
+        "OPENAI_MODEL": "gpt-4",
+        "EMBEDDING_MODEL": "text-embedding-3-small",
+        "LOG_LEVEL": "INFO"
+      },
+      "cwd": "/Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/gcp-migration"
+    }
+  }
+}
