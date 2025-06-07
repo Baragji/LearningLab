@@ -85,7 +85,7 @@ class GraphQueryEngine:
             
             # Semantic search using embeddings
             "semantic_search": """
-            CREATE QUERY semantic_search(LIST<FLOAT> query_embedding, STRING vertex_type = "Function", 
+            CREATE QUERY semantic_search(STRING query_embedding, STRING vertex_type = "Function", 
                                         FLOAT threshold = 0.8, INT limit = 10) FOR GRAPH RAGKnowledgeGraph {
                 
                 SumAccum<FLOAT> @cosine_similarity;
@@ -200,7 +200,7 @@ class GraphQueryEngine:
             """
         }
     
-    async def similarity_search(self, target_id: str, similarity_threshold: float = 0.7, 
+    async def similarity_search(self, target_id: str, threshold: float = 0.7, 
                                limit: int = 10) -> GraphSearchResult:
         """Find similar functions/code elements"""
         query_id = f"sim_search_{target_id}_{int(time.time())}"
@@ -212,7 +212,7 @@ class GraphQueryEngine:
                     "function_similarity",
                     {
                         "target_function_id": target_id,
-                        "threshold": similarity_threshold,
+                        "threshold": threshold,
                         "limit": limit
                     }
                 )
@@ -220,7 +220,7 @@ class GraphQueryEngine:
                 # Fallback to direct GSQL
                 gsql_query = f"""
                 SELECT s FROM Function:s -(SimilarTo:e)- Function:t
-                WHERE t.id == "{target_id}" AND e.similarity_score >= {similarity_threshold}
+                WHERE t.id == "{target_id}" AND e.similarity_score >= {threshold}
                 ORDER BY e.similarity_score DESC
                 LIMIT {limit}
                 """

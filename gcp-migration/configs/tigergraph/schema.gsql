@@ -23,7 +23,7 @@ CREATE VERTEX CodeFile (
     created_at DATETIME,
     modified_at DATETIME,
     content_hash STRING,
-    embedding LIST<FLOAT>,
+    embedding STRING,
     summary STRING
 ) WITH STATS="OUTDEGREE_BY_EDGETYPE", PRIMARY_ID_AS_ATTRIBUTE="true"
 
@@ -39,7 +39,7 @@ CREATE VERTEX Function (
     lines_of_code INT,
     start_line INT,
     end_line INT,
-    embedding LIST<FLOAT>,
+    embedding STRING,
     is_public BOOL,
     is_async BOOL
 ) WITH STATS="OUTDEGREE_BY_EDGETYPE", PRIMARY_ID_AS_ATTRIBUTE="true"
@@ -55,7 +55,7 @@ CREATE VERTEX Class (
     property_count INT,
     start_line INT,
     end_line INT,
-    embedding LIST<FLOAT>,
+    embedding STRING,
     is_abstract BOOL,
     access_modifier STRING
 ) WITH STATS="OUTDEGREE_BY_EDGETYPE", PRIMARY_ID_AS_ATTRIBUTE="true"
@@ -78,7 +78,7 @@ CREATE VERTEX Concept (
     description STRING,
     category STRING,
     confidence FLOAT,
-    embedding LIST<FLOAT>,
+    embedding STRING,
     frequency INT,
     importance FLOAT
 ) WITH STATS="OUTDEGREE_BY_EDGETYPE", PRIMARY_ID_AS_ATTRIBUTE="true"
@@ -90,7 +90,7 @@ CREATE VERTEX Documentation (
     content STRING,
     doc_type STRING,
     format STRING,
-    embedding LIST<FLOAT>,
+    embedding STRING,
     created_at DATETIME,
     updated_at DATETIME,
     author STRING
@@ -267,7 +267,7 @@ CREATE LOADING JOB load_code_files FOR GRAPH RAGKnowledgeGraph {
         $"created_at",
         $"modified_at",
         $"content_hash",
-        SPLIT($"embedding", ","),
+        $"embedding",
         $"summary"
     ) USING SEPARATOR=",", HEADER="true", EOL="\n";
 }
@@ -287,7 +287,7 @@ CREATE LOADING JOB load_functions FOR GRAPH RAGKnowledgeGraph {
         $"lines_of_code",
         $"start_line",
         $"end_line",
-        SPLIT($"embedding", ","),
+        $"embedding",
         $"is_public",
         $"is_async"
     ) USING SEPARATOR=",", HEADER="true", EOL="\n";

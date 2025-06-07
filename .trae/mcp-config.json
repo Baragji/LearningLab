@@ -26,12 +26,11 @@
       "command": "npx",
       "args": [
         "-y",
-        "@modelcontextprotocol/server-everything"
+        "@modelcontextprotocol/server-ollama"
       ],
       "env": {
-        "OPENAI_API_KEY": "${OPENAI_API_KEY}"
-      },
-      "disabled": false
+        "OLLAMA_HOST": "http://localhost:11434"
+      }
     },
     "neo4j-knowledge-graph": {
       "command": "npx",
@@ -47,7 +46,6 @@
       }
     },
     "sqlite-db": {
-      "type": "stdio",
       "command": "npx",
       "args": [
         "-y",
@@ -57,7 +55,6 @@
       "env": {}
     },
     "redis-memory": {
-      "type": "stdio",
       "command": "npx",
       "args": [
         "-y",
@@ -78,36 +75,6 @@
         "MCP_LANG": "Auto-detected based on system"
       },
       "fromGalleryId": "lmcc-dev.mult-fetch-mcp-server"
-    },
-    "Firecrawl": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "firecrawl-mcp"
-      ],
-      "env": {
-        "FIRECRAWL_API_KEY": "${FIRECRAWL_API_KEY}",
-        "FIRECRAWL_RETRY_MAX_ATTEMPTS": "3",
-        "FIRECRAWL_RETRY_INITIAL_DELAY": "1000",
-        "FIRECRAWL_RETRY_MAX_DELAY": "10000",
-        "FIRECRAWL_RETRY_BACKOFF_FACTOR": "2",
-        "FIRECRAWL_CREDIT_WARNING_THRESHOLD": "1000",
-        "FIRECRAWL_CREDIT_CRITICAL_THRESHOLD": "100"
-      },
-      "fromGalleryId": "mendableai.firecrawl-mcp-server",
-      "disabled": true
-    },
-    "Exa Search": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "exa-mcp-server"
-      ],
-      "env": {
-        "EXA_API_KEY": "${EXA_API_KEY}"
-      },
-      "fromGalleryId": "exa-labs.exa-mcp-server",
-      "disabled": true
     },
     "Gitingest": {
       "command": "uvx",
@@ -139,28 +106,6 @@
       },
       "fromGalleryId": "kazuph.mcp-taskmanager"
     },
-    "codegen-mcp": {
-      "command": "uvx",
-      "args": [
-        "--from",
-        "git+https://github.com/codegen-sh/codegen-sdk.git#egg=codegen-mcp-server&subdirectory=codegen-examples/examples/codegen-mcp-server",
-        "codegen-mcp-server"
-      ],
-      "disabled": true,
-      "autoApprove": [],
-      "fromGalleryId": "codegen-sh.codegen-sdk_codegen-mcp-server"
-    },
-    "github-mcp": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@modelcontextprotocol/server-github"
-      ],
-      "env": {
-        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_PERSONAL_ACCESS_TOKEN}"
-      },
-      "disabled": true
-    },
     "Playwright": {
       "command": "npx",
       "args": [
@@ -186,8 +131,7 @@
       "env": {
         "GEMINI_API_KEY": "${GOOGLE_API_KEY}"
       },
-      "fromGalleryId": "ai-1st.deepview-mcp",
-      "disabled": false
+      "fromGalleryId": "ai-1st.deepview-mcp"
     }
   }
 }

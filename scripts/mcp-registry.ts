@@ -183,19 +183,151 @@ class MCPRegistry {
       .sort((a, b) => b.performanceMetrics.uptime - a.performanceMetrics.uptime);
   }
 
-  public validateServerHealth(serverId: string): Promise<boolean> {
+  public async validateServerHealth(serverId: string): Promise<boolean> {
     const server = this.servers.get(serverId);
-    if (!server) return Promise.resolve(false);
+    if (!server) return false;
 
-    // Simulate health check
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const isHealthy = Math.random() > 0.1; // 90% success rate
-        server.lastValidated = new Date();
-        server.status = isHealthy ? 'active' : 'error';
-        resolve(isHealthy);
-      }, 100);
-    });
+    try {
+      // Perform actual health checks based on server type
+      let isHealthy = false;
+      
+      switch (serverId) {
+        case 'filesystem':
+          // Check if filesystem server can be started
+          isHealthy = await this.checkFilesystemHealth();
+          break;
+        case 'deepview':
+          // Check if DeepView server dependencies are available
+          isHealthy = await this.checkDeepViewHealth();
+          break;
+        case 'code-assistant':
+          // Check if code assistant dependencies are available
+          isHealthy = await this.checkCodeAssistantHealth();
+          break;
+        case 'sqlite-db':
+          // Check if SQLite database is accessible
+          isHealthy = await this.checkSQLiteHealth();
+          break;
+        case 'sequential-thinking':
+          // Check if sequential thinking server is available
+          isHealthy = await this.checkSequentialThinkingHealth();
+          break;
+        default:
+          isHealthy = true; // Default to healthy for unknown servers
+      }
+
+      server.lastValidated = new Date();
+      server.status = isHealthy ? 'active' : 'error';
+      return isHealthy;
+    } catch (error) {
+      server.status = 'error';
+      return false;
+    }
+  }
+
+  private async checkFilesystemHealth(): Promise<boolean> {
+    try {
+      const { spawn } = await import('child_process');
+      return new Promise((resolve) => {
+        const child = spawn('npx', ['-y', '@modelcontextprotocol/server-filesystem@2025.3.28', '--version'], {
+          stdio: 'pipe',
+          timeout: 5000
+        });
+        
+        child.on('close', (code) => {
+          resolve(code === 0);
+        });
+        
+        child.on('error', () => {
+          resolve(false);
+        });
+        
+        setTimeout(() => {
+          child.kill();
+          resolve(true); // If it doesn't exit quickly, it's probably working
+        }, 2000);
+      });
+    } catch {
+      return false;
+    }
+  }
+
+  private async checkDeepViewHealth(): Promise<boolean> {
+    try {
+      const hasGoogleApiKey = process.env.GOOGLE_API_KEY && process.env.GOOGLE_API_KEY !== 'your_google_api_key_here';
+      if (!hasGoogleApiKey) return false;
+
+      const { spawn } = await import('child_process');
+      return new Promise((resolve) => {
+        const child = spawn('uvx', ['deepview-mcp', '--help'], {
+          stdio: 'pipe',
+          timeout: 5000,
+          env: { ...process.env, GEMINI_API_KEY: process.env.GOOGLE_API_KEY }
+        });
+        
+        child.on('close', (code) => {
+          resolve(code === 0);
+        });
+        
+        child.on('error', () => {
+          resolve(false);
+        });
+        
+        setTimeout(() => {
+          child.kill();
+          resolve(false);
+        }, 3000);
+      });
+    } catch {
+      return false;
+    }
+  }
+
+  private async checkCodeAssistantHealth(): Promise<boolean> {
+    try {
+      // Check if Ollama is running
+      const response = await fetch('http://localhost:11434/api/tags');
+      return response.ok;
+    } catch {
+      return false;
+    }
+  }
+
+  private async checkSQLiteHealth(): Promise<boolean> {
+    try {
+      const fs = await import('fs');
+      const dbPath = '/Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/learninglab_testdata.db';
+      return fs.existsSync(dbPath);
+    } catch {
+      return false;
+    }
+  }
+
+  private async checkSequentialThinkingHealth(): Promise<boolean> {
+    try {
+      const { spawn } = await import('child_process');
+      return new Promise((resolve) => {
+        const child = spawn('npx', ['-y', '@modelcontextprotocol/server-sequential-thinking@0.6.2', '--help'], {
+          stdio: 'pipe',
+          timeout: 5000
+        });
+        
+        child.on('close', (code) => {
+          resolve(code === 0);
+        });
+        
+        child.on('error', () => {
+          resolve(false);
+        });
+        
+        setTimeout(() => {
+          child.kill();
+          resolve(true);
+        }, 2000);
+      });
+    } catch {
+      return false;
+    }
   }
 
   public getSecurityPolicy(serverId: string): MCPSecurityPolicy | null {

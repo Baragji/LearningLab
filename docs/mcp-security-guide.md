@@ -12,10 +12,10 @@
 #### 2. .env Fil Sikkerhed
 ```bash
 # ✅ Korrekt - API-nøgler i .env
-OPENAI_API_KEY=sk-proj-...
-GOOGLE_API_KEY=AIzaSy...
-FIRECRAWL_API_KEY=fc-...
-EXA_API_KEY=exa-...
+OPENAI_API_KEY=your_openai_key_here
+GOOGLE_API_KEY=your_google_key_here
+FIRECRAWL_API_KEY=your_firecrawl_key_here
+EXA_API_KEY=your_exa_key_here
 ```
 
 #### 3. MCP Konfiguration
@@ -35,7 +35,7 @@ EXA_API_KEY=exa-...
 // ❌ ALDRIG gør dette
 {
   "env": {
-    "API_KEY": "sk-proj-xHgAHUBo_fs1bsutuhLATdrxnVMJ5XLxLYqEGFuI..."
+    "API_KEY": "hardcoded_api_key_here"
   }
 }
 ```

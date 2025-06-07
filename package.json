@@ -50,7 +50,11 @@
     "seed": "yarn db:seed",
     "clean": "turbo run clean && rimraf node_modules .turbo .yarn/cache .yarn/install-state.gz",
     "clean:all": "yarn clean && rm -rf apps/*/node_modules packages/*/node_modules",
-    "postinstall": "prisma generate --schema=./prisma/schema.prisma"
+    "postinstall": "prisma generate --schema=./prisma/schema.prisma",
+    "mcp:security-audit": "./scripts/mcp-security-audit.sh",
+    "mcp:registry": "tsx scripts/mcp-registry.ts",
+    "mcp:context-manager": "tsx scripts/context-window-manager.ts",
+    "mcp:generate-repomix": "npm run mcp:context-manager repomix deepview && npx repomix --config repomix-deepview.config.json"
   },
   "devDependencies": {
     "@types/eslint": "^8.44.2",

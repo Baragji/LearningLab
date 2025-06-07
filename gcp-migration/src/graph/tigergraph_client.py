@@ -58,7 +58,7 @@ class TigerGraphClient:
             
             # Create synchronous connection for schema operations
             self.connection = tg.TigerGraphConnection(
-                host=self.config.host,
+                host=f"http://{self.config.host}",
                 restppPort=self.config.port,
                 username=self.config.username,
                 password=self.config.password,

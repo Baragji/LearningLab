@@ -242,14 +242,17 @@ class GraphEnhancedRAG:
                     limit=context.max_results
                 )
             
+            # Extract results from GraphSearchResult
+            results_list = similar_results.results if hasattr(similar_results, 'results') else []
+            
             # Generate similarity report
-            answer = await self._generate_similarity_report(similar_results, context)
+            answer = await self._generate_similarity_report(results_list, context)
             
             return RAGResponse(
                 answer=answer,
-                confidence=self._calculate_similarity_confidence(similar_results),
-                sources=similar_results.results,
-                graph_insights=self._extract_similarity_insights(similar_results),
+                confidence=self._calculate_similarity_confidence(results_list),
+                sources=self._format_sources(results_list),
+                graph_insights=self._extract_similarity_insights(results_list),
                 execution_time=0.0,
                 query_type=context.query_type
             )
@@ -420,17 +423,27 @@ class GraphEnhancedRAG:
     
     def _detect_language(self, query: str) -> Optional[str]:
         """Detect programming language from query"""
-        language_keywords = {
-            "python": ["def", "class", "import", "python"],
-            "javascript": ["function", "const", "let", "var", "javascript", "js"],
-            "java": ["public", "private", "class", "interface", "java"],
-            "cpp": ["#include", "namespace", "class", "cpp", "c++"]
-        }
-        
         query_lower = query.lower()
-        for lang, keywords in language_keywords.items():
-            if any(keyword in query_lower for keyword in keywords):
-                return lang
+        
+        # Check for explicit language mentions first
+        if "python" in query_lower:
+            return "python"
+        elif "javascript" in query_lower or " js " in query_lower:
+            return "javascript"
+        elif "java" in query_lower and "javascript" not in query_lower:
+            return "java"
+        elif "cpp" in query_lower or "c++" in query_lower:
+            return "cpp"
+        
+        # Check for language-specific patterns
+        if "def " in query_lower or "import " in query_lower:
+            return "python"
+        elif "const " in query_lower or "let " in query_lower or "var " in query_lower:
+            return "javascript"
+        elif "public class" in query_lower or "private class" in query_lower:
+            return "java"
+        elif "#include" in query_lower or "namespace" in query_lower:
+            return "cpp"
         
         return None
     
@@ -558,6 +571,226 @@ class GraphEnhancedRAG:
                     insights["complexity_distribution"].get(complexity_bucket, 0) + 1
         
         return insights
+    
+    async def _get_function_details(self, function_id: str) -> Dict[str, Any]:
+        """Get detailed function information"""
+        try:
+            query = f"""
+            SELECT f FROM Function:f
+            WHERE f.id == "{function_id}"
+            """
+            result = await self.graph_client.execute_query(query)
+            
+            if result.success and result.data:
+                function_data = result.data[0] if isinstance(result.data, list) else result.data
+                return {
+                    "id": function_data.get("id"),
+                    "name": function_data.get("function_name"),
+                    "signature": function_data.get("signature"),
+                    "docstring": function_data.get("docstring"),
+                    "complexity": function_data.get("complexity", 0),
+                    "lines_of_code": function_data.get("lines_of_code", 0)
+                }
+            else:
+                return {"error": "Function not found"}
+                
+        except Exception as e:
+            logger.error(f"Failed to get function details: {e}")
+            return {"error": str(e)}
+    
+    def _analyze_dependencies(self, dependencies: List[Dict[str, Any]]) -> Dict[str, Any]:
+        """Analyze dependency relationships"""
+        analysis = {
+            "total_dependencies": len(dependencies),
+            "dependency_types": {},
+            "complexity_impact": "low",
+            "recommendations": []
+        }
+        
+        # Categorize dependencies
+        for dep in dependencies:
+            dep_type = dep.get("type", "unknown")
+            analysis["dependency_types"][dep_type] = analysis["dependency_types"].get(dep_type, 0) + 1
+        
+        # Determine complexity impact
+        if len(dependencies) > 10:
+            analysis["complexity_impact"] = "high"
+            analysis["recommendations"].append("Consider refactoring to reduce dependencies")
+        elif len(dependencies) > 5:
+            analysis["complexity_impact"] = "medium"
+            analysis["recommendations"].append("Monitor dependency growth")
+        else:
+            analysis["recommendations"].append("Dependency count is manageable")
+        
+        return analysis
+    
+    async def _generate_similarity_report(self, similar_results: List[Dict[str, Any]], 
+                                        context: RAGContext) -> str:
+        """Generate similarity analysis report"""
+        if not similar_results:
+            return "No similar code found."
+        
+        report_parts = ["## Similar Code Analysis\n"]
+        
+        for i, result in enumerate(similar_results[:5], 1):
+            name = result.get("function_name", "Unknown")
+            similarity = result.get("similarity_score", 0.0)
+            description = result.get("docstring", "No description available")
+            
+            report_parts.append(f"### {i}. {name} (Similarity: {similarity:.2f})")
+            report_parts.append(f"{description[:150]}...")
+            report_parts.append("")
+        
+        # Add insights
+        avg_similarity = sum(r.get("similarity_score", 0) for r in similar_results) / len(similar_results)
+        report_parts.append(f"**Average Similarity:** {avg_similarity:.2f}")
+        
+        if avg_similarity > 0.8:
+            report_parts.append("**Insight:** High similarity detected - consider code deduplication.")
+        elif avg_similarity > 0.6:
+            report_parts.append("**Insight:** Moderate similarity - potential for refactoring.")
+        else:
+            report_parts.append("**Insight:** Low similarity - code appears unique.")
+        
+        return "\n".join(report_parts)
+    
+    async def _generate_function_explanation(self, function_details: Dict[str, Any], 
+                                           neighborhood: Any, similar_functions: Any,
+                                           context: RAGContext) -> str:
+        """Generate detailed function explanation"""
+        if "error" in function_details:
+            return f"Could not retrieve function details: {function_details['error']}"
+        
+        explanation_parts = [f"## Function: {function_details.get('name', 'Unknown')}"]
+        
+        # Add signature
+        if function_details.get('signature'):
+            explanation_parts.append(f"**Signature:** `{function_details['signature']}`")
+        
+        # Add description
+        if function_details.get('docstring'):
+            explanation_parts.append(f"**Description:** {function_details['docstring']}")
+        else:
+            explanation_parts.append("**Description:** No documentation available")
+        
+        # Add complexity info
+        complexity = function_details.get('complexity', 0)
+        if complexity > 0:
+            complexity_level = "Low" if complexity < 5 else "Medium" if complexity < 15 else "High"
+            explanation_parts.append(f"**Complexity:** {complexity_level} ({complexity})")
+        
+        # Add size info
+        loc = function_details.get('lines_of_code', 0)
+        if loc > 0:
+            explanation_parts.append(f"**Size:** {loc} lines of code")
+        
+        # Add neighborhood info
+        if hasattr(neighborhood, 'results') and neighborhood.results:
+            explanation_parts.append(f"**Dependencies:** {len(neighborhood.results)} related functions")
+        
+        # Add similarity info
+        if hasattr(similar_functions, 'results') and similar_functions.results:
+            explanation_parts.append(f"**Similar Functions:** {len(similar_functions.results)} found")
+        
+        return "\n\n".join(explanation_parts)
+    
+    async def _generate_dependency_report(self, dependency_analysis: Dict[str, Any], 
+                                        context: RAGContext) -> str:
+        """Generate dependency analysis report"""
+        report_parts = ["## Dependency Analysis"]
+        
+        total_deps = dependency_analysis.get('total_dependencies', 0)
+        report_parts.append(f"**Total Dependencies:** {total_deps}")
+        
+        # Dependency types breakdown
+        dep_types = dependency_analysis.get('dependency_types', {})
+        if dep_types:
+            report_parts.append("**Dependency Types:**")
+            for dep_type, count in dep_types.items():
+                report_parts.append(f"- {dep_type}: {count}")
+        
+        # Complexity impact
+        impact = dependency_analysis.get('complexity_impact', 'unknown')
+        report_parts.append(f"**Complexity Impact:** {impact.title()}")
+        
+        # Recommendations
+        recommendations = dependency_analysis.get('recommendations', [])
+        if recommendations:
+            report_parts.append("**Recommendations:**")
+            for rec in recommendations:
+                report_parts.append(f"- {rec}")
+        
+        return "\n\n".join(report_parts)
+    
+    def _calculate_similarity_confidence(self, results: List[Dict[str, Any]]) -> float:
+        """Calculate confidence for similarity results"""
+        if not results:
+            return 0.0
+        
+        # Use similarity scores if available
+        similarity_scores = [r.get('similarity_score', 0.5) for r in results]
+        avg_similarity = sum(similarity_scores) / len(similarity_scores)
+        
+        # Adjust based on number of results
+        result_factor = min(len(results) / 5.0, 1.0)
+        
+        return avg_similarity * result_factor
+    
+    def _extract_similarity_insights(self, results: List[Dict[str, Any]]) -> Dict[str, Any]:
+        """Extract insights from similarity results"""
+        if not results:
+            return {"total_similar": 0}
+        
+        insights = {
+            "total_similar": len(results),
+            "avg_similarity": 0.0,
+            "high_similarity_count": 0,
+            "similarity_distribution": {"high": 0, "medium": 0, "low": 0}
+        }
+        
+        similarity_scores = [r.get('similarity_score', 0.0) for r in results]
+        if similarity_scores:
+            insights["avg_similarity"] = sum(similarity_scores) / len(similarity_scores)
+            
+            for score in similarity_scores:
+                if score > 0.8:
+                    insights["similarity_distribution"]["high"] += 1
+                    insights["high_similarity_count"] += 1
+                elif score > 0.6:
+                    insights["similarity_distribution"]["medium"] += 1
+                else:
+                    insights["similarity_distribution"]["low"] += 1
+        
+        return insights
+    
+    def _analyze_call_patterns(self, neighborhood_results: List[Dict[str, Any]]) -> Dict[str, Any]:
+        """Analyze call patterns from neighborhood results"""
+        if not neighborhood_results:
+            return {"total_calls": 0, "pattern": "isolated"}
+        
+        patterns = {
+            "total_calls": len(neighborhood_results),
+            "incoming_calls": 0,
+            "outgoing_calls": 0,
+            "pattern": "unknown"
+        }
+        
+        # Simple pattern analysis
+        for result in neighborhood_results:
+            if result.get("relationship_type") == "calls":
+                patterns["outgoing_calls"] += 1
+            elif result.get("relationship_type") == "called_by":
+                patterns["incoming_calls"] += 1
+        
+        # Determine pattern
+        if patterns["incoming_calls"] > patterns["outgoing_calls"]:
+            patterns["pattern"] = "utility_function"
+        elif patterns["outgoing_calls"] > patterns["incoming_calls"]:
+            patterns["pattern"] = "orchestrator"
+        else:
+            patterns["pattern"] = "balanced"
+        
+        return patterns
     
     async def get_system_stats(self) -> Dict[str, Any]:
         """Get system statistics"""

@@ -88,7 +88,7 @@ class GraphSchemaManager:
                     "created_at": "DATETIME",
                     "modified_at": "DATETIME",
                     "content_hash": "STRING",
-                    "embedding": "LIST<FLOAT>",
+                    "embedding": "STRING",
                     "summary": "STRING"
                 },
                 description="Represents a source code file"
@@ -106,7 +106,7 @@ class GraphSchemaManager:
                     "lines_of_code": "INT",
                     "start_line": "INT",
                     "end_line": "INT",
-                    "embedding": "LIST<FLOAT>",
+                    "embedding": "STRING",
                     "is_public": "BOOL",
                     "is_async": "BOOL"
                 },
@@ -124,7 +124,7 @@ class GraphSchemaManager:
                     "property_count": "INT",
                     "start_line": "INT",
                     "end_line": "INT",
-                    "embedding": "LIST<FLOAT>",
+                    "embedding": "STRING",
                     "is_abstract": "BOOL",
                     "access_modifier": "STRING"
                 },
@@ -138,7 +138,7 @@ class GraphSchemaManager:
                     "description": "STRING",
                     "category": "STRING",
                     "confidence": "FLOAT",
-                    "embedding": "LIST<FLOAT>",
+                    "embedding": "STRING",
                     "frequency": "INT",
                     "importance": "FLOAT"
                 },
@@ -152,7 +152,7 @@ class GraphSchemaManager:
                     "content": "STRING",
                     "doc_type": "STRING",
                     "format": "STRING",
-                    "embedding": "LIST<FLOAT>",
+                    "embedding": "STRING",
                     "created_at": "DATETIME",
                     "updated_at": "DATETIME",
                     "author": "STRING"
@@ -349,8 +349,7 @@ class GraphSchemaManager:
             "INT": int,
             "FLOAT": float,
             "BOOL": bool,
-            "DATETIME": str,  # Simplified validation
-            "LIST<FLOAT>": list
+            "DATETIME": str  # Simplified validation
         }
         
         expected_python_type = type_mapping.get(expected_type)
