@@ -1,0 +1,148 @@
+--- gcp-migration/configs/monitoring_config.json
++++ gcp-migration/configs/monitoring_config.json
+@@ -0,0 +1,145 @@
++{
++  "prometheus": {
++    "host": "localhost",
++    "port": 9090,
++    "scrape_interval": "15s",
++    "retention": "30d"
++  },
++  "grafana": {
++    "host": "localhost",
++    "port": 3000,
++    "admin_user": "admin",
++    "admin_password": "${GRAFANA_ADMIN_PASSWORD}"
++  },
++  "alertmanager": {
++    "host": "localhost",
++    "port": 9093,
++    "smtp_server": "smtp.gmail.com",
++    "smtp_port": 587,
++    "alert_email": "alerts@yourcompany.com"
++  },
++  "gpu_monitoring": {
++    "enabled": true,
++    "check_interval_seconds": 60,
++    "grace_period_hours": 48,
++    "cost_optimization": {
++      "cpu_only_monthly_cost": 500,
++      "a100_2x_monthly_cost": 8000,
++      "h100_4x_monthly_cost": 20000
++    },
++    "performance_thresholds": {
++      "phase_2_trigger": {
++        "qps_threshold": 50.0,
++        "latency_p95_ms": 15000,
++        "consecutive_violations": 3,
++        "grace_period_hours": 48
++      },
++      "phase_3_trigger": {
++        "qps_threshold": 150.0,
++        "latency_p95_ms": 10000,
++        "consecutive_violations": 5,
++        "grace_period_hours": 72
++      }
++    }
++  },
++  "predictive_monitoring": {
++    "enabled": true,
++    "prediction_interval_minutes": 15,
++    "model_retrain_hours": 24,
++    "accuracy_target": 0.85,
++    "models": {
++      "latency_prediction": {
++        "type": "linear_regression",
++        "features": ["qps", "cpu_usage", "memory_usage", "gpu_utilization"],
++        "prediction_window_minutes": 30
++      },
++      "error_rate_prediction": {
++        "type": "xgboost",
++        "features": ["latency_p95", "qps", "memory_pressure"],
++        "prediction_window_minutes": 15
++      },
++      "resource_exhaustion_prediction": {
++        "type": "lstm",
++        "features": ["cpu_usage", "memory_usage", "disk_usage", "network_io"],
++        "prediction_window_minutes": 60
++      }
++    }
++  },
++  "slo_targets": {
++    "availability": {
++      "target_percent": 99.9,
++      "measurement_window_hours": 24,
++      "error_budget_hours": 0.72
++    },
++    "response_time_p95": {
++      "target_seconds": 10.0,
++      "measurement_window_hours": 1,
++      "alert_threshold_seconds": 8.0
++    },
++    "error_rate": {
++      "target_percent": 0.1,
++      "measurement_window_hours": 1,
++      "alert_threshold_percent": 0.5
++    },
++    "query_success_rate": {
++      "target_percent": 98.5,
++      "measurement_window_hours": 24,
++      "alert_threshold_percent": 97.0
++    }
++  },
++  "business_metrics": {
++    "user_satisfaction_score": {
++      "target": 4.5,
++      "measurement_method": "survey",
++      "correlation_metrics": ["response_time", "error_rate"]
++    },
++    "revenue_impact": {
++      "cost_per_downtime_minute": 1000,
++      "cost_per_slow_query": 0.1,
++      "tracking_enabled": true
++    }
++  },
++  "alerting": {
++    "channels": {
++      "slack": {
++        "webhook_url": "${SLACK_WEBHOOK_URL}",
++        "channel": "#rag-mcp-alerts"
++      },
++      "email": {
++        "smtp_server": "smtp.gmail.com",
++        "smtp_port": 587,
++        "username": "${SMTP_USERNAME}",
++        "password": "${SMTP_PASSWORD}",
++        "recipients": ["devops@yourcompany.com", "engineering@yourcompany.com"]
++      },
++      "pagerduty": {
++        "integration_key": "${PAGERDUTY_INTEGRATION_KEY}",
++        "severity_mapping": {
++          "critical": "critical",
++          "warning": "warning",
++          "info": "info"
++        }
++      }
++    },
++    "escalation_policy": {
++      "level_1": {
++        "channels": ["slack"],
++        "timeout_minutes": 5
++      },
++      "level_2": {
++        "channels": ["email"],
++        "timeout_minutes": 15
++      },
++      "level_3": {
++        "channels": ["pagerduty"],
++        "timeout_minutes": 30
++      }
++    }
++  },
++  "logging": {
++    "level": "INFO",
++    "format": "json",
++    "retention_days": 30,
++    "structured_logging": true
++  }
++}

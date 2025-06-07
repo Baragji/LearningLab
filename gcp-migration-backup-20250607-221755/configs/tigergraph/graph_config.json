@@ -1,0 +1,51 @@
+{
+  "graph_name": "RAGKnowledgeGraph",
+  "description": "Knowledge graph for RAG-based code assistance",
+  "version": "1.0",
+  "connection": {
+    "host": "localhost",
+    "port": 14240,
+    "username": "tigergraph",
+    "password": "tigergraph123",
+    "timeout": 30,
+    "max_retries": 3
+  },
+  "performance": {
+    "batch_size": 100,
+    "max_concurrent_queries": 10,
+    "query_timeout": 60,
+    "cache_ttl": 3600
+  },
+  "features": {
+    "enable_similarity_search": true,
+    "enable_semantic_search": true,
+    "enable_pattern_matching": true,
+    "enable_recommendations": true,
+    "similarity_threshold": 0.7,
+    "max_search_results": 50
+  },
+  "monitoring": {
+    "enable_metrics": true,
+    "log_queries": true,
+    "track_performance": true,
+    "alert_on_errors": true
+  },
+  "data_sources": {
+    "vector_db": {
+      "enabled": true,
+      "migration_batch_size": 100,
+      "validate_data": true
+    },
+    "code_repositories": {
+      "enabled": true,
+      "supported_languages": ["python", "javascript", "java", "cpp", "go"],
+      "parse_ast": true,
+      "extract_embeddings": true
+    },
+    "documentation": {
+      "enabled": true,
+      "formats": ["markdown", "rst", "html", "txt"],
+      "extract_concepts": true
+    }
+  }
+}
