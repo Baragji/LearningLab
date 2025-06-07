@@ -135,15 +135,18 @@
       "fromGalleryId": "ai-1st.deepview-mcp"
     },
     "learninglab-rag-server": {
-      "command": "/Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/gcp-migration/mcp-server-wrapper.sh",
-      "args": [],
+      "command": "python",
+      "args": [
+        "/Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/gcp-migration/src/api/mcp_server_stdio.py"
+      ],
       "env": {
         "OPENAI_API_KEY": "${OPENAI_API_KEY}",
         "CHROMADB_PATH": "/Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/gcp-migration/data/chromadb",
         "OPENAI_LLM_MODEL": "gpt-4",
         "OPENAI_EMBEDDING_MODEL": "text-embedding-3-small",
         "LOG_LEVEL": "INFO"
-      }
+      },
+      "cwd": "/Users/Yousef_1/Dokumenter/Kodefiler/Ejaztemplate/LearningLab/LearningLab/gcp-migration"
     }
   }
 }
